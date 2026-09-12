@@ -31,16 +31,17 @@ Der Ordner `FairFlock Theme/` mit WordPress-Core ist nur lokaler Playground — 
 
 Dauerbetrieb: Push-Deploy per Pipeline auf alle Shops in der Registry — kein manuelles Theme-Austauschen als Prozess.
 
-## Shop-Registry
+## Shop-Registry & Deploy
 
-Vorlage: `ops/shops.registry.example.json`  
-Echte Liste: `ops/shops.registry.json` (lokal, nicht mit Secrets committen).
+Anleitung: [`ops/DEPLOY.md`](ops/DEPLOY.md)
+
+- Vorlage: `ops/shops.registry.example.json`
+- Lokal: `ops/shops.registry.json` (gitignore)
+- Script: `./ops/scripts/deploy-shops.sh dist/fairflock-*.zip [--dry-run]`
 
 ## GitHub Release / Update-Weg
 
 1. Änderungen committen, Version bumpen (`style.css` + `functions.php`).
 2. Tag setzen: `git tag v0.9.149 && git push origin v0.9.149`
 3. GitHub Action **Release FairFlock Theme** baut das ZIP (Artifact).
-4. **Deploy** auf mStudio-Shops erst nach Anbindung (Secrets `MITTWALD_TOKEN`, Registry) — Job startet nur per manuellem Workflow mit `dry_run=false`.
-
-Bis der Deploy-Job live ist: Testshop einmalig per ZIP/SFTP, danach nur noch Pipeline.
+4. Deploy: Workflow manuell starten; Secrets laut `ops/DEPLOY.md`. Default ist Dry-Run — Live erst mit `dry_run=false`.

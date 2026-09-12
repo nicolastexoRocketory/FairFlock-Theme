@@ -2,15 +2,15 @@
   "theme": "fairflock",
   "shops": [
     {
-      "id": "demo-mittwald",
-      "name": "FairFlock Demo (mStudio)",
-      "url": "https://demo.example.de",
+      "id": "amateurhandball-demo",
+      "name": "Amateurhandball.de (WP Test)",
+      "url": "https://amateurhandball.rocketory.de",
       "mittwald": {
-        "appId": "REPLACE_APP_ID",
-        "projectId": "REPLACE_PROJECT_ID",
+        "projectId": "p-i2xera",
+        "appInstallationId": "a-gpdufg",
         "themePath": "wp-content/themes/fairflock"
       },
-      "notes": "Erste Testinstallation — Deploy nur Theme-Ordner, nie wp-content/uploads oder DB."
+      "notes": "Erste WP-Installation mit FairFlock-Theme. Bei Bedarf ID/URL anpassen. Deploy nur Theme-Ordner."
     }
   ]
 }

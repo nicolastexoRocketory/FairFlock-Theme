@@ -71,19 +71,6 @@ jobs:
           npm install -g @mittwald/cli
           mw --version
 
-      - name: Setup SSH key
-        env:
-          MITTWALD_SSH_PRIVATE_KEY: ${{ secrets.MITTWALD_SSH_PRIVATE_KEY }}
-        run: |
-          if [[ -z "${MITTWALD_SSH_PRIVATE_KEY}" ]]; then
-            echo "Secret MITTWALD_SSH_PRIVATE_KEY fehlt."
-            exit 1
-          fi
-          mkdir -p ~/.ssh
-          printf '%s\n' "$MITTWALD_SSH_PRIVATE_KEY" > ~/.ssh/mittwald_deploy
-          chmod 600 ~/.ssh/mittwald_deploy
-          echo "MITTWALD_SSH_IDENTITY_FILE=$HOME/.ssh/mittwald_deploy" >> "$GITHUB_ENV"
-
       - name: Write registry from secret
         env:
           SHOPS_REGISTRY_JSON: ${{ secrets.SHOPS_REGISTRY_JSON }}
@@ -94,6 +81,43 @@ jobs:
           else
             printf '%s\n' "$SHOPS_REGISTRY_JSON" > ops/shops.registry.json
           fi
+
+      - name: Setup SSH key
+        env:
+          MITTWALD_SSH_PRIVATE_KEY: ${{ secrets.MITTWALD_SSH_PRIVATE_KEY }}
+          MITTWALD_SSH_HOST_KEY: ${{ secrets.MITTWALD_SSH_HOST_KEY }}
+        run: |
+          if [[ -z "${MITTWALD_SSH_PRIVATE_KEY}" ]]; then
+            echo "Secret MITTWALD_SSH_PRIVATE_KEY fehlt."
+            exit 1
+          fi
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$MITTWALD_SSH_PRIVATE_KEY" > ~/.ssh/mittwald_deploy
+          chmod 600 ~/.ssh/mittwald_deploy
+          touch ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+          # Optional vorausgefüllte Host-Keys (empfohlen von mittwald)
+          if [[ -n "${MITTWALD_SSH_HOST_KEY}" ]]; then
+            printf '%s\n' "$MITTWALD_SSH_HOST_KEY" >> ~/.ssh/known_hosts
+          fi
+
+          # CI kennt mittwald-Hosts sonst nicht → "Host key verification failed"
+          cat > ~/.ssh/config <<'EOF'
+Host *.project.host
+  StrictHostKeyChecking accept-new
+  UserKnownHostsFile ~/.ssh/known_hosts
+  IdentityFile ~/.ssh/mittwald_deploy
+  IdentitiesOnly yes
+EOF
+          chmod 600 ~/.ssh/config
+
+          # Bekannter SSH-Host der Testinstallation (Amateurhandball / a-gpdufg)
+          ssh-keyscan -T 15 -H ssh.lashorst.project.host >> ~/.ssh/known_hosts 2>/dev/null || true
+          chmod 600 ~/.ssh/known_hosts
+
+          echo "MITTWALD_SSH_IDENTITY_FILE=$HOME/.ssh/mittwald_deploy" >> "$GITHUB_ENV"
 
       - name: Deploy theme
         env:

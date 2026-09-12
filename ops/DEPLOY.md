@@ -46,6 +46,7 @@ Secrets im Repo `FairFlock-Theme`:
 |--------|--------|
 | `MITTWALD_API_TOKEN` | mStudio API-Token |
 | `MITTWALD_SSH_PRIVATE_KEY` | Private SSH-Key (PEM), der in mStudio hinterlegt ist |
+| `MITTWALD_SSH_HOST_KEY` | Optional: Ausgabe von `ssh-keyscan ssh.<host>.project.host` |
 | `SHOPS_REGISTRY_JSON` | Inhalt von `shops.registry.json` (JSON) |
 
 Workflow: **Release FairFlock Theme**

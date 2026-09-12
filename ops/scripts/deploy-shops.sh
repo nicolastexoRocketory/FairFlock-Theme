@@ -100,7 +100,8 @@ while IFS='|' read -r SHOP_ID SHOP_NAME APP_ID REMOTE_SUB; do
 
   CMD=(
     mw app upload "${APP_ID}"
-    --source "${THEME_SRC}"
+    # Trailing slash: Inhalt von fairflock/ → remote themePath/ (kein fairflock/fairflock/)
+    --source "${THEME_SRC}/"
     --remote-sub-directory "${REMOTE_SUB}"
     --delete
   )

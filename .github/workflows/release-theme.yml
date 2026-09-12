@@ -104,13 +104,14 @@ jobs:
           fi
 
           # CI kennt mittwald-Hosts sonst nicht → "Host key verification failed"
-          cat > ~/.ssh/config <<'EOF'
-Host *.project.host
-  StrictHostKeyChecking accept-new
-  UserKnownHostsFile ~/.ssh/known_hosts
-  IdentityFile ~/.ssh/mittwald_deploy
-  IdentitiesOnly yes
-EOF
+          # (kein unindentierter Heredoc — der zerbricht YAML)
+          printf '%s\n' \
+            'Host *.project.host' \
+            '  StrictHostKeyChecking accept-new' \
+            '  UserKnownHostsFile ~/.ssh/known_hosts' \
+            '  IdentityFile ~/.ssh/mittwald_deploy' \
+            '  IdentitiesOnly yes' \
+            > ~/.ssh/config
           chmod 600 ~/.ssh/config
 
           # Bekannter SSH-Host der Testinstallation (Amateurhandball / a-gpdufg)

@@ -67,8 +67,8 @@ jobs:
 
       - name: Install mittwald CLI
         run: |
-          curl -fsSL https://github.com/mittwald/cli/releases/latest/download/mw_Linux_x86_64.tar.gz | tar -xz
-          sudo mv mw /usr/local/bin/mw
+          # Binary-Asset-Namen enthalten Version+Hash — npm ist der stabile Linux-Weg.
+          npm install -g @mittwald/cli
           mw --version
 
       - name: Setup SSH key

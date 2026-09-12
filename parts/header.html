@@ -1,0 +1,49 @@
+<!-- wp:group {"metadata":{"name":"Header"},"align":"full","className":"ff-header","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"},"margin":{"top":"0","bottom":"0"},"blockGap":"0"}},"layout":{"type":"default"}} -->
+<div class="wp-block-group alignfull ff-header" style="margin-top:0;margin-bottom:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+
+	<!-- wp:group {"metadata":{"name":"Header-Leiste"},"className":"ff-header__bar","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
+	<div class="wp-block-group ff-header__bar">
+
+		<!-- wp:group {"metadata":{"name":"Logo"},"className":"ff-header__brand","layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+		<div class="wp-block-group ff-header__brand">
+			<!-- wp:site-logo {"width":160,"shouldSyncIcon":true} /-->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:navigation {"metadata":{"name":"Navigation · Textfarbe = Menü · Rahmenfarbe = Trennstriche","ignoredHookedBlocks":["woocommerce/customer-account","woocommerce/mini-cart"]},"overlayMenu":"never","className":"ff-header__nav","layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"blockGap":"0px"}}} /-->
+
+		<!-- wp:group {"metadata":{"name":"Nav-Icons · gemeinsam stylen (Textfarbe / Hintergrund / Rahmenfarbe)"},"className":"ff-header__icons","style":{"spacing":{"blockGap":"8px","padding":{"top":"0","bottom":"0","left":"0","right":"0"}},"border":{"radius":"8px","width":"1px"}},"textColor":"contrast","borderColor":"contrast","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right","verticalAlignment":"center"}} -->
+		<div class="wp-block-group ff-header__icons has-border-color has-contrast-border-color has-contrast-color has-text-color" style="border-width:1px;border-radius:8px;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+
+			<!-- wp:buttons {"className":"ff-header__action-btns","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"},"style":{"spacing":{"blockGap":"8px"}}} -->
+			<div class="wp-block-buttons ff-header__action-btns">
+				<!-- wp:button {"metadata":{"name":"Suche"},"className":"ff-search-toggle is-style-fill"} -->
+				<div class="wp-block-button ff-search-toggle is-style-fill"><a class="wp-block-button__link wp-element-button" href="#ff-open-search" aria-label="Suche">Suchen…</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
+
+			<!-- wp:woocommerce/customer-account {"displayStyle":"icon_only","iconStyle":"line","iconClass":"wc-block-customer-account__account-icon","className":"ff-account"} /-->
+
+			<!-- wp:buttons {"className":"ff-header__action-btns ff-header__cart-btns","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"},"style":{"spacing":{"blockGap":"8px"}}} -->
+			<div class="wp-block-buttons ff-header__action-btns ff-header__cart-btns">
+				<!-- wp:button {"metadata":{"name":"Warenkorb"},"className":"ff-cart"} -->
+				<div class="wp-block-button ff-cart"><a class="wp-block-button__link wp-element-button" href="#ff-open-cart" aria-label="Warenkorb" aria-controls="ffCartLayer" aria-expanded="false">Warenkorb<span class="ff-cart__count" id="ffCartCount">0</span></a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
+
+		</div>
+		<!-- /wp:group -->
+
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"submenu","theme":"fairflock","area":"uncategorized","tagName":"div","className":"ff-submenu-slot"} /-->
+
+	<!-- wp:template-part {"slug":"search-overlay","theme":"fairflock","area":"uncategorized","tagName":"div","className":"ff-search-overlay-slot"} /-->
+
+	<!-- wp:template-part {"slug":"cart-drawer","theme":"fairflock","area":"uncategorized","tagName":"div","className":"ff-cart-drawer-slot"} /-->
+
+</div>
+<!-- /wp:group -->

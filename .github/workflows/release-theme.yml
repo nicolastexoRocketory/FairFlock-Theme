@@ -1,0 +1,83 @@
+name: Release FairFlock Theme
+
+# Baut das Theme-ZIP bei Tags / manuell.
+# Live-Deploy auf mStudio erst nach Secrets + Freigabe (Job "deploy" ist absichtlich nur vorbereitet).
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Nur paketieren, nicht deployen"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Package theme
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      zip_name: ${{ steps.meta.outputs.zip_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read version
+        id: meta
+        run: |
+          VERSION="$(grep -E '^Version:' style.css | head -1 | awk '{print $2}')"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "zip_name=fairflock-${VERSION}.zip" >> "$GITHUB_OUTPUT"
+          echo "Theme version: ${VERSION}"
+
+      - name: Build ZIP
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rsync zip
+          ./ops/scripts/package-theme.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fairflock-theme
+          path: dist/${{ steps.meta.outputs.zip_name }}
+          if-no-files-found: error
+
+  deploy:
+    name: Deploy to shops (Mittwald)
+    needs: package
+    runs-on: ubuntu-latest
+    # Kein automatischer Live-Deploy, solange Secrets fehlen.
+    # workflow_dispatch mit dry_run=false + gesetzte Secrets = Freigabe-Pfad.
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == false }}
+    environment: production
+    steps:
+      - name: Checkout (registry + scripts)
+        uses: actions/checkout@v4
+
+      - name: Download ZIP
+        uses: actions/download-artifact@v4
+        with:
+          name: fairflock-theme
+          path: dist
+
+      - name: Deploy placeholder
+        env:
+          MITTWALD_TOKEN: ${{ secrets.MITTWALD_TOKEN }}
+          SHOPS_REGISTRY: ${{ secrets.SHOPS_REGISTRY_JSON }}
+        run: |
+          echo "Deploy-Job ist vorbereitet, aber noch nicht angebunden."
+          echo "Nächster Schritt: ops/scripts/deploy-shops.sh + Mittwald-Secrets."
+          echo "Version: ${{ needs.package.outputs.version }}"
+          ls -la dist/
+          if [[ -z "${MITTWALD_TOKEN}" ]]; then
+            echo "Secret MITTWALD_TOKEN fehlt — Abbruch ohne Änderungen an Shops."
+            exit 1
+          fi
+          exit 1

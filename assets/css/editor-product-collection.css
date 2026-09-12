@@ -1,0 +1,7 @@
+/**
+ * Hide Woo Product Collection “Layout” (Stapel / Raster / Karussell) for
+ * FairFlock homepage product sliders (.ff-prod-slider__track).
+ */
+body.ff-hide-pc-layout .block-editor-block-inspector .components-tools-panel-item:has(.components-toggle-group-control) {
+	display: none !important;
+}

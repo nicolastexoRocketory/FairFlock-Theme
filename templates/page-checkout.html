@@ -1,0 +1,25 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:woocommerce/page-content-wrapper {"page":"checkout"} -->
+<!-- wp:group {"tagName":"main","metadata":{"name":"Kasse"},"className":"ff-checkout-page","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|70"},"margin":{"top":"0","bottom":"0"},"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
+<main class="wp-block-group ff-checkout-page" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--70)">
+
+	<!-- wp:group {"metadata":{"name":"Kasse Intro"},"className":"ff-checkout-page__intro","layout":{"type":"default"}} -->
+	<div class="wp-block-group ff-checkout-page__intro">
+		<!-- wp:heading {"level":1,"className":"ff-checkout-page__title"} -->
+		<h1 class="wp-block-heading ff-checkout-page__title">Kasse</h1>
+		<!-- /wp:heading -->
+
+		<!-- wp:paragraph {"className":"ff-checkout-page__trust"} -->
+		<p class="ff-checkout-page__trust"><span class="ff-checkout-page__trust-item">SSL-verschlüsselt</span><span class="ff-checkout-page__trust-item">Verkauf durch FairFlock GmbH</span><span class="ff-checkout-page__trust-item">Klarer Preis inkl. MwSt.</span></p>
+		<!-- /wp:paragraph -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:woocommerce/store-notices /-->
+	<!-- wp:post-content {"align":"wide"} /-->
+</main>
+<!-- /wp:group -->
+<!-- /wp:woocommerce/page-content-wrapper -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

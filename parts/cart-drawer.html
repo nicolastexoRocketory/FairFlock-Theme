@@ -1,0 +1,26 @@
+<!-- wp:html -->
+<div class="ff-cart-layer" id="ffCartLayer" aria-hidden="true">
+	<div class="ff-cart-backdrop" id="ffCartBackdrop"></div>
+	<aside class="ff-cart-drawer" id="ffCartDrawer" role="dialog" aria-modal="true" aria-labelledby="ffCartTitle" tabindex="-1">
+		<div class="ff-cart-drawer__head">
+			<h2 id="ffCartTitle">Warenkorb</h2>
+			<button type="button" class="ff-cart-drawer__close" id="ffCartClose" aria-label="Warenkorb schließen">
+				<svg viewBox="0 0 24 24" aria-hidden="true" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+			</button>
+		</div>
+		<div class="ff-cart-drawer__body" id="ffCartBody">
+			<p class="ff-cart-drawer__empty" id="ffCartEmpty">Dein Warenkorb ist noch leer.</p>
+			<div class="ff-cart-drawer__lines" id="ffCartLines" hidden></div>
+		</div>
+		<div class="ff-cart-drawer__foot">
+			<div class="ff-cart-drawer__sum">
+				<span>Zwischensumme</span>
+				<strong id="ffCartSubtotal">0,00&nbsp;€</strong>
+			</div>
+			<a class="ff-cart-drawer__checkout" id="ffCartCheckout" href="/checkout/">Zur Kasse →</a>
+			<p class="ff-cart-drawer__note">inkl. MwSt. · Verkauf durch FairFlock GmbH</p>
+			<a class="ff-cart-drawer__page" id="ffCartPageLink" href="/cart/">Warenkorb-Seite öffnen</a>
+		</div>
+	</aside>
+</div>
+<!-- /wp:html -->

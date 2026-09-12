@@ -1,0 +1,388 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.7/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": true,
+		"useRootPaddingAwareAlignments": true,
+		"color": {
+			"defaultDuotone": false,
+			"defaultGradients": false,
+			"defaultPalette": false,
+			"palette": [
+				{
+					"slug": "base",
+					"name": "Base / Fog",
+					"color": "#f3f5f4"
+				},
+				{
+					"slug": "contrast",
+					"name": "Ink",
+					"color": "#0e1114"
+				},
+				{
+					"slug": "brand",
+					"name": "Brand",
+					"color": "#377530"
+				},
+				{
+					"slug": "brand-deep",
+					"name": "Brand Deep",
+					"color": "#2a5c25"
+				},
+				{
+					"slug": "brand-soft",
+					"name": "Brand Soft",
+					"color": "#4a8f42"
+				},
+				{
+					"slug": "muted",
+					"name": "Muted",
+					"color": "#66707a"
+				},
+				{
+					"slug": "white",
+					"name": "White",
+					"color": "#ffffff"
+				}
+			]
+		},
+		"layout": {
+			"contentSize": "1240px",
+			"wideSize": "1240px"
+		},
+		"spacing": {
+			"defaultSpacingSizes": false,
+			"spacingSizes": [
+				{
+					"slug": "10",
+					"size": "8px",
+					"name": "1"
+				},
+				{
+					"slug": "20",
+					"size": "16px",
+					"name": "2"
+				},
+				{
+					"slug": "30",
+					"size": "24px",
+					"name": "3"
+				},
+				{
+					"slug": "40",
+					"size": "32px",
+					"name": "4"
+				},
+				{
+					"slug": "50",
+					"size": "40px",
+					"name": "5"
+				},
+				{
+					"slug": "60",
+					"size": "48px",
+					"name": "6"
+				},
+				{
+					"slug": "70",
+					"size": "56px",
+					"name": "7"
+				},
+				{
+					"slug": "80",
+					"size": "64px",
+					"name": "8"
+				}
+			],
+			"units": [ "%", "px", "em", "rem", "vh", "vw" ]
+		},
+		"typography": {
+			"defaultFontSizes": false,
+			"fluid": true,
+			"fontFamilies": [
+				{
+					"fontFamily": "\"Josefin Sans\", system-ui, sans-serif",
+					"name": "Josefin Sans",
+					"slug": "body"
+				},
+				{
+					"fontFamily": "\"Jockey One\", \"Josefin Sans\", sans-serif",
+					"name": "Jockey One",
+					"slug": "heading"
+				},
+				{
+					"fontFamily": "Lato, \"Josefin Sans\", sans-serif",
+					"name": "Lato",
+					"slug": "nav"
+				}
+			],
+			"fontSizes": [
+				{
+					"slug": "small",
+					"size": "0.875rem",
+					"name": "Small",
+					"fluid": false
+				},
+				{
+					"slug": "medium",
+					"size": "1rem",
+					"name": "Medium",
+					"fluid": false
+				},
+				{
+					"slug": "large",
+					"size": "1.5rem",
+					"name": "Large",
+					"fluid": {
+						"min": "1.25rem",
+						"max": "1.5rem"
+					}
+				},
+				{
+					"slug": "section",
+					"size": "2.25rem",
+					"name": "Section",
+					"fluid": {
+						"min": "1.75rem",
+						"max": "2.25rem"
+					}
+				},
+				{
+					"slug": "x-large",
+					"size": "2.5rem",
+					"name": "Extra Large",
+					"fluid": {
+						"min": "2rem",
+						"max": "3.5rem"
+					}
+				}
+			]
+		},
+		"border": {
+			"radius": true,
+			"color": true,
+			"style": true,
+			"width": true
+		},
+		"dimensions": {
+			"minHeight": true
+		},
+		"custom": {
+			"radius": {
+				"sm": "8px",
+				"md": "16px"
+			},
+			"brand-rgb": "55, 117, 48"
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var:preset|color|base",
+			"text": "var:preset|color|contrast"
+		},
+		"typography": {
+			"fontFamily": "var:preset|font-family|body",
+			"fontSize": "var:preset|font-size|medium",
+			"lineHeight": "1.5"
+		},
+		"spacing": {
+			"padding": {
+				"top": "0",
+				"right": "var:preset|spacing|40",
+				"bottom": "0",
+				"left": "var:preset|spacing|40"
+			},
+			"blockGap": "var:preset|spacing|40"
+		},
+		"elements": {
+			"heading": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontWeight": "400",
+					"lineHeight": "1.25",
+					"letterSpacing": "-0.03em"
+				},
+				"color": {
+					"text": "var:preset|color|contrast"
+				}
+			},
+			"h1": {
+				"typography": {
+					"fontSize": "var:preset|font-size|x-large"
+				}
+			},
+			"h2": {
+				"typography": {
+					"fontSize": "var:preset|font-size|section"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|contrast"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|brand"
+					}
+				}
+			},
+			"button": {
+				"border": {
+					"radius": "var(--wp--custom--radius--sm)"
+				},
+				"color": {
+					"background": "var:preset|color|brand",
+					"text": "var:preset|color|white"
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|body",
+					"fontSize": "var:preset|font-size|medium",
+					"fontWeight": "700"
+				},
+				"spacing": {
+					"padding": {
+						"top": "var:preset|spacing|20",
+						"right": "var:preset|spacing|30",
+						"bottom": "var:preset|spacing|20",
+						"left": "var:preset|spacing|30"
+					}
+				},
+				":hover": {
+					"color": {
+						"background": "var:preset|color|brand-deep",
+						"text": "var:preset|color|white"
+					}
+				}
+			}
+		},
+		"blocks": {
+			"core/site-title": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontWeight": "400"
+				}
+			},
+			"core/navigation": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|nav",
+					"fontSize": "var:preset|font-size|small",
+					"fontWeight": "700",
+					"textTransform": "uppercase",
+					"letterSpacing": "0.04em"
+				}
+			},
+			"core/search": {
+				"border": {
+					"radius": "999px"
+				},
+				"typography": {
+					"fontSize": "var:preset|font-size|small",
+					"fontWeight": "700"
+				}
+			},
+			"core/site-logo": {
+				"spacing": {
+					"margin": {
+						"top": "0",
+						"bottom": "0"
+					}
+				}
+			},
+			"core/button": {
+				"variations": {
+					"outline": {
+						"border": {
+							"color": "var:preset|color|brand",
+							"width": "1px"
+						},
+						"color": {
+							"text": "var:preset|color|brand",
+							"background": "transparent"
+						}
+					}
+				}
+			},
+			"core/group": {
+				"spacing": {
+					"blockGap": "var:preset|spacing|30"
+				}
+			},
+			"woocommerce/product-price": {
+				"color": {
+					"text": "var:preset|color|contrast"
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|body",
+					"fontWeight": "700"
+				}
+			},
+			"woocommerce/product-button": {
+				"color": {
+					"background": "var:preset|color|brand",
+					"text": "var:preset|color|white"
+				},
+				"typography": {
+					"fontWeight": "700"
+				},
+				"border": {
+					"radius": "var(--wp--custom--radius--sm)"
+				}
+			},
+			"woocommerce/product-sale-badge": {
+				"color": {
+					"background": "var:preset|color|brand",
+					"text": "var:preset|color|white"
+				},
+				"typography": {
+					"fontSize": "var:preset|font-size|small",
+					"fontWeight": "700"
+				}
+			},
+			"woocommerce/breadcrumbs": {
+				"typography": {
+					"fontSize": "var:preset|font-size|small"
+				},
+				"color": {
+					"text": "var:preset|color|muted"
+				}
+			}
+		}
+	},
+	"templateParts": [
+		{
+			"name": "header",
+			"title": "Header",
+			"area": "header"
+		},
+		{
+			"name": "footer",
+			"title": "Footer",
+			"area": "footer"
+		},
+		{
+			"name": "submenu",
+			"title": "Untermenü",
+			"area": "uncategorized"
+		},
+		{
+			"name": "search-overlay",
+			"title": "Mega-Suche (geöffnet)",
+			"area": "uncategorized"
+		},
+		{
+			"name": "cart-drawer",
+			"title": "Warenkorb-Panel",
+			"area": "uncategorized"
+		},
+		{
+			"name": "collections",
+			"title": "Kollektionen",
+			"area": "uncategorized"
+		},
+		{
+			"name": "reviews",
+			"title": "Bewertungen",
+			"area": "uncategorized"
+		}
+	]
+}

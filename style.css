@@ -1,0 +1,17 @@
+/*
+Theme Name: FairFlock
+Theme URI: https://fairflock.de
+Author: Rocketory / FairFlock GmbH
+Author URI: https://fairflock.de
+Description: Performantes Block Theme für FairFlock Multi-Tenant WooCommerce-Shops. Generische Platzhalter-Inhalte; Mandanten-Branding über Global Styles. Bearbeitung über Gutenberg und Site Editor.
+Requires at least: 6.7
+Tested up to: 7.1
+Requires PHP: 8.0
+Version: 0.9.148
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: fairflock
+Tags: full-site-editing, block-themes, block-patterns, custom-colors, custom-logo, editor-style, e-commerce, wide-blocks, accessibility-ready
+*/
+
+/* Frontend styles come from theme.json / Global Styles. Keep this file metadata-only. */

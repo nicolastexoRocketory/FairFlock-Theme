@@ -400,6 +400,60 @@
 	}
 }
 
+/*
+ * Site Editor: Animation aus, Wörter untereinander —
+ * sonst „laufen“ die Texte weg und sind kaum klickbar.
+ */
+.editor-styles-wrapper .ff-pattern-trust .strip,
+.block-editor-iframe__body .ff-pattern-trust .strip {
+	overflow: visible;
+	max-width: none;
+	width: 100%;
+	mask-image: none;
+	padding: 12px 0 8px;
+}
+
+.editor-styles-wrapper .ff-pattern-trust .strip::before,
+.block-editor-iframe__body .ff-pattern-trust .strip::before {
+	content: "Wortbanner — Texte untereinander bearbeiten (Frontend läuft als Banner)";
+	display: block;
+	margin: 0 0 10px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	text-transform: none;
+	color: var(--wp--preset--color--muted, #66707a);
+}
+
+.editor-styles-wrapper .ff-pattern-trust .strip-track,
+.block-editor-iframe__body .ff-pattern-trust .strip-track {
+	display: flex !important;
+	flex-direction: column !important;
+	flex-wrap: nowrap !important;
+	align-items: stretch !important;
+	gap: 8px !important;
+	width: 100% !important;
+	max-width: 36rem;
+	white-space: normal;
+	animation: none !important;
+	transform: none !important;
+}
+
+.editor-styles-wrapper .ff-pattern-trust .strip-track > *,
+.block-editor-iframe__body .ff-pattern-trust .strip-track > * {
+	width: 100%;
+}
+
+.editor-styles-wrapper .ff-pattern-trust .strip-track p,
+.block-editor-iframe__body .ff-pattern-trust .strip-track p {
+	display: block;
+	white-space: normal;
+	padding: 10px 12px;
+	border: 1px dashed color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 18%, transparent);
+	border-radius: 8px;
+	background: #fff;
+}
+
 @media (max-width: 960px) {
 	.fs-slider {
 		height: 90vh;

@@ -85,4 +85,25 @@
 
     restart();
   });
+
+  /* Trust-Strip: Inhalte einmal klonen für nahtlose Marquee (Editor bleibt bei Original-Blöcken). */
+  ready(function () {
+    if (document.body.classList.contains("block-editor-iframe__body")) {
+      return;
+    }
+
+    document.querySelectorAll(".ff-pattern-trust .strip-track").forEach(function (track) {
+      if (track.dataset.ffMarqueeCloned === "1") {
+        return;
+      }
+      var kids = Array.prototype.slice.call(track.children);
+      if (kids.length < 1) {
+        return;
+      }
+      kids.forEach(function (el) {
+        track.appendChild(el.cloneNode(true));
+      });
+      track.dataset.ffMarqueeCloned = "1";
+    });
+  });
 })();

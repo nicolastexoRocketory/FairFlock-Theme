@@ -37,7 +37,7 @@
 	border-radius: 0;
 	overflow: hidden;
 	color: #fff;
-	background: #0e1114;
+	background: var(--fs-ink);
 }
 
 .fs-slider.wp-block-group,
@@ -86,34 +86,65 @@
 	transition: transform 6s linear;
 }
 
+/* Verläufe aus Global Styles (brand / brand-deep / contrast) — keine festen FairFlock-Hex */
 .fs-slide--1 {
 	background:
-		linear-gradient(135deg, #16361a 0%, #377530 42%, #0e1114 100%);
+		linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--fs-brand) 45%, #000) 0%,
+			var(--fs-brand) 42%,
+			var(--fs-ink) 100%
+		);
 }
 
 .fs-slide--2 {
 	background:
-		linear-gradient(160deg, #0e1114 0%, #2a5c25 48%, #1a3d18 100%);
+		linear-gradient(
+			160deg,
+			var(--fs-ink) 0%,
+			var(--fs-brand-deep) 48%,
+			color-mix(in srgb, var(--fs-brand) 40%, #000) 100%
+		);
 }
 
 .fs-slide--3 {
 	background:
-		linear-gradient(120deg, #244f20 0%, #0e1114 55%, #377530 100%);
+		linear-gradient(
+			120deg,
+			var(--fs-brand-deep) 0%,
+			var(--fs-ink) 55%,
+			var(--fs-brand) 100%
+		);
 }
 
 .fs-slide-media--1 {
 	background-image:
-		linear-gradient(135deg, #16361a 0%, #377530 42%, #0e1114 100%);
+		linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--fs-brand) 45%, #000) 0%,
+			var(--fs-brand) 42%,
+			var(--fs-ink) 100%
+		);
 }
 
 .fs-slide-media--2 {
 	background-image:
-		linear-gradient(160deg, #0e1114 0%, #2a5c25 48%, #1a3d18 100%);
+		linear-gradient(
+			160deg,
+			var(--fs-ink) 0%,
+			var(--fs-brand-deep) 48%,
+			color-mix(in srgb, var(--fs-brand) 40%, #000) 100%
+		);
 }
 
 .fs-slide-media--3 {
 	background-image:
-		linear-gradient(120deg, #244f20 0%, #0e1114 55%, #377530 100%);
+		linear-gradient(
+			120deg,
+			var(--fs-brand-deep) 0%,
+			var(--fs-ink) 55%,
+			var(--fs-brand) 100%
+		);
 }
 
 .fs-slide.is-active .fs-slide-media {
@@ -127,7 +158,12 @@
 	z-index: 1;
 	background:
 		radial-gradient(90% 70% at 85% 15%, color-mix(in srgb, var(--fs-brand) 28%, transparent), transparent 55%),
-		linear-gradient(180deg, rgba(14, 17, 20, 0.18) 0%, rgba(14, 17, 20, 0.4) 40%, rgba(14, 17, 20, 0.88) 100%);
+		linear-gradient(
+			180deg,
+			color-mix(in srgb, var(--fs-ink) 18%, transparent) 0%,
+			color-mix(in srgb, var(--fs-ink) 40%, transparent) 40%,
+			color-mix(in srgb, var(--fs-ink) 88%, transparent) 100%
+		);
 	pointer-events: none;
 }
 

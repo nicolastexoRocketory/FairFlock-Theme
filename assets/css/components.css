@@ -102,7 +102,7 @@ body:not(.block-editor-iframe__body) .ff-header {
 }
 
 .ff-header__bar:not(.has-background):not([class*="-background-color"]):not([style*="background"]) {
-	background: rgba(var(--wp--custom--brand-rgb, 55, 117, 48), 0.42);
+	background: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 42%, transparent);
 	backdrop-filter: blur(16px) saturate(1.35);
 	-webkit-backdrop-filter: blur(16px) saturate(1.35);
 }
@@ -3558,8 +3558,8 @@ span.onsale,
 	margin: 0 !important;
 	padding: 0 !important;
 	border-radius: 8px;
-	background: rgba(var(--wp--custom--brand-rgb, 55, 117, 48), 0.9);
-	color: #fff !important;
+	background: var(--wp--preset--color--brand, #377530);
+	color: var(--wp--preset--color--white, #fff) !important;
 	font-size: 0.75rem;
 	font-weight: 700;
 	letter-spacing: 0.04em;
@@ -4288,7 +4288,7 @@ a.ff-bento-card,
 	min-height: 400px;
 	align-items: stretch;
 	background:
-		radial-gradient(80% 70% at 0% 100%, rgba(var(--wp--custom--brand-rgb, 55, 117, 48), 0.35), transparent 55%),
+		radial-gradient(80% 70% at 0% 100%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 35%, transparent), transparent 55%),
 		linear-gradient(
 			160deg,
 			var(--wp--preset--color--brand, #377530),
@@ -4377,7 +4377,7 @@ a.ff-bento-card,
 	padding: 0 !important;
 	border-radius: 0;
 	background:
-		linear-gradient(90deg, rgba(var(--wp--custom--brand-rgb, 55, 117, 48), 0.35), transparent 40%),
+		linear-gradient(90deg, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 35%, transparent), transparent 40%),
 		linear-gradient(160deg, #1a3d18, #0e1114);
 }
 
@@ -4395,7 +4395,7 @@ a.ff-bento-card,
 	position: absolute;
 	inset: 0;
 	z-index: 1;
-	background: linear-gradient(90deg, rgba(var(--wp--custom--brand-rgb, 55, 117, 48), 0.35), transparent 40%);
+	background: linear-gradient(90deg, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 35%, transparent), transparent 40%);
 	pointer-events: none;
 }
 
@@ -4570,7 +4570,7 @@ a.ff-bento-card,
 	height: 40px;
 	margin-bottom: 16px;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: rgba(var(--wp--custom--brand-rgb, 55, 117, 48), 0.12);
+	background: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 12%, transparent);
 	color: var(--wp--preset--color--brand-deep, #2a5c25);
 	font-weight: 700;
 	font-size: 0.9375rem;
@@ -4629,7 +4629,7 @@ a.ff-bento-card,
 	color: #fff;
 	box-sizing: border-box;
 	background:
-		radial-gradient(70% 80% at 70% 40%, rgba(var(--wp--custom--brand-rgb, 55, 117, 48), 0.45), transparent 60%),
+		radial-gradient(70% 80% at 70% 40%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 45%, transparent), transparent 60%),
 		linear-gradient(160deg, #1a3d18, #0e1114 70%);
 }
 

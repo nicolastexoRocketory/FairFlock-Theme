@@ -171,8 +171,7 @@
 			"radius": {
 				"sm": "8px",
 				"md": "16px"
-			},
-			"brand-rgb": "55, 117, 48"
+			}
 		}
 	},
 	"styles": {

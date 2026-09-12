@@ -34,6 +34,10 @@
       return;
     }
 
+    if (emptyEl) {
+      emptyEl.hidden = true;
+    }
+
     // Header uses translate → containing block for position:fixed.
     if (layer.parentElement !== document.body) {
       document.body.appendChild(layer);

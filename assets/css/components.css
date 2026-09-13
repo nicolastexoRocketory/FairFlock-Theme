@@ -5084,6 +5084,55 @@ a.ff-bento-card,
 	line-height: 1.5;
 }
 
+/* Cover-based fullbleed: real background images from the editor */
+.ff-fullbleed.ff-fullbleed--cover,
+.wp-block-cover.ff-fullbleed.ff-fullbleed--cover {
+	background-image: none;
+	background-color: #0e1114;
+}
+
+.ff-fullbleed.ff-fullbleed--cover::before {
+	display: none;
+}
+
+.ff-fullbleed.ff-fullbleed--cover:not(:has(.wp-block-cover__image-background)):not(:has(video)) {
+	background:
+		radial-gradient(70% 80% at 70% 40%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 45%, transparent), transparent 60%),
+		linear-gradient(
+			160deg,
+			color-mix(in srgb, var(--wp--preset--color--brand-deep, #2a5c25) 70%, #000),
+			var(--wp--preset--color--contrast, #0e1114) 70%
+		);
+}
+
+.ff-fullbleed.ff-fullbleed--cover .wp-block-cover__image-background,
+.ff-fullbleed.ff-fullbleed--cover img.wp-block-cover__image-background,
+.ff-fullbleed.ff-fullbleed--cover video.wp-block-cover__video-background {
+	position: absolute !important;
+	inset: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+	object-fit: cover !important;
+	object-position: center !important;
+	z-index: 0 !important;
+}
+
+.ff-fullbleed.ff-fullbleed--cover .wp-block-cover__background {
+	z-index: 1 !important;
+}
+
+.ff-fullbleed.ff-fullbleed--cover .wp-block-cover__inner-container {
+	z-index: 2 !important;
+	position: relative;
+	width: 100%;
+}
+
+.ff-fullbleed.ff-fullbleed--cover .ff-fullbleed__inner {
+	margin-inline: auto;
+}
+
 /* —— Reviews —— */
 
 .ff-pattern-reviews {

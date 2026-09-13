@@ -193,32 +193,36 @@ function fairflock_defaults_legal_page_blueprints() {
 }
 
 /**
- * Pattern slugs used as homepage sections (below hero/trust).
+ * Ordered homepage section pattern slugs (excluding live template-parts).
  *
- * @since 0.9.31
+ * Stack is assembled in fairflock_get_default_front_page_content().
+ *
+ * @since 0.2.1
+ * @since 0.9.171 Explicit order: products → media → fullbleed → collections → fullbleed 2 → …
  *
  * @return array<int, string>
  */
 function fairflock_get_front_page_section_slugs() {
 	return array(
 		class_exists( 'WooCommerce' ) ? 'fairflock/product-collection' : 'fairflock/products-teaser',
-		// Collections: live template-part ref (not expanded) — see fairflock_get_default_front_page_content().
+		'fairflock/media-split',
+		'fairflock/quote',
+		// collections template-part inserted between quote and quote-alt
+		'fairflock/quote-alt',
 		'fairflock/categories-bento',
 		'fairflock/brand-band',
-		'fairflock/media-split',
 		'fairflock/steps',
-		'fairflock/quote',
-		// Reviews: live template-part ref — see fairflock_get_default_front_page_content().
 		'fairflock/faq',
 		'fairflock/cta-end',
 	);
 }
 
 /**
- * Default Startseite content: products, then live collections template-part, then other sections.
+ * Default Startseite content: products, text/image, fullbleeds, collections, rest.
  *
  * @since 0.2.1
  * @since 0.9.133 Collections as template-part so product_cat stays the single source.
+ * @since 0.9.171 Text/Bild + Vollbild under products; second Vollbild under Kategorien.
  *
  * @return string
  */
@@ -226,18 +230,12 @@ function fairflock_get_default_front_page_content() {
 	$slugs = fairflock_get_front_page_section_slugs();
 	$parts = array();
 
-	$products_slug = class_exists( 'WooCommerce' ) ? 'fairflock/product-collection' : 'fairflock/products-teaser';
-	$products      = fairflock_get_registered_pattern_content( $products_slug );
-	if ( $products !== '' ) {
-		$parts[] = $products;
-	}
-
-	$parts[] = '<!-- wp:template-part {"slug":"collections","theme":"fairflock","area":"uncategorized"} /-->';
-
 	foreach ( $slugs as $slug ) {
-		if ( $slug === $products_slug || $slug === 'fairflock/reviews' ) {
-			continue;
+		if ( 'fairflock/quote-alt' === $slug ) {
+			// Kategorien (live) sitzt vor dem zweiten Vollbild.
+			$parts[] = '<!-- wp:template-part {"slug":"collections","theme":"fairflock","area":"uncategorized"} /-->';
 		}
+
 		$content = fairflock_get_registered_pattern_content( $slug );
 		if ( $content !== '' ) {
 			$parts[] = $content;

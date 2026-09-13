@@ -43,7 +43,7 @@ function fairflock_demo_content_packages() {
 	return array(
 		'front_page'    => array(
 			'label'       => __( 'Volle Startseite', 'fairflock' ),
-			'description' => __( 'Legt die Startseite an bzw. befüllt sie mit dem kompletten FairFlock-Layout: Produkte, Kollektionen, Bento, Brand-Band, Media-Split, Steps, Zitat, Reviews, FAQ und CTA — wie in der lokalen Referenzinstallation (Hero + Trust kommen aus dem Template).', 'fairflock' ),
+			'description' => __( 'Legt die Startseite an bzw. befüllt sie mit dem FairFlock-Layout: Produkte, Text/Bild, Vollbild, Kategorien, zweites Vollbild, Bento, Brand-Band, Steps, FAQ, Reviews und CTA (Hero + Trust kommen aus dem Template).', 'fairflock' ),
 			'risk'        => __( 'Ohne Haken bleibt bestehender Inhalt unberührt.', 'fairflock' ),
 			'overwrite'   => array(
 				'name'  => 'fairflock_demo_overwrite_front',

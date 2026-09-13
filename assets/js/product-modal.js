@@ -29,11 +29,14 @@
 		var productsApi = window.fairflockSearchApi || "/wp-json/wc/store/v1/products";
 		var cartApi = window.fairflockCartApi || "/wp-json/wc/store/v1/cart";
 		var addItemApi = cartApi.replace(/\/?$/, "/") + "add-item";
+		var personalizedAddApi =
+			window.fairflockPersonalizedAddApi || "/wp-json/fairflock/v1/cart/add-personalized";
 		var requestSeq = 0;
 		var storeNonce = "";
 		var cartToken = "";
 		var galleryIndex = 0;
 		var galleryImages = [];
+		var currentProduct = null;
 
 		function escapeHtml(s) {
 			return String(s).replace(/[&<>"']/g, function (c) {
@@ -379,7 +382,16 @@
 			);
 		}
 
+		function getPersonalization(p) {
+			var ext = (p && p.extensions && p.extensions.fairflock) || {};
+			return {
+				enabled: !!ext.enabled,
+				markup: typeof ext.markup === "string" ? ext.markup : ""
+			};
+		}
+
 		function renderProduct(p) {
+			currentProduct = p;
 			var images = collectImages(p);
 			var shortDesc = p.short_description || "";
 			var longDesc = p.description || "";
@@ -391,6 +403,11 @@
 				"In den Warenkorb";
 			var purchasable = p.is_purchasable !== false && p.is_in_stock !== false;
 			var hasOptions = !!p.has_options || (Array.isArray(p.variations) && p.variations.length > 0);
+			var personalization = getPersonalization(p);
+			var personalizationHtml =
+				!hasOptions && personalization.enabled && personalization.markup
+					? personalization.markup
+					: "";
 
 			var factsRows =
 				renderCategories(p.categories) +
@@ -437,10 +454,15 @@
 				optionsNote +
 				"</div>" +
 				'<div class="ff-product-modal__actions">' +
+				(personalizationHtml
+					? '<div class="ff-product-modal__personalization">' + personalizationHtml + "</div>"
+					: "") +
 				(purchasable && !hasOptions
 					? '<button type="button" class="ff-product-modal__cart" data-ff-add-id="' +
 					  String(p.id) +
-					  '">' +
+					  '"' +
+					  (personalization.enabled ? ' data-ff-personalized="1"' : "") +
+					  ">" +
 					  escapeHtml(btnText) +
 					  "</button>"
 					: hasOptions
@@ -454,6 +476,11 @@
 				'<p class="ff-product-modal__status" id="ffProductStatus" hidden></p>' +
 				"</div>" +
 				"</div></div>";
+
+			var persRoot = bodyEl.querySelector("[data-ff-personalization]");
+			if (persRoot && typeof window.fairflockInitPersonalization === "function") {
+				window.fairflockInitPersonalization(persRoot);
+			}
 		}
 
 		function openModal() {
@@ -471,6 +498,7 @@
 			document.body.classList.remove("is-ff-product-open");
 			galleryImages = [];
 			galleryIndex = 0;
+			currentProduct = null;
 		}
 
 		function loadProduct(slug) {
@@ -515,8 +543,121 @@
 			el.classList.toggle("is-error", !!isError);
 		}
 
+		function finishAddSuccess() {
+			setStatus("Zum Warenkorb hinzugefügt.");
+			document.body.dispatchEvent(new CustomEvent("wc-blocks_added_to_cart"));
+			var cartOpen =
+				document.querySelector(".ff-cart .wp-block-button__link") ||
+				document.querySelector(".ff-cart a");
+			closeModal();
+			if (cartOpen) {
+				window.setTimeout(function () {
+					cartOpen.click();
+				}, 180);
+			}
+		}
+
+		function validatePersonalizationClient() {
+			var root = bodyEl.querySelector("[data-ff-personalization]");
+			if (!root) return "";
+
+			var both = root.getAttribute("data-ff-both");
+			var mode = "upload";
+			if (both) {
+				var checked = root.querySelector('input[name="fairflock_personalization_mode"]:checked');
+				mode = checked ? checked.value : "upload";
+			} else if (root.querySelector('input[name="fairflock_personal_text"]') && !root.querySelector('input[name="fairflock_logo_upload"]')) {
+				mode = "text";
+			}
+
+			if (mode === "upload") {
+				var file = root.querySelector('input[name="fairflock_logo_upload"]');
+				if (!file || !file.files || !file.files.length) {
+					return "Bitte lade dein Logo hoch.";
+				}
+			} else {
+				var text = root.querySelector('input[name="fairflock_personal_text"]');
+				if (!text || !String(text.value || "").trim()) {
+					return "Bitte gib deinen Text ein.";
+				}
+			}
+			return "";
+		}
+
+		function addPersonalizedToCart(productId, btn) {
+			var err = validatePersonalizationClient();
+			if (err) {
+				setStatus(err, true);
+				return;
+			}
+
+			var root = bodyEl.querySelector("[data-ff-personalization]");
+			var fd = new FormData();
+			fd.append("id", String(productId));
+			fd.append("quantity", "1");
+
+			if (root) {
+				var modeInput = root.querySelector('input[name="fairflock_personalization_mode"]:checked');
+				if (modeInput) {
+					fd.append("fairflock_personalization_mode", modeInput.value);
+				}
+				var textInput = root.querySelector('input[name="fairflock_personal_text"]');
+				if (textInput && !textInput.disabled) {
+					fd.append("fairflock_personal_text", textInput.value || "");
+				}
+				var fileInput = root.querySelector('input[name="fairflock_logo_upload"]');
+				if (fileInput && !fileInput.disabled && fileInput.files && fileInput.files[0]) {
+					fd.append("fairflock_logo_upload", fileInput.files[0]);
+				}
+			}
+
+			if (btn) {
+				btn.disabled = true;
+				btn.setAttribute("aria-busy", "true");
+			}
+			setStatus("");
+
+			fetch(personalizedAddApi, {
+				method: "POST",
+				credentials: "same-origin",
+				headers: { Accept: "application/json" },
+				body: fd
+			})
+				.then(function (res) {
+					return res.json().then(function (data) {
+						return { ok: res.ok, data: data };
+					});
+				})
+				.then(function (result) {
+					if (!result.ok) {
+						var msg =
+							(result.data && (result.data.message || (result.data.data && result.data.data.message))) ||
+							"Leider nicht hinzugefügt. Bitte erneut versuchen.";
+						throw new Error(msg);
+					}
+					finishAddSuccess();
+				})
+				.catch(function (e) {
+					setStatus(
+						(e && e.message) || "Leider nicht hinzugefügt. Bitte erneut versuchen.",
+						true
+					);
+				})
+				.finally(function () {
+					if (btn) {
+						btn.disabled = false;
+						btn.removeAttribute("aria-busy");
+					}
+				});
+		}
+
 		function addToCart(productId, btn) {
 			setStatus("");
+			if (btn && btn.getAttribute("data-ff-personalized") === "1") {
+				addPersonalizedToCart(productId, btn);
+				return;
+			}
+
 			if (btn) {
 				btn.disabled = true;
 				btn.setAttribute("aria-busy", "true");
@@ -547,17 +688,7 @@
 					return res.json();
 				})
 				.then(function () {
-					setStatus("Zum Warenkorb hinzugefügt.");
-					document.body.dispatchEvent(new CustomEvent("wc-blocks_added_to_cart"));
-					var cartOpen =
-						document.querySelector(".ff-cart .wp-block-button__link") ||
-						document.querySelector(".ff-cart a");
-					closeModal();
-					if (cartOpen) {
-						window.setTimeout(function () {
-							cartOpen.click();
-						}, 180);
-					}
+					finishAddSuccess();
 				})
 				.catch(function () {
 					setStatus("Leider nicht hinzugefügt. Bitte erneut versuchen.", true);

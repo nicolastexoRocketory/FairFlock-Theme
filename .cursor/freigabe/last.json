@@ -1,0 +1,490 @@
+{
+  "savedAt": "2026-09-13T08:16:25.905Z",
+  "verdict": "allow",
+  "headline": "Risikoarm — keine Freigabe nötig",
+  "command": "wc -l assets/js/*.js assets/css/*.css inc/*.php 2>/dev/null; find . -name '*.php' -not -path './.git/*' | wc -l; du -sh . --exclude=.git 2>/dev/null || du -sk . | awk '{print $1/1024 \" MB\"}'",
+  "gates": [],
+  "notes": [
+    {
+      "id": "n5",
+      "tokenIds": [
+        "t0"
+      ],
+      "start": 0,
+      "end": 2,
+      "line": 1,
+      "code": "wc",
+      "title": "Befehl „wc“",
+      "summary": "Befehl „wc“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „wc“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n6",
+      "tokenIds": [
+        "t2"
+      ],
+      "start": 3,
+      "end": 5,
+      "line": 1,
+      "code": "-l",
+      "title": "Option -l",
+      "summary": "Schaltet die Option -l ein.",
+      "detail": "Eine Befehlsoption. Sie verändert, wie wc arbeitet.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n7",
+      "tokenIds": [
+        "t4"
+      ],
+      "start": 6,
+      "end": 20,
+      "line": 1,
+      "code": "assets/js/*.js",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf assets/js/*.js im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n8",
+      "tokenIds": [
+        "t6"
+      ],
+      "start": 21,
+      "end": 37,
+      "line": 1,
+      "code": "assets/css/*.css",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf assets/css/*.css im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n9",
+      "tokenIds": [
+        "t8"
+      ],
+      "start": 38,
+      "end": 47,
+      "line": 1,
+      "code": "inc/*.php",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf inc/*.php im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n10",
+      "tokenIds": [
+        "t10"
+      ],
+      "start": 48,
+      "end": 50,
+      "line": 1,
+      "code": "2>",
+      "title": "Umleitung",
+      "summary": "Schreibt Ausgabe in eine Datei (überschreibt sie).",
+      "detail": "Kann Dateien überschreiben. Zusammen mit sudo oder Pfaden außerhalb des Projekts prüfenswert.",
+      "category": "delete",
+      "risk": "medium"
+    },
+    {
+      "id": "n11",
+      "tokenIds": [
+        "t11"
+      ],
+      "start": 50,
+      "end": 59,
+      "line": 1,
+      "code": "/dev/null",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf /dev/null im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t12",
+      "tokenIds": [
+        "t12"
+      ],
+      "start": 59,
+      "end": 60,
+      "line": 1,
+      "code": ";",
+      "title": "Nacheinander",
+      "summary": "Beide Befehle laufen, unabhängig vom Erfolg des ersten.",
+      "detail": "Der zweite Teil wird auch nach einem Fehler ausgeführt.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n12",
+      "tokenIds": [
+        "t14"
+      ],
+      "start": 61,
+      "end": 65,
+      "line": 1,
+      "code": "find",
+      "title": "Befehl „find“",
+      "summary": "Befehl „find“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „find“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n13",
+      "tokenIds": [
+        "t16"
+      ],
+      "start": 66,
+      "end": 67,
+      "line": 1,
+      "code": ".",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf . im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n14",
+      "tokenIds": [
+        "t18"
+      ],
+      "start": 68,
+      "end": 73,
+      "line": 1,
+      "code": "-name",
+      "title": "Kombinierte Optionen -name",
+      "summary": "Option -n Option -a Option -m Option -e",
+      "detail": "",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n15",
+      "tokenIds": [
+        "t20"
+      ],
+      "start": 74,
+      "end": 81,
+      "line": 1,
+      "code": "'*.php'",
+      "title": "Argument",
+      "summary": "Übergibt „*.php“ an find.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n16",
+      "tokenIds": [
+        "t22"
+      ],
+      "start": 82,
+      "end": 86,
+      "line": 1,
+      "code": "-not",
+      "title": "Kombinierte Optionen -not",
+      "summary": "Option -n Option -o Option -t",
+      "detail": "",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n17",
+      "tokenIds": [
+        "t24"
+      ],
+      "start": 87,
+      "end": 92,
+      "line": 1,
+      "code": "-path",
+      "title": "Kombinierte Optionen -path",
+      "summary": "Option -p Option -a Option -t Option -h",
+      "detail": "",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n18",
+      "tokenIds": [
+        "t26"
+      ],
+      "start": 93,
+      "end": 103,
+      "line": 1,
+      "code": "'./.git/*'",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf ./.git/* im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t28",
+      "tokenIds": [
+        "t28"
+      ],
+      "start": 104,
+      "end": 105,
+      "line": 1,
+      "code": "|",
+      "title": "Pipe",
+      "summary": "Die Ausgabe links wird zur Eingabe rechts.",
+      "detail": "Besonders gefährlich, wenn rechts eine Shell steht (sh, bash). Dann wird heruntergeladener Text ausgeführt.",
+      "category": "structure",
+      "risk": "medium"
+    },
+    {
+      "id": "n19",
+      "tokenIds": [
+        "t30"
+      ],
+      "start": 106,
+      "end": 108,
+      "line": 1,
+      "code": "wc",
+      "title": "Befehl „wc“",
+      "summary": "Befehl „wc“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „wc“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n20",
+      "tokenIds": [
+        "t32"
+      ],
+      "start": 109,
+      "end": 111,
+      "line": 1,
+      "code": "-l",
+      "title": "Option -l",
+      "summary": "Schaltet die Option -l ein.",
+      "detail": "Eine Befehlsoption. Sie verändert, wie wc arbeitet.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t33",
+      "tokenIds": [
+        "t33"
+      ],
+      "start": 111,
+      "end": 112,
+      "line": 1,
+      "code": ";",
+      "title": "Nacheinander",
+      "summary": "Beide Befehle laufen, unabhängig vom Erfolg des ersten.",
+      "detail": "Der zweite Teil wird auch nach einem Fehler ausgeführt.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n21",
+      "tokenIds": [
+        "t35"
+      ],
+      "start": 113,
+      "end": 115,
+      "line": 1,
+      "code": "du",
+      "title": "Befehl „du“",
+      "summary": "Befehl „du“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „du“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n22",
+      "tokenIds": [
+        "t37"
+      ],
+      "start": 116,
+      "end": 119,
+      "line": 1,
+      "code": "-sh",
+      "title": "Kombinierte Optionen -sh",
+      "summary": "Option -s Option -h",
+      "detail": "",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n23",
+      "tokenIds": [
+        "t39"
+      ],
+      "start": 120,
+      "end": 121,
+      "line": 1,
+      "code": ".",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf . im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n24",
+      "tokenIds": [
+        "t41"
+      ],
+      "start": 122,
+      "end": 136,
+      "line": 1,
+      "code": "--exclude=.git",
+      "title": "Option --exclude",
+      "summary": "Setzt --exclude auf „.git“.",
+      "detail": "Eine Befehlsoption. Sie verändert, wie du arbeitet.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n25",
+      "tokenIds": [
+        "t43"
+      ],
+      "start": 137,
+      "end": 139,
+      "line": 1,
+      "code": "2>",
+      "title": "Umleitung",
+      "summary": "Schreibt Ausgabe in eine Datei (überschreibt sie).",
+      "detail": "Kann Dateien überschreiben. Zusammen mit sudo oder Pfaden außerhalb des Projekts prüfenswert.",
+      "category": "delete",
+      "risk": "medium"
+    },
+    {
+      "id": "n26",
+      "tokenIds": [
+        "t44"
+      ],
+      "start": 139,
+      "end": 148,
+      "line": 1,
+      "code": "/dev/null",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf /dev/null im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t46",
+      "tokenIds": [
+        "t46"
+      ],
+      "start": 149,
+      "end": 151,
+      "line": 1,
+      "code": "||",
+      "title": "Nur bei Fehler weiter",
+      "summary": "Der rechte Befehl läuft, wenn der linke fehlschlägt.",
+      "detail": "Häufig als Fallback. Prüfen, was im Fehlerfall ausgeführt würde.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n27",
+      "tokenIds": [
+        "t48"
+      ],
+      "start": 152,
+      "end": 154,
+      "line": 1,
+      "code": "du",
+      "title": "Befehl „du“",
+      "summary": "Befehl „du“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „du“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n28",
+      "tokenIds": [
+        "t50"
+      ],
+      "start": 155,
+      "end": 158,
+      "line": 1,
+      "code": "-sk",
+      "title": "Kombinierte Optionen -sk",
+      "summary": "Option -s Option -k",
+      "detail": "",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n29",
+      "tokenIds": [
+        "t52"
+      ],
+      "start": 159,
+      "end": 160,
+      "line": 1,
+      "code": ".",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf . im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t54",
+      "tokenIds": [
+        "t54"
+      ],
+      "start": 161,
+      "end": 162,
+      "line": 1,
+      "code": "|",
+      "title": "Pipe",
+      "summary": "Die Ausgabe links wird zur Eingabe rechts.",
+      "detail": "Besonders gefährlich, wenn rechts eine Shell steht (sh, bash). Dann wird heruntergeladener Text ausgeführt.",
+      "category": "structure",
+      "risk": "medium"
+    },
+    {
+      "id": "n30",
+      "tokenIds": [
+        "t56"
+      ],
+      "start": 163,
+      "end": 166,
+      "line": 1,
+      "code": "awk",
+      "title": "Befehl „awk“",
+      "summary": "Befehl „awk“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „awk“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n31",
+      "tokenIds": [
+        "t58"
+      ],
+      "start": 167,
+      "end": 190,
+      "line": 1,
+      "code": "'{print $1/1024 \" MB\"}'",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf {print $1/1024 \" MB\"} im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    }
+  ],
+  "userMessage": "Ohne Rückfrage\n\nwc -l assets/js/*.js assets/css/*.css inc/*.php 2>/dev/null; find . -name '*.php' -not -path './.git/*' | wc -l; du -sh . --exclude=.git 2>/dev/null || du -sk . | awk '{print $1/1024 \" MB\"}'\n\nWas die Teile tun:\n  1. -l — Schaltet die Option -l ein. [Niedrig]\n  2. assets/js/*.js — Bezieht sich auf assets/js/*.js im Dateisystem. [Niedrig]\n  3. assets/css/*.css — Bezieht sich auf assets/css/*.css im Dateisystem. [Niedrig]\n  4. inc/*.php — Bezieht sich auf inc/*.php im Dateisystem. [Niedrig]\n  5. 2> — Schreibt Ausgabe in eine Datei (überschreibt sie). [Mittel]\n  6. /dev/null — Bezieht sich auf /dev/null im Dateisystem. [Niedrig]\n  7. ; — Beide Befehle laufen, unabhängig vom Erfolg des ersten. [Niedrig]\n  8. . — Bezieht sich auf . im Dateisystem. [Niedrig]\n  9. -name — Option -n Option -a Option -m Option -e [Niedrig]\n  10. '*.php' — Übergibt „*.php“ an find. [Niedrig]\n  11. -not — Option -n Option -o Option -t [Niedrig]\n  12. -path — Option -p Option -a Option -t Option -h [Niedrig]\n  13. './.git/*' — Bezieht sich auf ./.git/* im Dateisystem. [Niedrig]\n  14. | — Die Ausgabe links wird zur Eingabe rechts. [Mittel]\n  15. -l — Schaltet die Option -l ein. [Niedrig]\n  16. ; — Beide Befehle laufen, unabhängig vom Erfolg des ersten. [Niedrig]\n  17. -sh — Option -s Option -h [Niedrig]\n  18. . — Bezieht sich auf . im Dateisystem. [Niedrig]\n  19. --exclude=.git — Setzt --exclude auf „.git“. [Niedrig]\n  20. 2> — Schreibt Ausgabe in eine Datei (überschreibt sie). [Mittel]\n  21. /dev/null — Bezieht sich auf /dev/null im Dateisystem. [Niedrig]\n  22. || — Der rechte Befehl läuft, wenn der linke fehlschlägt. [Niedrig]\n  23. -sk — Option -s Option -k [Niedrig]\n  24. . — Bezieht sich auf . im Dateisystem. [Niedrig]\n  25. | — Die Ausgabe links wird zur Eingabe rechts. [Mittel]\n  26. '{print $1/1024 \" MB\"}' — Bezieht sich auf {print $1/1024 \" MB\"} im Dateisystem. [Niedrig]"
+}

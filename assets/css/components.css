@@ -2047,6 +2047,14 @@ body.is-ff-product-open {
 	z-index: 2;
 }
 
+.ff-product-modal__personalization {
+	margin: 0 0 4px;
+}
+
+.ff-product-modal__personalization .ff-personalization {
+	margin: 0;
+}
+
 .ff-product-modal__cart {
 	display: inline-flex;
 	align-items: center;
@@ -2425,6 +2433,284 @@ span.onsale,
 	margin: 8px 0 0 !important;
 	padding: 16px 0 0;
 	border-top: 1px solid var(--ff-product-line);
+}
+
+/* —— Produkt-Personalisierung (Upload / Freitext) —— */
+.ff-personalization {
+	flex: 1 1 100%;
+	width: 100%;
+	box-sizing: border-box;
+	margin: 4px 0 8px;
+	padding: 18px 18px 16px;
+	display: grid;
+	gap: 14px;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
+	border-radius: var(--wp--custom--radius--md, 16px);
+	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 70%, #fff);
+}
+
+.ff-personalization__hint,
+.ff-personalization__question {
+	margin: 0;
+	font-size: 0.9375rem;
+	font-weight: 700;
+	line-height: 1.35;
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+.ff-personalization__hint {
+	font-weight: 400;
+	font-size: 0.875rem;
+	color: var(--wp--preset--color--muted, #66707a);
+}
+
+.ff-personalization__mode {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	min-width: 0;
+}
+
+.ff-personalization__mode legend {
+	padding: 0;
+	margin: 0 0 8px;
+}
+
+.ff-personalization__switch {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+	width: 100%;
+}
+
+.ff-personalization__switch-option {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	margin: 0;
+	padding: 10px 12px;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 14%, transparent);
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	background: #fff;
+	cursor: pointer;
+	text-align: center;
+	font-size: 0.875rem;
+	font-weight: 700;
+	color: var(--wp--preset--color--contrast, #0e1114);
+	transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.ff-personalization__switch-option input {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.ff-personalization__switch-option.is-active,
+.ff-personalization__switch-option:has(input:checked) {
+	border-color: var(--wp--preset--color--brand, #377530);
+	background: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 10%, #fff);
+	color: var(--wp--preset--color--brand, #377530);
+}
+
+.ff-personalization__panel[hidden] {
+	display: none !important;
+}
+
+.ff-personalization__field {
+	margin: 0;
+	display: grid;
+	gap: 6px;
+}
+
+.ff-personalization__field label {
+	font-size: 0.8125rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+.ff-personalization__field input[type="text"],
+.ff-personalization__field input[type="file"] {
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	min-height: 44px;
+	padding: 8px 12px;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 14%, transparent);
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	background: #fff;
+	font: inherit;
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+.ff-personalization__field input[type="file"] {
+	padding: 10px 12px;
+	font-size: 0.875rem;
+}
+
+.ff-personalization__field input[type="text"]:focus,
+.ff-personalization__field input[type="file"]:focus {
+	outline: 2px solid color-mix(in srgb, var(--wp--preset--color--brand, #377530) 45%, transparent);
+	outline-offset: 1px;
+	border-color: var(--wp--preset--color--brand, #377530);
+}
+
+.ff-personalization__note {
+	font-size: 0.75rem;
+	line-height: 1.35;
+	color: var(--wp--preset--color--muted, #66707a);
+}
+
+/* --- Password gate (site-wide + page) --- */
+.ff-password-body {
+	margin: 0;
+	min-height: 100vh;
+	display: grid;
+	place-items: center;
+	padding: 24px;
+	background:
+		radial-gradient(1200px 600px at 10% -10%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 18%, transparent), transparent 60%),
+		radial-gradient(900px 500px at 100% 100%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 10%, transparent), transparent 55%),
+		linear-gradient(180deg, #f4f7f5 0%, #eef2ef 100%);
+	color: var(--wp--preset--color--contrast, #0e1114);
+	font-family: var(--wp--preset--font-family--body, system-ui, sans-serif);
+}
+
+.ff-password {
+	width: 100%;
+	display: grid;
+	place-items: center;
+	padding: 28px 16px;
+}
+
+.ff-password__card {
+	width: min(100%, 420px);
+	padding: 28px 28px 26px;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 10%, transparent);
+	border-radius: var(--wp--custom--radius--md, 16px);
+	background: #fff;
+	box-shadow:
+		0 1px 2px rgba(14, 17, 20, 0.04),
+		0 24px 48px -28px rgba(14, 17, 20, 0.28);
+}
+
+.ff-password__brand {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 22px;
+	padding-bottom: 18px;
+	border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 8%, transparent);
+	text-align: center;
+}
+
+.ff-password__logo {
+	display: block;
+	width: auto;
+	max-width: 168px;
+	max-height: 64px;
+	height: auto;
+	object-fit: contain;
+}
+
+.ff-password__site {
+	margin: 0;
+	font-size: 0.8125rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	color: var(--wp--preset--color--muted, #66707a);
+}
+
+.ff-password__title {
+	margin: 0 0 8px;
+	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-size: 1.5rem;
+	font-weight: 600;
+	line-height: 1.25;
+	text-align: center;
+}
+
+.ff-password__intro {
+	margin: 0 0 18px;
+	font-size: 0.9375rem;
+	line-height: 1.45;
+	color: var(--wp--preset--color--muted, #66707a);
+	text-align: center;
+}
+
+.ff-password__error {
+	margin: 0 0 14px;
+	padding: 10px 12px;
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	background: color-mix(in srgb, #b42318 8%, #fff);
+	border: 1px solid color-mix(in srgb, #b42318 24%, transparent);
+	color: #7a1c14;
+	font-size: 0.875rem;
+	line-height: 1.4;
+}
+
+.ff-password__form {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.ff-password__label {
+	font-size: 0.8125rem;
+	font-weight: 600;
+}
+
+.ff-password__input {
+	width: 100%;
+	min-height: 48px;
+	padding: 12px 14px;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent);
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	background: #fff;
+	font: inherit;
+	font-size: 1rem;
+	box-sizing: border-box;
+}
+
+.ff-password__input:focus {
+	outline: 2px solid color-mix(in srgb, var(--wp--preset--color--brand, #377530) 40%, transparent);
+	outline-offset: 1px;
+	border-color: var(--wp--preset--color--brand, #377530);
+}
+
+.ff-password__submit {
+	margin-top: 8px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	padding: 12px 18px;
+	border: 0;
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	background: var(--wp--preset--color--brand, #377530);
+	color: #fff;
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.ff-password__submit:hover {
+	filter: brightness(1.05);
+}
+
+.ff-password__submit:focus-visible {
+	outline: 2px solid color-mix(in srgb, var(--wp--preset--color--brand, #377530) 50%, transparent);
+	outline-offset: 2px;
+}
+
+.post-password-form,
+.entry-content > .ff-password,
+.wp-block-post-content > .ff-password {
+	min-height: 48vh;
 }
 
 .ff-product__hero .quantity,

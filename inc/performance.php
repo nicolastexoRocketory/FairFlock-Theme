@@ -109,7 +109,7 @@ function fairflock_enqueue_frontend_assets() {
 	wp_enqueue_script(
 		'fairflock-product-modal',
 		FAIRFLOCK_URI . '/assets/js/product-modal.js',
-		array(),
+		array( 'fairflock-personalization' ),
 		FAIRFLOCK_VERSION,
 		array(
 			'strategy'  => 'defer',
@@ -162,10 +162,13 @@ function fairflock_enqueue_frontend_assets() {
 		'before'
 	);
 
+	$personalized_api = function_exists( 'rest_url' ) ? rest_url( 'fairflock/v1/cart/add-personalized' ) : '/wp-json/fairflock/v1/cart/add-personalized';
+
 	wp_add_inline_script(
 		'fairflock-product-modal',
 		'window.fairflockSearchApi=' . wp_json_encode( $api ) . ';'
-		. 'window.fairflockCartApi=' . wp_json_encode( $cart_api ) . ';',
+		. 'window.fairflockCartApi=' . wp_json_encode( $cart_api ) . ';'
+		. 'window.fairflockPersonalizedAddApi=' . wp_json_encode( $personalized_api ) . ';',
 		'before'
 	);
 }

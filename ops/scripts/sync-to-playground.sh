@@ -12,6 +12,9 @@ rsync -a --delete \
   --exclude 'README.md' \
   --exclude '.gitignore' \
   --exclude '.DS_Store' \
+  --exclude '.cursor' \
+  --exclude '.github' \
   "$ROOT/" "$PLAYGROUND/"
 
-echo "OK: $ROOT → Playground"
+echo "OK: $ROOT → $PLAYGROUND"
+grep -E '^Version:' "$PLAYGROUND/style.css" || true

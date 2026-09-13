@@ -53,22 +53,35 @@ function fairflock_demo_content_packages() {
 		'front_page'    => array(
 			'label'       => __( 'Volle Startseite', 'fairflock' ),
 			'description' => __( 'Legt die Startseite an bzw. befüllt sie mit dem kompletten FairFlock-Layout: Produkte, Kollektionen, Bento, Brand-Band, Media-Split, Steps, Zitat, Reviews, FAQ und CTA — wie in der lokalen Referenzinstallation (Hero + Trust kommen aus dem Template).', 'fairflock' ),
-			'risk'        => __( 'Überschreibt den Inhalt der Startseite, wenn vorhanden.', 'fairflock' ),
+			'risk'        => __( 'Ohne Haken bleibt bestehender Inhalt unberührt.', 'fairflock' ),
+			'overwrite'   => array(
+				'name'  => 'fairflock_demo_overwrite_front',
+				'label' => __( 'Bestehende Startseite überschreiben', 'fairflock' ),
+			),
 		),
 		'legal_pages'   => array(
 			'label'       => __( 'Rechtliche Seiten (FairFlock-Daten)', 'fairflock' ),
 			'description' => __( 'Impressum, Datenschutz, AGB, Widerrufsrecht, Versand & Zahlung mit den FairFlock-Angaben (wie Amateurhandball.de).', 'fairflock' ),
-			'risk'        => __( 'Mit „Überschreiben“ werden vorhandene Rechtstexte ersetzt.', 'fairflock' ),
+			'risk'        => __( 'Ohne Haken werden nur fehlende Seiten angelegt.', 'fairflock' ),
+			'overwrite'   => array(
+				'name'  => 'fairflock_demo_overwrite_legal',
+				'label' => __( 'Bestehende Rechtstexte ersetzen', 'fairflock' ),
+			),
 		),
 		'category_page' => array(
 			'label'       => __( 'Seite „Kategorien“', 'fairflock' ),
 			'description' => __( 'Stellt sicher, dass die Seite /kategorien/ existiert und die Theme-Vorlage für die Kategorie-Übersicht nutzt.', 'fairflock' ),
 			'risk'        => __( 'Legt die Seite nur an, wenn sie fehlt; Inhalt wird für die Live-Vorlage geleert.', 'fairflock' ),
+			'overwrite'   => null,
 		),
 		'about_page'    => array(
 			'label'       => __( 'Seite „Über uns“', 'fairflock' ),
-			'description' => __( 'Legt /ueber-uns/ an bzw. befüllt sie mit Hero, Story, Werten, Moment-Band und CTA (FairFlock-Story als Startpunkt).', 'fairflock' ),
-			'risk'        => __( 'Mit „Überschreiben“ wird der bestehende Seiteninhalt ersetzt.', 'fairflock' ),
+			'description' => __( 'Legt /ueber-uns/ an bzw. befüllt sie mit Hero, Story, Werten, Moment-Band, Text-Bild, CTA und FAQ.', 'fairflock' ),
+			'risk'        => __( 'Ohne Haken bleibt bestehender Inhalt unberührt.', 'fairflock' ),
+			'overwrite'   => array(
+				'name'  => 'fairflock_demo_overwrite_about',
+				'label' => __( 'Bestehende „Über uns“-Seite überschreiben', 'fairflock' ),
+			),
 		),
 	);
 }
@@ -588,7 +601,7 @@ function fairflock_demo_content_render_admin_page() {
 				<tbody>
 					<?php foreach ( $packages as $key => $pkg ) : ?>
 						<tr>
-							<th scope="row" class="check-column" style="padding:14px 12px;">
+							<th scope="row" class="check-column" style="padding:14px 12px;vertical-align:top;">
 								<input type="checkbox" name="fairflock_demo_packages[]" value="<?php echo esc_attr( $key ); ?>" id="ff-demo-<?php echo esc_attr( $key ); ?>" <?php checked( 'front_page' === $key ); ?> />
 							</th>
 							<td style="padding:14px 12px;">
@@ -596,31 +609,20 @@ function fairflock_demo_content_render_admin_page() {
 									<strong><?php echo esc_html( $pkg['label'] ); ?></strong>
 								</label>
 								<p style="margin:6px 0 0;color:#50575e;"><?php echo esc_html( $pkg['description'] ); ?></p>
+								<?php if ( ! empty( $pkg['overwrite']['name'] ) && ! empty( $pkg['overwrite']['label'] ) ) : ?>
+									<p style="margin:12px 0 0;">
+										<label style="display:inline-flex;align-items:flex-start;gap:8px;color:#1d2327;">
+											<input type="checkbox" name="<?php echo esc_attr( $pkg['overwrite']['name'] ); ?>" value="1" style="margin-top:2px;" />
+											<span><?php echo esc_html( $pkg['overwrite']['label'] ); ?></span>
+										</label>
+									</p>
+								<?php endif; ?>
 							</td>
-							<td style="padding:14px 12px;color:#646970;"><?php echo esc_html( $pkg['risk'] ); ?></td>
+							<td style="padding:14px 12px;color:#646970;vertical-align:top;"><?php echo esc_html( $pkg['risk'] ); ?></td>
 						</tr>
 					<?php endforeach; ?>
 				</tbody>
 			</table>
-
-			<p style="margin-top:16px;">
-				<label>
-					<input type="checkbox" name="fairflock_demo_overwrite_front" value="1" />
-					<?php esc_html_e( 'Bestehende Startseite überschreiben (nur für „Volle Startseite“)', 'fairflock' ); ?>
-				</label>
-			</p>
-			<p>
-				<label>
-					<input type="checkbox" name="fairflock_demo_overwrite_legal" value="1" />
-					<?php esc_html_e( 'Bestehende Rechtstexte mit FairFlock-Daten ersetzen', 'fairflock' ); ?>
-				</label>
-			</p>
-			<p>
-				<label>
-					<input type="checkbox" name="fairflock_demo_overwrite_about" value="1" />
-					<?php esc_html_e( 'Bestehende „Über uns“-Seite überschreiben', 'fairflock' ); ?>
-				</label>
-			</p>
 
 			<?php submit_button( __( 'Ausgewählte Layouts anlegen', 'fairflock' ), 'primary', 'fairflock_demo_content_run' ); ?>
 		</form>

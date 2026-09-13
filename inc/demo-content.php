@@ -13,25 +13,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers FairFlock admin parent + Demo Content screen.
+ * Registers Demo Content under FairFlock.
  *
  * @since 0.9.154
+ * @since 0.9.168 Parent menu is Einrichtung (fairflock-setup).
  *
  * @return void
  */
 function fairflock_demo_content_register_admin() {
-	add_menu_page(
-		__( 'FairFlock', 'fairflock' ),
-		__( 'FairFlock', 'fairflock' ),
-		'edit_theme_options',
-		'fairflock-demo-content',
-		'fairflock_demo_content_render_admin_page',
-		'dashicons-store',
-		58
-	);
-
 	add_submenu_page(
-		'fairflock-demo-content',
+		'fairflock-setup',
 		__( 'Demo Content', 'fairflock' ),
 		__( 'Demo Content', 'fairflock' ),
 		'edit_theme_options',
@@ -39,7 +30,7 @@ function fairflock_demo_content_register_admin() {
 		'fairflock_demo_content_render_admin_page'
 	);
 }
-add_action( 'admin_menu', 'fairflock_demo_content_register_admin' );
+add_action( 'admin_menu', 'fairflock_demo_content_register_admin', 10 );
 
 /**
  * Available demo packages.

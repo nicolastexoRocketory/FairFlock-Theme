@@ -357,7 +357,7 @@ add_filter( 'the_password_form', 'fairflock_filter_the_password_form', 10, 1 );
  */
 function fairflock_password_register_admin_page() {
 	add_submenu_page(
-		'fairflock-demo-content',
+		'fairflock-setup',
 		__( 'Passwortschutz', 'fairflock' ),
 		__( 'Passwortschutz', 'fairflock' ),
 		'manage_options',

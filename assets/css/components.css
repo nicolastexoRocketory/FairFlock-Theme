@@ -4372,14 +4372,62 @@ a.ff-collection-card,
 	content: none;
 }
 
-.ff-collection-card--1 { background: linear-gradient(145deg, #2a5c25, #4a8f42); }
-.ff-collection-card--2 { background: linear-gradient(145deg, #0e1114, #377530); }
-.ff-collection-card--3 { background: linear-gradient(145deg, #1a3d18, #67a85f); }
-.ff-collection-card--4 { background: linear-gradient(145deg, #243028, #4a8f42); }
-.ff-collection-card--5 { background: linear-gradient(145deg, #16351a, #2a5c25); }
-.ff-collection-card--6 { background: linear-gradient(145deg, #0e1114, #4a8f42); }
-.ff-collection-card--7 { background: linear-gradient(145deg, #2f4a32, #377530); }
-.ff-collection-card--8 { background: linear-gradient(145deg, #1c2e20, #5a9a52); }
+.ff-collection-card--1 {
+	background: linear-gradient(
+		145deg,
+		var(--wp--preset--color--brand-deep, #2a5c25),
+		var(--wp--preset--color--brand-soft, #4a8f42)
+	);
+}
+.ff-collection-card--2 {
+	background: linear-gradient(
+		145deg,
+		var(--wp--preset--color--contrast, #0e1114),
+		var(--wp--preset--color--brand, #377530)
+	);
+}
+.ff-collection-card--3 {
+	background: linear-gradient(
+		145deg,
+		color-mix(in srgb, var(--wp--preset--color--brand-deep, #2a5c25) 75%, #000),
+		var(--wp--preset--color--brand-soft, #4a8f42)
+	);
+}
+.ff-collection-card--4 {
+	background: linear-gradient(
+		145deg,
+		color-mix(in srgb, var(--wp--preset--color--brand, #377530) 35%, var(--wp--preset--color--contrast, #0e1114)),
+		var(--wp--preset--color--brand-soft, #4a8f42)
+	);
+}
+.ff-collection-card--5 {
+	background: linear-gradient(
+		145deg,
+		color-mix(in srgb, var(--wp--preset--color--brand-deep, #2a5c25) 85%, #000),
+		var(--wp--preset--color--brand-deep, #2a5c25)
+	);
+}
+.ff-collection-card--6 {
+	background: linear-gradient(
+		145deg,
+		var(--wp--preset--color--contrast, #0e1114),
+		var(--wp--preset--color--brand-soft, #4a8f42)
+	);
+}
+.ff-collection-card--7 {
+	background: linear-gradient(
+		145deg,
+		color-mix(in srgb, var(--wp--preset--color--brand, #377530) 45%, var(--wp--preset--color--contrast, #0e1114)),
+		var(--wp--preset--color--brand, #377530)
+	);
+}
+.ff-collection-card--8 {
+	background: linear-gradient(
+		145deg,
+		color-mix(in srgb, var(--wp--preset--color--brand-deep, #2a5c25) 55%, #000),
+		color-mix(in srgb, var(--wp--preset--color--brand-soft, #4a8f42) 70%, #fff)
+	);
+}
 
 /* —— Bento (styleguide) —— */
 .ff-bento,
@@ -4556,10 +4604,34 @@ a.ff-bento-card,
 	content: none;
 }
 
-.ff-bento-card--1 { background: linear-gradient(145deg, #0e1114, #4a8f42); }
-.ff-bento-card--2 { background: linear-gradient(145deg, #1a3d18, #377530); }
-.ff-bento-card--3 { background: linear-gradient(145deg, #243028, #2a5c25); }
-.ff-bento-card--4 { background: linear-gradient(145deg, #16351a, #67a85f); }
+.ff-bento-card--1 {
+	background: linear-gradient(
+		145deg,
+		var(--wp--preset--color--contrast, #0e1114),
+		var(--wp--preset--color--brand-soft, #4a8f42)
+	);
+}
+.ff-bento-card--2 {
+	background: linear-gradient(
+		145deg,
+		color-mix(in srgb, var(--wp--preset--color--brand-deep, #2a5c25) 75%, #000),
+		var(--wp--preset--color--brand, #377530)
+	);
+}
+.ff-bento-card--3 {
+	background: linear-gradient(
+		145deg,
+		color-mix(in srgb, var(--wp--preset--color--brand, #377530) 35%, var(--wp--preset--color--contrast, #0e1114)),
+		var(--wp--preset--color--brand-deep, #2a5c25)
+	);
+}
+.ff-bento-card--4 {
+	background: linear-gradient(
+		145deg,
+		color-mix(in srgb, var(--wp--preset--color--brand-deep, #2a5c25) 85%, #000),
+		var(--wp--preset--color--brand-soft, #4a8f42)
+	);
+}
 
 /* —— Brand band (styleguide) —— */
 .ff-band,
@@ -4664,7 +4736,11 @@ a.ff-bento-card,
 	border-radius: 0;
 	background:
 		linear-gradient(90deg, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 35%, transparent), transparent 40%),
-		linear-gradient(160deg, #1a3d18, #0e1114);
+		linear-gradient(
+			160deg,
+			color-mix(in srgb, var(--wp--preset--color--brand-deep, #2a5c25) 70%, #000),
+			var(--wp--preset--color--contrast, #0e1114)
+		);
 }
 
 .ff-band__media .wp-block-cover__background {
@@ -4916,7 +4992,11 @@ a.ff-bento-card,
 	box-sizing: border-box;
 	background:
 		radial-gradient(70% 80% at 70% 40%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 45%, transparent), transparent 60%),
-		linear-gradient(160deg, #1a3d18, #0e1114 70%);
+		linear-gradient(
+			160deg,
+			color-mix(in srgb, var(--wp--preset--color--brand-deep, #2a5c25) 70%, #000),
+			var(--wp--preset--color--contrast, #0e1114) 70%
+		);
 }
 
 /* Höhe am äußeren Pattern gesetzt → innere Fullbleed füllt aus */

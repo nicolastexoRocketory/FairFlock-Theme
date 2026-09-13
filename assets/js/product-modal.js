@@ -573,12 +573,12 @@
 			if (mode === "upload") {
 				var file = root.querySelector('input[name="fairflock_logo_upload"]');
 				if (!file || !file.files || !file.files.length) {
-					return "Bitte lade dein Logo hoch.";
+					return root.getAttribute("data-ff-msg-upload") || "Bitte Datei hochladen.";
 				}
 			} else {
 				var text = root.querySelector('input[name="fairflock_personal_text"]');
 				if (!text || !String(text.value || "").trim()) {
-					return "Bitte gib deinen Text ein.";
+					return root.getAttribute("data-ff-msg-text") || "Bitte Text eingeben.";
 				}
 			}
 			return "";

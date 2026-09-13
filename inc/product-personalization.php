@@ -16,11 +16,25 @@ const FAIRFLOCK_META_ENABLE_UPLOAD = '_fairflock_enable_logo_upload';
 /** Meta: enable personal free text on product. */
 const FAIRFLOCK_META_ENABLE_TEXT = '_fairflock_enable_personal_text';
 
+/** Meta: customer-facing title for upload field. */
+const FAIRFLOCK_META_UPLOAD_LABEL = '_fairflock_upload_label';
+
+/** Meta: optional hint under upload field. */
+const FAIRFLOCK_META_UPLOAD_HINT = '_fairflock_upload_hint';
+
+/** Meta: customer-facing title for text field. */
+const FAIRFLOCK_META_TEXT_LABEL = '_fairflock_text_label';
+
+/** Meta: optional hint under text field. */
+const FAIRFLOCK_META_TEXT_HINT = '_fairflock_text_hint';
+
 /** Cart / order meta keys. */
 const FAIRFLOCK_CART_UPLOAD_PATH  = 'fairflock_logo_path';
 const FAIRFLOCK_CART_UPLOAD_NAME  = 'fairflock_logo_name';
 const FAIRFLOCK_CART_UPLOAD_URL   = 'fairflock_logo_url';
+const FAIRFLOCK_CART_UPLOAD_LABEL = 'fairflock_upload_label';
 const FAIRFLOCK_CART_TEXT         = 'fairflock_personal_text';
+const FAIRFLOCK_CART_TEXT_LABEL   = 'fairflock_text_label';
 const FAIRFLOCK_ORDER_UPLOAD_URL  = '_fairflock_logo_url';
 const FAIRFLOCK_ORDER_UPLOAD_NAME = '_fairflock_logo_name';
 const FAIRFLOCK_ORDER_TEXT        = '_fairflock_personal_text';
@@ -61,6 +75,40 @@ function fairflock_product_has_personal_text( $product ) {
 		return false;
 	}
 	return 'yes' === get_post_meta( $id, FAIRFLOCK_META_ENABLE_TEXT, true );
+}
+
+/**
+ * Customer-facing labels for upload / text (with defaults).
+ *
+ * @since 0.9.156
+ *
+ * @param int|\WC_Product $product Product.
+ * @return array{upload_label:string,upload_hint:string,text_label:string,text_hint:string}
+ */
+function fairflock_personalization_labels( $product ) {
+	$id = fairflock_personalization_product_id( $product );
+
+	$upload_label = $id ? trim( (string) get_post_meta( $id, FAIRFLOCK_META_UPLOAD_LABEL, true ) ) : '';
+	$upload_hint  = $id ? trim( (string) get_post_meta( $id, FAIRFLOCK_META_UPLOAD_HINT, true ) ) : '';
+	$text_label   = $id ? trim( (string) get_post_meta( $id, FAIRFLOCK_META_TEXT_LABEL, true ) ) : '';
+	$text_hint    = $id ? trim( (string) get_post_meta( $id, FAIRFLOCK_META_TEXT_HINT, true ) ) : '';
+
+	if ( '' === $upload_label ) {
+		$upload_label = __( 'Logo hochladen', 'fairflock' );
+	}
+	if ( '' === $upload_hint ) {
+		$upload_hint = __( 'PNG, JPG, SVG oder PDF, max. 5 MB.', 'fairflock' );
+	}
+	if ( '' === $text_label ) {
+		$text_label = __( 'Persönlicher Text', 'fairflock' );
+	}
+
+	return array(
+		'upload_label' => $upload_label,
+		'upload_hint'  => $upload_hint,
+		'text_label'   => $text_label,
+		'text_hint'    => $text_hint,
+	);
 }
 
 /**
@@ -118,7 +166,27 @@ function fairflock_personalization_admin_fields() {
 		array(
 			'id'          => FAIRFLOCK_META_ENABLE_UPLOAD,
 			'label'       => __( 'Bild-Upload', 'fairflock' ),
-			'description' => __( 'Kunden können ein Logo/Bild hochladen (z. B. für Druck).', 'fairflock' ),
+			'description' => __( 'Kunden können eine Datei hochladen (Logo, Motiv, Druckvorlage …).', 'fairflock' ),
+			'desc_tip'    => true,
+		)
+	);
+
+	woocommerce_wp_text_input(
+		array(
+			'id'          => FAIRFLOCK_META_UPLOAD_LABEL,
+			'label'       => __( 'Titel Bild-Upload', 'fairflock' ),
+			'placeholder' => __( 'z. B. Vereinslogo / Druckmotiv', 'fairflock' ),
+			'description' => __( 'Wird dem Kunden als Feldtitel angezeigt.', 'fairflock' ),
+			'desc_tip'    => true,
+		)
+	);
+
+	woocommerce_wp_text_input(
+		array(
+			'id'          => FAIRFLOCK_META_UPLOAD_HINT,
+			'label'       => __( 'Hinweis Bild-Upload', 'fairflock' ),
+			'placeholder' => __( 'z. B. PNG oder PDF, max. 5 MB', 'fairflock' ),
+			'description' => __( 'Optionaler Hinweis unter dem Upload-Feld.', 'fairflock' ),
 			'desc_tip'    => true,
 		)
 	);
@@ -127,12 +195,32 @@ function fairflock_personalization_admin_fields() {
 		array(
 			'id'          => FAIRFLOCK_META_ENABLE_TEXT,
 			'label'       => __( 'Freitext', 'fairflock' ),
-			'description' => __( 'Kunden können einen kurzen Text angeben (z. B. Namenstag).', 'fairflock' ),
+			'description' => __( 'Kunden können einen kurzen Text angeben (Name, Nummer …).', 'fairflock' ),
 			'desc_tip'    => true,
 		)
 	);
 
-	echo '<p class="form-field">' . esc_html__( 'Sind beide Optionen aktiv, reicht dem Kunden eine Angabe (Upload oder Text).', 'fairflock' ) . '</p>';
+	woocommerce_wp_text_input(
+		array(
+			'id'          => FAIRFLOCK_META_TEXT_LABEL,
+			'label'       => __( 'Titel Freitext', 'fairflock' ),
+			'placeholder' => __( 'z. B. Name auf dem Trikot', 'fairflock' ),
+			'description' => __( 'Wird dem Kunden als Feldtitel angezeigt.', 'fairflock' ),
+			'desc_tip'    => true,
+		)
+	);
+
+	woocommerce_wp_text_input(
+		array(
+			'id'          => FAIRFLOCK_META_TEXT_HINT,
+			'label'       => __( 'Hinweis Freitext', 'fairflock' ),
+			'placeholder' => __( 'z. B. Max. 12 Zeichen', 'fairflock' ),
+			'description' => __( 'Optionaler Hinweis unter dem Textfeld.', 'fairflock' ),
+			'desc_tip'    => true,
+		)
+	);
+
+	echo '<p class="form-field">' . esc_html__( 'Sind beide Optionen aktiv, wählt der Kunde eine Variante (Upload oder Text). Leere Titel nutzen die Standardtexte.', 'fairflock' ) . '</p>';
 	echo '</div>';
 }
 add_action( 'woocommerce_product_options_general_product_data', 'fairflock_personalization_admin_fields' );
@@ -141,6 +229,7 @@ add_action( 'woocommerce_product_options_general_product_data', 'fairflock_perso
  * Saves personalization product meta.
  *
  * @since 0.9.151
+ * @since 0.9.156 Custom titles and hints.
  *
  * @param int $post_id Product ID.
  * @return void
@@ -152,6 +241,24 @@ function fairflock_personalization_save_admin_fields( $post_id ) {
 
 	update_post_meta( $post_id, FAIRFLOCK_META_ENABLE_UPLOAD, $upload );
 	update_post_meta( $post_id, FAIRFLOCK_META_ENABLE_TEXT, $text );
+
+	$fields = array(
+		FAIRFLOCK_META_UPLOAD_LABEL,
+		FAIRFLOCK_META_UPLOAD_HINT,
+		FAIRFLOCK_META_TEXT_LABEL,
+		FAIRFLOCK_META_TEXT_HINT,
+	);
+
+	foreach ( $fields as $key ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$raw = isset( $_POST[ $key ] ) ? wp_unslash( $_POST[ $key ] ) : '';
+		$val = sanitize_text_field( is_string( $raw ) ? $raw : '' );
+		if ( '' === $val ) {
+			delete_post_meta( $post_id, $key );
+		} else {
+			update_post_meta( $post_id, $key, $val );
+		}
+	}
 }
 add_action( 'woocommerce_process_product_meta', 'fairflock_personalization_save_admin_fields' );
 
@@ -180,13 +287,29 @@ function fairflock_get_personalization_markup( $product, $id_suffix = '' ) {
 		return '';
 	}
 
+	$labels    = fairflock_personalization_labels( $product );
 	$both      = $enable_upload && $enable_text;
 	$id_suffix = preg_replace( '/[^a-z0-9_-]/i', '', (string) $id_suffix );
 	$uid_file  = 'fairflock_logo_upload' . $id_suffix;
 	$uid_text  = 'fairflock_personal_text' . $id_suffix;
 
+	$need_upload = sprintf(
+		/* translators: %s: field title */
+		__( 'Bitte „%s“ angeben.', 'fairflock' ),
+		$labels['upload_label']
+	);
+	$need_text = sprintf(
+		/* translators: %s: field title */
+		__( 'Bitte „%s“ angeben.', 'fairflock' ),
+		$labels['text_label']
+	);
+
 	ob_start();
-	echo '<div class="ff-personalization" data-ff-personalization="1"' . ( $both ? ' data-ff-both="1"' : '' ) . '>';
+	echo '<div class="ff-personalization" data-ff-personalization="1"'
+		. ( $both ? ' data-ff-both="1"' : '' )
+		. ' data-ff-msg-upload="' . esc_attr( $need_upload ) . '"'
+		. ' data-ff-msg-text="' . esc_attr( $need_text ) . '"'
+		. '>';
 
 	if ( $both ) {
 		echo '<fieldset class="ff-personalization__mode">';
@@ -194,26 +317,28 @@ function fairflock_get_personalization_markup( $product, $id_suffix = '' ) {
 		echo '<div class="ff-personalization__switch" role="radiogroup" aria-label="' . esc_attr__( 'Individualisierungsart', 'fairflock' ) . '">';
 		echo '<label class="ff-personalization__switch-option is-active">';
 		echo '<input type="radio" name="fairflock_personalization_mode" value="upload" checked="checked" />';
-		echo '<span>' . esc_html__( 'Bild / Logo', 'fairflock' ) . '</span>';
+		echo '<span>' . esc_html( $labels['upload_label'] ) . '</span>';
 		echo '</label>';
 		echo '<label class="ff-personalization__switch-option">';
 		echo '<input type="radio" name="fairflock_personalization_mode" value="text" />';
-		echo '<span>' . esc_html__( 'Eigener Text', 'fairflock' ) . '</span>';
+		echo '<span>' . esc_html( $labels['text_label'] ) . '</span>';
 		echo '</label>';
 		echo '</div>';
 		echo '</fieldset>';
 	} elseif ( $enable_upload ) {
-		echo '<p class="ff-personalization__hint">' . esc_html__( 'Bitte lade dein Logo hoch.', 'fairflock' ) . '</p>';
+		echo '<p class="ff-personalization__hint">' . esc_html( $need_upload ) . '</p>';
 	} else {
-		echo '<p class="ff-personalization__hint">' . esc_html__( 'Bitte gib deinen Text ein.', 'fairflock' ) . '</p>';
+		echo '<p class="ff-personalization__hint">' . esc_html( $need_text ) . '</p>';
 	}
 
 	if ( $enable_upload ) {
 		echo '<div class="ff-personalization__panel ff-personalization__panel--upload"' . ( $both ? ' data-ff-panel="upload"' : '' ) . '>';
 		echo '<p class="ff-personalization__field ff-personalization__field--upload">';
-		echo '<label for="' . esc_attr( $uid_file ) . '">' . esc_html__( 'Logo hochladen', 'fairflock' ) . '</label>';
+		echo '<label for="' . esc_attr( $uid_file ) . '">' . esc_html( $labels['upload_label'] ) . '</label>';
 		echo '<input type="file" id="' . esc_attr( $uid_file ) . '" name="fairflock_logo_upload" accept=".jpg,.jpeg,.png,.svg,.pdf,image/jpeg,image/png,image/svg+xml,application/pdf" />';
-		echo '<span class="ff-personalization__note">' . esc_html__( 'PNG, JPG, SVG oder PDF, max. 5 MB.', 'fairflock' ) . '</span>';
+		if ( '' !== $labels['upload_hint'] ) {
+			echo '<span class="ff-personalization__note">' . esc_html( $labels['upload_hint'] ) . '</span>';
+		}
 		echo '</p>';
 		echo '</div>';
 	}
@@ -221,12 +346,15 @@ function fairflock_get_personalization_markup( $product, $id_suffix = '' ) {
 	if ( $enable_text ) {
 		echo '<div class="ff-personalization__panel ff-personalization__panel--text"' . ( $both ? ' data-ff-panel="text" hidden' : '' ) . '>';
 		echo '<p class="ff-personalization__field ff-personalization__field--text">';
-		echo '<label for="' . esc_attr( $uid_text ) . '">' . esc_html__( 'Persönlicher Text', 'fairflock' ) . '</label>';
+		echo '<label for="' . esc_attr( $uid_text ) . '">' . esc_html( $labels['text_label'] ) . '</label>';
 		printf(
 			'<input type="text" id="%s" name="fairflock_personal_text" maxlength="%d" autocomplete="off" />',
 			esc_attr( $uid_text ),
 			(int) FAIRFLOCK_TEXT_MAX_LENGTH
 		);
+		if ( '' !== $labels['text_hint'] ) {
+			echo '<span class="ff-personalization__note">' . esc_html( $labels['text_hint'] ) . '</span>';
+		}
 		echo '</p>';
 		echo '</div>';
 	}
@@ -524,6 +652,7 @@ function fairflock_personalization_validate_add_to_cart( $passed, $product_id ) 
 		return $passed;
 	}
 
+	$labels  = fairflock_personalization_labels( $product_id );
 	$file_ok = false;
 	$text_ok = false;
 
@@ -575,13 +704,26 @@ function fairflock_personalization_validate_add_to_cart( $passed, $product_id ) 
 	$satisfied = false;
 	if ( $enable_upload && $enable_text ) {
 		$satisfied = $file_ok || $text_ok;
-		$msg       = __( 'Bitte Logo hochladen oder Text eingeben (eines reicht).', 'fairflock' );
+		$msg       = sprintf(
+			/* translators: 1: upload title, 2: text title */
+			__( 'Bitte „%1$s“ oder „%2$s“ angeben (eines reicht).', 'fairflock' ),
+			$labels['upload_label'],
+			$labels['text_label']
+		);
 	} elseif ( $enable_upload ) {
 		$satisfied = $file_ok;
-		$msg       = __( 'Bitte lade dein Logo hoch.', 'fairflock' );
+		$msg       = sprintf(
+			/* translators: %s: field title */
+			__( 'Bitte „%s“ angeben.', 'fairflock' ),
+			$labels['upload_label']
+		);
 	} else {
 		$satisfied = $text_ok;
-		$msg       = __( 'Bitte gib deinen Text ein.', 'fairflock' );
+		$msg       = sprintf(
+			/* translators: %s: field title */
+			__( 'Bitte „%s“ angeben.', 'fairflock' ),
+			$labels['text_label']
+		);
 	}
 
 	if ( ! $satisfied ) {
@@ -755,6 +897,8 @@ function fairflock_personalization_add_cart_item_data( $cart_item_data, $product
 		return $cart_item_data;
 	}
 
+	$labels = fairflock_personalization_labels( $product_id );
+
 	// phpcs:ignore WordPress.Security.NonceVerification.Missing
 	$mode = isset( $_POST['fairflock_personalization_mode'] ) ? sanitize_key( wp_unslash( $_POST['fairflock_personalization_mode'] ) ) : '';
 	if ( $enable_upload && $enable_text && in_array( $mode, array( 'upload', 'text' ), true ) ) {
@@ -768,10 +912,11 @@ function fairflock_personalization_add_cart_item_data( $cart_item_data, $product
 			wc_add_notice( $uploaded->get_error_message(), 'error' );
 			return $cart_item_data;
 		}
-		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_PATH ] = $uploaded['file'];
-		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_URL ]  = $uploaded['url'];
-		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_NAME ] = $uploaded['name'];
-		$cart_item_data['unique_key']                 = md5( microtime() . $uploaded['file'] );
+		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_PATH ]  = $uploaded['file'];
+		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_URL ]   = $uploaded['url'];
+		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_NAME ]  = $uploaded['name'];
+		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_LABEL ] = $labels['upload_label'];
+		$cart_item_data['unique_key']                  = md5( microtime() . $uploaded['file'] );
 	}
 
 	if ( $enable_text ) {
@@ -779,9 +924,10 @@ function fairflock_personalization_add_cart_item_data( $cart_item_data, $product
 		$raw  = isset( $_POST['fairflock_personal_text'] ) ? wp_unslash( $_POST['fairflock_personal_text'] ) : '';
 		$text = sanitize_text_field( $raw );
 		if ( '' !== $text ) {
-			$cart_item_data[ FAIRFLOCK_CART_TEXT ] = function_exists( 'mb_substr' )
+			$cart_item_data[ FAIRFLOCK_CART_TEXT ]       = function_exists( 'mb_substr' )
 				? mb_substr( $text, 0, FAIRFLOCK_TEXT_MAX_LENGTH )
 				: substr( $text, 0, FAIRFLOCK_TEXT_MAX_LENGTH );
+			$cart_item_data[ FAIRFLOCK_CART_TEXT_LABEL ] = $labels['text_label'];
 			if ( empty( $cart_item_data['unique_key'] ) ) {
 				$cart_item_data['unique_key'] = md5( microtime() . $text );
 			}
@@ -796,6 +942,7 @@ add_filter( 'woocommerce_add_cart_item_data', 'fairflock_personalization_add_car
  * Displays personalization in cart and checkout.
  *
  * @since 0.9.151
+ * @since 0.9.156 Uses custom field titles.
  *
  * @param array $item_data Item data rows.
  * @param array $cart_item Cart item.
@@ -803,14 +950,20 @@ add_filter( 'woocommerce_add_cart_item_data', 'fairflock_personalization_add_car
  */
 function fairflock_personalization_get_item_data( $item_data, $cart_item ) {
 	if ( ! empty( $cart_item[ FAIRFLOCK_CART_UPLOAD_NAME ] ) ) {
+		$label = ! empty( $cart_item[ FAIRFLOCK_CART_UPLOAD_LABEL ] )
+			? (string) $cart_item[ FAIRFLOCK_CART_UPLOAD_LABEL ]
+			: __( 'Logo', 'fairflock' );
 		$item_data[] = array(
-			'key'   => __( 'Logo', 'fairflock' ),
+			'key'   => $label,
 			'value' => esc_html( $cart_item[ FAIRFLOCK_CART_UPLOAD_NAME ] ),
 		);
 	}
 	if ( ! empty( $cart_item[ FAIRFLOCK_CART_TEXT ] ) ) {
+		$label = ! empty( $cart_item[ FAIRFLOCK_CART_TEXT_LABEL ] )
+			? (string) $cart_item[ FAIRFLOCK_CART_TEXT_LABEL ]
+			: __( 'Persönlicher Text', 'fairflock' );
 		$item_data[] = array(
-			'key'   => __( 'Persönlicher Text', 'fairflock' ),
+			'key'   => $label,
 			'value' => esc_html( $cart_item[ FAIRFLOCK_CART_TEXT ] ),
 		);
 	}
@@ -831,10 +984,13 @@ add_filter( 'woocommerce_get_item_data', 'fairflock_personalization_get_item_dat
 function fairflock_personalization_checkout_create_order_line_item( $item, $cart_item_key, $values ) {
 	if ( ! empty( $values[ FAIRFLOCK_CART_UPLOAD_URL ] ) ) {
 		$item->add_meta_data( FAIRFLOCK_ORDER_UPLOAD_URL, esc_url_raw( $values[ FAIRFLOCK_CART_UPLOAD_URL ] ), true );
-		$name = ! empty( $values[ FAIRFLOCK_CART_UPLOAD_NAME ] ) ? $values[ FAIRFLOCK_CART_UPLOAD_NAME ] : __( 'Logo', 'fairflock' );
+		$name = ! empty( $values[ FAIRFLOCK_CART_UPLOAD_NAME ] ) ? $values[ FAIRFLOCK_CART_UPLOAD_NAME ] : __( 'Datei', 'fairflock' );
 		$item->add_meta_data( FAIRFLOCK_ORDER_UPLOAD_NAME, sanitize_file_name( $name ), true );
+		$upload_label = ! empty( $values[ FAIRFLOCK_CART_UPLOAD_LABEL ] )
+			? sanitize_text_field( $values[ FAIRFLOCK_CART_UPLOAD_LABEL ] )
+			: __( 'Logo', 'fairflock' );
 		$item->add_meta_data(
-			__( 'Logo', 'fairflock' ),
+			$upload_label,
 			esc_url_raw( $values[ FAIRFLOCK_CART_UPLOAD_URL ] ),
 			true
 		);
@@ -842,7 +998,10 @@ function fairflock_personalization_checkout_create_order_line_item( $item, $cart
 	if ( ! empty( $values[ FAIRFLOCK_CART_TEXT ] ) ) {
 		$text = sanitize_text_field( $values[ FAIRFLOCK_CART_TEXT ] );
 		$item->add_meta_data( FAIRFLOCK_ORDER_TEXT, $text, true );
-		$item->add_meta_data( __( 'Persönlicher Text', 'fairflock' ), $text, true );
+		$text_label = ! empty( $values[ FAIRFLOCK_CART_TEXT_LABEL ] )
+			? sanitize_text_field( $values[ FAIRFLOCK_CART_TEXT_LABEL ] )
+			: __( 'Persönlicher Text', 'fairflock' );
+		$item->add_meta_data( $text_label, $text, true );
 	}
 }
 add_action( 'woocommerce_checkout_create_order_line_item', 'fairflock_personalization_checkout_create_order_line_item', 10, 3 );
@@ -865,7 +1024,7 @@ function fairflock_personalization_order_item_display_meta( $display_value, $met
 	$key  = isset( $data['key'] ) ? $data['key'] : '';
 	$val  = isset( $data['value'] ) ? $data['value'] : '';
 
-	if ( FAIRFLOCK_ORDER_UPLOAD_URL === $key || __( 'Logo', 'fairflock' ) === $key ) {
+	if ( FAIRFLOCK_ORDER_UPLOAD_URL === $key || __( 'Logo', 'fairflock' ) === $key || ( $item instanceof WC_Order_Item && (string) $item->get_meta( FAIRFLOCK_ORDER_UPLOAD_URL, true ) === (string) $val && $val ) ) {
 		$url = esc_url( $val );
 		if ( $url ) {
 			$label = '';

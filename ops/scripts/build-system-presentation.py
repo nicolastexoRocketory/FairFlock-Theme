@@ -179,7 +179,6 @@ def build() -> Path:
     # —— 1 Titel ——
     def s_title(page, total):
         draw_bg(c, "title")
-        # Left panel copy — vertically centered in left column
         left_block = 70 * mm
         y = (H + left_block) / 2
         c.setFillColor(white)
@@ -192,12 +191,11 @@ def build() -> Path:
         c.drawString(18 * mm, y - 48 * mm, "Einfach erklärt —")
         c.drawString(18 * mm, y - 55 * mm, "für alle verständlich.")
 
-        # Right panel — vertically centered
         right_items = [
-            "Ein eigener Online-Shop-Baukasten von uns",
-            "Sieht je Firma anders aus — Technik bleibt gleich",
+            "Eigener Online-Shop-Baukasten von uns",
+            "Jede Firma sieht anders aus — Technik bleibt gleich",
             "Updates für alle Shops auf einmal möglich",
-            "Neu: Passwortschutz & fertige Startseiten per Klick",
+            "Viele fertige Funktionen — von Suche bis Kasse",
         ]
         rh = 18 * mm + measure_bullets(c, right_items, 120 * mm, 13, 18)
         ry = vcenter_block(rh)
@@ -224,12 +222,11 @@ def build() -> Path:
         draw_bg(c)
         items = [
             ("1", "Die Idee", "Warum wir ein eigenes System gebaut haben"),
-            ("2", "Was der Kunde sieht", "Der Shop im Alltag — klar und modern"),
-            ("3", "Was im Büro passiert", "Inhalte pflegen, ohne Technik-Studium"),
-            ("4", "Immer aktuell & sicher", "Updates und Schutz — ohne Drama"),
+            ("2", "Alle Funktionen", "Was der Shop und das Büro können"),
+            ("3", "Alltag im Büro", "Einrichten und pflegen — ohne Technik-Studium"),
+            ("4", "Aktuell & sicher", "Updates und Schutz — ohne Drama"),
             ("5", "Statt Flatsome", "Der einfache Vergleich"),
         ]
-        # measure
         head_h = 28 * mm
         rows_h = len(items) * 18 * mm
         block = head_h + rows_h
@@ -294,46 +291,49 @@ def build() -> Path:
             x += 68 * mm
         footer(c, page, total)
 
-    # —— 5 Frontend ——
+    # —— 5 Funktionen für Kunden ——
     def s_front(page, total):
         draw_bg(c)
         cards = [
             (
                 "Finden & Orientieren",
                 [
-                    "Suche mit Vorschlägen",
-                    "Menü & Kategorien",
-                    "Konto-Zugang",
+                    "Suche mit Produktvorschlägen",
+                    "Menü und Untermenüs",
+                    "Kategorien & Kollektionen",
+                    "Konto-Zugang (Login)",
                     "Warenkorb von der Seite",
                 ],
             ),
             (
-                "Kaufen",
+                "Produkte & Kaufen",
                 [
-                    "Produkt-Schnellansicht",
-                    "Optional: Logo oder Text aufs Produkt",
-                    "Warenkorb & Kasse",
-                    "Bestellbestätigung",
+                    "Produkt-Schnellansicht (Popup)",
+                    "Produkt-Slider / Teaser",
+                    "Logo oder Text aufs Produkt",
+                    "Warenkorb, Kasse, Bestätigung",
+                    "Versand- & Zahlungsseiten",
                 ],
             ),
             (
-                "Überzeugen",
+                "Vertrauen & Inhalt",
                 [
-                    "Große Einstiegsbilder",
+                    "Hero mit großen Bildern",
                     "Vertrauens-Leiste",
                     "FAQ, Schritte, Bewertungen",
+                    "Zitat / Marken-Band",
                     "Klare Call-to-Actions",
                 ],
             ),
         ]
         head_h = 30 * mm
-        card_h = 88 * mm
+        card_h = 100 * mm
         block = head_h + card_h
         y_top = vcenter_block(block)
         draw_heading_block(
             c,
-            "2. Was der Kunde sieht",
-            "Der Shop soll vertrauenswürdig und leicht verständlich wirken",
+            "2. Funktionen für Kundinnen & Kunden",
+            "Alles, was man im Shop erleben kann",
             y_top,
         )
         y_cards = y_top - head_h - card_h
@@ -343,55 +343,58 @@ def build() -> Path:
             x += 90 * mm
         footer(c, page, total)
 
-    # —— 6 Neue Features Frontend-nah ——
-    def s_new_features(page, total):
+    # —— 6 Funktionen fürs Büro / Setup ——
+    def s_all_functions(page, total):
         draw_bg(c)
         cards = [
             (
-                "Passwortschutz",
+                "Einrichten",
                 [
-                    "Shop nur für Mitarbeitende öffnen",
-                    "Schöne Anmeldekarte mit Firmenlogo",
-                    "Passwortfeld — fertig",
-                    "Ideal vor dem öffentlichen Start",
-                    "oder für interne Clubs / Firmen",
+                    "Logo & Farben je Marke",
+                    "Fertige Seiten-Bausteine",
+                    "Ein-Klick-Startseite",
+                    "Rechtliche Platzhalter-Seiten",
+                    "Kategorien-Seite",
+                    "Plugin-Checkliste zum Start",
                 ],
             ),
             (
-                "Fertige Startseite per Klick",
+                "Shop-Alltag",
                 [
-                    "Im Backend: „Demo Content“",
-                    "Volle Startseite auswählen",
-                    "Alle wichtigen Abschnitte",
-                    "ordentlich angeordnet",
-                    "Kein Zusammenklicken von Null",
+                    "Produkte & Preise pflegen",
+                    "Personalisierung je Artikel",
+                    "Passwortschutz für den Shop",
+                    "Einzelne Seiten absichern",
+                    "FAQ & Inhalte bearbeiten",
+                    "Handy & Desktop tauglich",
                 ],
             ),
             (
-                "Weitere Bausteine",
+                "Betrieb",
                 [
-                    "Rechtliche Seiten anlegen",
-                    "Kategorien-Seite bereithalten",
-                    "Nur was man anhakt",
-                    "Nichts wird heimlich überschrieben",
-                    "Sicher für bestehende Shops",
+                    "Ein System für viele Shops",
+                    "Zentrale Verbesserungen",
+                    "Probelauf vor Live-Update",
+                    "Kundeninhalte bleiben sicher",
+                    "Schnelle Shop-Seiten",
+                    "Weniger Fremd-Abhängigkeit",
                 ],
             ),
         ]
         head_h = 32 * mm
-        card_h = 95 * mm
+        card_h = 108 * mm
         block = head_h + card_h
         y_top = vcenter_block(block)
         draw_heading_block(
             c,
-            "Neu dabei",
-            "Zwei Funktionen, die den Alltag spürbar erleichtern",
+            "2. Funktionen fürs Büro & den Betrieb",
+            "Was man einrichten, pflegen und steuern kann",
             y_top,
         )
         y_cards = y_top - head_h - card_h
         x = 18 * mm
         for title, lines in cards:
-            card(c, x, y_cards, 84 * mm, card_h, title, lines, title_size=14, body_size=12)
+            card(c, x, y_cards, 84 * mm, card_h, title, lines, title_size=14, body_size=11.5)
             x += 90 * mm
         footer(c, page, total)
 
@@ -399,10 +402,10 @@ def build() -> Path:
     def s_backend(page, total):
         draw_bg(c)
         steps = [
-            ("1", "Marke festlegen", "Logo und Farben — einmal einstellen."),
-            ("2", "Seiten füllen", "Fertige Abschnitte einfügen, Texte & Bilder tauschen."),
-            ("3", "Shop pflegen", "Produkte anlegen. Extra-Optionen nur wo nötig."),
-            ("4", "Kurz prüfen", "Handy & Computer: Suche, Warenkorb, Bestellung."),
+            ("1", "Plugins prüfen", "WooCommerce, Complianz, optional Yoast SEO."),
+            ("2", "Marke festlegen", "Logo und Farben — einmal einstellen."),
+            ("3", "Layouts anlegen", "Bei Bedarf fertige Startseite per Klick."),
+            ("4", "Shop pflegen", "Produkte, Texte, Bilder — laufend aktuell halten."),
         ]
         head_h = 30 * mm
         steps_h = len(steps) * 22 * mm
@@ -410,8 +413,8 @@ def build() -> Path:
         y_top = vcenter_block(block)
         draw_heading_block(
             c,
-            "3. Was im Büro passiert",
-            "Inhalte ändern — ohne Programmierkenntnisse",
+            "3. So arbeitet man damit",
+            "Vom leeren Shop zum laufenden Alltag",
             y_top,
         )
         y = y_top - head_h
@@ -434,9 +437,9 @@ def build() -> Path:
     def s_backend_demo(page, total):
         draw_bg(c)
         bullets = [
-            "Unter „FairFlock → Demo Content“ wählt man aus, was angelegt werden soll.",
-            "Beispiel: eine komplette Startseite wie in unserer Vorzeige-Installation.",
-            "Optional: Impressum & Co. sowie die Kategorien-Seite.",
+            "Unter „FairFlock → Demo Content“ sieht man zuerst die empfohlenen Plugins.",
+            "Danach wählt man aus, welche Layouts angelegt werden sollen.",
+            "Zum Beispiel: komplette Startseite, rechtliche Seiten, Kategorien-Seite.",
             "Bestehende Inhalte werden nur überschrieben, wenn man das ausdrücklich erlaubt.",
         ]
         head_h = 32 * mm
@@ -446,8 +449,8 @@ def build() -> Path:
         y_top = vcenter_block(block)
         used = draw_heading_block(
             c,
-            "3. Ein-Klick-Layouts",
-            "Neue Shops schneller startklar machen",
+            "3. Demo Content im Backend",
+            "Plugins prüfen und fertige Layouts anlegen",
             y_top,
         )
         draw_bullets(c, bullets, 22 * mm, y_top - used, W - 50 * mm, size=14, leading=20)
@@ -575,7 +578,7 @@ def build() -> Path:
         bullets = [
             "Flatsome kann viel — wir brauchen das Richtige.",
             "Weniger Knöpfe bedeuten weniger Verwirrung und weniger Fehler.",
-            "Neue Funktionen (wie Passwortschutz oder Ein-Klick-Startseite) erreichen alle Shops schneller.",
+            "Funktionen wie Passwortschutz oder Ein-Klick-Startseite erreichen alle Shops gemeinsam.",
             "Langfristig spart das Zeit, Geld und Nerven — bei gleichbleibend guter Qualität.",
         ]
         head_h = 30 * mm
@@ -611,7 +614,7 @@ def build() -> Path:
 
         nexts = [
             "Kurz am Bildschirm zeigen (Shop + Backend)",
-            "Passwortschutz und Demo Content vorführen",
+            "Funktionen live durchgehen",
             "Entscheiden: Rollout auf weitere Shops",
         ]
         rh = 16 * mm + measure_bullets(c, nexts, 120 * mm, 13, 18)
@@ -628,7 +631,7 @@ def build() -> Path:
         s_idea,
         s_idea2,
         s_front,
-        s_new_features,
+        s_all_functions,
         s_backend,
         s_backend_demo,
         s_updates,

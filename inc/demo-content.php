@@ -283,9 +283,77 @@ function fairflock_demo_content_install_category_page() {
 }
 
 /**
+ * Recommended plugins before shop setup.
+ *
+ * @since 0.9.155
+ *
+ * @return array<int, array{slug:string,name:string,required:bool,note:string}>
+ */
+function fairflock_demo_content_recommended_plugins() {
+	return array(
+		array(
+			'slug'     => 'woocommerce',
+			'name'     => 'WooCommerce',
+			'required' => true,
+			'note'     => __( 'Shop-Grundlage — Produkte, Warenkorb, Kasse.', 'fairflock' ),
+		),
+		array(
+			'slug'     => 'complianz-gdpr',
+			'name'     => 'Complianz',
+			'required' => true,
+			'note'     => __( 'Cookie-Hinweis & Datenschutz-Einwilligung.', 'fairflock' ),
+		),
+		array(
+			'slug'     => 'wordpress-seo',
+			'name'     => 'Yoast SEO',
+			'required' => false,
+			'note'     => __( 'Optional, aber sinnvoll — Suchmaschinen & Snippets.', 'fairflock' ),
+		),
+	);
+}
+
+/**
+ * Whether a plugin slug is installed and active.
+ *
+ * @since 0.9.155
+ *
+ * @param string $slug Plugin directory slug.
+ * @return array{installed:bool,active:bool}
+ */
+function fairflock_demo_content_plugin_status( $slug ) {
+	if ( ! function_exists( 'get_plugins' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	$slug   = sanitize_key( $slug );
+	$found  = '';
+	$plugins = get_plugins();
+
+	foreach ( array_keys( $plugins ) as $file ) {
+		if ( str_starts_with( $file, $slug . '/' ) || $file === $slug . '.php' ) {
+			$found = $file;
+			break;
+		}
+	}
+
+	if ( '' === $found ) {
+		return array(
+			'installed' => false,
+			'active'    => false,
+		);
+	}
+
+	return array(
+		'installed' => true,
+		'active'    => is_plugin_active( $found ),
+	);
+}
+
+/**
  * Renders Demo Content admin UI.
  *
  * @since 0.9.154
+ * @since 0.9.155 Plugins checklist before layouts.
  *
  * @return void
  */
@@ -295,6 +363,7 @@ function fairflock_demo_content_render_admin_page() {
 	}
 
 	$packages = fairflock_demo_content_packages();
+	$plugins  = fairflock_demo_content_recommended_plugins();
 	$status   = isset( $_GET['ff_demo'] ) ? sanitize_key( wp_unslash( $_GET['ff_demo'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$results  = get_transient( 'fairflock_demo_content_result_' . get_current_user_id() );
 	if ( is_array( $results ) ) {
@@ -302,10 +371,70 @@ function fairflock_demo_content_render_admin_page() {
 	} else {
 		$results = array();
 	}
+
+	$can_install = current_user_can( 'install_plugins' );
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Demo Content', 'fairflock' ); ?></h1>
 		<p><?php esc_html_e( 'Ein-Klick-Layouts für neue Shops. Es wird nichts automatisch bei Theme-Updates überschrieben — nur was du hier auswählst.', 'fairflock' ); ?></p>
+
+		<h2 style="margin-top:28px;"><?php esc_html_e( 'Plugins', 'fairflock' ); ?></h2>
+		<p><?php esc_html_e( 'Bitte diese Plugins installieren und aktivieren, bevor du Layouts anlegst oder den Shop einrichtest.', 'fairflock' ); ?></p>
+
+		<table class="widefat striped" style="max-width:920px;">
+			<thead>
+				<tr>
+					<th scope="col" style="padding:12px;"><?php esc_html_e( 'Plugin', 'fairflock' ); ?></th>
+					<th scope="col" style="padding:12px;"><?php esc_html_e( 'Status', 'fairflock' ); ?></th>
+					<th scope="col" style="padding:12px;"><?php esc_html_e( 'Hinweis', 'fairflock' ); ?></th>
+					<th scope="col" style="padding:12px;"><?php esc_html_e( 'Aktion', 'fairflock' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach ( $plugins as $plugin ) : ?>
+					<?php
+					$st = fairflock_demo_content_plugin_status( $plugin['slug'] );
+					if ( $st['active'] ) {
+						$badge = '<span style="color:#1e7a34;font-weight:600;">' . esc_html__( 'Aktiv', 'fairflock' ) . '</span>';
+					} elseif ( $st['installed'] ) {
+						$badge = '<span style="color:#996800;font-weight:600;">' . esc_html__( 'Installiert, nicht aktiv', 'fairflock' ) . '</span>';
+					} else {
+						$badge = '<span style="color:#b32d2e;font-weight:600;">' . esc_html__( 'Fehlt', 'fairflock' ) . '</span>';
+					}
+
+					$install_url = $can_install
+						? admin_url( 'plugin-install.php?s=' . rawurlencode( $plugin['name'] ) . '&tab=search&type=term' )
+						: '';
+					$plugins_url = admin_url( 'plugins.php' );
+					?>
+					<tr>
+						<td style="padding:14px 12px;">
+							<strong><?php echo esc_html( $plugin['name'] ); ?></strong>
+							<?php if ( ! empty( $plugin['required'] ) ) : ?>
+								— <span style="color:#b32d2e;"><?php esc_html_e( 'erforderlich', 'fairflock' ); ?></span>
+							<?php else : ?>
+								— <span style="color:#646970;"><?php esc_html_e( 'optional, aber sinnvoll', 'fairflock' ); ?></span>
+							<?php endif; ?>
+						</td>
+						<td style="padding:14px 12px;"><?php echo $badge; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+						<td style="padding:14px 12px;color:#50575e;"><?php echo esc_html( $plugin['note'] ); ?></td>
+						<td style="padding:14px 12px;">
+							<?php if ( $st['active'] ) : ?>
+								—
+							<?php elseif ( $st['installed'] ) : ?>
+								<a href="<?php echo esc_url( $plugins_url ); ?>"><?php esc_html_e( 'Unter Plugins aktivieren', 'fairflock' ); ?></a>
+							<?php elseif ( $install_url ) : ?>
+								<a class="button button-secondary" href="<?php echo esc_url( $install_url ); ?>"><?php esc_html_e( 'Installieren', 'fairflock' ); ?></a>
+							<?php else : ?>
+								<span class="description"><?php esc_html_e( 'Keine Installationsrechte', 'fairflock' ); ?></span>
+							<?php endif; ?>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+
+		<h2 style="margin-top:32px;"><?php esc_html_e( 'Layouts anlegen', 'fairflock' ); ?></h2>
 
 		<?php if ( 'empty' === $status ) : ?>
 			<div class="notice notice-warning"><p><?php esc_html_e( 'Bitte mindestens ein Paket auswählen.', 'fairflock' ); ?></p></div>

@@ -33,7 +33,7 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 	margin-right: 0 !important;
 }
 
-/* —— Hero: edge-to-edge plane, brand first —— */
+/* —— Hero: edge-to-edge plane, brand first, content dead-center —— */
 .ff-about-hero,
 .wp-block-group.ff-about-hero {
 	position: relative;
@@ -44,6 +44,7 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 .ff-about-hero .wp-block-cover.ff-about-hero__cover {
 	min-height: min(88vh, 820px) !important;
 	padding: 0 !important;
+	display: flex !important;
 	align-items: center !important;
 	justify-content: center !important;
 	background:
@@ -58,45 +59,70 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 	opacity: 1 !important;
 }
 
-.ff-about-hero__cover .wp-block-cover__inner-container {
-	width: var(--ff-shell) !important;
-	max-width: var(--ff-shell) !important;
+/*
+ * Shrink the cover content to the reading measure and center that box
+ * in the viewport — do NOT stretch to --ff-shell (that left-aligns copy).
+ */
+.ff-about-hero__cover .wp-block-cover__inner-container,
+.ff-about-hero .wp-block-cover__inner-container {
+	width: min(40rem, var(--ff-shell)) !important;
+	max-width: min(40rem, var(--ff-shell)) !important;
 	margin-inline: auto !important;
 	padding-top: calc(var(--ff-header-clearance) + var(--wp--preset--spacing--40, 32px)) !important;
 	padding-bottom: var(--wp--preset--spacing--60, 48px) !important;
+	padding-left: var(--ff-gutter, 32px) !important;
+	padding-right: var(--ff-gutter, 32px) !important;
 	box-sizing: border-box;
 	display: flex !important;
-	flex-direction: column;
+	flex-direction: column !important;
 	align-items: center !important;
 	justify-content: center !important;
-	text-align: center;
+	text-align: center !important;
 }
 
 .ff-about-hero__copy,
+.ff-about-hero .ff-about-hero__copy,
 .wp-block-group.ff-about-hero__copy {
-	display: grid;
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	justify-content: center !important;
 	gap: 14px;
-	max-width: 36rem;
-	width: 100%;
-	margin-inline: auto !important;
-	justify-items: center;
+	width: 100% !important;
+	max-width: 100% !important;
+	margin: 0 !important;
 	text-align: center !important;
 }
 
-.ff-about-hero__copy > *,
+/* Kill WP constrained / left-justification leftovers inside the hero */
+.ff-about-hero .ff-about-hero__copy.is-layout-constrained > *,
+.ff-about-hero .ff-about-hero__copy > *,
+.ff-about-hero .wp-block-cover__inner-container > * {
+	margin-left: auto !important;
+	margin-right: auto !important;
+	text-align: center !important;
+}
+
 .ff-about-hero__brand,
 .ff-about-hero__title,
 .ff-about-hero__lead,
-.ff-about-hero__copy .wp-block-heading,
-.ff-about-hero__copy p {
+.ff-about-hero .ff-about-hero__brand,
+.ff-about-hero .ff-about-hero__title,
+.ff-about-hero .ff-about-hero__lead,
+.ff-about-hero .wp-block-heading,
+.ff-about-hero p,
+.ff-about-hero h1,
+.ff-about-hero h2 {
+	width: 100% !important;
+	max-width: 100% !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
 	text-align: center !important;
-	margin-left: auto;
-	margin-right: auto;
 }
 
 .ff-about-hero__brand {
-	margin-top: 0;
-	margin-bottom: 0;
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
 	font-family: var(--wp--preset--font-family--heading);
 	font-size: clamp(2.4rem, 6vw, 4rem);
 	font-weight: 400;
@@ -106,9 +132,9 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 }
 
 .ff-about-hero__title,
-.ff-about-hero__copy .ff-about-hero__title {
-	margin-top: 0;
-	margin-bottom: 0;
+.ff-about-hero .ff-about-hero__title {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
 	font-family: var(--wp--preset--font-family--heading);
 	font-size: clamp(1.25rem, 2.2vw, 1.65rem);
 	font-weight: 400;
@@ -117,23 +143,37 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 	color: color-mix(in srgb, #fff 86%, var(--wp--preset--color--brand, #377530));
 }
 
-.ff-about-hero__lead {
-	margin-top: 0;
-	margin-bottom: 0;
+.ff-about-hero__lead,
+.ff-about-hero .ff-about-hero__lead {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
 	font-size: 1.0625rem;
 	line-height: 1.55;
 	color: color-mix(in srgb, #fff 74%, transparent);
-	max-width: 32rem;
+	max-width: 34rem !important;
 }
 
-.ff-about-hero__cta {
-	margin-top: 6px;
+.ff-about-hero__cta,
+.ff-about-hero .ff-about-hero__cta,
+.ff-about-hero .wp-block-buttons {
+	display: flex !important;
+	flex-wrap: wrap !important;
 	justify-content: center !important;
-	width: 100%;
+	align-items: center !important;
+	width: 100% !important;
+	margin-top: 6px !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	gap: 10px;
+}
+
+.ff-about-hero .wp-block-button {
+	margin: 0 !important;
 }
 
 .ff-about-hero__btn .wp-block-button__link,
-.ff-about-hero__cta .wp-element-button {
+.ff-about-hero__cta .wp-element-button,
+.ff-about-hero .wp-block-button__link {
 	min-height: 48px;
 	padding: 12px 22px;
 	border-radius: var(--wp--custom--radius--sm, 8px);
@@ -141,10 +181,12 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 	color: #fff !important;
 	font-weight: 700;
 	text-decoration: none;
+	text-align: center !important;
 }
 
 .ff-about-hero__btn .wp-block-button__link:hover,
-.ff-about-hero__cta .wp-element-button:hover {
+.ff-about-hero__cta .wp-element-button:hover,
+.ff-about-hero .wp-block-button__link:hover {
 	background: var(--wp--preset--color--brand-deep, #2a5c25) !important;
 }
 

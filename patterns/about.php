@@ -17,11 +17,11 @@ $contact   = esc_url( 'mailto:info@fairflock.de' );
 ?>
 <!-- wp:group {"metadata":{"name":"Über uns · Hero"},"align":"full","className":"ff-about-hero","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"},"margin":{"top":"0","bottom":"0"},"blockGap":"0"}},"layout":{"type":"default"}} -->
 <div class="wp-block-group alignfull ff-about-hero" style="margin-top:0;margin-bottom:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
-	<!-- wp:cover {"dimRatio":55,"overlayColor":"contrast","isUserOverlayColor":true,"minHeight":88,"minHeightUnit":"vh","contentPosition":"center center","isDark":true,"className":"ff-about-hero__cover","layout":{"type":"constrained"}} -->
+	<!-- wp:cover {"dimRatio":55,"overlayColor":"contrast","isUserOverlayColor":true,"minHeight":88,"minHeightUnit":"vh","contentPosition":"center center","isDark":true,"className":"ff-about-hero__cover","layout":{"type":"default"}} -->
 	<div class="wp-block-cover is-dark has-custom-content-position is-position-center-center ff-about-hero__cover" style="min-height:88vh">
 		<span aria-hidden="true" class="wp-block-cover__background has-contrast-background-color has-background-dim"></span>
 		<div class="wp-block-cover__inner-container">
-			<!-- wp:group {"className":"ff-about-hero__copy","style":{"spacing":{"blockGap":"14px"}},"layout":{"type":"constrained","contentSize":"36rem","justifyContent":"center"}} -->
+			<!-- wp:group {"className":"ff-about-hero__copy","style":{"spacing":{"blockGap":"14px"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center","flexWrap":"nowrap"}} -->
 			<div class="wp-block-group ff-about-hero__copy">
 				<!-- wp:paragraph {"align":"center","className":"ff-about-hero__brand"} -->
 				<p class="has-text-align-center ff-about-hero__brand"><?php echo $shop_name; ?></p>

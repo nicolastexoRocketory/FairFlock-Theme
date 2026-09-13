@@ -443,6 +443,106 @@ function fairflock_maybe_migrate_footer_sold_by_blocks() {
 add_action( 'init', 'fairflock_maybe_migrate_footer_sold_by_blocks', 31 );
 
 /**
+ * One-time: switch customized footers from dark (contrast/white) to light (base/contrast).
+ *
+ * Theme file parts/footer.html already uses base + contrast; DB customizations
+ * from the old styleguide kept contrast background + white text.
+ *
+ * @since 0.9.166
+ *
+ * @return void
+ */
+function fairflock_maybe_migrate_footer_light_defaults() {
+	if ( get_option( 'fairflock_footer_light_defaults' ) === '1' ) {
+		return;
+	}
+
+	if ( get_stylesheet() !== 'fairflock' ) {
+		return;
+	}
+
+	$parts = get_posts(
+		array(
+			'post_type'      => 'wp_template_part',
+			'name'           => 'footer',
+			'post_status'    => array( 'publish', 'draft', 'auto-draft' ),
+			'posts_per_page' => 20,
+			'no_found_rows'  => true,
+		)
+	);
+
+	foreach ( $parts as $part ) {
+		if ( ! $part instanceof WP_Post || ! is_string( $part->post_content ) || '' === $part->post_content ) {
+			continue;
+		}
+
+		$content = $part->post_content;
+		if ( ! str_contains( $content, 'ff-footer' ) ) {
+			continue;
+		}
+
+		// Only migrate the classic dark styleguide combo.
+		$is_dark = str_contains( $content, '"backgroundColor":"contrast"' )
+			|| str_contains( $content, 'has-contrast-background-color' );
+		if ( ! $is_dark ) {
+			continue;
+		}
+
+		$updated = $content;
+
+		// Block JSON attrs on root footer group.
+		$updated = str_replace( '"backgroundColor":"contrast"', '"backgroundColor":"base"', $updated );
+		$updated = str_replace( '"textColor":"white"', '"textColor":"contrast"', $updated );
+
+		// Rendered HTML classes on root footer.
+		$updated = preg_replace(
+			'/(class="[^"]*\bff-footer\b[^"]*)\bhas-contrast-background-color\b/',
+			'$1has-base-background-color',
+			$updated,
+			1
+		);
+		$updated = preg_replace(
+			'/(class="[^"]*\bff-footer\b[^"]*)\bhas-white-color\b/',
+			'$1has-contrast-color',
+			$updated,
+			1
+		);
+
+		// Social icons: white → contrast for light surface.
+		$updated = str_replace( '"iconColor":"white"', '"iconColor":"contrast"', $updated );
+		$updated = str_replace( '"iconColorValue":"#ffffff"', '"iconColorValue":"#0e1114"', $updated );
+		$updated = str_replace( '"iconColorValue":"#fff"', '"iconColorValue":"#0e1114"', $updated );
+
+		// Headings / copy that were forced white.
+		$updated = str_replace(
+			'"className":"ff-footer__heading","textColor":"white"',
+			'"className":"ff-footer__heading","textColor":"contrast"',
+			$updated
+		);
+		$updated = str_replace(
+			'ff-footer__heading has-white-color',
+			'ff-footer__heading has-contrast-color',
+			$updated
+		);
+
+		if ( ! is_string( $updated ) || $updated === $content ) {
+			continue;
+		}
+
+		wp_update_post(
+			array(
+				'ID'           => (int) $part->ID,
+				'post_content' => $updated,
+			),
+			true
+		);
+	}
+
+	update_option( 'fairflock_footer_light_defaults', '1' );
+}
+add_action( 'init', 'fairflock_maybe_migrate_footer_light_defaults', 32 );
+
+/**
  * Reviews: Score-Card entfernen, Titel „4,9 bei Google“ setzen.
  *
  * @return void

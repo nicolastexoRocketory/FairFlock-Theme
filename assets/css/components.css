@@ -3688,6 +3688,11 @@ span.onsale,
 	font-size: 0.875rem;
 }
 
+/* Default surface when the template part has no editor background set */
+.ff-footer:not([class*="-background-color"]):not(.has-background) {
+	background-color: var(--wp--preset--color--base, #f3f5f4);
+}
+
 .ff-footer:not([class*="-color"]) {
 	color: var(--wp--preset--color--contrast, #0e1114);
 }

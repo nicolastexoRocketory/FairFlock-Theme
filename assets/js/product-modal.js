@@ -68,9 +68,28 @@
 				var u = new URL(href, window.location.origin);
 				if (u.origin !== window.location.origin) return "";
 				var parts = u.pathname.replace(/\/+$/, "").split("/").filter(Boolean);
-				var idx = parts.indexOf("product");
-				if (idx === -1 || !parts[idx + 1]) return "";
-				return decodeURIComponent(parts[idx + 1]);
+				if (!parts.length) return "";
+
+				var bases = window.fairflockProductBases;
+				if (!Array.isArray(bases) || !bases.length) {
+					bases = ["product", "produkt"];
+				}
+
+				var i;
+				for (i = 0; i < bases.length; i++) {
+					var base = String(bases[i] || "")
+						.replace(/^\/+|\/+$/g, "")
+						.split("/")
+						.filter(Boolean)
+						.pop();
+					if (!base) continue;
+					var idx = parts.indexOf(base);
+					// Need a slug after the product base; ignore category roots like /produktkategorie/
+					if (idx !== -1 && idx < parts.length - 1) {
+						return decodeURIComponent(parts[parts.length - 1]);
+					}
+				}
+				return "";
 			} catch (e) {
 				return "";
 			}

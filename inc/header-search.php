@@ -192,6 +192,49 @@ function fairflock_get_store_products_api_url() {
 }
 
 /**
+ * Product permalink base segments for modal link detection (e.g. product, produkt).
+ *
+ * @since 0.9.164
+ *
+ * @return array<int, string>
+ */
+function fairflock_get_product_link_bases() {
+	$bases = array( 'product', 'produkt' );
+
+	if ( function_exists( 'wc_get_permalink_structure' ) ) {
+		$structure = wc_get_permalink_structure();
+		$candidates = array();
+		if ( ! empty( $structure['product_rewrite_slug'] ) && is_string( $structure['product_rewrite_slug'] ) ) {
+			$candidates[] = $structure['product_rewrite_slug'];
+		}
+		if ( ! empty( $structure['product_base'] ) && is_string( $structure['product_base'] ) ) {
+			$candidates[] = $structure['product_base'];
+		}
+		foreach ( $candidates as $raw ) {
+			$clean = trim( (string) $raw, '/' );
+			$clean = preg_replace( '/%[^%]+%/', '', $clean );
+			$clean = trim( (string) $clean, '/' );
+			if ( '' === $clean ) {
+				continue;
+			}
+			$segments = array_values( array_filter( explode( '/', $clean ) ) );
+			if ( ! empty( $segments ) ) {
+				array_unshift( $bases, (string) end( $segments ) );
+			}
+		}
+	}
+
+	$bases = array_map(
+		static function ( $base ) {
+			return sanitize_title( (string) $base );
+		},
+		$bases
+	);
+
+	return array_values( array_unique( array_filter( $bases ) ) );
+}
+
+/**
  * Product search results URL for a query string.
  *
  * @since 0.8.0

@@ -62,6 +62,48 @@ function fairflock_enqueue_frontend_assets() {
 		);
 	}
 
+	if ( function_exists( 'is_cart' ) && is_cart() ) {
+		wp_enqueue_style(
+			'fairflock-cart',
+			FAIRFLOCK_URI . '/assets/css/cart.css',
+			array( 'fairflock-components' ),
+			FAIRFLOCK_VERSION
+		);
+	}
+
+	if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+		$account_deps = array( 'fairflock-components' );
+		foreach ( array( 'woocommerce-general', 'woocommerce-layout', 'woocommerce-smallscreen', 'wc-blocks-style' ) as $handle ) {
+			if ( wp_style_is( $handle, 'registered' ) || wp_style_is( $handle, 'enqueued' ) ) {
+				$account_deps[] = $handle;
+			}
+		}
+		wp_enqueue_style(
+			'fairflock-account',
+			FAIRFLOCK_URI . '/assets/css/account.css',
+			$account_deps,
+			FAIRFLOCK_VERSION
+		);
+	}
+
+	if ( is_page( array( 'impressum', 'datenschutz', 'agb', 'widerruf', 'versand-zahlung' ) ) ) {
+		wp_enqueue_style(
+			'fairflock-legal',
+			FAIRFLOCK_URI . '/assets/css/legal.css',
+			array( 'fairflock-components' ),
+			FAIRFLOCK_VERSION
+		);
+	}
+
+	if ( is_page( 'ueber-uns' ) ) {
+		wp_enqueue_style(
+			'fairflock-about',
+			FAIRFLOCK_URI . '/assets/css/about.css',
+			array( 'fairflock-components' ),
+			FAIRFLOCK_VERSION
+		);
+	}
+
 	wp_enqueue_script(
 		'fairflock-header-search',
 		FAIRFLOCK_URI . '/assets/js/header-search.js',
@@ -163,12 +205,16 @@ function fairflock_enqueue_frontend_assets() {
 	);
 
 	$personalized_api = function_exists( 'rest_url' ) ? rest_url( 'fairflock/v1/cart/add-personalized' ) : '/wp-json/fairflock/v1/cart/add-personalized';
+	$product_bases    = function_exists( 'fairflock_get_product_link_bases' )
+		? fairflock_get_product_link_bases()
+		: array( 'product', 'produkt' );
 
 	wp_add_inline_script(
 		'fairflock-product-modal',
 		'window.fairflockSearchApi=' . wp_json_encode( $api ) . ';'
 		. 'window.fairflockCartApi=' . wp_json_encode( $cart_api ) . ';'
-		. 'window.fairflockPersonalizedAddApi=' . wp_json_encode( $personalized_api ) . ';',
+		. 'window.fairflockPersonalizedAddApi=' . wp_json_encode( $personalized_api ) . ';'
+		. 'window.fairflockProductBases=' . wp_json_encode( array_values( $product_bases ) ) . ';',
 		'before'
 	);
 }

@@ -1,0 +1,166 @@
+/**
+ * FairFlock About page — full-bleed hero + section stack.
+ */
+
+body.ff-about-page .ff-about-page,
+.ff-about-page {
+	width: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box;
+}
+
+body.ff-about-page:not(.home):not(.front-page) .wp-site-blocks > main.ff-about-page {
+	padding-top: 0 !important;
+}
+
+body.ff-about-page .ff-about-page .wp-block-post-content,
+.ff-about-page .wp-block-post-content,
+.ff-about-page .wp-block-post-content.alignwide,
+.ff-about-page .wp-block-post-content.alignfull {
+	width: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
+.ff-about-page .wp-block-post-content > *.alignfull {
+	width: 100% !important;
+	max-width: none !important;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+
+/* —— Hero: edge-to-edge plane, brand first —— */
+.ff-about-hero,
+.wp-block-group.ff-about-hero {
+	position: relative;
+	isolation: isolate;
+}
+
+.ff-about-hero__cover,
+.ff-about-hero .wp-block-cover.ff-about-hero__cover {
+	min-height: min(88vh, 820px) !important;
+	padding: 0 !important;
+	align-items: center !important;
+	justify-content: center !important;
+	background:
+		radial-gradient(ellipse 70% 55% at 50% 40%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 28%, transparent), transparent 68%),
+		linear-gradient(155deg, #0e1114 0%, #172018 45%, #243028 100%);
+}
+
+.ff-about-hero__cover .wp-block-cover__background {
+	background:
+		radial-gradient(ellipse 70% 55% at 50% 40%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 22%, transparent), transparent 68%),
+		linear-gradient(155deg, #0e1114 0%, #172018 45%, #243028 100%) !important;
+	opacity: 1 !important;
+}
+
+.ff-about-hero__cover .wp-block-cover__inner-container {
+	width: var(--ff-shell) !important;
+	max-width: var(--ff-shell) !important;
+	margin-inline: auto !important;
+	padding-top: calc(var(--ff-header-clearance) + var(--wp--preset--spacing--40, 32px)) !important;
+	padding-bottom: var(--wp--preset--spacing--60, 48px) !important;
+	box-sizing: border-box;
+	display: flex !important;
+	flex-direction: column;
+	align-items: center !important;
+	justify-content: center !important;
+	text-align: center;
+}
+
+.ff-about-hero__copy,
+.wp-block-group.ff-about-hero__copy {
+	display: grid;
+	gap: 14px;
+	max-width: 36rem;
+	width: 100%;
+	margin-inline: auto !important;
+	justify-items: center;
+	text-align: center;
+}
+
+.ff-about-hero__brand {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: clamp(2.4rem, 6vw, 4rem);
+	font-weight: 400;
+	letter-spacing: -0.035em;
+	line-height: 1.05;
+	color: #fff;
+	text-align: center;
+}
+
+.ff-about-hero__title,
+.ff-about-hero__copy .ff-about-hero__title {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+	font-weight: 400;
+	letter-spacing: -0.02em;
+	line-height: 1.3;
+	color: color-mix(in srgb, #fff 86%, var(--wp--preset--color--brand, #377530));
+	text-align: center;
+}
+
+.ff-about-hero__lead {
+	margin: 0 auto;
+	font-size: 1.0625rem;
+	line-height: 1.55;
+	color: color-mix(in srgb, #fff 74%, transparent);
+	max-width: 32rem;
+	text-align: center;
+}
+
+.ff-about-hero__cta {
+	margin-top: 6px;
+	justify-content: center !important;
+}
+
+.ff-about-hero__btn .wp-block-button__link,
+.ff-about-hero__cta .wp-element-button {
+	min-height: 48px;
+	padding: 12px 22px;
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	background: var(--wp--preset--color--brand, #377530) !important;
+	color: #fff !important;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.ff-about-hero__btn .wp-block-button__link:hover,
+.ff-about-hero__cta .wp-element-button:hover {
+	background: var(--wp--preset--color--brand-deep, #2a5c25) !important;
+}
+
+.ff-about-story .ff-media-split,
+.ff-about-visit .ff-media-split,
+.ff-about-values .ff-pattern-steps__shell,
+.ff-about-cta .ff-end-box,
+.ff-about-faq .ff-pattern-faq__shell {
+	width: var(--ff-shell) !important;
+	max-width: var(--ff-shell) !important;
+	margin-inline: auto !important;
+}
+
+.ff-about-visit .ff-media-split--flip {
+	grid-template-columns: 1.1fr 1fr;
+}
+
+.ff-about-values {
+	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 65%, #fff);
+}
+
+@media (max-width: 720px) {
+	.ff-about-hero__cover,
+	.ff-about-hero .wp-block-cover.ff-about-hero__cover {
+		min-height: min(78vh, 640px) !important;
+	}
+
+	.ff-about-hero__brand {
+		font-size: clamp(2rem, 10vw, 2.75rem);
+	}
+}

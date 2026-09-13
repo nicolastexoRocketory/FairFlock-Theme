@@ -56,14 +56,19 @@ function fairflock_demo_content_packages() {
 			'risk'        => __( 'Überschreibt den Inhalt der Startseite, wenn vorhanden.', 'fairflock' ),
 		),
 		'legal_pages'   => array(
-			'label'       => __( 'Rechtliche Seiten', 'fairflock' ),
-			'description' => __( 'Erstellt fehlende Platzhalter: Impressum, Datenschutz, AGB, Widerruf, Versand & Zahlung. Vorhandene Seiten bleiben unverändert.', 'fairflock' ),
-			'risk'        => __( 'Nur fehlende Seiten — kein Überschreiben.', 'fairflock' ),
+			'label'       => __( 'Rechtliche Seiten (FairFlock-Daten)', 'fairflock' ),
+			'description' => __( 'Impressum, Datenschutz, AGB, Widerrufsrecht, Versand & Zahlung mit den FairFlock-Angaben (wie Amateurhandball.de).', 'fairflock' ),
+			'risk'        => __( 'Mit „Überschreiben“ werden vorhandene Rechtstexte ersetzt.', 'fairflock' ),
 		),
 		'category_page' => array(
 			'label'       => __( 'Seite „Kategorien“', 'fairflock' ),
 			'description' => __( 'Stellt sicher, dass die Seite /kategorien/ existiert und die Theme-Vorlage für die Kategorie-Übersicht nutzt.', 'fairflock' ),
 			'risk'        => __( 'Legt die Seite nur an, wenn sie fehlt; Inhalt wird für die Live-Vorlage geleert.', 'fairflock' ),
+		),
+		'about_page'    => array(
+			'label'       => __( 'Seite „Über uns“', 'fairflock' ),
+			'description' => __( 'Legt /ueber-uns/ an bzw. befüllt sie mit Hero, Story, Werten, Moment-Band und CTA (FairFlock-Story als Startpunkt).', 'fairflock' ),
+			'risk'        => __( 'Mit „Überschreiben“ wird der bestehende Seiteninhalt ersetzt.', 'fairflock' ),
 		),
 	);
 }
@@ -105,11 +110,19 @@ function fairflock_demo_content_handle_submit() {
 		exit;
 	}
 
-	$overwrite = ! empty( $_POST['fairflock_demo_overwrite_front'] );
-	$results   = array();
+	$overwrite       = ! empty( $_POST['fairflock_demo_overwrite_front'] );
+	$overwrite_legal = ! empty( $_POST['fairflock_demo_overwrite_legal'] );
+	$overwrite_about = ! empty( $_POST['fairflock_demo_overwrite_about'] );
+	$results         = array();
 
 	foreach ( $selected as $key ) {
-		$results[ $key ] = fairflock_demo_content_install_package( $key, $overwrite );
+		if ( 'legal_pages' === $key ) {
+			$results[ $key ] = fairflock_demo_content_install_package( $key, $overwrite_legal );
+		} elseif ( 'about_page' === $key ) {
+			$results[ $key ] = fairflock_demo_content_install_package( $key, $overwrite_about );
+		} else {
+			$results[ $key ] = fairflock_demo_content_install_package( $key, $overwrite );
+		}
 	}
 
 	set_transient(
@@ -145,13 +158,20 @@ function fairflock_demo_content_install_package( $package, $overwrite = false ) 
 		case 'front_page':
 			return fairflock_demo_content_install_front_page( $overwrite );
 		case 'legal_pages':
-			fairflock_ensure_legal_pages();
+			$stats = fairflock_ensure_legal_pages( (bool) $overwrite );
 			return array(
 				'ok'      => true,
-				'message' => __( 'Rechtliche Platzhalter-Seiten geprüft/angelegt.', 'fairflock' ),
+				'message' => sprintf(
+					/* translators: 1: created count, 2: updated count */
+					__( 'Rechtliche Seiten: %1$d neu, %2$d aktualisiert.', 'fairflock' ),
+					(int) $stats['created'],
+					(int) $stats['updated']
+				),
 			);
 		case 'category_page':
 			return fairflock_demo_content_install_category_page();
+		case 'about_page':
+			return fairflock_demo_content_install_about_page( (bool) $overwrite );
 		default:
 			return array(
 				'ok'      => false,
@@ -227,6 +247,98 @@ function fairflock_demo_content_install_front_page( $overwrite ) {
 		'message' => sprintf(
 			/* translators: %s: edit URL */
 			__( 'Volle Startseite angelegt. %s', 'fairflock' ),
+			$edit ? '<a href="' . esc_url( $edit ) . '">' . esc_html__( 'Seite bearbeiten', 'fairflock' ) . '</a>' : ''
+		),
+	);
+}
+
+/**
+ * Creates or fills the About page with the FairFlock about pattern stack.
+ *
+ * @since 0.9.161
+ *
+ * @param bool $overwrite Overwrite existing content.
+ * @return array{ok:bool,message:string}
+ */
+function fairflock_demo_content_install_about_page( $overwrite = false ) {
+	$content = '';
+	if ( function_exists( 'fairflock_get_registered_pattern_content' ) ) {
+		$content = trim( (string) fairflock_get_registered_pattern_content( 'fairflock/about' ) );
+	}
+	if ( '' === $content ) {
+		return array(
+			'ok'      => false,
+			'message' => __( 'Über-uns-Layout nicht verfügbar (Pattern fehlt).', 'fairflock' ),
+		);
+	}
+
+	$existing = get_page_by_path( 'ueber-uns' );
+	if ( $existing instanceof WP_Post ) {
+		$has_content = is_string( $existing->post_content ) && '' !== trim( $existing->post_content );
+		if ( $has_content && ! $overwrite ) {
+			$edit = get_edit_post_link( $existing->ID, 'raw' );
+			return array(
+				'ok'      => true,
+				'message' => sprintf(
+					/* translators: %s: edit link */
+					__( 'Seite „Über uns“ existiert bereits mit Inhalt — Überschreiben nicht aktiviert. %s', 'fairflock' ),
+					$edit ? '<a href="' . esc_url( $edit ) . '">' . esc_html__( 'Seite bearbeiten', 'fairflock' ) . '</a>' : ''
+				),
+			);
+		}
+
+		$updated = wp_update_post(
+			array(
+				'ID'           => (int) $existing->ID,
+				'post_title'   => __( 'Über uns', 'fairflock' ),
+				'post_status'  => 'publish',
+				'post_content' => $content,
+			),
+			true
+		);
+
+		if ( is_wp_error( $updated ) ) {
+			return array(
+				'ok'      => false,
+				'message' => $updated->get_error_message(),
+			);
+		}
+
+		$edit = get_edit_post_link( (int) $existing->ID, 'raw' );
+		return array(
+			'ok'      => true,
+			'message' => sprintf(
+				/* translators: %s: edit link */
+				__( 'Seite „Über uns“ aktualisiert. %s', 'fairflock' ),
+				$edit ? '<a href="' . esc_url( $edit ) . '">' . esc_html__( 'Seite bearbeiten', 'fairflock' ) . '</a>' : ''
+			),
+		);
+	}
+
+	$page_id = wp_insert_post(
+		array(
+			'post_title'   => __( 'Über uns', 'fairflock' ),
+			'post_name'    => 'ueber-uns',
+			'post_status'  => 'publish',
+			'post_type'    => 'page',
+			'post_content' => $content,
+		),
+		true
+	);
+
+	if ( is_wp_error( $page_id ) ) {
+		return array(
+			'ok'      => false,
+			'message' => $page_id->get_error_message(),
+		);
+	}
+
+	$edit = get_edit_post_link( (int) $page_id, 'raw' );
+	return array(
+		'ok'      => true,
+		'message' => sprintf(
+			/* translators: %s: edit link */
+			__( 'Seite „Über uns“ angelegt. %s', 'fairflock' ),
 			$edit ? '<a href="' . esc_url( $edit ) . '">' . esc_html__( 'Seite bearbeiten', 'fairflock' ) . '</a>' : ''
 		),
 	);
@@ -495,6 +607,18 @@ function fairflock_demo_content_render_admin_page() {
 				<label>
 					<input type="checkbox" name="fairflock_demo_overwrite_front" value="1" />
 					<?php esc_html_e( 'Bestehende Startseite überschreiben (nur für „Volle Startseite“)', 'fairflock' ); ?>
+				</label>
+			</p>
+			<p>
+				<label>
+					<input type="checkbox" name="fairflock_demo_overwrite_legal" value="1" />
+					<?php esc_html_e( 'Bestehende Rechtstexte mit FairFlock-Daten ersetzen', 'fairflock' ); ?>
+				</label>
+			</p>
+			<p>
+				<label>
+					<input type="checkbox" name="fairflock_demo_overwrite_about" value="1" />
+					<?php esc_html_e( 'Bestehende „Über uns“-Seite überschreiben', 'fairflock' ); ?>
 				</label>
 			</p>
 

@@ -1,0 +1,348 @@
+/**
+ * FairFlock My Account — dashboard + endpoints.
+ *
+ * WooCommerce layout.css floats nav/content and adds clearfix on .woocommerce.
+ * Those break CSS Grid; we reset both and use flex instead.
+ */
+
+body.woocommerce-account .ff-account-page,
+.ff-account-page {
+	--ff-account-line: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 10%, transparent);
+	--ff-account-panel: #fff;
+	--ff-account-soft: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 8%, #fff);
+	position: relative;
+	isolation: isolate;
+	width: 100% !important;
+	max-width: none !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+.ff-account-page::before {
+	content: "";
+	position: absolute;
+	inset: 0 0 auto;
+	height: min(360px, 42vh);
+	z-index: -1;
+	pointer-events: none;
+	background:
+		radial-gradient(ellipse 80% 70% at 88% 0%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 10%, transparent), transparent 70%),
+		linear-gradient(180deg, color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 70%, #fff) 0%, transparent 100%);
+}
+
+.ff-account-page__intro {
+	width: var(--ff-shell);
+	max-width: var(--ff-shell);
+	margin: 0 auto var(--wp--preset--spacing--40, 32px);
+	display: grid;
+	gap: 8px;
+	padding: 0 !important;
+}
+
+.ff-account-page__title,
+.ff-account-page__intro .wp-block-heading {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: clamp(2rem, 4vw, 2.75rem);
+	font-weight: 400;
+	letter-spacing: -0.03em;
+	line-height: 1.1;
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+.ff-account-page__lead {
+	margin: 0;
+	max-width: 36rem;
+	font-size: 1.05rem;
+	line-height: 1.5;
+	color: var(--wp--preset--color--muted, #66707a);
+}
+
+/* Shell width for content + classic Woo wrapper */
+body.woocommerce-account .ff-account-page .wp-block-post-content,
+body.woocommerce-account .ff-account-page .woocommerce,
+body.woocommerce-account main .woocommerce {
+	width: var(--ff-shell) !important;
+	max-width: var(--ff-shell) !important;
+	margin-inline: auto !important;
+	box-sizing: border-box;
+}
+
+/* Kill Woo clearfix that become bogus grid/flex items */
+body.woocommerce-account .woocommerce::before,
+body.woocommerce-account .woocommerce::after,
+.ff-account-page .woocommerce::before,
+.ff-account-page .woocommerce::after {
+	content: none !important;
+	display: none !important;
+}
+
+/* Side-by-side: nav + content (floats off) */
+body.woocommerce-account .woocommerce,
+.ff-account-page .woocommerce {
+	display: flex !important;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: clamp(20px, 3vw, 32px);
+	clear: both;
+}
+
+body.woocommerce-account .woocommerce-notices-wrapper,
+.ff-account-page .woocommerce-notices-wrapper {
+	flex: 1 0 100%;
+	width: 100%;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation,
+.ff-account-page .woocommerce-MyAccount-navigation {
+	float: none !important;
+	width: 240px !important;
+	max-width: 100%;
+	flex: 0 0 240px;
+	background: var(--ff-account-panel);
+	border: 1px solid var(--ff-account-line);
+	border-radius: var(--wp--custom--radius--md, 16px);
+	padding: 12px;
+	position: sticky;
+	top: 96px;
+	box-sizing: border-box;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation ul,
+.ff-account-page .woocommerce-MyAccount-navigation ul {
+	list-style: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	display: grid;
+	gap: 4px;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation li,
+.ff-account-page .woocommerce-MyAccount-navigation li {
+	list-style: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation a,
+.ff-account-page .woocommerce-MyAccount-navigation a {
+	display: block;
+	padding: 12px 14px;
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	text-decoration: none !important;
+	font-weight: 600;
+	font-size: 0.9375rem;
+	background: transparent;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation a:hover,
+.ff-account-page .woocommerce-MyAccount-navigation a:hover {
+	background: var(--ff-account-soft);
+	color: var(--wp--preset--color--brand, #377530) !important;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-navigation li.is-active a,
+.ff-account-page .woocommerce-MyAccount-navigation li.is-active a {
+	background: var(--ff-account-soft);
+	color: var(--wp--preset--color--brand, #377530) !important;
+	text-decoration: none !important;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content,
+.ff-account-page .woocommerce-MyAccount-content {
+	float: none !important;
+	width: auto !important;
+	flex: 1 1 280px;
+	min-width: 0;
+	background: var(--ff-account-panel);
+	border: 1px solid var(--ff-account-line);
+	border-radius: var(--wp--custom--radius--md, 16px);
+	padding: 24px 26px;
+	box-sizing: border-box;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content > p:first-child,
+.ff-account-page .woocommerce-MyAccount-content > p:first-child {
+	margin-top: 0;
+	font-size: 1.05rem;
+	line-height: 1.55;
+}
+
+body.woocommerce-account .woocommerce-MyAccount-content > p:last-child,
+.ff-account-page .woocommerce-MyAccount-content > p:last-child {
+	margin-bottom: 0;
+}
+
+.ff-account-page .woocommerce-OrdersTable,
+.ff-account-page .woocommerce-orders-table,
+.ff-account-page table.shop_table,
+body.woocommerce-account table.shop_table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 0;
+}
+
+.ff-account-page table.shop_table th,
+.ff-account-page table.shop_table td,
+body.woocommerce-account table.shop_table th,
+body.woocommerce-account table.shop_table td {
+	padding: 12px 10px;
+	border-bottom: 1px solid var(--ff-account-line);
+	text-align: left;
+	font-size: 0.9375rem;
+}
+
+.ff-account-page table.shop_table th,
+body.woocommerce-account table.shop_table th {
+	font-weight: 700;
+	color: var(--wp--preset--color--muted, #66707a);
+	font-size: 0.8125rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.ff-account-page .woocommerce-Addresses,
+body.woocommerce-account .woocommerce-Addresses {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.ff-account-page .woocommerce-Address,
+.ff-account-page .u-column1,
+.ff-account-page .u-column2,
+body.woocommerce-account .woocommerce-Address {
+	float: none !important;
+	width: auto !important;
+	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 55%, #fff);
+	border: 1px solid var(--ff-account-line);
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	padding: 18px 18px 14px;
+}
+
+.ff-account-page .woocommerce-Address-title h3,
+body.woocommerce-account .woocommerce-Address-title h3 {
+	margin: 0 0 8px;
+	font-family: var(--wp--preset--font-family--heading);
+	font-weight: 400;
+	font-size: 1.25rem;
+}
+
+.ff-account-page .woocommerce-Address-title a,
+.ff-account-page .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button),
+body.woocommerce-account .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button) {
+	color: var(--wp--preset--color--brand, #377530);
+	font-weight: 600;
+}
+
+.ff-account-page input.input-text,
+.ff-account-page input[type="text"],
+.ff-account-page input[type="email"],
+.ff-account-page input[type="password"],
+.ff-account-page input[type="tel"],
+.ff-account-page select,
+.ff-account-page textarea,
+body.woocommerce-account input.input-text,
+body.woocommerce-account select,
+body.woocommerce-account textarea {
+	width: 100%;
+	min-height: 48px;
+	padding: 10px 12px;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent);
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	background: #fff;
+	font: inherit;
+	box-sizing: border-box;
+}
+
+.ff-account-page label,
+body.woocommerce-account .woocommerce-MyAccount-content label {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	margin-bottom: 6px;
+	display: inline-block;
+}
+
+.ff-account-page .button,
+.ff-account-page button.button,
+.ff-account-page .woocommerce-button,
+body.woocommerce-account .woocommerce-MyAccount-content .button,
+body.woocommerce-account .woocommerce-MyAccount-content button.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	padding: 10px 18px;
+	border: 0;
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	background: var(--wp--preset--color--brand, #377530);
+	color: #fff !important;
+	font-weight: 700;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.ff-account-page .button:hover,
+.ff-account-page button.button:hover,
+body.woocommerce-account .woocommerce-MyAccount-content .button:hover {
+	background: var(--wp--preset--color--brand-deep, #2a5c25);
+}
+
+.ff-account-page .woocommerce-form-login,
+.ff-account-page .woocommerce-form-register,
+.ff-account-page .u-columns,
+body.woocommerce-account .woocommerce-form-login,
+body.woocommerce-account .woocommerce-form-register {
+	max-width: 420px;
+	display: grid;
+	gap: 12px;
+}
+
+body.woocommerce-account .u-columns {
+	max-width: none;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 32px;
+}
+
+body.woocommerce-account .u-columns .u-column1,
+body.woocommerce-account .u-columns .u-column2 {
+	float: none !important;
+	width: auto !important;
+}
+
+@media (max-width: 960px) {
+	body.woocommerce-account .woocommerce-MyAccount-navigation,
+	.ff-account-page .woocommerce-MyAccount-navigation {
+		flex: 1 1 100%;
+		width: 100% !important;
+		position: static;
+	}
+
+	body.woocommerce-account .woocommerce-MyAccount-navigation ul,
+	.ff-account-page .woocommerce-MyAccount-navigation ul {
+		display: flex;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		gap: 6px;
+		padding-bottom: 4px;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	body.woocommerce-account .woocommerce-MyAccount-navigation a,
+	.ff-account-page .woocommerce-MyAccount-navigation a {
+		white-space: nowrap;
+	}
+
+	body.woocommerce-account .woocommerce-MyAccount-content,
+	.ff-account-page .woocommerce-MyAccount-content {
+		flex: 1 1 100%;
+	}
+
+	.ff-account-page .woocommerce-Addresses,
+	body.woocommerce-account .woocommerce-Addresses,
+	body.woocommerce-account .u-columns {
+		grid-template-columns: 1fr;
+	}
+}

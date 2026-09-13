@@ -3,8 +3,20 @@
 <!-- wp:woocommerce/page-content-wrapper {"page":"cart"} -->
 <!-- wp:group {"tagName":"main","metadata":{"name":"Warenkorb"},"className":"ff-cart-page","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|70"},"margin":{"top":"0","bottom":"0"},"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
 <main class="wp-block-group ff-cart-page" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--70)">
+
+	<!-- wp:group {"metadata":{"name":"Warenkorb Intro"},"className":"ff-cart-page__intro","layout":{"type":"default"}} -->
+	<div class="wp-block-group ff-cart-page__intro">
+		<!-- wp:heading {"level":1,"className":"ff-cart-page__title"} -->
+		<h1 class="wp-block-heading ff-cart-page__title">Warenkorb</h1>
+		<!-- /wp:heading -->
+
+		<!-- wp:paragraph {"className":"ff-cart-page__trust"} -->
+		<p class="ff-cart-page__trust"><span class="ff-cart-page__trust-item">Mengen anpassen</span><span class="ff-cart-page__trust-item">Verkauf durch FairFlock</span><span class="ff-cart-page__trust-item">Preise inkl. MwSt.</span></p>
+		<!-- /wp:paragraph -->
+	</div>
+	<!-- /wp:group -->
+
 	<!-- wp:woocommerce/store-notices /-->
-	<!-- wp:post-title {"align":"wide","level":1} /-->
 	<!-- wp:post-content {"align":"wide"} /-->
 </main>
 <!-- /wp:group -->

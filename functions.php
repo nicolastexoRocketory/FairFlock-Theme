@@ -10,11 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'FAIRFLOCK_VERSION', '0.9.157' );
+define( 'FAIRFLOCK_VERSION', '0.9.165' );
 define( 'FAIRFLOCK_DIR', get_template_directory() );
 define( 'FAIRFLOCK_URI', get_template_directory_uri() );
 
 require_once FAIRFLOCK_DIR . '/inc/setup.php';
+require_once FAIRFLOCK_DIR . '/inc/legal-pages.php';
 require_once FAIRFLOCK_DIR . '/inc/defaults.php';
 require_once FAIRFLOCK_DIR . '/inc/patterns.php';
 require_once FAIRFLOCK_DIR . '/inc/editor-faq.php';

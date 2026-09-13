@@ -3689,7 +3689,7 @@ span.onsale,
 }
 
 .ff-footer:not([class*="-color"]) {
-	color: rgba(255, 255, 255, 0.72);
+	color: var(--wp--preset--color--contrast, #0e1114);
 }
 
 .ff-footer a {
@@ -3701,11 +3701,12 @@ span.onsale,
 .ff-footer a:hover,
 .ff-footer a:focus-visible {
 	opacity: 1;
+	color: var(--wp--preset--color--brand, #377530);
 }
 
 .ff-footer__top {
 	padding-bottom: 40px;
-	border-bottom: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+	border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
 }
 
 .ff-footer__heading {
@@ -3716,7 +3717,7 @@ span.onsale,
 }
 
 .ff-footer__heading:not([class*="-color"]) {
-	color: #fff;
+	color: var(--wp--preset--color--contrast, #0e1114);
 }
 
 .ff-footer__brand {
@@ -3743,7 +3744,7 @@ span.onsale,
 }
 
 .ff-footer__tagline:not([class*="-color"]) {
-	color: rgba(255, 255, 255, 0.62);
+	color: var(--wp--preset--color--muted, #66707a);
 }
 
 .ff-footer__social {
@@ -3769,7 +3770,7 @@ span.onsale,
 	padding: 0 !important;
 	margin: 0;
 	border-radius: 8px;
-	border: 1px solid rgba(255, 255, 255, 0.14);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 14%, transparent);
 	background: transparent;
 	line-height: 0;
 	transition: background 0.25s, border-color 0.25s;
@@ -3777,8 +3778,8 @@ span.onsale,
 
 .ff-footer__social .wp-social-link a:hover,
 .ff-footer__social .wp-block-social-link-anchor:hover {
-	background: rgba(255, 255, 255, 0.08);
-	border-color: rgba(255, 255, 255, 0.28);
+	background: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 10%, transparent);
+	border-color: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 35%, transparent);
 }
 
 .ff-footer__social .wp-social-link svg,
@@ -3827,8 +3828,8 @@ span.onsale,
 }
 
 .ff-footer__sold-by:not([class*="-color"]) {
-	color: inherit;
-	opacity: 0.92;
+	color: var(--wp--preset--color--muted, #66707a);
+	opacity: 1;
 }
 
 .ff-footer__sold-by > p,
@@ -3860,7 +3861,8 @@ span.onsale,
 }
 
 .ff-footer__legal-inline:not([class*="-color"]) {
-	opacity: 0.85;
+	opacity: 1;
+	color: var(--wp--preset--color--muted, #66707a);
 }
 
 .ff-footer__legal-inline a {

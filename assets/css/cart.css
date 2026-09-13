@@ -1,0 +1,155 @@
+/**
+ * FairFlock cart page — aligned with checkout look.
+ */
+
+.ff-cart-page {
+	--ff-cart-line: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 10%, transparent);
+	--ff-cart-line-strong: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent);
+	--ff-cart-panel: #fff;
+	--ff-cart-soft: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 6%, #fff);
+	position: relative;
+	isolation: isolate;
+	width: 100% !important;
+	max-width: none !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+.ff-cart-page::before {
+	content: "";
+	position: absolute;
+	inset: 0 0 auto;
+	height: min(360px, 42vh);
+	z-index: -1;
+	pointer-events: none;
+	background:
+		radial-gradient(ellipse 80% 70% at 12% 0%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 10%, transparent), transparent 70%),
+		linear-gradient(180deg, color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 70%, #fff) 0%, transparent 100%);
+}
+
+.ff-cart-page__intro {
+	width: var(--ff-shell);
+	max-width: var(--ff-shell);
+	margin: 0 auto var(--wp--preset--spacing--40, 32px);
+	display: grid;
+	gap: 10px;
+	padding: 0 !important;
+}
+
+.ff-cart-page__title,
+.ff-cart-page__intro .wp-block-heading {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: clamp(2rem, 4vw, 2.75rem);
+	font-weight: 400;
+	letter-spacing: -0.03em;
+	line-height: 1.1;
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+.ff-cart-page__trust {
+	margin: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 16px;
+	font-size: 0.9375rem;
+	color: var(--wp--preset--color--muted, #66707a);
+}
+
+.ff-cart-page__trust-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.ff-cart-page__trust-item::before {
+	content: "";
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--brand, #377530);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp--preset--color--brand, #377530) 18%, transparent);
+}
+
+.ff-cart-page .wp-block-post-content,
+.ff-cart-page .wp-block-woocommerce-cart,
+.ff-cart-page .wc-block-cart,
+.ff-cart-page .wc-block-store-notices,
+.ff-cart-page .wp-block-woocommerce-store-notices {
+	width: var(--ff-shell) !important;
+	max-width: var(--ff-shell) !important;
+	margin-inline: auto !important;
+	box-sizing: border-box;
+}
+
+.ff-cart-page .wc-block-components-sidebar-layout {
+	display: grid !important;
+	grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+	gap: clamp(24px, 4vw, 48px);
+	align-items: start;
+	margin: 0 !important;
+}
+
+.ff-cart-page .wc-block-components-sidebar {
+	position: sticky;
+	top: 96px;
+}
+
+.ff-cart-page .wc-block-cart-items,
+.ff-cart-page .wp-block-woocommerce-cart-order-summary-block,
+.ff-cart-page .wc-block-cart__sidebar > * {
+	background: var(--ff-cart-panel);
+	border: 1px solid var(--ff-cart-line);
+	border-radius: var(--wp--custom--radius--md, 16px);
+	padding: 20px 22px;
+}
+
+.ff-cart-page .wc-block-cart-items {
+	padding: 8px 16px;
+}
+
+.ff-cart-page .wc-block-cart-items__row {
+	border-bottom: 1px solid var(--ff-cart-line) !important;
+	padding: 18px 0 !important;
+}
+
+.ff-cart-page .wc-block-components-product-name {
+	font-weight: 600 !important;
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	text-decoration: none !important;
+}
+
+.ff-cart-page .wc-block-components-product-name:hover {
+	color: var(--wp--preset--color--brand, #377530) !important;
+}
+
+.ff-cart-page .wc-block-cart__submit-button,
+.ff-cart-page .wc-block-components-button:not(.is-link):not(.outlined) {
+	background: var(--wp--preset--color--brand, #377530) !important;
+	border-color: var(--wp--preset--color--brand, #377530) !important;
+	color: #fff !important;
+	border-radius: var(--wp--custom--radius--sm, 8px) !important;
+	min-height: 52px !important;
+	font-weight: 700 !important;
+}
+
+.ff-cart-page .wc-block-cart__submit-button:hover,
+.ff-cart-page .wc-block-components-button:not(.is-link):not(.outlined):hover {
+	background: var(--wp--preset--color--brand-deep, #2a5c25) !important;
+	border-color: var(--wp--preset--color--brand-deep, #2a5c25) !important;
+}
+
+.ff-cart-page .wc-block-cart__empty-cart__title {
+	font-family: var(--wp--preset--font-family--heading);
+	font-weight: 400;
+}
+
+@media (max-width: 960px) {
+	.ff-cart-page .wc-block-components-sidebar-layout {
+		grid-template-columns: 1fr !important;
+	}
+
+	.ff-cart-page .wc-block-components-sidebar {
+		position: static;
+	}
+}

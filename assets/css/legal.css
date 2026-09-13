@@ -1,0 +1,170 @@
+/**
+ * FairFlock legal pages — readable prose column.
+ *
+ * Block layout (constrained / alignwide) often overrides soft max-width rules;
+ * we pin the reading measure with !important, same approach as cart/account.
+ */
+
+body.ff-legal-page .ff-legal-page,
+.ff-legal-page {
+	--ff-legal-measure: min(42rem, var(--ff-shell));
+	--ff-legal-line: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 10%, transparent);
+	position: relative;
+	isolation: isolate;
+	width: 100% !important;
+	max-width: none !important;
+	margin-inline: 0 !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	padding-bottom: var(--wp--preset--spacing--70, 64px) !important;
+	box-sizing: border-box;
+}
+
+/* Beat global `body … > main { padding-top: clearance }` */
+body.ff-legal-page:not(.home):not(.front-page) .wp-site-blocks > main.ff-legal-page {
+	padding-top: calc(var(--ff-header-clearance) + var(--wp--preset--spacing--50, 40px)) !important;
+}
+
+body.ff-legal-page .ff-legal-page::before,
+.ff-legal-page::before {
+	content: "";
+	position: absolute;
+	inset: 0 0 auto;
+	height: min(420px, 48vh);
+	z-index: -1;
+	pointer-events: none;
+	background:
+		radial-gradient(ellipse 70% 60% at 12% 0%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 8%, transparent), transparent 70%),
+		linear-gradient(180deg, color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 80%, #fff) 0%, transparent 100%);
+}
+
+body.ff-legal-page .ff-legal-page__inner,
+.ff-legal-page .ff-legal-page__inner {
+	width: var(--ff-legal-measure) !important;
+	max-width: var(--ff-legal-measure) !important;
+	margin-inline: auto !important;
+	box-sizing: border-box;
+	display: grid;
+	gap: 1.25rem;
+}
+
+body.ff-legal-page .ff-legal-page__title,
+body.ff-legal-page .ff-legal-page .wp-block-post-title,
+.ff-legal-page .ff-legal-page__title,
+.ff-legal-page .wp-block-post-title {
+	width: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: clamp(2rem, 4vw, 2.75rem);
+	font-weight: 400;
+	letter-spacing: -0.03em;
+	line-height: 1.15;
+	color: var(--wp--preset--color--contrast, #0e1114);
+	text-align: left !important;
+}
+
+body.ff-legal-page .ff-legal-page__content,
+body.ff-legal-page .ff-legal-page .wp-block-post-content,
+.ff-legal-page .ff-legal-page__content,
+.ff-legal-page .wp-block-post-content,
+.ff-legal-page .wp-block-post-content.alignwide,
+.ff-legal-page .wp-block-post-content.alignfull {
+	width: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 28px 28px 32px !important;
+	box-sizing: border-box;
+	background: #fff;
+	border: 1px solid var(--ff-legal-line);
+	border-radius: var(--wp--custom--radius--md, 16px);
+	font-size: 1.05rem;
+	line-height: 1.65;
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+body.ff-legal-page .ff-legal-page .wp-block-post-content > *:first-child,
+.ff-legal-page .wp-block-post-content > *:first-child {
+	margin-block-start: 0 !important;
+}
+
+body.ff-legal-page .ff-legal-page .wp-block-post-content > *:last-child,
+.ff-legal-page .wp-block-post-content > *:last-child {
+	margin-block-end: 0 !important;
+}
+
+body.ff-legal-page .wp-block-post-content h2,
+body.ff-legal-page .wp-block-post-content h3,
+.ff-legal-page .wp-block-post-content h2,
+.ff-legal-page .wp-block-post-content h3 {
+	font-family: var(--wp--preset--font-family--heading);
+	font-weight: 400;
+	letter-spacing: -0.02em;
+	margin: 1.75rem 0 0.65rem;
+	line-height: 1.25;
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+body.ff-legal-page .wp-block-post-content h2,
+.ff-legal-page .wp-block-post-content h2 {
+	font-size: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+body.ff-legal-page .wp-block-post-content h3,
+.ff-legal-page .wp-block-post-content h3 {
+	font-size: 1.125rem;
+}
+
+body.ff-legal-page .wp-block-post-content p,
+.ff-legal-page .wp-block-post-content p {
+	margin: 0 0 1rem;
+	color: var(--wp--preset--color--muted, #66707a);
+}
+
+body.ff-legal-page .wp-block-post-content p:last-child,
+.ff-legal-page .wp-block-post-content p:last-child {
+	margin-bottom: 0;
+}
+
+body.ff-legal-page .wp-block-post-content a,
+.ff-legal-page .wp-block-post-content a {
+	color: var(--wp--preset--color--brand, #377530);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+body.ff-legal-page .wp-block-post-content ul,
+body.ff-legal-page .wp-block-post-content ol,
+.ff-legal-page .wp-block-post-content ul,
+.ff-legal-page .wp-block-post-content ol {
+	margin: 0 0 1.25rem;
+	padding-left: 1.25rem;
+	color: var(--wp--preset--color--muted, #66707a);
+}
+
+body.ff-legal-page .wp-block-post-content li,
+.ff-legal-page .wp-block-post-content li {
+	margin: 0 0 0.4rem;
+}
+
+body.ff-legal-page .wp-block-post-content li:last-child,
+.ff-legal-page .wp-block-post-content li:last-child {
+	margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+	body.ff-legal-page .ff-legal-page__inner,
+	.ff-legal-page .ff-legal-page__inner {
+		width: var(--ff-shell) !important;
+		max-width: var(--ff-shell) !important;
+	}
+
+	body.ff-legal-page .ff-legal-page__content,
+	body.ff-legal-page .ff-legal-page .wp-block-post-content,
+	.ff-legal-page .ff-legal-page__content,
+	.ff-legal-page .wp-block-post-content {
+		padding: 20px 18px 24px !important;
+	}
+}

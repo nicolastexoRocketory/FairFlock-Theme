@@ -80,7 +80,7 @@ function fairflock_apply_site_defaults( $force = false ) {
 		fairflock_maybe_seed_pattern_front_page( $front_page_id );
 	}
 
-	fairflock_ensure_legal_pages();
+	fairflock_defaults_ensure_legal_pages();
 
 	update_option( 'fairflock_site_defaults_version', FAIRFLOCK_SITE_DEFAULTS_VERSION );
 }
@@ -163,66 +163,33 @@ function fairflock_ensure_front_page() {
 /**
  * Ensures placeholder legal pages exist for footer links.
  *
- * Does not overwrite existing published pages (editors keep their content).
+ * Does not overwrite existing published pages (editors keep their content)
+ * unless called with overwrite from Demo Content.
  *
  * @since 0.9.11
  *
  * @return void
  */
-function fairflock_ensure_legal_pages() {
-	$pages = fairflock_get_legal_page_blueprints();
-
-	foreach ( $pages as $slug => $page ) {
-		$existing = get_page_by_path( $slug );
-		if ( $existing instanceof WP_Post && 'publish' === $existing->post_status ) {
-			continue;
-		}
-
-		wp_insert_post(
-			array(
-				'post_title'   => $page['title'],
-				'post_name'    => $slug,
-				'post_status'  => 'publish',
-				'post_type'    => 'page',
-				'post_content' => $page['content'],
-			),
-			true
-		);
+function fairflock_defaults_ensure_legal_pages() {
+	if ( function_exists( 'fairflock_ensure_legal_pages' ) ) {
+		fairflock_ensure_legal_pages( false );
 	}
 }
 
 /**
- * Placeholder content for legal / info pages.
+ * Placeholder content for legal / info pages — see inc/legal-pages.php.
+ *
+ * Kept as thin wrapper for older call sites.
  *
  * @since 0.9.11
+ * @deprecated 0.9.158 Use fairflock_get_legal_page_blueprints() in legal-pages.php.
  *
  * @return array<string, array{title: string, content: string}>
  */
-function fairflock_get_legal_page_blueprints() {
-	$note = '<strong>' . esc_html__( 'Platzhalter', 'fairflock' ) . '</strong> — ' . esc_html__( 'vor Go-Live rechtlich finalisieren.', 'fairflock' );
-
-	return array(
-		'impressum'        => array(
-			'title'   => __( 'Impressum', 'fairflock' ),
-			'content' => '<!-- wp:paragraph --><p>' . $note . '</p><!-- /wp:paragraph --><!-- wp:heading {"level":2} --><h2 class="wp-block-heading">' . esc_html__( 'Angaben gemäß § 5 TMG', 'fairflock' ) . '</h2><!-- /wp:heading --><!-- wp:paragraph --><p>FairFlock GmbH<br>Musterstraße 1<br>12345 Musterstadt</p><!-- /wp:paragraph --><!-- wp:heading {"level":2} --><h2 class="wp-block-heading">' . esc_html__( 'Kontakt', 'fairflock' ) . '</h2><!-- /wp:heading --><!-- wp:paragraph --><p>Telefon: 05223 1831964<br>E-Mail: info@fairflock.de</p><!-- /wp:paragraph -->',
-		),
-		'datenschutz'      => array(
-			'title'   => __( 'Datenschutz', 'fairflock' ),
-			'content' => '<!-- wp:paragraph --><p>' . $note . '</p><!-- /wp:paragraph --><!-- wp:heading {"level":2} --><h2 class="wp-block-heading">' . esc_html__( 'Verantwortlicher', 'fairflock' ) . '</h2><!-- /wp:heading --><!-- wp:paragraph --><p>' . esc_html__( 'Verantwortlich ist die FairFlock GmbH (siehe Impressum).', 'fairflock' ) . '</p><!-- /wp:paragraph -->',
-		),
-		'agb'              => array(
-			'title'   => __( 'AGB', 'fairflock' ),
-			'content' => '<!-- wp:paragraph --><p>' . $note . '</p><!-- /wp:paragraph --><!-- wp:heading {"level":2} --><h2 class="wp-block-heading">' . esc_html__( 'Geltungsbereich', 'fairflock' ) . '</h2><!-- /wp:heading --><!-- wp:paragraph --><p>' . esc_html__( 'Diese AGB gelten für Bestellungen im Online-Shop. Vertragspartner ist die FairFlock GmbH.', 'fairflock' ) . '</p><!-- /wp:paragraph -->',
-		),
-		'widerruf'         => array(
-			'title'   => __( 'Widerruf', 'fairflock' ),
-			'content' => '<!-- wp:paragraph --><p>' . $note . '</p><!-- /wp:paragraph --><!-- wp:heading {"level":2} --><h2 class="wp-block-heading">' . esc_html__( 'Widerrufsrecht', 'fairflock' ) . '</h2><!-- /wp:heading --><!-- wp:paragraph --><p>' . esc_html__( 'Verbraucher haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen zu widerrufen.', 'fairflock' ) . '</p><!-- /wp:paragraph -->',
-		),
-		'versand-zahlung'  => array(
-			'title'   => __( 'Versand & Zahlung', 'fairflock' ),
-			'content' => '<!-- wp:paragraph --><p>' . $note . '</p><!-- /wp:paragraph --><!-- wp:heading {"level":2} --><h2 class="wp-block-heading">' . esc_html__( 'Versand', 'fairflock' ) . '</h2><!-- /wp:heading --><!-- wp:paragraph --><p>' . esc_html__( 'Lieferung in der Regel in 3–10 Werktagen. Preise inkl. MwSt. Zahlarten im Checkout.', 'fairflock' ) . '</p><!-- /wp:paragraph -->',
-		),
-	);
+function fairflock_defaults_legal_page_blueprints() {
+	return function_exists( 'fairflock_get_legal_page_blueprints' )
+		? fairflock_get_legal_page_blueprints()
+		: array();
 }
 
 /**

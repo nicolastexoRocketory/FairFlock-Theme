@@ -47,16 +47,54 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 	display: flex !important;
 	align-items: center !important;
 	justify-content: center !important;
+	background-color: #0e1114;
+}
+
+/* Placeholder look when no media is set yet */
+.ff-about-hero__cover:not(:has(.wp-block-cover__image-background)):not(:has(video)),
+.ff-about-hero .wp-block-cover.ff-about-hero__cover:not(:has(.wp-block-cover__image-background)):not(:has(video)) {
 	background:
 		radial-gradient(ellipse 70% 55% at 50% 40%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 28%, transparent), transparent 68%),
 		linear-gradient(155deg, #0e1114 0%, #172018 45%, #243028 100%);
 }
 
-.ff-about-hero__cover .wp-block-cover__background {
+.ff-about-hero__cover:not(:has(.wp-block-cover__image-background)):not(:has(video)) .wp-block-cover__background {
 	background:
 		radial-gradient(ellipse 70% 55% at 50% 40%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 22%, transparent), transparent 68%),
 		linear-gradient(155deg, #0e1114 0%, #172018 45%, #243028 100%) !important;
 	opacity: 1 !important;
+}
+
+/* With media: never paint an opaque overlay over the image — keep WP dimRatio */
+.ff-about-hero__cover:has(.wp-block-cover__image-background) .wp-block-cover__background,
+.ff-about-hero__cover:has(video) .wp-block-cover__background {
+	background-image: none !important;
+	/* Keep solid tint if Cover set a color; opacity comes from has-background-dim-* */
+}
+
+/* Ensure editor-chosen hero image actually shows on the frontend */
+.ff-about-hero__cover .wp-block-cover__image-background,
+.ff-about-hero__cover img.wp-block-cover__image-background,
+.ff-about-hero__cover video.wp-block-cover__video-background {
+	position: absolute !important;
+	inset: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+	object-fit: cover !important;
+	object-position: center !important;
+	z-index: 0 !important;
+	pointer-events: none;
+}
+
+.ff-about-hero__cover .wp-block-cover__background {
+	z-index: 1 !important;
+}
+
+.ff-about-hero__cover .wp-block-cover__inner-container {
+	z-index: 2 !important;
+	position: relative;
 }
 
 /*

@@ -72,6 +72,12 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 	/* Keep solid tint if Cover set a color; opacity comes from has-background-dim-* */
 }
 
+/* Dark overlay must stay ink in Light + Dark (palette contrast flips). */
+.ff-about-hero__cover .wp-block-cover__background.has-contrast-background-color,
+.ff-about-hero__cover .wp-block-cover__background.has-background-dim {
+	background-color: #0e1114 !important;
+}
+
 /* Ensure editor-chosen hero image actually shows on the frontend */
 .ff-about-hero__cover .wp-block-cover__image-background,
 .ff-about-hero__cover img.wp-block-cover__image-background,

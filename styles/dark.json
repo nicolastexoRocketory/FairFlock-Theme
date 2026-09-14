@@ -18,17 +18,17 @@
 				{
 					"slug": "brand",
 					"name": "Brand",
-					"color": "#4a9a42"
+					"color": "#377530"
 				},
 				{
 					"slug": "brand-deep",
 					"name": "Brand Deep",
-					"color": "#377530"
+					"color": "#2a5c25"
 				},
 				{
 					"slug": "brand-soft",
 					"name": "Brand Soft",
-					"color": "#5aad52"
+					"color": "#4a8f42"
 				},
 				{
 					"slug": "muted",

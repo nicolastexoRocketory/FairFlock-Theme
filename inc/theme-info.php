@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.188',
+			'items'   => array(
+				__( 'Dark Mode: Suche nutzt Surface/Text-Tokens; Brand-Farben bleiben in Light/Dark gleich.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.187',
+			'items'   => array(
+				__( 'Dark Mode: Vollbild-Overlays bleiben dunkel, Text darauf weiß.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.186',
 			'items'   => array(
 				__( 'Darstellung: Volle Breite und Formen (abgerundet/eckig) unter FairFlock → Darstellung.', 'fairflock' ),

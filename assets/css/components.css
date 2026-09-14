@@ -1246,6 +1246,13 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	opacity: 0;
 	transform: translateY(-8px);
 	transition: opacity 0.3s var(--ff-ease), transform 0.3s var(--ff-ease);
+	background: var(--ff-surface, #fff) !important;
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+.ff-search-shell.has-white-background-color,
+.ff-search-shell.has-background {
+	background: var(--ff-surface, #fff) !important;
 }
 
 .ff-search-layer.is-open .ff-search-shell {
@@ -1269,8 +1276,13 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	box-sizing: border-box;
 	border-radius: var(--wp--custom--radius--md, 16px) !important;
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent) !important;
-	background: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 5%, #fff) !important;
-	box-shadow: 0 8px 32px rgba(14, 17, 20, 0.12);
+	background: color-mix(
+		in srgb,
+		var(--wp--preset--color--contrast, #0e1114) 6%,
+		var(--ff-surface, #fff)
+	) !important;
+	box-shadow: 0 8px 32px color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 14%, transparent);
+	color: var(--wp--preset--color--contrast, #0e1114);
 }
 
 .ff-search-bar .ff-search-field,
@@ -1367,8 +1379,14 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	gap: 24px;
 	width: 100%;
 	box-sizing: border-box;
-	box-shadow: 0 16px 48px rgba(14, 17, 20, 0.14);
+	box-shadow: 0 16px 48px color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 14%, transparent);
 	color: var(--wp--preset--color--contrast, #0e1114);
+	background: var(--ff-surface, #fff) !important;
+}
+
+.ff-search-mega.has-white-background-color,
+.ff-search-mega.has-background {
+	background: var(--ff-surface, #fff) !important;
 }
 
 .ff-search-mega h4,
@@ -1484,7 +1502,7 @@ ul.ff-search-menu-nav {
 	flex: 0 0 auto;
 	height: auto;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: #e8eceb center / cover no-repeat;
+	background: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 8%, var(--wp--preset--color--base, #f3f5f4)) center / cover no-repeat;
 }
 
 .ff-search-hit-meta,
@@ -4899,7 +4917,7 @@ a.ff-bento-card,
 		linear-gradient(
 			160deg,
 			color-mix(in srgb, var(--wp--preset--color--brand-deep, #2a5c25) 70%, #000),
-			var(--wp--preset--color--contrast, #0e1114)
+			#0e1114
 		);
 }
 
@@ -5138,7 +5156,10 @@ a.ff-bento-card,
 	text-decoration: underline;
 }
 
-/* —— Fullbleed moment (styleguide #moment) —— */
+/* —— Fullbleed moment (styleguide #moment) ——
+ * Overlays stay dark in Light and Dark style variations (white copy on ink).
+ * Do not use palette "contrast" here — it flips to fog in Dark.
+ */
 .ff-fullbleed,
 .wp-block-group.ff-fullbleed {
 	position: relative;
@@ -5155,7 +5176,7 @@ a.ff-bento-card,
 		linear-gradient(
 			160deg,
 			color-mix(in srgb, var(--wp--preset--color--brand-deep, #2a5c25) 70%, #000),
-			var(--wp--preset--color--contrast, #0e1114) 70%
+			#0e1114 70%
 		);
 }
 
@@ -5227,12 +5248,12 @@ a.ff-bento-card,
 	font-weight: 400;
 	letter-spacing: -0.03em;
 	line-height: 1.2;
-	color: #fff;
+	color: #fff !important;
 }
 
 .ff-fullbleed__inner p {
 	margin: 0;
-	color: rgba(255, 255, 255, 0.82);
+	color: rgba(255, 255, 255, 0.82) !important;
 	font-size: 1.05rem;
 	line-height: 1.5;
 }
@@ -5242,10 +5263,18 @@ a.ff-bento-card,
 .wp-block-cover.ff-fullbleed.ff-fullbleed--cover {
 	background-image: none;
 	background-color: #0e1114;
+	color: #fff;
 }
 
 .ff-fullbleed.ff-fullbleed--cover::before {
 	display: none;
+}
+
+/* Palette "contrast" flips in Dark — keep cinematic dim dark. */
+.ff-fullbleed.ff-fullbleed--cover .wp-block-cover__background,
+.ff-fullbleed.ff-fullbleed--cover .wp-block-cover__background.has-contrast-background-color,
+.ff-fullbleed.ff-fullbleed--cover .wp-block-cover__background.has-background-dim {
+	background-color: #0e1114 !important;
 }
 
 .ff-fullbleed.ff-fullbleed--cover:not(:has(.wp-block-cover__image-background)):not(:has(video)) {
@@ -5254,7 +5283,7 @@ a.ff-bento-card,
 		linear-gradient(
 			160deg,
 			color-mix(in srgb, var(--wp--preset--color--brand-deep, #2a5c25) 70%, #000),
-			var(--wp--preset--color--contrast, #0e1114) 70%
+			#0e1114 70%
 		);
 }
 

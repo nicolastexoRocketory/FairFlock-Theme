@@ -103,6 +103,7 @@ function fairflock_setup_wizard_steps() {
 	$wc_ship_url  = admin_url( 'admin.php?page=wc-settings&tab=shipping' );
 	$menus_url    = admin_url( 'site-editor.php?p=%2Fnavigation' );
 	$header_url   = admin_url( 'admin.php?page=fairflock-header-style' );
+	$unsplash_url = admin_url( 'admin.php?page=fairflock-unsplash-credit' );
 	$permalinks   = admin_url( 'options-permalink.php' );
 
 	return array(
@@ -250,6 +251,17 @@ function fairflock_setup_wizard_steps() {
 				array(
 					'label' => __( 'Passwortschutz', 'fairflock' ),
 					'url'   => $password_url,
+				),
+			),
+			'optional'    => true,
+		),
+		'unsplash'     => array(
+			'title'       => __( 'Unsplash Credit (optional)', 'fairflock' ),
+			'description' => __( 'Wenn Unsplash-Fotos genutzt werden: Bildnachweis im Footer und Impressum aktivieren.', 'fairflock' ),
+			'links'       => array(
+				array(
+					'label' => __( 'Unsplash Credit', 'fairflock' ),
+					'url'   => $unsplash_url,
 				),
 			),
 			'optional'    => true,
@@ -548,6 +560,18 @@ function fairflock_setup_wizard_step_status( $key, $step ) {
 			return array(
 				'done' => ! empty( $dismissed[ $key ] ),
 				'note' => __( 'Optional — aktivieren, wenn die Seite noch nicht öffentlich sein soll.', 'fairflock' ),
+			);
+
+		case 'unsplash':
+			if ( fairflock_unsplash_credit_enabled() ) {
+				return array(
+					'done' => true,
+					'note' => __( 'Unsplash-Bildnachweis ist aktiv (Footer + Impressum).', 'fairflock' ),
+				);
+			}
+			return array(
+				'done' => ! empty( $dismissed[ $key ] ),
+				'note' => __( 'Optional — nur nötig, wenn Unsplash-Fotos eingesetzt werden.', 'fairflock' ),
 			);
 
 		case 'golive':

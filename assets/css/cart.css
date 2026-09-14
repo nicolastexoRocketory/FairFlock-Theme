@@ -5,8 +5,8 @@
 .ff-cart-page {
 	--ff-cart-line: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 10%, transparent);
 	--ff-cart-line-strong: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent);
-	--ff-cart-panel: #fff;
-	--ff-cart-soft: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 6%, #fff);
+	--ff-cart-panel: var(--wp--custom--surface, #fff);
+	--ff-cart-soft: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 8%, var(--wp--preset--color--base, #f3f5f4));
 	position: relative;
 	isolation: isolate;
 	width: 100% !important;

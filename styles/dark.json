@@ -1,0 +1,79 @@
+{
+	"$schema": "https://schemas.wp.org/wp/6.7/theme.json",
+	"version": 3,
+	"title": "Dark",
+	"settings": {
+		"color": {
+			"palette": [
+				{
+					"slug": "base",
+					"name": "Base / Night",
+					"color": "#12151a"
+				},
+				{
+					"slug": "contrast",
+					"name": "Ink / Fog",
+					"color": "#f0f2f4"
+				},
+				{
+					"slug": "brand",
+					"name": "Brand",
+					"color": "#4a9a42"
+				},
+				{
+					"slug": "brand-deep",
+					"name": "Brand Deep",
+					"color": "#377530"
+				},
+				{
+					"slug": "brand-soft",
+					"name": "Brand Soft",
+					"color": "#5aad52"
+				},
+				{
+					"slug": "muted",
+					"name": "Muted",
+					"color": "#9aa3ad"
+				},
+				{
+					"slug": "white",
+					"name": "White",
+					"color": "#ffffff"
+				}
+			]
+		},
+		"custom": {
+			"surface": "#1a1f26"
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var:preset|color|base",
+			"text": "var:preset|color|contrast"
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var:preset|color|contrast"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|contrast"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|brand"
+					}
+				}
+			},
+			"button": {
+				"color": {
+					"background": "var:preset|color|brand",
+					"text": "var:preset|color|white"
+				}
+			}
+		},
+		"css": ":root{color-scheme:dark;}"
+	}
+}

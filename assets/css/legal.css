@@ -76,7 +76,7 @@ body.ff-legal-page .ff-legal-page .wp-block-post-content,
 	margin: 0 !important;
 	padding: 28px 28px 32px !important;
 	box-sizing: border-box;
-	background: #fff;
+	background: var(--wp--custom--surface, #fff);
 	border: 1px solid var(--ff-legal-line);
 	border-radius: var(--wp--custom--radius--md, 16px);
 	font-size: 1.05rem;

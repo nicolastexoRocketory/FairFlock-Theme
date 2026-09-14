@@ -171,7 +171,8 @@
 			"radius": {
 				"sm": "8px",
 				"md": "16px"
-			}
+			},
+			"surface": "#ffffff"
 		}
 	},
 	"styles": {

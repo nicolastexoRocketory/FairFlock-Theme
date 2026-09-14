@@ -44,6 +44,19 @@
 			});
 		}
 
+		function decodeHtmlEntities(s) {
+			if (!s) {
+				return "";
+			}
+			var t = document.createElement("textarea");
+			t.innerHTML = String(s);
+			return t.value;
+		}
+
+		function safeText(s) {
+			return escapeHtml(decodeHtmlEntities(s));
+		}
+
 		function formatPrice(prices, key) {
 			if (!prices) return "";
 			var minor = typeof prices.currency_minor_unit === "number" ? prices.currency_minor_unit : 2;
@@ -455,8 +468,8 @@
 				renderGallery(images) +
 				'<div class="ff-product-modal__copy">' +
 				'<div class="ff-product-modal__scroll">' +
-				'<h2 id="ffProductTitle" class="ff-product-modal__title">' +
-				escapeHtml(p.name || "") +
+				'<h2 id="ffProductTitle" class="ff-product-modal__title wp-block-heading">' +
+				safeText(p.name || "") +
 				"</h2>" +
 				renderRating(p) +
 				renderPriceBlock(p) +

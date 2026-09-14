@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'FAIRFLOCK_VERSION', '0.9.176' );
+define( 'FAIRFLOCK_VERSION', '0.9.185' );
 define( 'FAIRFLOCK_DIR', get_template_directory() );
 define( 'FAIRFLOCK_URI', get_template_directory_uri() );
 
@@ -32,5 +32,7 @@ require_once FAIRFLOCK_DIR . '/inc/product-modal.php';
 require_once FAIRFLOCK_DIR . '/inc/account-popup.php';
 require_once FAIRFLOCK_DIR . '/inc/product-personalization.php';
 require_once FAIRFLOCK_DIR . '/inc/password-protection.php';
+require_once FAIRFLOCK_DIR . '/inc/unsplash-credit.php';
+require_once FAIRFLOCK_DIR . '/inc/theme-info.php';
 require_once FAIRFLOCK_DIR . '/inc/setup-wizard.php';
 require_once FAIRFLOCK_DIR . '/inc/demo-content.php';

@@ -102,6 +102,7 @@ function fairflock_setup_wizard_steps() {
 	$wc_pay_url   = admin_url( 'admin.php?page=wc-settings&tab=checkout' );
 	$wc_ship_url  = admin_url( 'admin.php?page=wc-settings&tab=shipping' );
 	$menus_url    = admin_url( 'site-editor.php?p=%2Fnavigation' );
+	$header_url   = admin_url( 'admin.php?page=fairflock-header-style' );
 	$permalinks   = admin_url( 'options-permalink.php' );
 
 	return array(
@@ -215,11 +216,15 @@ function fairflock_setup_wizard_steps() {
 		),
 		'navigation'   => array(
 			'title'       => __( 'Navigation prüfen', 'fairflock' ),
-			'description' => __( 'Hauptmenü und Footer-Links: Shop, Kategorien, Über uns, Rechtliches.', 'fairflock' ),
+			'description' => __( 'Hauptmenü und Footer-Links setzen. Nav-Design wählen: schwebend oder randlos.', 'fairflock' ),
 			'links'       => array(
 				array(
 					'label' => __( 'Navigation im Site Editor', 'fairflock' ),
 					'url'   => $menus_url,
+				),
+				array(
+					'label' => __( 'Nav-Design wählen', 'fairflock' ),
+					'url'   => $header_url,
 				),
 			),
 			'optional'    => true,

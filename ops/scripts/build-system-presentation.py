@@ -222,7 +222,7 @@ def build() -> Path:
         draw_bg(c)
         items = [
             ("1", "Die Idee", "Warum wir ein eigenes System gebaut haben"),
-            ("2", "Alle Funktionen", "Was der Shop und das Büro können"),
+            ("2", "Alle Funktionen", "Shop, Navigation, Büro und Einrichtung"),
             ("3", "Alltag im Büro", "Einrichten und pflegen — ohne Technik-Studium"),
             ("4", "Aktuell & sicher", "Updates und Schutz — ohne Drama"),
             ("5", "Statt Flatsome", "Der einfache Vergleich"),
@@ -298,11 +298,11 @@ def build() -> Path:
             (
                 "Finden & Orientieren",
                 [
+                    "Zwei Nav-Designs (schwebend / randlos)",
                     "Suche mit Produktvorschlägen",
                     "Menü und Untermenüs",
                     "Kategorien & Kollektionen",
-                    "Konto-Zugang (Login)",
-                    "Warenkorb von der Seite",
+                    "Konto, Warenkorb von der Seite",
                 ],
             ),
             (
@@ -318,11 +318,11 @@ def build() -> Path:
             (
                 "Vertrauen & Inhalt",
                 [
-                    "Hero mit großen Bildern",
-                    "Vertrauens-Leiste",
+                    "Hero, Text/Bild, Vollbild-Bänder",
                     "FAQ, Schritte, Bewertungen",
-                    "Zitat / Marken-Band",
-                    "Klare Call-to-Actions",
+                    "Über-uns-Seite fertig aufgebaut",
+                    "Rechtstexte & klare CTAs",
+                    "Handy & Desktop tauglich",
                 ],
             ),
         ]
@@ -343,6 +343,55 @@ def build() -> Path:
             x += 90 * mm
         footer(c, page, total)
 
+    # —— 5b Nav-Design ——
+    def s_nav(page, total):
+        draw_bg(c)
+        cards = [
+            (
+                "Schwebend",
+                [
+                    "Abgerundete Leiste",
+                    "Abstand zum Bildschirmrand",
+                    "Glass-/Farb-Look",
+                    "Standard — wie bisher",
+                ],
+            ),
+            (
+                "Randlos",
+                [
+                    "Volle Breite bis zum Rand",
+                    "Oben bündig, keine Rundungen",
+                    "Gleiches Innen-Layout",
+                    "Logo · Menü · Icons",
+                ],
+            ),
+            (
+                "Umschalten",
+                [
+                    "FairFlock → Navigation",
+                    "Zwei Optionen wählen",
+                    "Sofort auf der Website",
+                    "Auch im Einrichtungs-Assistenten",
+                ],
+            ),
+        ]
+        head_h = 30 * mm
+        card_h = 90 * mm
+        block = head_h + card_h
+        y_top = vcenter_block(block)
+        draw_heading_block(
+            c,
+            "2. Navigation — zwei Designs",
+            "Inhalt gleich, Optik wählbar",
+            y_top,
+        )
+        y_cards = y_top - head_h - card_h
+        x = 18 * mm
+        for title, lines in cards:
+            card(c, x, y_cards, 84 * mm, card_h, title, lines, title_size=14, body_size=12)
+            x += 90 * mm
+        footer(c, page, total)
+
     # —— 6 Funktionen fürs Büro / Setup ——
     def s_all_functions(page, total):
         draw_bg(c)
@@ -350,11 +399,11 @@ def build() -> Path:
             (
                 "Einrichten",
                 [
+                    "Einrichtungs-Assistent (Schritt für Schritt)",
                     "Logo & Farben je Marke",
-                    "Fertige Seiten-Bausteine",
-                    "Ein-Klick-Startseite",
+                    "Nav-Design umschalten",
+                    "Ein-Klick-Startseite & Über uns",
                     "Rechtliche Platzhalter-Seiten",
-                    "Kategorien-Seite",
                     "Plugin-Checkliste zum Start",
                 ],
             ),
@@ -366,7 +415,7 @@ def build() -> Path:
                     "Passwortschutz für den Shop",
                     "Einzelne Seiten absichern",
                     "FAQ & Inhalte bearbeiten",
-                    "Handy & Desktop tauglich",
+                    "Warenkorb- & Konto-Seiten klar",
                 ],
             ),
             (
@@ -402,9 +451,9 @@ def build() -> Path:
     def s_backend(page, total):
         draw_bg(c)
         steps = [
-            ("1", "Plugins prüfen", "WooCommerce, Complianz, optional Yoast SEO."),
-            ("2", "Marke festlegen", "Logo und Farben — einmal einstellen."),
-            ("3", "Layouts anlegen", "Bei Bedarf fertige Startseite per Klick."),
+            ("1", "Einrichtung öffnen", "FairFlock → Einrichtung führt Schritt für Schritt."),
+            ("2", "Marke & Navigation", "Logo, Farben, Nav-Design (schwebend oder randlos)."),
+            ("3", "Layouts anlegen", "Startseite, Über uns, Rechtstexte per Klick."),
             ("4", "Shop pflegen", "Produkte, Texte, Bilder — laufend aktuell halten."),
         ]
         head_h = 30 * mm
@@ -437,9 +486,9 @@ def build() -> Path:
     def s_backend_demo(page, total):
         draw_bg(c)
         bullets = [
-            "Unter „FairFlock → Demo Content“ sieht man zuerst die empfohlenen Plugins.",
-            "Danach wählt man aus, welche Layouts angelegt werden sollen.",
-            "Zum Beispiel: komplette Startseite, rechtliche Seiten, Kategorien-Seite.",
+            "Unter „FairFlock → Einrichtung“ startet der Assistent mit klaren Schritten.",
+            "Demo Content: empfohlene Plugins und fertige Layouts (Startseite, Über uns, Rechtliches).",
+            "Navigation: Menüpunkte im Site Editor — Design unter FairFlock → Navigation umschalten.",
             "Bestehende Inhalte werden nur überschrieben, wenn man das ausdrücklich erlaubt.",
         ]
         head_h = 32 * mm
@@ -500,7 +549,7 @@ def build() -> Path:
                     "Shop bei Bedarf abschließen",
                     "Nur mit Passwort hinein",
                     "Mit Firmenlogo begrüßen",
-                    "Admins kommen trotzdem rein",
+                    "Vor Go-Live wieder öffnen",
                 ],
             ),
             (
@@ -578,7 +627,7 @@ def build() -> Path:
         bullets = [
             "Flatsome kann viel — wir brauchen das Richtige.",
             "Weniger Knöpfe bedeuten weniger Verwirrung und weniger Fehler.",
-            "Funktionen wie Passwortschutz oder Ein-Klick-Startseite erreichen alle Shops gemeinsam.",
+            "Neue Funktionen (Nav-Design, Assistent, Passwortschutz, Layouts) erreichen alle Shops gemeinsam.",
             "Langfristig spart das Zeit, Geld und Nerven — bei gleichbleibend guter Qualität.",
         ]
         head_h = 30 * mm
@@ -631,6 +680,7 @@ def build() -> Path:
         s_idea,
         s_idea2,
         s_front,
+        s_nav,
         s_all_functions,
         s_backend,
         s_backend_demo,

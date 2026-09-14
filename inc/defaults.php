@@ -199,6 +199,7 @@ function fairflock_defaults_legal_page_blueprints() {
  *
  * @since 0.2.1
  * @since 0.9.171 Explicit order: products → media → fullbleed → collections → fullbleed 2 → …
+ * @since 0.9.172 Fullbleed 3 before steps.
  *
  * @return array<int, string>
  */
@@ -211,6 +212,7 @@ function fairflock_get_front_page_section_slugs() {
 		'fairflock/quote-alt',
 		'fairflock/categories-bento',
 		'fairflock/brand-band',
+		'fairflock/quote-3',
 		'fairflock/steps',
 		'fairflock/faq',
 		'fairflock/cta-end',
@@ -223,6 +225,7 @@ function fairflock_get_front_page_section_slugs() {
  * @since 0.2.1
  * @since 0.9.133 Collections as template-part so product_cat stays the single source.
  * @since 0.9.171 Text/Bild + Vollbild under products; second Vollbild under Kategorien.
+ * @since 0.9.172 Third Vollbild before steps.
  *
  * @return string
  */

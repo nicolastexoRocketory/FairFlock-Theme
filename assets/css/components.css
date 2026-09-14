@@ -52,6 +52,63 @@ body:not(.home):not(.front-page) .wp-site-blocks > main {
 	padding-top: var(--ff-header-clearance) !important;
 }
 
+/* —— Header style: edge (full-bleed, no radius) —— */
+body.ff-header-style-edge {
+	--ff-header-top: 0px;
+	--ff-header-clearance: calc(var(--ff-header-height) + 1.5rem);
+}
+
+body.ff-header-style-edge .ff-header,
+.ff-header.ff-header--edge {
+	width: 100%;
+	max-width: none;
+	margin-inline: 0;
+}
+
+body:not(.block-editor-iframe__body).ff-header-style-edge .ff-header,
+body:not(.block-editor-iframe__body) .ff-header.ff-header--edge {
+	top: 0;
+	left: 0;
+	right: 0;
+	translate: none;
+	width: 100%;
+	max-width: none;
+}
+
+body.ff-header-style-edge .ff-header__bar,
+.ff-header.ff-header--edge .ff-header__bar {
+	border-radius: 0;
+	box-shadow: 0 1px 0 rgba(14, 17, 20, 0.08);
+}
+
+body.ff-header-style-edge .ff-header__icons,
+body.ff-header-style-edge .ff-header__actions,
+.ff-header.ff-header--edge .ff-header__icons,
+.ff-header.ff-header--edge .ff-header__actions {
+	--ff-icon-radius: 0;
+	border-radius: 0 !important;
+}
+
+body.ff-header-style-edge .ff-header__icons .wp-block-button__link,
+body.ff-header-style-edge .ff-header__actions .wp-block-button__link,
+body.ff-header-style-edge .ff-header__icons .wc-block-customer-account__account-icon,
+.ff-header.ff-header--edge .ff-header__icons .wp-block-button__link,
+.ff-header.ff-header--edge .ff-header__actions .wp-block-button__link {
+	border-radius: 0 !important;
+}
+
+body.ff-header-style-edge .ff-nav-sub,
+body.ff-header-style-edge .ff-header__nav .wp-block-navigation__submenu-container,
+.ff-header.ff-header--edge .ff-nav-sub,
+.ff-header.ff-header--edge .ff-header__nav .wp-block-navigation__submenu-container {
+	border-radius: 0 !important;
+}
+
+body.ff-header-style-edge .ff-nav-sub .ff-nav-sub__item,
+.ff-header.ff-header--edge .ff-nav-sub .ff-nav-sub__item {
+	border-radius: 0;
+}
+
 /* WooCommerce wrappt Single-Product oft in .woocommerce — Clearance dort ebenfalls */
 body.single-product:not(.home):not(.front-page) .wp-site-blocks > .woocommerce,
 body.single-product:not(.home):not(.front-page) .wp-site-blocks > .woocommerce > main {
@@ -3909,6 +3966,13 @@ span.onsale,
 		translate: none;
 		width: auto;
 		max-width: none;
+	}
+
+	body:not(.block-editor-iframe__body).ff-header-style-edge .ff-header,
+	body:not(.block-editor-iframe__body) .ff-header.ff-header--edge {
+		left: 0;
+		right: 0;
+		width: 100%;
 	}
 
 	.ff-header {

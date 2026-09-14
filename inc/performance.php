@@ -63,10 +63,16 @@ function fairflock_enqueue_frontend_assets() {
 	}
 
 	if ( function_exists( 'is_cart' ) && is_cart() ) {
+		$cart_deps = array( 'fairflock-components' );
+		foreach ( array( 'wc-blocks-style', 'wc-blocks-style-cart', 'wc-blocks-vendors-style' ) as $handle ) {
+			if ( wp_style_is( $handle, 'registered' ) || wp_style_is( $handle, 'enqueued' ) ) {
+				$cart_deps[] = $handle;
+			}
+		}
 		wp_enqueue_style(
 			'fairflock-cart',
 			FAIRFLOCK_URI . '/assets/css/cart.css',
-			array( 'fairflock-components' ),
+			$cart_deps,
 			FAIRFLOCK_VERSION
 		);
 	}

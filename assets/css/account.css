@@ -32,7 +32,7 @@ body.woocommerce-account .ff-account-page,
 	pointer-events: none;
 	background:
 		radial-gradient(ellipse 80% 70% at 88% 0%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 10%, transparent), transparent 70%),
-		linear-gradient(180deg, color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 70%, #fff) 0%, transparent 100%);
+		linear-gradient(180deg, var(--wp--preset--color--base, #f3f5f4) 0%, transparent 100%);
 }
 
 /* —— Outer shell only —— */

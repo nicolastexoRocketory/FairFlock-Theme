@@ -16,9 +16,10 @@
 .fs-slider {
 	--fs-brand: var(--wp--preset--color--brand, #377530);
 	--fs-brand-deep: var(--wp--preset--color--brand-deep, #2a5c25);
-	--fs-ink: var(--wp--preset--color--contrast, #0e1114);
+	/* Fixed ink — never flip with Dark (overlay stays dark, text white) */
+	--fs-ink: var(--ff-ink, #0e1114);
 	--fs-ease: var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
-	--fs-shell: var(--ff-shell, min(1240px, calc(100% - 64px)));
+	--fs-shell: var(--ff-shell, min(1240px, calc(100% - 2 * var(--ff-gutter, 32px))));
 	--fs-space-1: 8px;
 	--fs-space-2: 16px;
 	--fs-space-3: 24px;
@@ -170,8 +171,8 @@
 .wp-block-group.fs-slide-inner {
 	position: relative;
 	z-index: 2;
-	width: min(1240px, calc(100% - 64px));
-	max-width: min(1240px, calc(100% - 64px));
+	width: var(--fs-shell);
+	max-width: var(--fs-shell);
 	margin-inline: auto !important;
 	box-sizing: border-box;
 	padding: var(--fs-space-8) var(--fs-space-3) calc(var(--fs-space-6) + 40px);
@@ -212,14 +213,14 @@
 	margin: 0 0 var(--fs-space-2);
 	max-width: 14ch;
 	text-wrap: balance;
-	color: #fff;
+	color: #fff !important;
 }
 
 .fs-slide .fs-text {
 	margin: 0 0 var(--fs-space-3);
 	max-width: 32rem;
 	font-size: var(--fs-t2);
-	color: rgba(255, 255, 255, 0.78);
+	color: rgba(255, 255, 255, 0.78) !important;
 }
 
 .fs-slider .cta-row {
@@ -391,7 +392,7 @@
 
 /* Trust marquee */
 .strip {
-	width: var(--ff-shell, min(1240px, calc(100% - 64px)));
+	width: var(--ff-shell, min(1240px, calc(100% - 2 * var(--ff-gutter, 32px))));
 	max-width: calc(100% - 2rem);
 	margin: 0 auto;
 	overflow: hidden;

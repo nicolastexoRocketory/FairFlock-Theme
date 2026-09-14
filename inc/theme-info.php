@@ -20,6 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.191',
+			'items'   => array(
+				__( 'Suche-Popup: Suchleiste volle Panelbreite, einheitliche Radien; robust gegen Volle Breite / Eckig.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.190',
+			'items'   => array(
+				__( 'Hero: Overlay bleibt im Dark Mode dunkel; Slide-Inhalt folgt „Volle Breite“ (--ff-shell).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.189',
+			'items'   => array(
+				__( 'Darstellung „Eckig“ greift auf Karten, Suche, Kasse, Shop; Dark Mode für Close-Buttons, Sortierung, CTA und Verläufe korrigiert.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.188',
 			'items'   => array(
 				__( 'Dark Mode: Suche nutzt Surface/Text-Tokens; Brand-Farben bleiben in Light/Dark gleich.', 'fairflock' ),

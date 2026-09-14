@@ -28,7 +28,7 @@
 	background:
 		radial-gradient(ellipse 80% 70% at 12% 0%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 10%, transparent), transparent 70%),
 		radial-gradient(ellipse 60% 50% at 88% 8%, color-mix(in srgb, var(--wp--preset--color--brand-soft, #4a8f42) 8%, transparent), transparent 65%),
-		linear-gradient(180deg, color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 70%, #fff) 0%, transparent 100%);
+		linear-gradient(180deg, var(--wp--preset--color--base, #f3f5f4) 0%, transparent 100%);
 }
 
 /* —— Intro / trust —— */
@@ -216,7 +216,19 @@
 	border-color: var(--wp--preset--color--brand, #377530) !important;
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp--preset--color--brand, #377530) 18%, transparent) !important;
 	outline: none !important;
-	background-color: #fff !important;
+	background-color: var(--ff-checkout-field-bg) !important;
+}
+
+/* Browser-Autofill darf Felder nicht weiß erzwingen */
+.ff-checkout-page input:-webkit-autofill,
+.ff-checkout-page input:-webkit-autofill:hover,
+.ff-checkout-page input:-webkit-autofill:focus,
+.ff-checkout-page textarea:-webkit-autofill,
+.ff-checkout-page select:-webkit-autofill {
+	-webkit-text-fill-color: var(--wp--preset--color--contrast, #0e1114) !important;
+	caret-color: var(--wp--preset--color--contrast, #0e1114);
+	box-shadow: 0 0 0 1000px var(--ff-checkout-field-bg) inset !important;
+	transition: background-color 99999s ease-out;
 }
 
 .ff-checkout-page .wc-block-components-text-input:hover input:not(:focus):not(:disabled),

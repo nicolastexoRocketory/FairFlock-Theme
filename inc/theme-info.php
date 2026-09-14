@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.193',
+			'items'   => array(
+				__( 'Hero-Slideshow: Titel einheitlich größer (alle Slides gleiche Größe).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.192',
+			'items'   => array(
+				__( 'Sektions- und Rechtsseiten-Titel nutzen Global Styles (h2); About-Hero-Marke als Überschrift.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.191',
 			'items'   => array(
 				__( 'Suche-Popup: Suchleiste volle Panelbreite, einheitliche Radien; robust gegen Volle Breite / Eckig.', 'fairflock' ),

@@ -56,11 +56,6 @@ body.ff-legal-page .ff-legal-page .wp-block-post-title,
 	max-width: none !important;
 	margin: 0 !important;
 	padding: 0 !important;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: clamp(2rem, 4vw, 2.75rem);
-	font-weight: 400;
-	letter-spacing: -0.03em;
-	line-height: 1.15;
 	color: var(--wp--preset--color--contrast, #0e1114);
 	text-align: left !important;
 }
@@ -98,22 +93,8 @@ body.ff-legal-page .wp-block-post-content h2,
 body.ff-legal-page .wp-block-post-content h3,
 .ff-legal-page .wp-block-post-content h2,
 .ff-legal-page .wp-block-post-content h3 {
-	font-family: var(--wp--preset--font-family--heading);
-	font-weight: 400;
-	letter-spacing: -0.02em;
 	margin: 1.75rem 0 0.65rem;
-	line-height: 1.25;
 	color: var(--wp--preset--color--contrast, #0e1114);
-}
-
-body.ff-legal-page .wp-block-post-content h2,
-.ff-legal-page .wp-block-post-content h2 {
-	font-size: clamp(1.25rem, 2vw, 1.5rem);
-}
-
-body.ff-legal-page .wp-block-post-content h3,
-.ff-legal-page .wp-block-post-content h3 {
-	font-size: 1.125rem;
 }
 
 body.ff-legal-page .wp-block-post-content p,

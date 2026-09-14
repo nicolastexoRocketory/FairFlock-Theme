@@ -4305,29 +4305,6 @@ span.onsale,
 .ff-pattern-section-head > .wp-block-heading,
 .ff-pattern-section-head > h2 {
 	margin: 0 !important;
-	font-size: var(--ff-section-title);
-	line-height: 1.2;
-	letter-spacing: -0.03em;
-}
-
-/* Alle Sektions-H2 gleich groß (Hero / Karten / Footer ausgenommen) */
-.ff-band__copy h2,
-.ff-band__copy .wp-block-heading,
-.ff-media-split__copy h2,
-.ff-media-split__copy .wp-block-heading,
-.ff-end-box h2,
-.ff-end-box .wp-block-heading,
-.ff-fullbleed__inner h2,
-.ff-fullbleed__inner .wp-block-heading,
-.ff-pattern-faq__head > .wp-block-heading,
-.ff-pattern-faq__head > h2,
-.ff-pattern-cta-end h2,
-.ff-pattern-cta-end .wp-block-heading,
-.ff-pattern-quote h2,
-.ff-pattern-quote .wp-block-heading {
-	font-size: var(--ff-section-title);
-	line-height: 1.2;
-	letter-spacing: -0.03em;
 }
 
 .ff-pattern-section-head > p {
@@ -4921,11 +4898,6 @@ a.ff-bento-card,
 .ff-band__copy .wp-block-heading {
 	margin: 0 0 8px;
 	max-width: 14ch;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--ff-section-title);
-	font-weight: 400;
-	letter-spacing: -0.03em;
-	line-height: 1.2;
 	color: #fff;
 }
 
@@ -5040,11 +5012,6 @@ a.ff-bento-card,
 .ff-media-split__copy .wp-block-heading {
 	margin: 0 0 16px;
 	max-width: 16ch;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--ff-section-title);
-	font-weight: 400;
-	letter-spacing: -0.03em;
-	line-height: 1.2;
 	color: var(--wp--preset--color--contrast, #0e1114);
 }
 
@@ -5307,11 +5274,6 @@ a.ff-bento-card,
 .ff-fullbleed__inner h2,
 .ff-fullbleed__inner .wp-block-heading {
 	margin: 0 0 12px;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--ff-section-title);
-	font-weight: 400;
-	letter-spacing: -0.03em;
-	line-height: 1.2;
 	color: #fff !important;
 }
 
@@ -5802,10 +5764,6 @@ a.ff-bento-card,
 .ff-end-box h2,
 .ff-end-box .wp-block-heading {
 	margin: 0 0 12px;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--ff-section-title);
-	font-weight: 400;
-	letter-spacing: -0.03em;
 	color: #fff;
 }
 
@@ -5891,11 +5849,6 @@ a.ff-bento-card,
 	max-width: none !important;
 	width: 100%;
 	text-align: left !important;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: clamp(2rem, 4vw, 2.75rem);
-	font-weight: 400;
-	letter-spacing: -0.03em;
-	line-height: 1.15;
 }
 
 .ff-page .wp-block-post-content,

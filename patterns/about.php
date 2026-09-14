@@ -23,13 +23,13 @@ $contact   = esc_url( 'mailto:info@fairflock.de' );
 		<div class="wp-block-cover__inner-container">
 			<!-- wp:group {"className":"ff-about-hero__copy","style":{"spacing":{"blockGap":"14px"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center","flexWrap":"nowrap"}} -->
 			<div class="wp-block-group ff-about-hero__copy">
-				<!-- wp:paragraph {"align":"center","className":"ff-about-hero__brand"} -->
-				<p class="has-text-align-center ff-about-hero__brand"><?php echo $shop_name; ?></p>
-				<!-- /wp:paragraph -->
-
-				<!-- wp:heading {"textAlign":"center","level":1,"className":"ff-about-hero__title"} -->
-				<h1 class="wp-block-heading has-text-align-center ff-about-hero__title">Dein Druckpartner — mit Haltung.</h1>
+				<!-- wp:heading {"textAlign":"center","level":2,"className":"ff-about-hero__brand"} -->
+				<h2 class="wp-block-heading has-text-align-center ff-about-hero__brand"><?php echo $shop_name; ?></h2>
 				<!-- /wp:heading -->
+
+				<!-- wp:paragraph {"align":"center","className":"ff-about-hero__title"} -->
+				<p class="has-text-align-center ff-about-hero__title">Dein Druckpartner — mit Haltung.</p>
+				<!-- /wp:paragraph -->
 
 				<!-- wp:paragraph {"align":"center","className":"ff-about-hero__lead"} -->
 				<p class="has-text-align-center ff-about-hero__lead">Von der Idee bis zum fertigen Stück: Druck, Stick und Gestaltung für Vereine, Teams und alle, die Marke sichtbar machen wollen.</p>

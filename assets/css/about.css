@@ -167,19 +167,13 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 .ff-about-hero__brand {
 	margin-top: 0 !important;
 	margin-bottom: 0 !important;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: clamp(2.4rem, 6vw, 4rem);
-	font-weight: 400;
-	letter-spacing: -0.035em;
-	line-height: 1.05;
-	color: #fff;
+	color: #fff !important;
 }
 
 .ff-about-hero__title,
 .ff-about-hero .ff-about-hero__title {
 	margin-top: 0 !important;
 	margin-bottom: 0 !important;
-	font-family: var(--wp--preset--font-family--heading);
 	font-size: clamp(1.25rem, 2.2vw, 1.65rem);
 	font-weight: 400;
 	letter-spacing: -0.02em;
@@ -256,9 +250,5 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 	.ff-about-hero__cover,
 	.ff-about-hero .wp-block-cover.ff-about-hero__cover {
 		min-height: min(78vh, 640px) !important;
-	}
-
-	.ff-about-hero__brand {
-		font-size: clamp(2rem, 10vw, 2.75rem);
 	}
 }

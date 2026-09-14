@@ -174,6 +174,68 @@
 		);
 	}
 
+	var DESKTOP_MQ = "(min-width: 961px)";
+	var COLLECTIONS_VISIBLE = 9; /* 3 Spalten × 3 Reihen */
+
+	function initCollectionsExpand(section) {
+		var grid = section.querySelector(".ff-collections-grid");
+		var expand = section.querySelector(".ff-collections-expand");
+		if (!grid || !expand) {
+			return;
+		}
+		var btn = expand.querySelector(".wp-block-button__link, a, button");
+		if (!btn || bound.has(expand)) {
+			return;
+		}
+		bound.add(expand);
+
+		var labelMore = btn.getAttribute("data-ff-label-more") || "Mehr anzeigen";
+		var labelLess = btn.getAttribute("data-ff-label-less") || "Weniger anzeigen";
+
+		function cardCount() {
+			return grid.querySelectorAll(".ff-collection-card").length;
+		}
+
+		function isDesktop() {
+			return window.matchMedia(DESKTOP_MQ).matches;
+		}
+
+		function setExpanded(expanded) {
+			grid.classList.toggle("is-collapsed", !expanded);
+			grid.classList.toggle("is-expanded", expanded);
+			btn.textContent = expanded ? labelLess : labelMore;
+			btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+		}
+
+		function syncVisibility() {
+			var needsToggle = isDesktop() && cardCount() > COLLECTIONS_VISIBLE;
+			expand.hidden = !needsToggle;
+			expand.classList.toggle("is-visible", needsToggle);
+			if (!needsToggle) {
+				grid.classList.remove("is-collapsed", "is-expanded");
+				btn.textContent = labelMore;
+				btn.setAttribute("aria-expanded", "false");
+				return;
+			}
+			if (!grid.classList.contains("is-expanded")) {
+				setExpanded(false);
+			}
+		}
+
+		btn.setAttribute("role", "button");
+		btn.setAttribute("aria-expanded", "false");
+		btn.addEventListener("click", function (event) {
+			event.preventDefault();
+			if (!isDesktop() || cardCount() <= COLLECTIONS_VISIBLE) {
+				return;
+			}
+			setExpanded(!grid.classList.contains("is-expanded"));
+		});
+
+		window.addEventListener("resize", syncVisibility);
+		syncVisibility();
+	}
+
 	function boot() {
 		var productSections = document.querySelectorAll(".ff-pattern-products--woo");
 		if (productSections.length) {
@@ -187,6 +249,7 @@
 		document.querySelectorAll(".ff-reviews-slider").forEach(initReviews);
 		document.querySelectorAll(".ff-pattern-collections").forEach(function (section) {
 			initCardSection(section, ".ff-collections-grid");
+			initCollectionsExpand(section);
 		});
 		document.querySelectorAll(".ff-pattern-bento").forEach(function (section) {
 			initCardSection(section, ".ff-bento");

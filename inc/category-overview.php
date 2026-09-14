@@ -211,6 +211,11 @@ function fairflock_get_collections_section_markup( array $args = array() ) {
 	$lead_esc    = esc_html( $lead );
 	$anchor_esc  = esc_attr( $anchor );
 	$section_cls = trim( 'ff-pattern-collections ' . $extra );
+	$expand_more      = __( 'Mehr anzeigen', 'fairflock' );
+	$expand_less      = __( 'Weniger anzeigen', 'fairflock' );
+	$expand_more_esc  = esc_html( $expand_more );
+	$expand_more_attr = esc_attr( $expand_more );
+	$expand_less_attr = esc_attr( $expand_less );
 
 	$more_html = '';
 	if ( $show_more ) {
@@ -264,11 +269,19 @@ HTML;
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"className":"ff-collections-grid","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
-		<div class="wp-block-group ff-collections-grid">
+		<!-- wp:group {"className":"ff-collections-grid is-collapsed","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
+		<div class="wp-block-group ff-collections-grid is-collapsed">
 {$cards}
 		</div>
 		<!-- /wp:group -->
+
+		<!-- wp:buttons {"className":"ff-collections-expand","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
+		<div class="wp-block-buttons ff-collections-expand" hidden>
+			<!-- wp:button {"className":"ff-collections-expand__btn is-style-outline"} -->
+			<div class="wp-block-button ff-collections-expand__btn is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-collections-more" data-ff-label-more="{$expand_more_attr}" data-ff-label-less="{$expand_less_attr}">{$expand_more_esc}</a></div>
+			<!-- /wp:button -->
+		</div>
+		<!-- /wp:buttons -->
 	</div>
 	<!-- /wp:group -->
 </div>

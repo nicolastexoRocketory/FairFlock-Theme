@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'FAIRFLOCK_VERSION', '0.9.174' );
+define( 'FAIRFLOCK_VERSION', '0.9.176' );
 define( 'FAIRFLOCK_DIR', get_template_directory() );
 define( 'FAIRFLOCK_URI', get_template_directory_uri() );
 
@@ -27,6 +27,7 @@ require_once FAIRFLOCK_DIR . '/inc/category-overview.php';
 require_once FAIRFLOCK_DIR . '/inc/header-search.php';
 require_once FAIRFLOCK_DIR . '/inc/submenu-styles.php';
 require_once FAIRFLOCK_DIR . '/inc/header-style.php';
+require_once FAIRFLOCK_DIR . '/inc/csv-import.php';
 require_once FAIRFLOCK_DIR . '/inc/product-modal.php';
 require_once FAIRFLOCK_DIR . '/inc/account-popup.php';
 require_once FAIRFLOCK_DIR . '/inc/product-personalization.php';

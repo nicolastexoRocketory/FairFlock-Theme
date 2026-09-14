@@ -1,6 +1,6 @@
 <?php
 /**
- * Header / navigation style switch (floating pill vs edge bar).
+ * Darstellung: Nav-Design, Inhaltsbreite, Formen.
  *
  * @package FairFlock
  * @since 0.9.173
@@ -25,6 +25,34 @@ function fairflock_header_style_choices() {
 }
 
 /**
+ * Content width choices.
+ *
+ * @since 0.9.186
+ *
+ * @return array<string, string>
+ */
+function fairflock_content_width_choices() {
+	return array(
+		'shell' => __( 'Inhaltsbreite (max. 1240px)', 'fairflock' ),
+		'full'  => __( 'Volle Breite (nur Seitenabstand)', 'fairflock' ),
+	);
+}
+
+/**
+ * Shape / radius choices.
+ *
+ * @since 0.9.186
+ *
+ * @return array<string, string>
+ */
+function fairflock_shape_style_choices() {
+	return array(
+		'rounded' => __( 'Abgerundet', 'fairflock' ),
+		'sharp'   => __( 'Eckig', 'fairflock' ),
+	);
+}
+
+/**
  * Current header style.
  *
  * @since 0.9.173
@@ -39,7 +67,35 @@ function fairflock_get_header_style() {
 }
 
 /**
- * Adds body class for CSS clearance / layout.
+ * Current content width mode.
+ *
+ * @since 0.9.186
+ *
+ * @return string shell|full
+ */
+function fairflock_get_content_width() {
+	$width = (string) get_option( 'fairflock_content_width', 'shell' );
+	$ok    = array_keys( fairflock_content_width_choices() );
+
+	return in_array( $width, $ok, true ) ? $width : 'shell';
+}
+
+/**
+ * Current shape style.
+ *
+ * @since 0.9.186
+ *
+ * @return string rounded|sharp
+ */
+function fairflock_get_shape_style() {
+	$shape = (string) get_option( 'fairflock_shape_style', 'rounded' );
+	$ok    = array_keys( fairflock_shape_style_choices() );
+
+	return in_array( $shape, $ok, true ) ? $shape : 'rounded';
+}
+
+/**
+ * Adds body classes for CSS clearance / layout / shapes.
  *
  * @since 0.9.173
  *
@@ -48,6 +104,8 @@ function fairflock_get_header_style() {
  */
 function fairflock_header_style_body_class( $classes ) {
 	$classes[] = 'ff-header-style-' . fairflock_get_header_style();
+	$classes[] = 'ff-content-width-' . fairflock_get_content_width();
+	$classes[] = 'ff-shape-' . fairflock_get_shape_style();
 
 	return $classes;
 }
@@ -104,8 +162,8 @@ add_filter( 'render_block', 'fairflock_header_style_render_block', 10, 2 );
 function fairflock_header_style_register_admin_page() {
 	add_submenu_page(
 		'fairflock-setup',
-		__( 'Navigation', 'fairflock' ),
-		__( 'Navigation', 'fairflock' ),
+		__( 'Darstellung', 'fairflock' ),
+		__( 'Darstellung', 'fairflock' ),
 		'manage_options',
 		'fairflock-header-style',
 		'fairflock_header_style_render_admin_page'
@@ -114,7 +172,7 @@ function fairflock_header_style_register_admin_page() {
 add_action( 'admin_menu', 'fairflock_header_style_register_admin_page', 25 );
 
 /**
- * Saves header style setting.
+ * Saves Darstellung settings (nav, width, shapes).
  *
  * @since 0.9.173
  *
@@ -131,11 +189,21 @@ function fairflock_header_style_handle_admin_save() {
 
 	check_admin_referer( 'fairflock_header_style_settings' );
 
-	$raw   = isset( $_POST['fairflock_header_style'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_header_style'] ) ) : 'floating';
-	$ok    = array_keys( fairflock_header_style_choices() );
-	$style = in_array( $raw, $ok, true ) ? $raw : 'floating';
+	$header_raw = isset( $_POST['fairflock_header_style'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_header_style'] ) ) : 'floating';
+	$header_ok  = array_keys( fairflock_header_style_choices() );
+	$header     = in_array( $header_raw, $header_ok, true ) ? $header_raw : 'floating';
 
-	update_option( 'fairflock_header_style', $style, false );
+	$width_raw = isset( $_POST['fairflock_content_width'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_content_width'] ) ) : 'shell';
+	$width_ok  = array_keys( fairflock_content_width_choices() );
+	$width     = in_array( $width_raw, $width_ok, true ) ? $width_raw : 'shell';
+
+	$shape_raw = isset( $_POST['fairflock_shape_style'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_shape_style'] ) ) : 'rounded';
+	$shape_ok  = array_keys( fairflock_shape_style_choices() );
+	$shape     = in_array( $shape_raw, $shape_ok, true ) ? $shape_raw : 'rounded';
+
+	update_option( 'fairflock_header_style', $header, false );
+	update_option( 'fairflock_content_width', $width, false );
+	update_option( 'fairflock_shape_style', $shape, false );
 
 	wp_safe_redirect(
 		add_query_arg(
@@ -151,7 +219,7 @@ function fairflock_header_style_handle_admin_save() {
 add_action( 'admin_init', 'fairflock_header_style_handle_admin_save' );
 
 /**
- * Renders Navigation style admin screen.
+ * Renders Darstellung admin screen.
  *
  * @since 0.9.173
  *
@@ -162,16 +230,20 @@ function fairflock_header_style_render_admin_page() {
 		return;
 	}
 
-	$current = fairflock_get_header_style();
-	$choices = fairflock_header_style_choices();
+	$header_current = fairflock_get_header_style();
+	$header_choices = fairflock_header_style_choices();
+	$width_current  = fairflock_get_content_width();
+	$width_choices  = fairflock_content_width_choices();
+	$shape_current  = fairflock_get_shape_style();
+	$shape_choices  = fairflock_shape_style_choices();
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'Navigation', 'fairflock' ); ?></h1>
+		<h1><?php esc_html_e( 'Darstellung', 'fairflock' ); ?></h1>
 		<?php if ( ! empty( $_GET['updated'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Einstellungen gespeichert.', 'fairflock' ); ?></p></div>
 		<?php endif; ?>
 
-		<p><?php esc_html_e( 'Gleiches Layout (Logo, Menü, Suche, Konto, Warenkorb) — zwei Optiken zur Auswahl.', 'fairflock' ); ?></p>
+		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite und Formen — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
 
 		<form method="post" action="">
 			<?php wp_nonce_field( 'fairflock_header_style_settings' ); ?>
@@ -180,15 +252,47 @@ function fairflock_header_style_render_admin_page() {
 					<th scope="row"><?php esc_html_e( 'Nav-Design', 'fairflock' ); ?></th>
 					<td>
 						<fieldset>
-							<?php foreach ( $choices as $key => $label ) : ?>
+							<?php foreach ( $header_choices as $key => $label ) : ?>
 								<label style="display:block;margin:0 0 10px;">
-									<input type="radio" name="fairflock_header_style" value="<?php echo esc_attr( $key ); ?>" <?php checked( $current, $key ); ?> />
+									<input type="radio" name="fairflock_header_style" value="<?php echo esc_attr( $key ); ?>" <?php checked( $header_current, $key ); ?> />
 									<strong><?php echo esc_html( $label ); ?></strong>
 								</label>
 							<?php endforeach; ?>
 						</fieldset>
 						<p class="description">
 							<?php esc_html_e( 'Schwebend: abgerundete Leiste mit Abstand zum Rand (Standard). Randlos: volle Breite, oben bündig, ohne Rundungen.', 'fairflock' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Volle Breite', 'fairflock' ); ?></th>
+					<td>
+						<fieldset>
+							<?php foreach ( $width_choices as $key => $label ) : ?>
+								<label style="display:block;margin:0 0 10px;">
+									<input type="radio" name="fairflock_content_width" value="<?php echo esc_attr( $key ); ?>" <?php checked( $width_current, $key ); ?> />
+									<strong><?php echo esc_html( $label ); ?></strong>
+								</label>
+							<?php endforeach; ?>
+						</fieldset>
+						<p class="description">
+							<?php esc_html_e( 'Inhaltsbreite: max. 1240px zentriert (Standard). Volle Breite: Inhalte nutzen die Viewport-Breite mit dem üblichen Seitenabstand.', 'fairflock' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Formen', 'fairflock' ); ?></th>
+					<td>
+						<fieldset>
+							<?php foreach ( $shape_choices as $key => $label ) : ?>
+								<label style="display:block;margin:0 0 10px;">
+									<input type="radio" name="fairflock_shape_style" value="<?php echo esc_attr( $key ); ?>" <?php checked( $shape_current, $key ); ?> />
+									<strong><?php echo esc_html( $label ); ?></strong>
+								</label>
+							<?php endforeach; ?>
+						</fieldset>
+						<p class="description">
+							<?php esc_html_e( 'Abgerundet: weiche Ecken an Karten, Modals und Buttons (Standard). Eckig: alle Design-Radien auf 0.', 'fairflock' ); ?>
 						</p>
 					</td>
 				</tr>

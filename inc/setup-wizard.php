@@ -217,14 +217,14 @@ function fairflock_setup_wizard_steps() {
 		),
 		'navigation'   => array(
 			'title'       => __( 'Navigation prüfen', 'fairflock' ),
-			'description' => __( 'Hauptmenü und Footer-Links setzen. Nav-Design wählen: schwebend oder randlos.', 'fairflock' ),
+			'description' => __( 'Hauptmenü und Footer-Links setzen. Unter Darstellung: Nav-Design, Inhaltsbreite und Formen wählen.', 'fairflock' ),
 			'links'       => array(
 				array(
 					'label' => __( 'Navigation im Site Editor', 'fairflock' ),
 					'url'   => $menus_url,
 				),
 				array(
-					'label' => __( 'Nav-Design wählen', 'fairflock' ),
+					'label' => __( 'Darstellung wählen', 'fairflock' ),
 					'url'   => $header_url,
 				),
 			),

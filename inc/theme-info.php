@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.186',
+			'items'   => array(
+				__( 'Darstellung: Volle Breite und Formen (abgerundet/eckig) unter FairFlock → Darstellung.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.185',
 			'items'   => array(
 				__( 'Produkt-Popup: Titel nutzt Global Styles (Überschrift) und dekodiert HTML-Entities korrekt.', 'fairflock' ),

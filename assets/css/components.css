@@ -17,6 +17,34 @@
 	--ff-surface: var(--wp--custom--surface, #ffffff);
 }
 
+/* —— Inhaltsbreite: Volle Breite (FairFlock → Darstellung) —— */
+body.ff-content-width-full {
+	--ff-shell: calc(100% - 2 * var(--ff-gutter));
+	--wp--style--global--content-size: var(--ff-shell);
+	--wp--style--global--wide-size: var(--ff-shell);
+}
+
+/* —— Formen: eckig (Radien auf 0) —— */
+body.ff-shape-sharp {
+	--wp--custom--radius--sm: 0px;
+	--wp--custom--radius--md: 0px;
+}
+
+body.ff-shape-sharp .ff-header__bar,
+body.ff-shape-sharp .ff-header--floating .ff-header__bar {
+	border-radius: 0;
+}
+
+body.ff-shape-sharp .fs-slider,
+body.ff-shape-sharp .fs-slider .slider-btn,
+body.ff-shape-sharp .fs-kicker {
+	border-radius: 0;
+}
+
+body.ff-shape-sharp .fs-slider {
+	--fs-r-sm: 0px;
+}
+
 /*
  * Floating header is out of document flow (position: fixed).
  * WordPress still applies site-blocks blockGap between header and main —

@@ -2004,16 +2004,19 @@ body.is-ff-product-open {
 	height: 40px;
 	padding: 0;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
-	background: rgba(255, 255, 255, 0.92);
-	color: var(--wp--preset--color--contrast, #0e1114);
+	border: 1px solid color-mix(in srgb, #fff 28%, transparent);
+	background: color-mix(in srgb, var(--ff-ink, #0e1114) 55%, transparent);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	color: #fff;
 	font-size: 1.125rem;
 	line-height: 1;
 	cursor: pointer;
 }
 
 .ff-product-modal__gallery-btn:hover {
-	background: var(--ff-surface, #fff);
+	background: color-mix(in srgb, var(--ff-ink, #0e1114) 72%, transparent);
+	color: #fff;
 }
 
 .ff-product-modal__thumbs {
@@ -2024,7 +2027,7 @@ body.is-ff-product-open {
 	padding: 10px;
 	overflow-x: auto;
 	scrollbar-width: thin;
-	background: #f3f5f4;
+	background: var(--wp--preset--color--base, #f3f5f4);
 	border-top: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 8%, transparent);
 }
 
@@ -2205,7 +2208,7 @@ body.is-ff-product-open {
 	margin: 0;
 	padding: 10px 12px;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 8%, #fff);
+	background: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 14%, var(--ff-surface, #fff));
 	color: var(--wp--preset--color--contrast, #0e1114);
 	font-size: 0.8125rem;
 	line-height: 1.4;
@@ -6290,10 +6293,12 @@ a.ff-bento-card,
 	opacity: 0;
 	padding: 8px 16px;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: rgba(255, 255, 255, 0.92);
+	background: color-mix(in srgb, var(--ff-ink, #0e1114) 82%, transparent);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
 	font-size: 0.875rem;
 	font-weight: 700;
-	color: var(--wp--preset--color--contrast, #0e1114);
+	color: #fff;
 	pointer-events: none;
 	transition: opacity 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
 		translate 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
@@ -6558,10 +6563,12 @@ a.ff-bento-card,
 	opacity: 0;
 	padding: 8px 16px;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: rgba(255, 255, 255, 0.92);
+	background: color-mix(in srgb, var(--ff-ink, #0e1114) 82%, transparent);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
 	font-size: 0.875rem;
 	font-weight: 700;
-	color: var(--wp--preset--color--contrast, #0e1114);
+	color: #fff;
 	pointer-events: none;
 	transition: opacity 0.35s var(--ff-ease), translate 0.35s var(--ff-ease);
 }

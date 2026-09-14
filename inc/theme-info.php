@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.195',
+			'items'   => array(
+				__( 'Produktkarten Hover „Ansehen“: dunkler Hintergrund, weißer Text (Dark Mode).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.194',
+			'items'   => array(
+				__( 'Produkt-Popup Dark Mode: Galerie-Pfeile, Thumbnail-Leiste und Hinweis-Box korrigiert.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.193',
 			'items'   => array(
 				__( 'Hero-Slideshow: Titel einheitlich größer (alle Slides gleiche Größe).', 'fairflock' ),

@@ -28,8 +28,6 @@
 	--fs-r-sm: var(--wp--custom--radius--sm, 8px);
 	--fs-t1: 0.875rem;
 	--fs-t2: 1rem;
-	/* Hero titles: larger than section/x-large, same size on every slide */
-	--fs-title: clamp(2.75rem, 6vw, 4rem);
 
 	position: relative;
 	width: 100%;
@@ -204,7 +202,7 @@
 	color: rgba(255, 255, 255, 0.9);
 }
 
-/* Hero titles: one large size on every slide (heading font from Global Styles). */
+/* Hero titles: Typografie aus Global Styles (h1/h2); Farbe weiß auf dunklem Overlay. */
 .fs-slide h1,
 .fs-slide h2,
 .fs-slide h3,
@@ -215,11 +213,6 @@
 	margin: 0 0 var(--fs-space-2);
 	max-width: 14ch;
 	text-wrap: balance;
-	font-family: var(--wp--preset--font-family--heading, "Jockey One", "Josefin Sans", sans-serif);
-	font-size: var(--fs-title) !important;
-	font-weight: 400;
-	letter-spacing: -0.03em;
-	line-height: 1.05;
 	color: #fff !important;
 }
 

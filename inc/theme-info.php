@@ -20,6 +20,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.197',
+			'items'   => array(
+				__( 'Warenkorb-Drawer: Produktname als Text (Body-Font), kein Heading-Tag.', 'fairflock' ),
+				__( 'Hero-Slider: Überschriften nutzen wieder Global Styles (h1/h2).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.196',
 			'items'   => array(
 				__( 'Kollektionen: Desktop zeigt 3 Reihen, darunter „Mehr anzeigen“ für den Rest.', 'fairflock' ),

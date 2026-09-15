@@ -222,7 +222,9 @@
 }
 
 .ff-cart-page .wc-block-components-product-name {
+	font-family: var(--wp--preset--font-family--body, inherit) !important;
 	font-weight: 600 !important;
+	letter-spacing: normal !important;
 	color: var(--wp--preset--color--contrast, #0e1114) !important;
 	text-decoration: none !important;
 }

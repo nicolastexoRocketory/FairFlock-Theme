@@ -383,9 +383,9 @@
 }
 
 .ff-checkout-page .wc-block-components-product-name {
-	font-family: var(--wp--preset--font-family--heading);
-	font-weight: 400 !important;
-	letter-spacing: -0.01em;
+	font-family: var(--wp--preset--font-family--body, inherit);
+	font-weight: 600 !important;
+	letter-spacing: normal;
 	color: var(--wp--preset--color--contrast, #0e1114) !important;
 	text-decoration: none !important;
 }

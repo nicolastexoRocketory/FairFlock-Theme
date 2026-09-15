@@ -1761,14 +1761,20 @@ body.is-ff-product-open {
 	background: #e8eceb center / cover no-repeat;
 }
 
-.ff-cart-line h3 {
+.ff-cart-line__title {
 	margin: 0 0 4px;
+	font-family: var(--wp--preset--font-family--body, inherit);
 	font-size: 0.95rem;
 	font-weight: 700;
+	letter-spacing: normal;
+	line-height: 1.35;
+	color: var(--wp--preset--color--contrast, #0e1114);
 }
 
+.ff-cart-line__qty,
 .ff-cart-line p {
 	margin: 0;
+	font-family: var(--wp--preset--font-family--body, inherit);
 	font-size: 0.8125rem;
 	color: var(--wp--preset--color--muted, #66707a);
 }

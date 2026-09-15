@@ -108,9 +108,9 @@
 					return (
 						'<article class="ff-cart-line">' +
 						thumb +
-						"<div><h3>" +
+						'<div class="ff-cart-line__meta"><p class="ff-cart-line__title">' +
 						escapeHtml(item.name || "") +
-						"</h3><p>Menge " +
+						"</p><p class=\"ff-cart-line__qty\">Menge " +
 						escapeHtml(String(item.quantity || 1)) +
 						"</p></div>" +
 						'<div class="ff-cart-line__price">' +

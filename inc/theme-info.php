@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.218',
+			'items'   => array(
+				__( 'Mega-Menü: Listen manuell, alle Kategorien live oder Produkte einer Kategorie (Site Editor).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.217',
+			'items'   => array(
+				__( 'Navigation: Hover mit animiertem Underline und dezentem Hitbox-Hintergrund.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.216',
 			'items'   => array(
 				__( 'Darstellung: Hero-Höhe der Slideshow als vh einstellbar (alle Geräte).', 'fairflock' ),

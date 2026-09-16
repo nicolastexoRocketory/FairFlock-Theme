@@ -468,7 +468,7 @@
 				renderGallery(images) +
 				'<div class="ff-product-modal__copy">' +
 				'<div class="ff-product-modal__scroll">' +
-				'<h2 id="ffProductTitle" class="ff-product-modal__title wp-block-heading">' +
+				'<h2 id="ffProductTitle" class="ff-product-modal__title">' +
 				safeText(p.name || "") +
 				"</h2>" +
 				renderRating(p) +

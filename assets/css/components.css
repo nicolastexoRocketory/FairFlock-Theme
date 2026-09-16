@@ -47,6 +47,9 @@ body.ff-shape-sharp .ff-search-bar,
 body.ff-shape-sharp .ff-search-mega,
 body.ff-shape-sharp .ff-search-hit,
 body.ff-shape-sharp .ff-search-hit-thumb,
+body.ff-shape-sharp .ff-mega-panel,
+body.ff-shape-sharp .ff-mega-panel-slot .ff-mega-panel,
+body.ff-shape-sharp .ff-mega-panel .wp-block-button__link,
 body.ff-shape-sharp .ff-shop__filters,
 body.ff-shape-sharp .ff-shop__toolbar select,
 body.ff-shape-sharp .ff-shop .ff-shop__collection:not(.ff-prod-slider__track) .wc-block-product,
@@ -484,7 +487,7 @@ body:not(.block-editor-iframe__body) .ff-header {
 	align-self: center;
 	width: 0;
 	height: 14px;
-	margin-inline: 2px;
+	margin-inline: 10px;
 	border-left: 1px solid;
 	border-left-color: inherit;
 	background: none;
@@ -579,18 +582,94 @@ body:not(.block-editor-iframe__body) .ff-header {
 	background: var(--ff-submenu-bg, rgba(14, 17, 20, 0.94));
 }
 
-.ff-header__nav .wp-block-navigation-item .wp-block-navigation__submenu-icon {
-	width: 10px;
-	height: 10px;
-	margin-left: 2px;
-	opacity: 0.7;
+/*
+ * Dropdown-Indicator: dezenter Chevron mit klarer Luft zum Trennstrich.
+ * WP legt SVG oft als .wp-block-navigation__submenu-icon / Toggle-Button an.
+ */
+.ff-header__nav .wp-block-navigation-item .wp-block-navigation__submenu-icon,
+.ff-header__nav .wp-block-navigation-submenu__toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1em;
+	height: 1em;
+	min-width: 1em;
+	margin: 0 0 0 0.35em;
+	padding: 0;
+	border: 0;
+	background: transparent;
 	color: currentColor;
-	transition: transform 0.25s var(--ff-ease);
+	opacity: 0.55;
+	line-height: 1;
+	flex-shrink: 0;
+	transition:
+		transform 0.25s var(--ff-ease),
+		opacity 0.2s var(--ff-ease);
+}
+
+/* Toggle enthält Label + Icon: Icon nur rechts, kein Extra-Margin am Button */
+.ff-header__nav .wp-block-navigation-submenu__toggle:not(:empty) {
+	width: auto;
+	min-width: 0;
+	height: auto;
+	margin-left: 0;
+	gap: 0.35em;
+	opacity: 1;
+}
+
+.ff-header__nav .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon {
+	margin-left: 0;
+}
+
+.ff-header__nav .wp-block-navigation-item .wp-block-navigation__submenu-icon svg,
+.ff-header__nav .wp-block-navigation-submenu__toggle svg {
+	display: block;
+	width: 0.55em;
+	height: 0.55em;
+	stroke-width: 1.75;
+}
+
+/* Platz rechts am Item mit Indicator = gleicher Abstand wie Text-Items zum Trennstrich */
+.ff-header__nav .wp-block-navigation-submenu > .wp-block-navigation-item__content,
+.ff-header__nav .wp-block-navigation-item.has-child > .wp-block-navigation-item__content {
+	padding-right: 2px;
+}
+
+.ff-header__nav .wp-block-navigation-submenu,
+.ff-header__nav .wp-block-navigation-item.has-child {
+	padding-right: 6px;
+}
+
+.ff-header__nav .wp-block-navigation-submenu:hover > .wp-block-navigation__submenu-icon,
+.ff-header__nav .wp-block-navigation-submenu:hover > .wp-block-navigation-submenu__toggle,
+.ff-header__nav .wp-block-navigation-item.has-child:hover > .wp-block-navigation__submenu-icon,
+.ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation__submenu-icon,
+.ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle {
+	opacity: 0.9;
 }
 
 .ff-header__nav .wp-block-navigation-submenu.is-menu-open > .wp-block-navigation__submenu-icon,
-.ff-header__nav .wp-block-navigation-item:focus-within > .wp-block-navigation__submenu-icon {
+.ff-header__nav .wp-block-navigation-submenu.is-menu-open > .wp-block-navigation-submenu__toggle,
+.ff-header__nav .wp-block-navigation-item:focus-within > .wp-block-navigation__submenu-icon,
+.ff-header__nav .wp-block-navigation-item:focus-within > .wp-block-navigation-submenu__toggle,
+.ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation__submenu-icon,
+.ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle {
 	transform: rotate(180deg);
+	opacity: 0.9;
+}
+
+/* Nur das Icon drehen, nicht den ganzen Toggle mit Label */
+.ff-header__nav .wp-block-navigation-submenu.is-menu-open > .wp-block-navigation-submenu__toggle:not(:empty),
+.ff-header__nav .wp-block-navigation-item:focus-within > .wp-block-navigation-submenu__toggle:not(:empty),
+.ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle:not(:empty) {
+	transform: none;
+}
+
+.ff-header__nav .wp-block-navigation-submenu.is-menu-open > .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon,
+.ff-header__nav .wp-block-navigation-item:focus-within > .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon,
+.ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon {
+	transform: rotate(180deg);
+	opacity: 0.9;
 }
 
 .ff-header__nav .wp-block-navigation__submenu-container {
@@ -640,19 +719,86 @@ html.is-ff-mega-open .ff-header__bar {
 body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-open {
 	display: block !important;
 	position: fixed !important;
-	/* left/top/width via nav-mega.js — flush under header bar */
-	padding-top: 10px; /* hover-bridge: Lücke schließen */
+	/* top via nav-mega.js — bündig unter der Nav, ohne Lücke */
+	left: 0 !important;
+	right: 0 !important;
+	width: 100% !important;
+	max-width: none !important;
+	transform: none !important;
+	padding: 0;
 	margin: 0;
 	pointer-events: auto;
+	box-sizing: border-box;
+	z-index: 90;
 }
 
+/* Unsichtbare Hover-Brücke nach oben (kein sichtbarer Abstand zur Nav) */
+body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-open::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: -14px;
+	height: 14px;
+}
+
+/* Slot ist immer randlos; Panel ebenfalls bündig (kein Seiten-/Nav-Abstand) */
 body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
 	width: 100%;
-	max-width: 100%;
+	max-width: none;
 	margin: 0;
 	box-sizing: border-box;
 	box-shadow: 0 16px 40px rgba(14, 17, 20, 0.28);
-	border: 1px solid color-mix(in srgb, #fff 12%, transparent);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
+	border-top: 0;
+	border-left: 0;
+	border-right: 0;
+	border-radius: 0;
+	background: var(--ff-surface, var(--wp--custom--surface, #fff));
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+/* Optional: Innenbreite der Inhalte (FairFlock → Darstellung → Mega-Menü Breite) */
+body.ff-mega-width-shell:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel > *,
+body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel > * {
+	max-width: var(--ff-shell);
+	margin-inline: auto;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* Palette: Buttons folgen Global Styles / Brand */
+.ff-mega-panel .wp-block-button:not(.is-style-outline) .wp-block-button__link {
+	background: var(--wp--preset--color--brand, #377530) !important;
+	border-color: var(--wp--preset--color--brand, #377530) !important;
+	color: var(--wp--preset--color--white, #fff) !important;
+}
+
+.ff-mega-panel .wp-block-button:not(.is-style-outline) .wp-block-button__link:hover,
+.ff-mega-panel .wp-block-button:not(.is-style-outline) .wp-block-button__link:focus-visible {
+	background: var(--wp--preset--color--brand-deep, #2a5c25) !important;
+	border-color: var(--wp--preset--color--brand-deep, #2a5c25) !important;
+	color: var(--wp--preset--color--white, #fff) !important;
+}
+
+.ff-mega-panel .wp-block-button.is-style-outline .wp-block-button__link {
+	background: transparent !important;
+	border: 1px solid var(--wp--preset--color--brand, #377530) !important;
+	color: var(--wp--preset--color--brand, #377530) !important;
+}
+
+.ff-mega-panel .wp-block-button.is-style-outline .wp-block-button__link:hover,
+.ff-mega-panel .wp-block-button.is-style-outline .wp-block-button__link:focus-visible {
+	background: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 12%, transparent) !important;
+	color: var(--wp--preset--color--brand, #377530) !important;
+}
+
+.ff-mega-panel a:where(:not(.wp-element-button)) {
+	color: inherit;
+}
+
+.ff-mega-panel a:where(:not(.wp-element-button)):hover {
+	color: var(--wp--preset--color--brand, #377530);
 }
 
 .ff-mega-panel h3,
@@ -1624,7 +1770,7 @@ ul.ff-search-menu-nav {
 
 .ff-search-hits {
 	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
+	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 12px;
 	min-height: 8px;
 	align-items: stretch;
@@ -2201,9 +2347,18 @@ body.is-ff-product-open {
 	overscroll-behavior: contain;
 }
 
-.ff-product-modal__title {
+.ff-product-modal__title,
+.ff-product-modal h2.ff-product-modal__title,
+.ff-product-modal .ff-product-modal__title.wp-block-heading {
 	margin: 0;
 	padding-right: 36px;
+	/* UI-Titel, kein Display-Heading: Body-Font aus Global Styles */
+	font-family: var(--wp--preset--font-family--body, inherit) !important;
+	font-size: 1.25rem !important;
+	font-weight: 700;
+	letter-spacing: normal;
+	line-height: 1.3;
+	text-transform: none;
 }
 
 .ff-product-modal__rating {
@@ -2309,6 +2464,7 @@ body.is-ff-product-open {
 
 .ff-product-modal__section-title {
 	margin: 0 0 8px;
+	font-family: var(--wp--preset--font-family--body, inherit);
 	font-size: 0.875rem;
 	font-weight: 700;
 	letter-spacing: 0.02em;

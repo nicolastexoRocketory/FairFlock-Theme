@@ -28,8 +28,6 @@
 	--fs-r-sm: var(--wp--custom--radius--sm, 8px);
 	--fs-t1: 0.875rem;
 	--fs-t2: 1rem;
-	/* Hero titles: intentionally larger than section h2, same size on every slide */
-	--fs-title: clamp(3.25rem, 7.5vw, 5rem);
 
 	position: relative;
 	width: 100%;
@@ -204,25 +202,21 @@
 	color: rgba(255, 255, 255, 0.9);
 }
 
-/* Hero titles: Display-Größe + Heading-Font (schlägt Body-/Block-Font-Klassen). */
+/*
+ * Hero titles: nur Layout + Kontrast.
+ * Typografie (Font, Gewicht, Größe, Tracking, …) kommt aus Global Styles
+ * via inc/hero-heading-styles.php — nicht hier hardcoden.
+ */
 .fs-slider .fs-slide h1,
 .fs-slider .fs-slide h2,
 .fs-slider .fs-slide h3,
 .fs-slider .fs-slide h4,
 .fs-slider .fs-slide h5,
 .fs-slider .fs-slide h6,
-.fs-slider .fs-slide .wp-block-heading,
-.fs-slider .fs-slide .wp-block-heading.has-body-font-family,
-.fs-slider .fs-slide .wp-block-heading.has-nav-font-family,
-.fs-slider .fs-slide .wp-block-heading[class*="-font-family"] {
+.fs-slider .fs-slide .wp-block-heading {
 	margin: 0 0 var(--fs-space-2);
 	max-width: 14ch;
 	text-wrap: balance;
-	font-family: var(--wp--preset--font-family--heading, "Jockey One", "Josefin Sans", sans-serif) !important;
-	font-size: var(--fs-title) !important;
-	font-weight: 400;
-	letter-spacing: -0.03em;
-	line-height: 1.05;
 	color: #fff !important;
 }
 

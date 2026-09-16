@@ -53,6 +53,21 @@ function fairflock_shape_style_choices() {
 }
 
 /**
+ * Mega menu width choices.
+ *
+ * @since 0.9.205
+ *
+ * @return array<string, string>
+ */
+function fairflock_mega_width_choices() {
+	return array(
+		'bar'   => __( 'Wie Header-Leiste', 'fairflock' ),
+		'shell' => __( 'Inhaltsbreite (--ff-shell)', 'fairflock' ),
+		'full'  => __( 'Volle Breite (mit Seitenabstand)', 'fairflock' ),
+	);
+}
+
+/**
  * Current header style.
  *
  * @since 0.9.173
@@ -95,6 +110,20 @@ function fairflock_get_shape_style() {
 }
 
 /**
+ * Current mega menu width mode.
+ *
+ * @since 0.9.205
+ *
+ * @return string bar|shell|full
+ */
+function fairflock_get_mega_width() {
+	$width = (string) get_option( 'fairflock_mega_width', 'bar' );
+	$ok    = array_keys( fairflock_mega_width_choices() );
+
+	return in_array( $width, $ok, true ) ? $width : 'bar';
+}
+
+/**
  * Adds body classes for CSS clearance / layout / shapes.
  *
  * @since 0.9.173
@@ -106,6 +135,7 @@ function fairflock_header_style_body_class( $classes ) {
 	$classes[] = 'ff-header-style-' . fairflock_get_header_style();
 	$classes[] = 'ff-content-width-' . fairflock_get_content_width();
 	$classes[] = 'ff-shape-' . fairflock_get_shape_style();
+	$classes[] = 'ff-mega-width-' . fairflock_get_mega_width();
 
 	return $classes;
 }
@@ -201,9 +231,14 @@ function fairflock_header_style_handle_admin_save() {
 	$shape_ok  = array_keys( fairflock_shape_style_choices() );
 	$shape     = in_array( $shape_raw, $shape_ok, true ) ? $shape_raw : 'rounded';
 
+	$mega_raw = isset( $_POST['fairflock_mega_width'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_mega_width'] ) ) : 'bar';
+	$mega_ok  = array_keys( fairflock_mega_width_choices() );
+	$mega     = in_array( $mega_raw, $mega_ok, true ) ? $mega_raw : 'bar';
+
 	update_option( 'fairflock_header_style', $header, false );
 	update_option( 'fairflock_content_width', $width, false );
 	update_option( 'fairflock_shape_style', $shape, false );
+	update_option( 'fairflock_mega_width', $mega, false );
 
 	wp_safe_redirect(
 		add_query_arg(
@@ -236,6 +271,8 @@ function fairflock_header_style_render_admin_page() {
 	$width_choices  = fairflock_content_width_choices();
 	$shape_current  = fairflock_get_shape_style();
 	$shape_choices  = fairflock_shape_style_choices();
+	$mega_current   = fairflock_get_mega_width();
+	$mega_choices   = fairflock_mega_width_choices();
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Darstellung', 'fairflock' ); ?></h1>
@@ -243,7 +280,7 @@ function fairflock_header_style_render_admin_page() {
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Einstellungen gespeichert.', 'fairflock' ); ?></p></div>
 		<?php endif; ?>
 
-		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite und Formen — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
+		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite, Formen und Mega-Menü — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
 
 		<form method="post" action="">
 			<?php wp_nonce_field( 'fairflock_header_style_settings' ); ?>
@@ -293,6 +330,22 @@ function fairflock_header_style_render_admin_page() {
 						</fieldset>
 						<p class="description">
 							<?php esc_html_e( 'Abgerundet: weiche Ecken an Karten, Modals und Buttons (Standard). Eckig: alle Design-Radien auf 0.', 'fairflock' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Mega-Menü Breite', 'fairflock' ); ?></th>
+					<td>
+						<fieldset>
+							<?php foreach ( $mega_choices as $key => $label ) : ?>
+								<label style="display:block;margin:0 0 10px;">
+									<input type="radio" name="fairflock_mega_width" value="<?php echo esc_attr( $key ); ?>" <?php checked( $mega_current, $key ); ?> />
+									<strong><?php echo esc_html( $label ); ?></strong>
+								</label>
+							<?php endforeach; ?>
+						</fieldset>
+						<p class="description">
+							<?php esc_html_e( 'Breite des Panels unter der Navigation. Bei Nav-Design „Randlos“ spannt das Mega-Menü immer über die volle Viewport-Breite. Inhalt und Spalten: Site Editor → Template-Teil „Mega-Menü“.', 'fairflock' ); ?>
 						</p>
 					</td>
 				</tr>

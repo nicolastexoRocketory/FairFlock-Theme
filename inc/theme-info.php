@@ -20,6 +20,42 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.210',
+			'items'   => array(
+				__( 'Suche: Vorschläge Desktop 3 Spalten, Mobile 2 Spalten.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.209',
+			'items'   => array(
+				__( 'Produkt-Popup: Titel nutzen Body-Font statt Heading-Design.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.208',
+			'items'   => array(
+				__( 'Mega-Menü: bündig unter der Nav und randlos (kein Abstand).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.207',
+			'items'   => array(
+				__( 'Hero-Slider: Titel übernehmen Typografie aus Global Styles (h1/h2), nicht mehr feste Theme-Werte.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.206',
+			'items'   => array(
+				__( 'Navigation: Dropdown-Indicator und Abstand zu den Trennstrichen überarbeitet.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.205',
+			'items'   => array(
+				__( 'Mega-Menü: Breite unter FairFlock → Darstellung; folgt Nav-Design/Formen; Buttons nutzen Brand-Palette.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.204',
 			'items'   => array(
 				__( 'Hero-Slider: Heading-Font greift wieder zuverlässig (auch gegen Block-Font-Klassen).', 'fairflock' ),

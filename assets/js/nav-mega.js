@@ -2,7 +2,8 @@
  * Opt-in Mega menu: opens editable template-part panel under the header.
  *
  * Trigger: Navigation item with block style “Mega” (is-style-ff-mega).
- * Content: Template part “Mega-Menü” (.ff-mega-panel-slot) — full block layout.
+ * Content: Template part “Mega-Menü” (.ff-mega-panel-slot).
+ * Position: flush under header bar, full viewport width (no edge/nav gap).
  */
 (function () {
 	var MQ = "(min-width: 961px)";
@@ -50,28 +51,30 @@
 		}
 	}
 
+	function clearInlineBox(slot) {
+		if (!slot) {
+			return;
+		}
+		["left", "right", "top", "width", "max-width", "transform"].forEach(function (prop) {
+			slot.style.removeProperty(prop);
+		});
+	}
+
 	function positionSlot(slot) {
 		var bar = headerBar();
 		if (!slot || !bar || !isDesktop()) {
-			if (slot) {
-				slot.style.removeProperty("left");
-				slot.style.removeProperty("top");
-				slot.style.removeProperty("width");
-				slot.style.removeProperty("max-width");
-			}
+			clearInlineBox(slot);
 			return;
 		}
 
 		var rect = bar.getBoundingClientRect();
-		var gutter = 16;
-		var width = Math.min(rect.width, window.innerWidth - gutter * 2);
-		var left = Math.max(gutter, Math.min(rect.left, window.innerWidth - width - gutter));
-
-		/* 0px gap — bridge is CSS padding; avoids hover death-zone */
-		slot.style.setProperty("left", left + "px", "important");
-		slot.style.setProperty("top", rect.bottom + "px", "important");
-		slot.style.setProperty("width", width + "px", "important");
-		slot.style.setProperty("max-width", "calc(100vw - " + gutter * 2 + "px)", "important");
+		/* Bündig unter der Header-Leiste, randlos über die volle Viewport-Breite (CSS). */
+		slot.style.setProperty("top", Math.round(rect.bottom) + "px", "important");
+		slot.style.removeProperty("left");
+		slot.style.removeProperty("right");
+		slot.style.removeProperty("width");
+		slot.style.removeProperty("max-width");
+		slot.style.removeProperty("transform");
 	}
 
 	function openMega(item) {
@@ -98,10 +101,7 @@
 		if (slot) {
 			slot.classList.remove("is-open");
 			slot.setAttribute("aria-hidden", "true");
-			slot.style.removeProperty("left");
-			slot.style.removeProperty("top");
-			slot.style.removeProperty("width");
-			slot.style.removeProperty("max-width");
+			clearInlineBox(slot);
 		}
 		megaItems().forEach(function (item) {
 			item.classList.remove("is-ff-mega-active");

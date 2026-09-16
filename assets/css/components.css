@@ -496,12 +496,9 @@ body:not(.block-editor-iframe__body) .ff-header {
 
 .ff-header__nav .wp-block-navigation-item__content {
 	padding: 8px;
-	font-family: var(--wp--preset--font-family--nav, Lato, sans-serif);
-	font-size: 0.75rem;
-	font-weight: 700;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
+	/* Typografie kommt aus Global Styles / Navigation-Block — hier nur Layout. */
 	white-space: nowrap;
+	text-decoration: none;
 	transition: color 0.25s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
@@ -621,10 +618,9 @@ body:not(.block-editor-iframe__body) .ff-header {
 	border-radius: 6px;
 	background: transparent;
 	text-decoration: none;
+	/* Untermenü nie in Caps — auch wenn Top-Nav Uppercase hat */
 	text-transform: none;
-	letter-spacing: 0;
-	font-size: 0.875rem;
-	font-weight: 700;
+	letter-spacing: normal;
 	white-space: nowrap;
 	line-height: 1.3;
 }

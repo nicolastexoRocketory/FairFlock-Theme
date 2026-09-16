@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.200',
+			'items'   => array(
+				__( 'Header-Navigation: Typografie aus Global Styles; Standard Body-Font ohne Uppercase.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.199',
 			'items'   => array(
 				__( 'Shop-Seitennavigation: gestylte Buttons (Surface, Brand-Aktivzustand).', 'fairflock' ),

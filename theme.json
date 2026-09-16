@@ -264,11 +264,11 @@
 			},
 			"core/navigation": {
 				"typography": {
-					"fontFamily": "var:preset|font-family|nav",
-					"fontSize": "var:preset|font-size|small",
+					"fontFamily": "var:preset|font-family|body",
+					"fontSize": "var:preset|font-size|medium",
 					"fontWeight": "700",
-					"textTransform": "uppercase",
-					"letterSpacing": "0.04em"
+					"textTransform": "none",
+					"letterSpacing": "normal"
 				}
 			},
 			"core/search": {

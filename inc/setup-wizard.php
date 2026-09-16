@@ -217,7 +217,7 @@ function fairflock_setup_wizard_steps() {
 		),
 		'navigation'   => array(
 			'title'       => __( 'Navigation prüfen', 'fairflock' ),
-			'description' => __( 'Hauptmenü und Footer-Links setzen. Unter Darstellung: Nav-Design, Inhaltsbreite und Formen wählen.', 'fairflock' ),
+			'description' => __( 'Hauptmenü und Footer-Links setzen. Unterpunkte mit Stil „Mega“ werden zum Spalten-Mega-Menü. Unter Darstellung: Nav-Design, Inhaltsbreite und Formen wählen.', 'fairflock' ),
 			'links'       => array(
 				array(
 					'label' => __( 'Navigation im Site Editor', 'fairflock' ),

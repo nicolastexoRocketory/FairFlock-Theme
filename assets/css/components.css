@@ -607,6 +607,119 @@ body:not(.block-editor-iframe__body) .ff-header {
 	display: none;
 }
 
+/* —— Mega menu (opt-in: Stil „Mega“ am Untermenü-Punkt) —— */
+.ff-header,
+.ff-header__bar,
+.ff-header__nav,
+.ff-header__nav .wp-block-navigation,
+.ff-header__nav .wp-block-navigation__container {
+	overflow: visible;
+}
+
+html.is-ff-mega-open .ff-header,
+html.is-ff-mega-open .ff-header__bar {
+	overflow: visible;
+}
+
+@media (min-width: 961px) {
+	.ff-header__nav .wp-block-navigation-submenu.is-style-ff-mega > .wp-block-navigation__submenu-container,
+	.ff-header__nav .wp-block-navigation-item.is-style-ff-mega > .wp-block-navigation__submenu-container {
+		display: grid !important;
+		grid-auto-flow: column;
+		grid-auto-columns: minmax(140px, 1fr);
+		align-items: start;
+		gap: 8px 24px !important;
+		min-width: 0;
+		width: var(--ff-shell);
+		max-width: calc(100vw - 2 * var(--ff-gutter, 32px));
+		padding: 20px 24px !important;
+		margin: 0 !important;
+		box-sizing: border-box;
+		position: fixed !important;
+		z-index: 90;
+		/* left/top/width set by nav-mega.js to match header bar */
+	}
+
+	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container > .wp-block-navigation-item {
+		display: flex !important;
+		flex-direction: column;
+		align-items: stretch;
+		width: auto !important;
+		min-width: 0;
+		position: relative;
+	}
+
+	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container > .wp-block-navigation-item > .wp-block-navigation-item__content {
+		font-family: var(--wp--preset--font-family--body, inherit);
+		font-size: 0.9375rem;
+		font-weight: 700;
+		letter-spacing: normal;
+		text-transform: none;
+		white-space: normal;
+		padding: 6px 8px 10px;
+	}
+
+	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container > .wp-block-navigation-item > .wp-block-navigation-submenu__toggle,
+	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container > .wp-block-navigation-item > .wp-block-navigation__submenu-icon {
+		display: none !important;
+	}
+
+	/* Nested links: always visible as column list (no flyout) */
+	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container .wp-block-navigation__submenu-container {
+		position: static !important;
+		inset: auto !important;
+		display: flex !important;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 2px !important;
+		min-width: 0 !important;
+		width: 100% !important;
+		max-width: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		border: 0 !important;
+		border-radius: 0 !important;
+		box-shadow: none !important;
+		background: transparent !important;
+		backdrop-filter: none !important;
+		-webkit-backdrop-filter: none !important;
+		opacity: 1 !important;
+		visibility: visible !important;
+		pointer-events: auto !important;
+		transform: none !important;
+	}
+
+	.ff-header__nav .is-style-ff-mega .wp-block-navigation__submenu-container .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
+		font-weight: 500;
+		font-size: 0.875rem;
+		white-space: normal;
+		padding: 8px;
+	}
+}
+
+@media (max-width: 960px) {
+	.ff-header__nav .wp-block-navigation-submenu.is-style-ff-mega > .wp-block-navigation__submenu-container,
+	.ff-header__nav .wp-block-navigation-item.is-style-ff-mega > .wp-block-navigation__submenu-container {
+		/* Fall back to normal stacked dropdown */
+		display: flex !important;
+		flex-direction: column;
+		position: absolute !important;
+		width: max-content;
+		min-width: 220px;
+		left: 0 !important;
+		right: auto !important;
+		transform: none !important;
+	}
+
+	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container .wp-block-navigation__submenu-container {
+		position: static !important;
+		box-shadow: none !important;
+		border: 0 !important;
+		background: transparent !important;
+		padding-left: 12px !important;
+	}
+}
+
 .ff-nav-sub .ff-nav-sub__item,
 .ff-nav-sub .ff-nav-sub__item a,
 .ff-header__nav .wp-block-navigation__submenu-container .wp-block-navigation-item__content {

@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.202',
+			'items'   => array(
+				__( 'Navigation: opt-in Mega-Menü per Block-Stil „Mega“ (Site Editor, Spalten über Unterpunkte).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.201',
+			'items'   => array(
+				__( 'Mein Konto: Adressen-Grid, Login-Karte, Dark-Mode-Felder und Body-Font für Inhaltsüberschriften.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.200',
 			'items'   => array(
 				__( 'Header-Navigation: Typografie aus Global Styles; Standard Body-Font ohne Uppercase.', 'fairflock' ),

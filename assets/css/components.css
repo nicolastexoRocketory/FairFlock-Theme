@@ -410,19 +410,24 @@ body:not(.block-editor-iframe__body) .ff-header {
 
 .ff-header__brand {
 	flex-shrink: 0;
-	max-width: min(100%, 48vw);
+	max-width: min(100%, 60vw);
 }
 
-/* Respect Site Logo “width” from the Site Editor (HTML width/height attrs). */
+/* Site Logo „Breite“ aus dem Site Editor (width-Attribut / Inline-Style) muss greifen. */
 .ff-header__brand .wp-block-site-logo {
+	line-height: 0;
+}
+
+.ff-header__brand .wp-block-site-logo a {
+	display: inline-block;
 	line-height: 0;
 }
 
 .ff-header__brand .wp-block-site-logo img {
 	display: block;
-	height: auto;
+	height: auto !important;
 	max-width: 100%;
-	max-height: calc(var(--ff-header-height, 72px) - 16px);
+	max-height: none;
 	object-fit: contain;
 }
 

@@ -20,6 +20,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.198',
+			'items'   => array(
+				__( 'Hero: Titel wieder größer (alle Slides gleich); Primär-Button bleibt hell (auch Dark Mode).', 'fairflock' ),
+				__( 'Header-Logo: Site-Editor-Breite greift wieder (kein max-height-Cap mehr).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.197',
 			'items'   => array(
 				__( 'Warenkorb-Drawer: Produktname als Text (Body-Font), kein Heading-Tag.', 'fairflock' ),

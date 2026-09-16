@@ -28,6 +28,8 @@
 	--fs-r-sm: var(--wp--custom--radius--sm, 8px);
 	--fs-t1: 0.875rem;
 	--fs-t2: 1rem;
+	/* Hero titles: intentionally larger than section h2, same size on every slide */
+	--fs-title: clamp(3.25rem, 7.5vw, 5rem);
 
 	position: relative;
 	width: 100%;
@@ -202,7 +204,7 @@
 	color: rgba(255, 255, 255, 0.9);
 }
 
-/* Hero titles: Typografie aus Global Styles (h1/h2); Farbe weiß auf dunklem Overlay. */
+/* Hero titles: große Display-Größe auf allen Slides; Heading-Font aus Global Styles. */
 .fs-slide h1,
 .fs-slide h2,
 .fs-slide h3,
@@ -213,6 +215,11 @@
 	margin: 0 0 var(--fs-space-2);
 	max-width: 14ch;
 	text-wrap: balance;
+	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-size: var(--fs-title) !important;
+	font-weight: 400;
+	letter-spacing: -0.03em;
+	line-height: 1.05;
 	color: #fff !important;
 }
 
@@ -254,13 +261,15 @@
 
 .fs-slider a.btn-light,
 .fs-slider .btn-light:not(.wp-block-button) {
-	background: var(--ff-surface, #fff);
-	color: var(--fs-ink);
+	/* Always light CTA on dark hero — never Dark-Mode surface */
+	background: #fff;
+	color: var(--fs-ink, #0e1114);
 }
 
 .fs-slider a.btn-light:hover,
 .fs-slider .btn-light:not(.wp-block-button):hover {
 	background: #f2f4f3;
+	color: var(--fs-ink, #0e1114);
 }
 
 .fs-slider a.btn-glass,
@@ -653,15 +662,19 @@
 	transform: translateY(-2px);
 }
 
-.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link {
-	background: var(--ff-surface, #fff) !important;
+.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link,
+.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link {
+	background: #fff !important;
 	color: var(--fs-ink, #0e1114) !important;
 	border: 0 !important;
 }
 
 .fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:hover,
-.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:focus-visible {
+.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:focus-visible,
+.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:hover,
+.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:focus-visible {
 	background: #f2f4f3 !important;
+	color: var(--fs-ink, #0e1114) !important;
 }
 
 .fs-slider .cta-row .wp-block-button.btn-glass .wp-block-button__link {

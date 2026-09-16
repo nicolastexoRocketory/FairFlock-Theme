@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.204',
+			'items'   => array(
+				__( 'Hero-Slider: Heading-Font greift wieder zuverlässig (auch gegen Block-Font-Klassen).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.203',
 			'items'   => array(
 				__( 'Mega-Menü: Inhalt als Template-Teil „Mega-Menü“ (Spalten/Blöcke); Hover-Lücke geschlossen.', 'fairflock' ),

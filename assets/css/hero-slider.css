@@ -204,18 +204,21 @@
 	color: rgba(255, 255, 255, 0.9);
 }
 
-/* Hero titles: große Display-Größe auf allen Slides; Heading-Font aus Global Styles. */
-.fs-slide h1,
-.fs-slide h2,
-.fs-slide h3,
-.fs-slide h4,
-.fs-slide h5,
-.fs-slide h6,
-.fs-slide .wp-block-heading {
+/* Hero titles: Display-Größe + Heading-Font (schlägt Body-/Block-Font-Klassen). */
+.fs-slider .fs-slide h1,
+.fs-slider .fs-slide h2,
+.fs-slider .fs-slide h3,
+.fs-slider .fs-slide h4,
+.fs-slider .fs-slide h5,
+.fs-slider .fs-slide h6,
+.fs-slider .fs-slide .wp-block-heading,
+.fs-slider .fs-slide .wp-block-heading.has-body-font-family,
+.fs-slider .fs-slide .wp-block-heading.has-nav-font-family,
+.fs-slider .fs-slide .wp-block-heading[class*="-font-family"] {
 	margin: 0 0 var(--fs-space-2);
 	max-width: 14ch;
 	text-wrap: balance;
-	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-family: var(--wp--preset--font-family--heading, "Jockey One", "Josefin Sans", sans-serif) !important;
 	font-size: var(--fs-title) !important;
 	font-weight: 400;
 	letter-spacing: -0.03em;

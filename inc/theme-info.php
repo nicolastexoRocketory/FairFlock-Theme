@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.199',
+			'items'   => array(
+				__( 'Shop-Seitennavigation: gestylte Buttons (Surface, Brand-Aktivzustand).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.198',
 			'items'   => array(
 				__( 'Hero: Titel wieder größer (alle Slides gleich); Primär-Button bleibt hell (auch Dark Mode).', 'fairflock' ),

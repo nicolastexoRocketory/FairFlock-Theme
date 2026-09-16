@@ -50,6 +50,12 @@ body.ff-shape-sharp .ff-search-hit-thumb,
 body.ff-shape-sharp .ff-shop__filters,
 body.ff-shape-sharp .ff-shop__toolbar select,
 body.ff-shape-sharp .ff-shop .ff-shop__collection:not(.ff-prod-slider__track) .wc-block-product,
+body.ff-shape-sharp .ff-shop .wp-block-query-pagination-previous,
+body.ff-shape-sharp .ff-shop .wp-block-query-pagination-next,
+body.ff-shape-sharp .ff-shop .wp-block-query-pagination .page-numbers,
+body.ff-shape-sharp .ff-shop__pagination .wp-block-query-pagination-previous,
+body.ff-shape-sharp .ff-shop__pagination .wp-block-query-pagination-next,
+body.ff-shape-sharp .ff-shop__pagination .page-numbers,
 body.ff-shape-sharp .ff-cart-drawer,
 body.ff-shape-sharp .ff-cart-drawer__close,
 body.ff-shape-sharp .ff-cart-line__thumb,
@@ -6425,6 +6431,105 @@ a.ff-bento-card,
 	display: none !important;
 }
 
+/* Shop / Suche: Seitennavigation */
+.ff-shop .wp-block-query-pagination,
+.ff-shop__pagination,
+.wp-block-query-pagination.ff-shop__pagination {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	margin: var(--wp--preset--spacing--40, 2rem) 0 0;
+	padding: 0;
+	font-family: var(--wp--preset--font-family--body, inherit);
+}
+
+.ff-shop .wp-block-query-pagination-previous,
+.ff-shop .wp-block-query-pagination-next,
+.ff-shop .wp-block-query-pagination .page-numbers,
+.ff-shop__pagination .wp-block-query-pagination-previous,
+.ff-shop__pagination .wp-block-query-pagination-next,
+.ff-shop__pagination .page-numbers {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 40px;
+	min-width: 40px;
+	margin: 0;
+	padding: 8px 14px;
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 14%, transparent);
+	background: var(--ff-surface, #fff);
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	font-size: 0.9375rem;
+	font-weight: 700;
+	line-height: 1.2;
+	text-decoration: none !important;
+	box-shadow: none;
+	transition: background 0.25s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		border-color 0.25s,
+		color 0.25s,
+		transform 0.25s;
+}
+
+.ff-shop .wp-block-query-pagination-numbers,
+.ff-shop__pagination .wp-block-query-pagination-numbers {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.ff-shop .wp-block-query-pagination .page-numbers.dots,
+.ff-shop__pagination .page-numbers.dots {
+	min-width: auto;
+	padding-inline: 6px;
+	border: 0;
+	background: transparent;
+	color: var(--wp--preset--color--muted, #66707a) !important;
+	font-weight: 700;
+	pointer-events: none;
+}
+
+.ff-shop .wp-block-query-pagination a.page-numbers:hover,
+.ff-shop .wp-block-query-pagination a.page-numbers:focus-visible,
+.ff-shop .wp-block-query-pagination-previous:hover,
+.ff-shop .wp-block-query-pagination-previous:focus-visible,
+.ff-shop .wp-block-query-pagination-next:hover,
+.ff-shop .wp-block-query-pagination-next:focus-visible,
+.ff-shop__pagination a.page-numbers:hover,
+.ff-shop__pagination a.page-numbers:focus-visible,
+.ff-shop__pagination .wp-block-query-pagination-previous:hover,
+.ff-shop__pagination .wp-block-query-pagination-previous:focus-visible,
+.ff-shop__pagination .wp-block-query-pagination-next:hover,
+.ff-shop__pagination .wp-block-query-pagination-next:focus-visible {
+	border-color: var(--wp--preset--color--contrast, #0e1114);
+	background: var(--wp--preset--color--base, #f3f5f4);
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	transform: translateY(-1px);
+}
+
+.ff-shop .wp-block-query-pagination .page-numbers.current,
+.ff-shop__pagination .page-numbers.current {
+	border-color: var(--wp--preset--color--brand, #377530);
+	background: var(--wp--preset--color--brand, #377530);
+	color: #fff !important;
+	cursor: default;
+}
+
+@media (max-width: 600px) {
+	.ff-shop .wp-block-query-pagination-previous,
+	.ff-shop .wp-block-query-pagination-next,
+	.ff-shop__pagination .wp-block-query-pagination-previous,
+	.ff-shop__pagination .wp-block-query-pagination-next {
+		flex: 1 1 auto;
+		min-width: 0;
+		justify-content: center;
+	}
+}
 
 @media (max-width: 900px) {
 	.ff-shop__layout,

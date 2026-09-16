@@ -228,7 +228,43 @@ body:not(.block-editor-iframe__body) .ff-header {
 	 * (class or inline style). Never override user-chosen nav colors. */
 	box-shadow: 0 8px 32px rgba(14, 17, 20, 0.12);
 	color: #fff;
-	transition: background 0.35s var(--ff-ease), border-color 0.35s var(--ff-ease), box-shadow 0.35s var(--ff-ease);
+	transition:
+		background 0.35s var(--ff-ease),
+		border-color 0.35s var(--ff-ease),
+		box-shadow 0.35s var(--ff-ease),
+		min-height 0.3s var(--ff-ease),
+		padding 0.3s var(--ff-ease);
+}
+
+/* Scroll: leichte Kompakt-Skalierung der Header-Leiste */
+html.is-ff-header-compact .ff-header__bar {
+	min-height: calc(var(--ff-header-height) - 12px);
+	padding-block: 4px;
+}
+
+html.is-ff-header-compact .ff-header__brand {
+	transform: scale(0.9);
+	transform-origin: left center;
+}
+
+html.is-ff-header-compact .ff-header__brand,
+html.is-ff-header-compact .ff-header__icons .wp-block-button__link,
+html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
+	transition: transform 0.3s var(--ff-ease);
+}
+
+html.is-ff-header-compact .ff-header__icons .wp-block-button__link,
+html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
+	transform: scale(0.92);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ff-header__bar,
+	html.is-ff-header-compact .ff-header__brand,
+	html.is-ff-header-compact .ff-header__icons .wp-block-button__link,
+	html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
+		transition: none;
+	}
 }
 
 .ff-header__bar:not(.has-background):not([class*="-background-color"]):not([style*="background"]) {
@@ -424,6 +460,7 @@ body:not(.block-editor-iframe__body) .ff-header {
 .ff-header__brand {
 	flex-shrink: 0;
 	max-width: min(100%, 60vw);
+	transition: transform 0.3s var(--ff-ease);
 }
 
 /* Site Logo „Breite“ aus dem Site Editor (width-Attribut / Inline-Style) muss greifen. */
@@ -585,8 +622,7 @@ body:not(.block-editor-iframe__body) .ff-header {
 }
 
 /*
- * Dropdown-Indicator: dezenter Chevron mit klarer Luft zum Trennstrich.
- * WP legt SVG oft als .wp-block-navigation__submenu-icon / Toggle-Button an.
+ * Dropdown-Indicator: Abstand zum Label, Hover-Farbe wie Text, animierte Drehung.
  */
 .ff-header__nav .wp-block-navigation-item .wp-block-navigation__submenu-icon,
 .ff-header__nav .wp-block-navigation-submenu__toggle {
@@ -596,27 +632,29 @@ body:not(.block-editor-iframe__body) .ff-header {
 	width: 1em;
 	height: 1em;
 	min-width: 1em;
-	margin: 0 0 0 0.35em;
+	margin: 0 0 0 0.65em;
 	padding: 0;
 	border: 0;
 	background: transparent;
 	color: currentColor;
-	opacity: 0.55;
+	opacity: 0.65;
 	line-height: 1;
 	flex-shrink: 0;
 	transition:
-		transform 0.25s var(--ff-ease),
-		opacity 0.2s var(--ff-ease);
+		transform 0.35s var(--ff-ease),
+		color 0.25s var(--ff-ease),
+		opacity 0.25s var(--ff-ease);
 }
 
-/* Toggle enthält Label + Icon: Icon nur rechts, kein Extra-Margin am Button */
+/* Toggle enthält Label + Icon */
 .ff-header__nav .wp-block-navigation-submenu__toggle:not(:empty) {
 	width: auto;
 	min-width: 0;
 	height: auto;
 	margin-left: 0;
-	gap: 0.35em;
+	gap: 0.65em;
 	opacity: 1;
+	color: inherit;
 }
 
 .ff-header__nav .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon {
@@ -626,15 +664,17 @@ body:not(.block-editor-iframe__body) .ff-header {
 .ff-header__nav .wp-block-navigation-item .wp-block-navigation__submenu-icon svg,
 .ff-header__nav .wp-block-navigation-submenu__toggle svg {
 	display: block;
-	width: 0.55em;
-	height: 0.55em;
-	stroke-width: 1.75;
+	width: 0.6em;
+	height: 0.6em;
+	fill: currentColor;
+	stroke: currentColor;
+	color: inherit;
 }
 
-/* Platz rechts am Item mit Indicator = gleicher Abstand wie Text-Items zum Trennstrich */
+/* Mehr Luft zwischen Label und Chevron */
 .ff-header__nav .wp-block-navigation-submenu > .wp-block-navigation-item__content,
 .ff-header__nav .wp-block-navigation-item.has-child > .wp-block-navigation-item__content {
-	padding-right: 2px;
+	padding-right: 0;
 }
 
 .ff-header__nav .wp-block-navigation-submenu,
@@ -642,36 +682,76 @@ body:not(.block-editor-iframe__body) .ff-header {
 	padding-right: 6px;
 }
 
+/* Hover / aktiv: Indicator = gleiche Farbe wie Menüpunkt-Text */
 .ff-header__nav .wp-block-navigation-submenu:hover > .wp-block-navigation__submenu-icon,
 .ff-header__nav .wp-block-navigation-submenu:hover > .wp-block-navigation-submenu__toggle,
 .ff-header__nav .wp-block-navigation-item.has-child:hover > .wp-block-navigation__submenu-icon,
+.ff-header__nav .wp-block-navigation-item.has-child:hover > .wp-block-navigation-submenu__toggle,
+.ff-header__nav .wp-block-navigation-submenu:focus-within > .wp-block-navigation__submenu-icon,
+.ff-header__nav .wp-block-navigation-submenu:focus-within > .wp-block-navigation-submenu__toggle,
 .ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation__submenu-icon,
 .ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle {
-	opacity: 0.9;
+	color: var(--wp--preset--color--brand, #377530) !important;
+	opacity: 1;
 }
 
+.ff-header__nav:not(.has-text-color) .wp-block-navigation-submenu:hover > .wp-block-navigation__submenu-icon,
+.ff-header__nav:not(.has-text-color) .wp-block-navigation-submenu:hover > .wp-block-navigation-submenu__toggle,
+.ff-header__nav:not(.has-text-color) .wp-block-navigation-item.has-child:hover > .wp-block-navigation__submenu-icon,
+.ff-header__nav:not(.has-text-color) .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation__submenu-icon,
+.ff-header__nav:not(.has-text-color) .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle {
+	color: #fff !important;
+}
+
+.ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation-submenu:hover > .wp-block-navigation__submenu-icon,
+.ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation-item.has-child:hover > .wp-block-navigation__submenu-icon,
+.ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation-submenu:hover > .wp-block-navigation__submenu-icon,
+.ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation-item.has-child:hover > .wp-block-navigation__submenu-icon,
+.ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation__submenu-icon,
+.ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation__submenu-icon {
+	color: var(--wp--preset--color--brand, #377530) !important;
+}
+
+/* Animierte Drehung: Hover + geöffnet */
+.ff-header__nav .wp-block-navigation-submenu:hover > .wp-block-navigation__submenu-icon,
+.ff-header__nav .wp-block-navigation-item.has-child:hover > .wp-block-navigation__submenu-icon,
 .ff-header__nav .wp-block-navigation-submenu.is-menu-open > .wp-block-navigation__submenu-icon,
-.ff-header__nav .wp-block-navigation-submenu.is-menu-open > .wp-block-navigation-submenu__toggle,
 .ff-header__nav .wp-block-navigation-item:focus-within > .wp-block-navigation__submenu-icon,
-.ff-header__nav .wp-block-navigation-item:focus-within > .wp-block-navigation-submenu__toggle,
-.ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation__submenu-icon,
-.ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle {
+.ff-header__nav .is-style-ff-mega:hover > .wp-block-navigation__submenu-icon,
+.ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation__submenu-icon {
 	transform: rotate(180deg);
-	opacity: 0.9;
+}
+
+.ff-header__nav .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon {
+	transition:
+		transform 0.35s var(--ff-ease),
+		color 0.25s var(--ff-ease),
+		opacity 0.25s var(--ff-ease);
 }
 
 /* Nur das Icon drehen, nicht den ganzen Toggle mit Label */
 .ff-header__nav .wp-block-navigation-submenu.is-menu-open > .wp-block-navigation-submenu__toggle:not(:empty),
 .ff-header__nav .wp-block-navigation-item:focus-within > .wp-block-navigation-submenu__toggle:not(:empty),
+.ff-header__nav .wp-block-navigation-submenu:hover > .wp-block-navigation-submenu__toggle:not(:empty),
 .ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle:not(:empty) {
 	transform: none;
 }
 
+.ff-header__nav .wp-block-navigation-submenu:hover > .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon,
 .ff-header__nav .wp-block-navigation-submenu.is-menu-open > .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon,
 .ff-header__nav .wp-block-navigation-item:focus-within > .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon,
+.ff-header__nav .is-style-ff-mega:hover > .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon,
 .ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon {
 	transform: rotate(180deg);
-	opacity: 0.9;
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ff-header__nav .wp-block-navigation-item .wp-block-navigation__submenu-icon,
+	.ff-header__nav .wp-block-navigation-submenu__toggle,
+	.ff-header__nav .wp-block-navigation-submenu__toggle .wp-block-navigation__submenu-icon {
+		transition: none;
+	}
 }
 
 .ff-header__nav .wp-block-navigation__submenu-container {
@@ -917,6 +997,19 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 .ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-item__content,
 .ff-header__nav .is-style-ff-mega:hover > .wp-block-navigation-item__content {
 	opacity: 1;
+	color: var(--wp--preset--color--brand, #377530) !important;
+}
+
+.ff-header__nav:not(.has-text-color) .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-item__content,
+.ff-header__nav:not(.has-text-color) .is-style-ff-mega:hover > .wp-block-navigation-item__content {
+	color: #fff !important;
+}
+
+.ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-item__content,
+.ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-item__content,
+.ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .is-style-ff-mega:hover > .wp-block-navigation-item__content,
+.ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .is-style-ff-mega:hover > .wp-block-navigation-item__content {
+	color: var(--wp--preset--color--brand, #377530) !important;
 }
 
 @media (max-width: 960px) {

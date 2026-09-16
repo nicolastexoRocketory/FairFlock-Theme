@@ -122,6 +122,17 @@ function fairflock_enqueue_frontend_assets() {
 	);
 
 	wp_enqueue_script(
+		'fairflock-header-scroll',
+		FAIRFLOCK_URI . '/assets/js/header-scroll.js',
+		array(),
+		FAIRFLOCK_VERSION,
+		array(
+			'strategy'  => 'defer',
+			'in_footer' => true,
+		)
+	);
+
+	wp_enqueue_script(
 		'fairflock-nav-mega',
 		FAIRFLOCK_URI . '/assets/js/nav-mega.js',
 		array(),

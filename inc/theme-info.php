@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.213',
+			'items'   => array(
+				__( 'Navigation: Dropdown-Indicator mit Hover-Farbe, mehr Abstand und Dreh-Animation.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.212',
+			'items'   => array(
+				__( 'Header: leichte Kompakt-Skalierung beim Scrollen.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.211',
 			'items'   => array(
 				__( 'Mega-Menü: 4 Spalten — 3× Links + Promo-Card (Bild, Titel, Text, Button).', 'fairflock' ),

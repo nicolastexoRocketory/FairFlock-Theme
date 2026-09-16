@@ -1,6 +1,6 @@
 <?php
 /**
- * Darstellung: Nav-Design, Inhaltsbreite, Formen.
+ * Darstellung: Nav-Design, Inhaltsbreite, Formen, Hero-Höhe.
  *
  * @package FairFlock
  * @since 0.9.173
@@ -124,6 +124,62 @@ function fairflock_get_mega_width() {
 }
 
 /**
+ * Hero slideshow height in vh (all devices).
+ *
+ * @since 0.9.216
+ *
+ * @return int 40–100
+ */
+function fairflock_get_hero_height_vh() {
+	$vh = (int) get_option( 'fairflock_hero_height_vh', 80 );
+
+	return max( 40, min( 100, $vh ) );
+}
+
+/**
+ * Prints CSS variable for hero height.
+ *
+ * @since 0.9.216
+ *
+ * @return void
+ */
+function fairflock_print_hero_height_css() {
+	$vh = fairflock_get_hero_height_vh();
+	$css = sprintf(
+		':root{--ff-hero-vh:%1$dvh;}body:not(.block-editor-iframe__body) .fs-slider{height:var(--ff-hero-vh);min-height:var(--ff-hero-vh);}',
+		$vh
+	);
+
+	if ( wp_style_is( 'fairflock-hero-slider', 'enqueued' ) || wp_style_is( 'fairflock-hero-slider', 'registered' ) ) {
+		wp_add_inline_style( 'fairflock-hero-slider', $css );
+		return;
+	}
+
+	printf(
+		'<style id="fairflock-hero-height">%s</style>' . "\n",
+		$css // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- numeric CSS only
+	);
+}
+add_action( 'wp_enqueue_scripts', 'fairflock_print_hero_height_css', 25 );
+
+/**
+ * Hero height also in the block editor canvas.
+ *
+ * @since 0.9.216
+ *
+ * @return void
+ */
+function fairflock_print_hero_height_css_editor() {
+	$vh  = fairflock_get_hero_height_vh();
+	$css = sprintf(
+		'.editor-styles-wrapper .fs-slider,.block-editor-iframe__body .fs-slider{--ff-hero-vh:%1$dvh;}',
+		$vh
+	);
+	wp_add_inline_style( 'wp-edit-blocks', $css );
+}
+add_action( 'enqueue_block_editor_assets', 'fairflock_print_hero_height_css_editor', 25 );
+
+/**
  * Adds body classes for CSS clearance / layout / shapes.
  *
  * @since 0.9.173
@@ -235,10 +291,14 @@ function fairflock_header_style_handle_admin_save() {
 	$mega_ok  = array_keys( fairflock_mega_width_choices() );
 	$mega     = in_array( $mega_raw, $mega_ok, true ) ? $mega_raw : 'bar';
 
+	$hero_vh = isset( $_POST['fairflock_hero_height_vh'] ) ? (int) wp_unslash( $_POST['fairflock_hero_height_vh'] ) : 80;
+	$hero_vh = max( 40, min( 100, $hero_vh ) );
+
 	update_option( 'fairflock_header_style', $header, false );
 	update_option( 'fairflock_content_width', $width, false );
 	update_option( 'fairflock_shape_style', $shape, false );
 	update_option( 'fairflock_mega_width', $mega, false );
+	update_option( 'fairflock_hero_height_vh', $hero_vh, false );
 
 	wp_safe_redirect(
 		add_query_arg(
@@ -273,6 +333,7 @@ function fairflock_header_style_render_admin_page() {
 	$shape_choices  = fairflock_shape_style_choices();
 	$mega_current   = fairflock_get_mega_width();
 	$mega_choices   = fairflock_mega_width_choices();
+	$hero_vh        = fairflock_get_hero_height_vh();
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Darstellung', 'fairflock' ); ?></h1>
@@ -280,7 +341,7 @@ function fairflock_header_style_render_admin_page() {
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Einstellungen gespeichert.', 'fairflock' ); ?></p></div>
 		<?php endif; ?>
 
-		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite, Formen und Mega-Menü — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
+		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite, Formen, Mega-Menü und Hero — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
 
 		<form method="post" action="">
 			<?php wp_nonce_field( 'fairflock_header_style_settings' ); ?>
@@ -346,6 +407,25 @@ function fairflock_header_style_render_admin_page() {
 						</fieldset>
 						<p class="description">
 							<?php esc_html_e( 'Breite des Panels unter der Navigation. Bei Nav-Design „Randlos“ spannt das Mega-Menü immer über die volle Viewport-Breite. Inhalt und Spalten: Site Editor → Template-Teil „Mega-Menü“.', 'fairflock' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="fairflock_hero_height_vh"><?php esc_html_e( 'Hero-Höhe', 'fairflock' ); ?></label></th>
+					<td>
+						<input
+							type="number"
+							name="fairflock_hero_height_vh"
+							id="fairflock_hero_height_vh"
+							value="<?php echo esc_attr( (string) $hero_vh ); ?>"
+							min="40"
+							max="100"
+							step="1"
+							class="small-text"
+						/>
+						<span>vh</span>
+						<p class="description">
+							<?php esc_html_e( 'Höhe der Hero-Slideshow in Viewport-Höhe (vh), gilt für alle Geräte. Standard: 80. Erlaubt: 40–100.', 'fairflock' ); ?>
 						</p>
 					</td>
 				</tr>

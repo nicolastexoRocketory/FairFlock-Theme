@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.216',
+			'items'   => array(
+				__( 'Darstellung: Hero-Höhe der Slideshow als vh einstellbar (alle Geräte).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.215',
 			'items'   => array(
 				__( 'Navigation: Indicator wieder dezent (keine Brand-Farbe), klarer Abstand zum Label, Dreh-Animation.', 'fairflock' ),

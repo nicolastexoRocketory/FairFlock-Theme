@@ -32,8 +32,8 @@
 	position: relative;
 	width: 100%;
 	margin: 0;
-	height: min(80vh, 720px);
-	min-height: min(80vh, 720px);
+	height: var(--ff-hero-vh, 80vh);
+	min-height: var(--ff-hero-vh, 80vh);
 	border-radius: 0;
 	overflow: hidden;
 	color: #fff;
@@ -497,14 +497,10 @@
 }
 
 @media (max-width: 960px) {
-	.fs-slider {
-		height: 90vh;
-		min-height: 90vh;
-	}
-
 	/*
 	 * Content is end-aligned; without top padding a tall copy block
 	 * (kicker/overtitle) can sit under the fixed header on small screens.
+	 * Höhe kommt global aus --ff-hero-vh (FairFlock → Darstellung).
 	 */
 	.fs-slide {
 		padding-top: 6em;

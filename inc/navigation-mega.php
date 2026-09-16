@@ -106,3 +106,59 @@ function fairflock_maybe_inject_mega_panel_into_header() {
 	update_option( 'fairflock_mega_panel_slot', '1' );
 }
 add_action( 'init', 'fairflock_maybe_inject_mega_panel_into_header', 40 );
+
+/**
+ * One-time: apply 4-column Mega-Menü layout (3 link cols + promo card).
+ *
+ * Overwrites customized mega-panel template parts so the new default appears
+ * without manually resetting the Site Editor part.
+ *
+ * @since 0.9.211
+ *
+ * @return void
+ */
+function fairflock_maybe_refresh_mega_panel_layout() {
+	if ( get_option( 'fairflock_mega_panel_layout' ) === '4col-v1' ) {
+		return;
+	}
+
+	if ( get_stylesheet() !== 'fairflock' ) {
+		return;
+	}
+
+	$file = FAIRFLOCK_DIR . '/parts/mega-panel.html';
+	if ( ! is_readable( $file ) ) {
+		return;
+	}
+
+	$markup = file_get_contents( $file );
+	if ( ! is_string( $markup ) || $markup === '' ) {
+		return;
+	}
+
+	$parts = get_posts(
+		array(
+			'post_type'      => 'wp_template_part',
+			'name'           => 'mega-panel',
+			'post_status'    => array( 'publish', 'draft', 'auto-draft' ),
+			'posts_per_page' => 20,
+			'no_found_rows'  => true,
+		)
+	);
+
+	foreach ( $parts as $part ) {
+		if ( ! $part instanceof WP_Post ) {
+			continue;
+		}
+
+		wp_update_post(
+			array(
+				'ID'           => (int) $part->ID,
+				'post_content' => $markup,
+			)
+		);
+	}
+
+	update_option( 'fairflock_mega_panel_layout', '4col-v1', false );
+}
+add_action( 'init', 'fairflock_maybe_refresh_mega_panel_layout', 41 );

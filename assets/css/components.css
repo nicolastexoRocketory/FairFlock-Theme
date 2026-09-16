@@ -50,6 +50,8 @@ body.ff-shape-sharp .ff-search-hit-thumb,
 body.ff-shape-sharp .ff-mega-panel,
 body.ff-shape-sharp .ff-mega-panel-slot .ff-mega-panel,
 body.ff-shape-sharp .ff-mega-panel .wp-block-button__link,
+body.ff-shape-sharp .ff-mega-panel__card,
+body.ff-shape-sharp .ff-mega-panel__card-media,
 body.ff-shape-sharp .ff-shop__filters,
 body.ff-shape-sharp .ff-shop__toolbar select,
 body.ff-shape-sharp .ff-shop .ff-shop__collection:not(.ff-prod-slider__track) .wc-block-product,
@@ -811,6 +813,68 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 	color: inherit;
 }
 
+/* 4 Spalten: 3× Links + 1× Promo-Card */
+.ff-mega-panel__cols.wp-block-columns,
+.ff-mega-panel .ff-mega-panel__cols {
+	display: grid !important;
+	grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(220px, 1.15fr);
+	gap: 28px !important;
+	align-items: start;
+	flex-wrap: nowrap !important;
+}
+
+.ff-mega-panel__cols > .wp-block-column {
+	flex-basis: auto !important;
+	width: auto !important;
+	max-width: none !important;
+	margin: 0 !important;
+}
+
+.ff-mega-panel__card {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	height: 100%;
+	overflow: hidden;
+	border-radius: var(--wp--custom--radius--md, 12px);
+	background: var(--ff-surface, var(--wp--custom--surface, #fff));
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 10%, transparent);
+	box-sizing: border-box;
+}
+
+.ff-mega-panel__card-media.wp-block-cover,
+.ff-mega-panel__card .wp-block-cover {
+	min-height: 160px !important;
+	border-radius: 0;
+	overflow: hidden;
+}
+
+.ff-mega-panel__card-media .wp-block-heading,
+.ff-mega-panel__card .wp-block-cover .wp-block-heading {
+	margin: 0;
+	font-family: var(--wp--preset--font-family--body, inherit) !important;
+	font-weight: 700;
+	letter-spacing: normal;
+	line-height: 1.25;
+	text-wrap: balance;
+}
+
+.ff-mega-panel__card-body {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	flex: 1 1 auto;
+}
+
+.ff-mega-panel__card-body p {
+	margin: 0;
+	line-height: 1.45;
+}
+
+.ff-mega-panel__card .wp-block-buttons {
+	margin: 0;
+}
+
 .ff-mega-panel__links,
 .ff-mega-panel .wp-block-list {
 	margin: 0;
@@ -837,6 +901,17 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 	opacity: 1;
 	text-decoration: underline;
 	text-underline-offset: 2px;
+}
+
+@media (max-width: 1100px) {
+	.ff-mega-panel__cols.wp-block-columns,
+	.ff-mega-panel .ff-mega-panel__cols {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.ff-mega-panel__cols > .wp-block-column:last-child {
+		grid-column: 1 / -1;
+	}
 }
 
 .ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-item__content,

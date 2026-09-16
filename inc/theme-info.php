@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.211',
+			'items'   => array(
+				__( 'Mega-Menü: 4 Spalten — 3× Links + Promo-Card (Bild, Titel, Text, Button).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.210',
 			'items'   => array(
 				__( 'Suche: Vorschläge Desktop 3 Spalten, Mobile 2 Spalten.', 'fairflock' ),

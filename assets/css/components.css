@@ -249,11 +249,13 @@ body:not(.block-editor-iframe__body) .ff-header {
 .block-editor-iframe__body .ff-header .ff-search-overlay-slot,
 .block-editor-iframe__body .ff-header .ff-cart-drawer-slot,
 .block-editor-iframe__body .ff-header .ff-submenu-slot,
+.block-editor-iframe__body .ff-header .ff-mega-panel-slot,
 .block-editor-iframe__body .ff-header .ff-search-layer,
 .block-editor-iframe__body .ff-header .ff-cart-layer,
 .editor-styles-wrapper .ff-header .ff-search-overlay-slot,
 .editor-styles-wrapper .ff-header .ff-cart-drawer-slot,
 .editor-styles-wrapper .ff-header .ff-submenu-slot,
+.editor-styles-wrapper .ff-header .ff-mega-panel-slot,
 .editor-styles-wrapper .ff-header .ff-search-layer,
 .editor-styles-wrapper .ff-header .ff-cart-layer {
 	display: block !important;
@@ -607,7 +609,7 @@ body:not(.block-editor-iframe__body) .ff-header {
 	display: none;
 }
 
-/* —— Mega menu (opt-in: Stil „Mega“ am Untermenü-Punkt) —— */
+/* —— Mega menu: Stil „Mega“ öffnet Template-Teil „Mega-Menü“ —— */
 .ff-header,
 .ff-header__bar,
 .ff-header__nav,
@@ -621,102 +623,91 @@ html.is-ff-mega-open .ff-header__bar {
 	overflow: visible;
 }
 
+/* Desktop: native WP-Untermenü des Mega-Triggers aus — Inhalt kommt aus Template-Part */
 @media (min-width: 961px) {
 	.ff-header__nav .wp-block-navigation-submenu.is-style-ff-mega > .wp-block-navigation__submenu-container,
 	.ff-header__nav .wp-block-navigation-item.is-style-ff-mega > .wp-block-navigation__submenu-container {
-		display: grid !important;
-		grid-auto-flow: column;
-		grid-auto-columns: minmax(140px, 1fr);
-		align-items: start;
-		gap: 8px 24px !important;
-		min-width: 0;
-		width: var(--ff-shell);
-		max-width: calc(100vw - 2 * var(--ff-gutter, 32px));
-		padding: 20px 24px !important;
-		margin: 0 !important;
-		box-sizing: border-box;
-		position: fixed !important;
-		z-index: 90;
-		/* left/top/width set by nav-mega.js to match header bar */
-	}
-
-	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container > .wp-block-navigation-item {
-		display: flex !important;
-		flex-direction: column;
-		align-items: stretch;
-		width: auto !important;
-		min-width: 0;
-		position: relative;
-	}
-
-	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container > .wp-block-navigation-item > .wp-block-navigation-item__content {
-		font-family: var(--wp--preset--font-family--body, inherit);
-		font-size: 0.9375rem;
-		font-weight: 700;
-		letter-spacing: normal;
-		text-transform: none;
-		white-space: normal;
-		padding: 6px 8px 10px;
-	}
-
-	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container > .wp-block-navigation-item > .wp-block-navigation-submenu__toggle,
-	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container > .wp-block-navigation-item > .wp-block-navigation__submenu-icon {
 		display: none !important;
-	}
-
-	/* Nested links: always visible as column list (no flyout) */
-	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container .wp-block-navigation__submenu-container {
-		position: static !important;
-		inset: auto !important;
-		display: flex !important;
-		flex-direction: column;
-		align-items: stretch;
-		gap: 2px !important;
-		min-width: 0 !important;
-		width: 100% !important;
-		max-width: none !important;
-		margin: 0 !important;
-		padding: 0 !important;
-		border: 0 !important;
-		border-radius: 0 !important;
-		box-shadow: none !important;
-		background: transparent !important;
-		backdrop-filter: none !important;
-		-webkit-backdrop-filter: none !important;
-		opacity: 1 !important;
-		visibility: visible !important;
-		pointer-events: auto !important;
-		transform: none !important;
-	}
-
-	.ff-header__nav .is-style-ff-mega .wp-block-navigation__submenu-container .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
-		font-weight: 500;
-		font-size: 0.875rem;
-		white-space: normal;
-		padding: 8px;
 	}
 }
 
+.ff-mega-panel-slot {
+	display: none;
+	box-sizing: border-box;
+	z-index: 90;
+}
+
+body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-open {
+	display: block !important;
+	position: fixed !important;
+	/* left/top/width via nav-mega.js — flush under header bar */
+	padding-top: 10px; /* hover-bridge: Lücke schließen */
+	margin: 0;
+	pointer-events: auto;
+}
+
+body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
+	width: 100%;
+	max-width: 100%;
+	margin: 0;
+	box-sizing: border-box;
+	box-shadow: 0 16px 40px rgba(14, 17, 20, 0.28);
+	border: 1px solid color-mix(in srgb, #fff 12%, transparent);
+}
+
+.ff-mega-panel h3,
+.ff-mega-panel .wp-block-heading {
+	margin: 0 0 10px;
+	font-family: var(--wp--preset--font-family--body, inherit);
+	font-weight: 700;
+	letter-spacing: normal;
+	text-transform: none;
+	color: inherit;
+}
+
+.ff-mega-panel__links,
+.ff-mega-panel .wp-block-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ff-mega-panel__links li,
+.ff-mega-panel .wp-block-list li {
+	margin: 0;
+}
+
+.ff-mega-panel__links a,
+.ff-mega-panel .wp-block-list a {
+	display: block;
+	padding: 6px 0;
+	color: inherit;
+	text-decoration: none;
+	opacity: 0.88;
+}
+
+.ff-mega-panel__links a:hover,
+.ff-mega-panel .wp-block-list a:hover {
+	opacity: 1;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.ff-header__nav .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-item__content,
+.ff-header__nav .is-style-ff-mega:hover > .wp-block-navigation-item__content {
+	opacity: 1;
+}
+
 @media (max-width: 960px) {
-	.ff-header__nav .wp-block-navigation-submenu.is-style-ff-mega > .wp-block-navigation__submenu-container,
-	.ff-header__nav .wp-block-navigation-item.is-style-ff-mega > .wp-block-navigation__submenu-container {
-		/* Fall back to normal stacked dropdown */
-		display: flex !important;
-		flex-direction: column;
-		position: absolute !important;
-		width: max-content;
-		min-width: 220px;
-		left: 0 !important;
-		right: auto !important;
-		transform: none !important;
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot,
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-open {
+		display: none !important;
 	}
 
-	.ff-header__nav .is-style-ff-mega > .wp-block-navigation__submenu-container .wp-block-navigation__submenu-container {
-		position: static !important;
-		box-shadow: none !important;
-		border: 0 !important;
-		background: transparent !important;
-		padding-left: 12px !important;
+	/* Mobile: native submenu again */
+	.ff-header__nav .wp-block-navigation-submenu.is-style-ff-mega > .wp-block-navigation__submenu-container,
+	.ff-header__nav .wp-block-navigation-item.is-style-ff-mega > .wp-block-navigation__submenu-container {
+		display: flex !important;
 	}
 }
 
@@ -782,6 +773,11 @@ html.is-ff-mega-open .ff-header__bar {
 
 /* Editor: Untermenü nur beim Bearbeiten des Template-Teils; Frontend: aus */
 body:not(.block-editor-iframe__body) .ff-submenu-slot {
+	display: none !important;
+}
+
+/* Mega-Panel-Slot: Frontend nur bei .is-open (JS); Editor sichtbar über Slot-Regeln oben */
+body:not(.block-editor-iframe__body) .ff-mega-panel-slot:not(.is-open) {
 	display: none !important;
 }
 

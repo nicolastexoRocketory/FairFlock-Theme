@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.203',
+			'items'   => array(
+				__( 'Mega-Menü: Inhalt als Template-Teil „Mega-Menü“ (Spalten/Blöcke); Hover-Lücke geschlossen.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.202',
 			'items'   => array(
 				__( 'Navigation: opt-in Mega-Menü per Block-Stil „Mega“ (Site Editor, Spalten über Unterpunkte).', 'fairflock' ),

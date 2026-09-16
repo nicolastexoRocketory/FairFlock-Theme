@@ -365,6 +365,11 @@
 			"area": "uncategorized"
 		},
 		{
+			"name": "mega-panel",
+			"title": "Mega-Menü",
+			"area": "uncategorized"
+		},
+		{
 			"name": "search-overlay",
 			"title": "Mega-Suche (geöffnet)",
 			"area": "uncategorized"

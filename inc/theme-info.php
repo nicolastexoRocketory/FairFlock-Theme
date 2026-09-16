@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.214',
+			'items'   => array(
+				__( 'Produktseite: Variations-Auswahl und Meta-Bereich (SKU/Kategorie/Tags) sauber ausgerichtet.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.213',
 			'items'   => array(
 				__( 'Navigation: Dropdown-Indicator mit Hover-Farbe, mehr Abstand und Dreh-Animation.', 'fairflock' ),

@@ -3053,6 +3053,17 @@ span.onsale,
 	gap: 12px;
 }
 
+/* Variationen + Personalisierung immer volle Breite, nicht neben Qty/Button quetschen */
+.ff-product__hero form.cart .variations,
+.ff-product__hero form.cart table.variations,
+.ff-product__hero form.cart .ff-personalization,
+.ff-product__hero form.cart .woocommerce-variation-add-to-cart,
+.ff-product__hero form.cart .single_variation_wrap {
+	flex: 1 1 100%;
+	width: 100%;
+	max-width: 100%;
+}
+
 /* Fallback, falls Woo nur form.cart ohne Wrapper ausgibt */
 .ff-product__summary > form.cart,
 .ff-product__hero > .wp-block-column > form.cart {
@@ -3389,29 +3400,129 @@ span.onsale,
 	color: #fff !important;
 }
 
+/* Variationen: Label oben, Select darunter — kein Überlappen */
 .ff-product__hero .variations,
 .ff-product__hero table.variations {
+	display: block;
 	width: 100%;
-	margin: 0 0 12px !important;
+	margin: 0 0 4px !important;
 	border: 0 !important;
+	border-collapse: collapse;
+}
+
+.ff-product__hero .variations tbody,
+.ff-product__hero .variations tr {
+	display: block;
+	width: 100%;
+}
+
+.ff-product__hero .variations tr {
+	display: grid;
+	grid-template-columns: minmax(5.5rem, 7rem) minmax(0, 1fr);
+	gap: 8px 16px;
+	align-items: start;
+	margin: 0 0 14px;
+}
+
+.ff-product__hero .variations tr:last-child {
+	margin-bottom: 0;
 }
 
 .ff-product__hero .variations td,
-.ff-product__hero .variations th {
-	padding: 6px 0 !important;
+.ff-product__hero .variations th,
+.ff-product__hero .variations .label,
+.ff-product__hero .variations .value {
+	display: block;
+	width: auto;
+	max-width: 100%;
+	margin: 0 !important;
+	padding: 0 !important;
 	border: 0 !important;
-	vertical-align: middle;
+	background: transparent !important;
+	float: none !important;
+	vertical-align: top;
+	text-align: left;
 	font-size: 0.9375rem;
+	line-height: 1.35;
+	box-sizing: border-box;
+}
+
+.ff-product__hero .variations .label,
+.ff-product__hero .variations th.label {
+	padding-top: 12px !important;
+	font-weight: 700;
+	color: inherit;
+}
+
+.ff-product__hero .variations .label label,
+.ff-product__hero .variations th label {
+	display: inline;
+	margin: 0;
+	padding: 0;
+	font: inherit;
+	cursor: default;
+}
+
+.ff-product__hero .variations .value,
+.ff-product__hero .variations td.value {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 8px;
+	min-width: 0;
 }
 
 .ff-product__hero .variations select,
 .ff-product__hero .variations .woo-variation-items-wrapper {
+	display: block;
+	width: 100%;
+	max-width: 100%;
 	min-height: 44px;
-	padding: 8px 12px;
+	margin: 0;
+	padding: 8px 36px 8px 12px;
 	border: 1px solid var(--ff-product-line);
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	background: var(--ff-surface, #fff);
-	width: 100%;
+	color: inherit;
+	font: inherit;
+	line-height: 1.3;
+	box-sizing: border-box;
+	appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%2366707a' stroke-width='1.5' d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 12px center;
+}
+
+.ff-product__hero .variations .reset_variations {
+	display: inline-block;
+	align-self: flex-start;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	font-size: 0.8125rem;
+	line-height: 1.3;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	opacity: 0.85;
+}
+
+.ff-product__hero .variations .reset_variations:hover {
+	opacity: 1;
+	color: var(--wp--preset--color--brand, #377530);
+}
+
+@media (max-width: 480px) {
+	.ff-product__hero .variations tr {
+		grid-template-columns: 1fr;
+		gap: 6px;
+	}
+
+	.ff-product__hero .variations .label,
+	.ff-product__hero .variations th.label {
+		padding-top: 0 !important;
+	}
 }
 
 .ff-product__hero .stock,
@@ -3429,23 +3540,35 @@ span.onsale,
 	color: #b42318;
 }
 
-/* Meta */
+/* Meta: eine klare Spalte, eine Linie, gleiche Baseline */
 .ff-product__hero .wp-block-woocommerce-product-meta,
 .ff-product__hero .product_meta {
-	margin: 8px 0 0 !important;
-	padding: 14px 0 0;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 10px;
+	margin: 12px 0 0 !important;
+	padding: 16px 0 0;
+	border: 0;
 	border-top: 1px solid var(--ff-product-line);
-	display: grid;
-	gap: 8px;
 	font-size: 0.875rem;
+	line-height: 1.5;
 	color: var(--wp--preset--color--muted, #66707a);
+	box-sizing: border-box;
 }
 
 .ff-product__hero .wp-block-woocommerce-product-meta .wp-block-group,
-.ff-product__hero .product_meta {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px 16px;
+.ff-product__hero .product_meta > span,
+.ff-product__hero .product_meta .sku_wrapper,
+.ff-product__hero .product_meta .posted_in,
+.ff-product__hero .product_meta .tagged_as {
+	display: block;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0 !important;
+	float: none !important;
+	line-height: 1.5;
 }
 
 .ff-product__hero .wp-block-woocommerce-product-meta a,

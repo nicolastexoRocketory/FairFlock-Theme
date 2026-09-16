@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'FAIRFLOCK_VERSION', '0.9.213' );
+define( 'FAIRFLOCK_VERSION', '0.9.214' );
 define( 'FAIRFLOCK_DIR', get_template_directory() );
 define( 'FAIRFLOCK_URI', get_template_directory_uri() );
 

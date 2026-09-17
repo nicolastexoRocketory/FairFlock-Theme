@@ -1,7 +1,7 @@
 /**
- * FAQ list editor helpers: style new Details as FAQ rows inside .ff-faq-list.
+ * FAQ list editor: variation isActive + style new Details as FAQ rows.
  */
-(function (wp) {
+(function (wp, config) {
 	if (!wp || !wp.data || !wp.blocks) {
 		return;
 	}
@@ -9,12 +9,45 @@
 	var FAQ_CLASS = "ff-faq-item";
 	var LIST_CLASS = "ff-faq-list";
 	var pending = {};
+	var i18n = (config && config.i18n) || {};
 
 	function hasClass(className, token) {
 		return (
 			typeof className === "string" &&
 			(" " + className + " ").indexOf(" " + token + " ") !== -1
 		);
+	}
+
+	function registerFaqVariation() {
+		if (!wp.blocks.registerBlockVariation) {
+			return;
+		}
+		wp.blocks.registerBlockVariation("core/details", {
+			name: "fairflock-faq-item",
+			title: i18n.title || "FAQ-Eintrag",
+			description: i18n.description || "Frage und Antwort für die FAQ-Liste.",
+			category: "text",
+			icon: "editor-help",
+			keywords: ["faq", "frage", "antwort", "accordion"],
+			attributes: {
+				className: FAQ_CLASS,
+				showContent: true,
+				metadata: { name: i18n.title || "FAQ-Eintrag" },
+			},
+			innerBlocks: [
+				["core/paragraph", { placeholder: i18n.placeholder || "Antwort hier eingeben…" }],
+			],
+			scope: ["inserter", "block", "transform"],
+			isActive: function (blockAttributes) {
+				return hasClass(blockAttributes && blockAttributes.className, FAQ_CLASS);
+			},
+		});
+	}
+
+	if (wp.domReady) {
+		wp.domReady(registerFaqVariation);
+	} else {
+		registerFaqVariation();
 	}
 
 	function isFaqListBlock(block) {
@@ -58,7 +91,7 @@
 
 		var meta = block.attributes.metadata || {};
 		if (!meta.name) {
-			next.metadata = Object.assign({}, meta, { name: "FAQ-Eintrag" });
+			next.metadata = Object.assign({}, meta, { name: i18n.title || "FAQ-Eintrag" });
 			dirty = true;
 		}
 
@@ -70,11 +103,9 @@
 
 		if (!block.innerBlocks || !block.innerBlocks.length) {
 			var paragraph = wp.blocks.createBlock("core/paragraph", {
-				placeholder: "Antwort hier eingeben…",
+				placeholder: i18n.placeholder || "Antwort hier eingeben…",
 			});
-			wp.data
-				.dispatch("core/block-editor")
-				.replaceInnerBlocks(clientId, [paragraph], false);
+			wp.data.dispatch("core/block-editor").replaceInnerBlocks(clientId, [paragraph], false);
 		}
 
 		setTimeout(function () {
@@ -103,4 +134,4 @@
 			}
 		});
 	});
-})(window.wp);
+})(window.wp, window.fairflockFaq || {});

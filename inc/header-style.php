@@ -198,6 +198,43 @@ function fairflock_header_style_body_class( $classes ) {
 add_filter( 'body_class', 'fairflock_header_style_body_class' );
 
 /**
+ * Mirrors Darstellung body/header classes into the Site Editor canvas.
+ *
+ * @since 0.9.225
+ *
+ * @return void
+ */
+function fairflock_enqueue_darstellung_editor_bridge() {
+	$path = FAIRFLOCK_DIR . '/assets/js/editor-darstellung.js';
+	if ( ! is_readable( $path ) ) {
+		return;
+	}
+
+	wp_enqueue_script(
+		'fairflock-editor-darstellung',
+		FAIRFLOCK_URI . '/assets/js/editor-darstellung.js',
+		array( 'wp-dom-ready' ),
+		FAIRFLOCK_VERSION,
+		true
+	);
+
+	wp_localize_script(
+		'fairflock-editor-darstellung',
+		'fairflockDarstellung',
+		array(
+			'bodyClasses' => array(
+				'ff-header-style-' . fairflock_get_header_style(),
+				'ff-content-width-' . fairflock_get_content_width(),
+				'ff-shape-' . fairflock_get_shape_style(),
+				'ff-mega-width-' . fairflock_get_mega_width(),
+			),
+			'headerMod'   => 'ff-header--' . fairflock_get_header_style(),
+		)
+	);
+}
+add_action( 'enqueue_block_editor_assets', 'fairflock_enqueue_darstellung_editor_bridge', 20 );
+
+/**
  * Adds style modifier on the root .ff-header group (frontend + editor render).
  *
  * @since 0.9.173

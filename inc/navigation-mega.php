@@ -140,19 +140,32 @@ function fairflock_maybe_refresh_mega_panel_layout() {
 add_action( 'init', 'fairflock_maybe_refresh_mega_panel_layout', 41 );
 
 /**
+ * Token-safe className check (same contract as editor JS hasClass).
+ *
+ * @since 0.9.225
+ *
+ * @param string $class_name Class attribute.
+ * @param string $token      Class token.
+ * @return bool
+ */
+function fairflock_mega_list_has_class( $class_name, $token ) {
+	return (bool) preg_match( '/(?:^|\s)' . preg_quote( (string) $token, '/' ) . '(?:\s|$)/', (string) $class_name );
+}
+
+/**
  * Parses mega-list mode from a className string.
  *
  * @since 0.9.218
+ * @since 0.9.225 Token-boundary match (align with editor JS).
  *
  * @param string $class_name Block className.
  * @return string manual|categories|products
  */
 function fairflock_mega_list_parse_mode( $class_name ) {
-	$class_name = (string) $class_name;
-	if ( str_contains( $class_name, 'ff-mega-list--categories' ) ) {
+	if ( fairflock_mega_list_has_class( $class_name, 'ff-mega-list--categories' ) ) {
 		return 'categories';
 	}
-	if ( str_contains( $class_name, 'ff-mega-list--products' ) ) {
+	if ( fairflock_mega_list_has_class( $class_name, 'ff-mega-list--products' ) ) {
 		return 'products';
 	}
 	return 'manual';
@@ -307,6 +320,7 @@ function fairflock_mega_list_products_markup( $category_id ) {
  * Replaces mega-list group inner content with live links on the frontend.
  *
  * @since 0.9.218
+ * @since 0.9.225 Robust UL match (class token anywhere in attributes).
  *
  * @param string               $block_content Rendered HTML.
  * @param array<string, mixed> $block         Parsed block.
@@ -320,7 +334,7 @@ function fairflock_render_mega_list_group( $block_content, $block ) {
 	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
 	$class = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
 
-	if ( ! str_contains( $class, 'ff-mega-list' ) ) {
+	if ( ! fairflock_mega_list_has_class( $class, 'ff-mega-list' ) ) {
 		return $block_content;
 	}
 
@@ -336,27 +350,24 @@ function fairflock_render_mega_list_group( $block_content, $block ) {
 		$live = fairflock_mega_list_products_markup( fairflock_mega_list_parse_category_id( $class ) );
 	}
 
-	if ( $live === '' || ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
+	if ( '' === $live ) {
 		return $block_content;
 	}
 
-	/*
-	 * Replace the first list (or append after heading) inside the group.
-	 * Prefer swapping an existing .ff-mega-panel__links / ul; otherwise inject before </div>.
-	 */
-	if ( preg_match( '/<ul\b[^>]*class="[^"]*ff-mega-panel__links[^"]*"[^>]*>.*?<\/ul>/is', $block_content ) ) {
-		return (string) preg_replace(
-			'/<ul\b[^>]*class="[^"]*ff-mega-panel__links[^"]*"[^>]*>.*?<\/ul>/is',
-			$live,
-			$block_content,
-			1
-		);
+	// Match <ul … ff-mega-panel__links …> regardless of attribute order/quotes.
+	$pattern_links = '/<ul\b(?=[^>]*\bff-mega-panel__links\b)[^>]*>.*?<\/ul>/is';
+	if ( preg_match( $pattern_links, $block_content ) ) {
+		$replaced = preg_replace( $pattern_links, $live, $block_content, 1 );
+		return is_string( $replaced ) ? $replaced : $block_content;
 	}
 
-	if ( preg_match( '/<ul\b[^>]*>.*?<\/ul>/is', $block_content ) ) {
-		return (string) preg_replace( '/<ul\b[^>]*>.*?<\/ul>/is', $live, $block_content, 1 );
+	$pattern_ul = '/<ul\b[^>]*>.*?<\/ul>/is';
+	if ( preg_match( $pattern_ul, $block_content ) ) {
+		$replaced = preg_replace( $pattern_ul, $live, $block_content, 1 );
+		return is_string( $replaced ) ? $replaced : $block_content;
 	}
 
-	return (string) preg_replace( '/<\/div>\s*$/', $live . '</div>', $block_content, 1 );
+	$replaced = preg_replace( '/<\/div>\s*$/', $live . '</div>', $block_content, 1 );
+	return is_string( $replaced ) ? $replaced : $block_content;
 }
 add_filter( 'render_block_core/group', 'fairflock_render_mega_list_group', 20, 2 );

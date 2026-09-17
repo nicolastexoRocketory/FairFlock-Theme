@@ -1,7 +1,8 @@
 /**
- * Bento cards: column/row span controls in the inspector.
+ * Bento cards: column/row span controls (className API → CSS grid).
+ * Only .ff-bento-card children; strips legacy is-wide/is-tall.
  */
-(function (wp) {
+(function (wp, config) {
 	if (!wp || !wp.hooks || !wp.compose || !wp.element || !wp.blockEditor || !wp.components || !wp.data) {
 		return;
 	}
@@ -12,19 +13,22 @@
 	var PanelBody = wp.components.PanelBody;
 	var RangeControl = wp.components.RangeControl;
 	var createHigherOrderComponent = wp.compose.createHigherOrderComponent;
+	var i18n = (config && config.i18n) || {};
 
 	function hasClass(className, token) {
 		return typeof className === "string" && (" " + className + " ").indexOf(" " + token + " ") !== -1;
 	}
 
 	function parseSpan(className, prefix) {
-		var match = String(className || "").match(new RegExp(prefix + "-(\\d)"));
+		var match = String(className || "").match(new RegExp("(?:^|\\s)" + prefix + "-(\\d+)(?:\\s|$)"));
 		return match ? parseInt(match[1], 10) : 0;
 	}
 
 	function setSpanClass(className, prefix, value) {
 		var cleaned = String(className || "")
-			.replace(new RegExp("(?:^|\\s)" + prefix + "-\\d", "g"), " ")
+			.replace(new RegExp("(?:^|\\s)" + prefix + "-\\d+(?=\\s|$)", "g"), " ")
+			.replace(/(?:^|\s)is-wide(?=\s|$)/g, " ")
+			.replace(/(?:^|\s)is-tall(?=\s|$)/g, " ")
 			.replace(/\s+/g, " ")
 			.trim();
 		return (cleaned + " " + prefix + "-" + value).trim();
@@ -41,19 +45,11 @@
 		return { cols: 1, rows: 1 };
 	}
 
-	function isBentoChild(props) {
-		if (props.name !== "core/group") {
-			return false;
-		}
-		if (hasClass(props.attributes.className, "ff-bento-card")) {
-			return true;
-		}
-		var parentId = wp.data.select("core/block-editor").getBlockRootClientId(props.clientId);
-		if (!parentId) {
-			return false;
-		}
-		var parent = wp.data.select("core/block-editor").getBlock(parentId);
-		return !!(parent && parent.attributes && hasClass(parent.attributes.className, "ff-bento"));
+	function isBentoCard(props) {
+		return (
+			props.name === "core/group" &&
+			hasClass(props.attributes && props.attributes.className, "ff-bento-card")
+		);
 	}
 
 	function currentSpans(props) {
@@ -80,7 +76,7 @@
 
 	var withBentoSpan = createHigherOrderComponent(function (BlockEdit) {
 		return function (props) {
-			if (!isBentoChild(props)) {
+			if (!isBentoCard(props)) {
 				return el(BlockEdit, props);
 			}
 
@@ -96,29 +92,27 @@
 					null,
 					el(
 						PanelBody,
-						{ title: "Bento-Raster", initialOpen: true },
+						{ title: i18n.panel || "Bento-Raster", initialOpen: true },
 						el(RangeControl, {
-							label: "Spalten",
+							label: i18n.cols || "Spalten",
 							min: 1,
 							max: 4,
 							value: spans.cols,
 							onChange: function (value) {
-								var next = setSpanClass(className, "ff-bento-cols", value);
-								var style = Object.assign({}, props.attributes.style || {});
-								style.layout = Object.assign({}, style.layout || {}, { columnSpan: value });
-								props.setAttributes({ className: next, style: style });
+								props.setAttributes({
+									className: setSpanClass(className, "ff-bento-cols", value),
+								});
 							},
 						}),
 						el(RangeControl, {
-							label: "Zeilen",
+							label: i18n.rows || "Zeilen",
 							min: 1,
 							max: 3,
 							value: spans.rows,
 							onChange: function (value) {
-								var next = setSpanClass(className, "ff-bento-rows", value);
-								var style = Object.assign({}, props.attributes.style || {});
-								style.layout = Object.assign({}, style.layout || {}, { rowSpan: value });
-								props.setAttributes({ className: next, style: style });
+								props.setAttributes({
+									className: setSpanClass(className, "ff-bento-rows", value),
+								});
 							},
 						})
 					)
@@ -128,4 +122,4 @@
 	}, "withBentoSpan");
 
 	wp.hooks.addFilter("editor.BlockEdit", "fairflock/bento-span", withBentoSpan);
-})(window.wp);
+})(window.wp, window.fairflockBento || {});

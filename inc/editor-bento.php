@@ -34,9 +34,22 @@ function fairflock_enqueue_bento_editor_assets() {
 			'wp-data',
 			'wp-element',
 			'wp-hooks',
+			'wp-i18n',
 		),
 		FAIRFLOCK_VERSION,
 		true
+	);
+
+	wp_localize_script(
+		'fairflock-editor-bento',
+		'fairflockBento',
+		array(
+			'i18n' => array(
+				'panel' => __( 'Bento-Raster', 'fairflock' ),
+				'cols'  => __( 'Spalten', 'fairflock' ),
+				'rows'  => __( 'Zeilen', 'fairflock' ),
+			),
+		)
 	);
 }
 add_action( 'enqueue_block_editor_assets', 'fairflock_enqueue_bento_editor_assets' );

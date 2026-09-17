@@ -11,7 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers a Details variation pre-styled as a FAQ row.
+ * Registers a Details variation pre-styled as a FAQ row (server/inserter metadata).
+ * Client isActive is registered in editor-faq.js (token match, not exact className).
  *
  * @since 0.9.52
  *
@@ -47,7 +48,6 @@ function fairflock_register_faq_details_variation() {
 				),
 			),
 			'scope'       => array( 'inserter', 'block', 'transform' ),
-			'isActive'    => array( 'className' ),
 		)
 	);
 }
@@ -57,6 +57,7 @@ add_action( 'init', 'fairflock_register_faq_details_variation' );
  * Enqueues editor helpers for the FAQ list appender.
  *
  * @since 0.9.52
+ * @since 0.9.225 JS variation isActive + i18n.
  *
  * @return void
  */
@@ -70,9 +71,28 @@ function fairflock_enqueue_faq_editor_assets() {
 	wp_enqueue_script(
 		'fairflock-editor-faq',
 		FAIRFLOCK_URI . '/assets/js/editor-faq.js',
-		array( 'wp-blocks', 'wp-data', 'wp-hooks', 'wp-block-editor' ),
+		array(
+			'wp-block-editor',
+			'wp-blocks',
+			'wp-data',
+			'wp-dom-ready',
+			'wp-hooks',
+			'wp-i18n',
+		),
 		FAIRFLOCK_VERSION,
 		true
+	);
+
+	wp_localize_script(
+		'fairflock-editor-faq',
+		'fairflockFaq',
+		array(
+			'i18n' => array(
+				'title'       => __( 'FAQ-Eintrag', 'fairflock' ),
+				'description' => __( 'Frage und Antwort für die FAQ-Liste.', 'fairflock' ),
+				'placeholder' => __( 'Antwort hier eingeben…', 'fairflock' ),
+			),
+		)
 	);
 }
 add_action( 'enqueue_block_editor_assets', 'fairflock_enqueue_faq_editor_assets' );
@@ -139,6 +159,12 @@ function fairflock_maybe_patch_faq_list_editor_attrs() {
 	}
 
 	if ( get_stylesheet() !== 'fairflock' ) {
+		return;
+	}
+
+	// Soft attr patch only — still gated by tenant-safety (default off).
+	if ( ! fairflock_may_migrate_db_content( 'faq_list_editor_attrs' ) ) {
+		update_option( 'fairflock_faq_list_editor_patched', '1' );
 		return;
 	}
 

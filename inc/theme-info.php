@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.225',
+			'items'   => array(
+				__( 'Editor: Darstellung im Canvas, Bento-Spans, Mega-Liste/FAQ stabiler — Editor ≈ Frontend.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.224',
 			'items'   => array(
 				__( 'Security/Perf: Personalized-ATC mit REST-Nonce; kein SVG-Upload; Conditional Assets; Version nur aus style.css; ZIP-Allowlist.', 'fairflock' ),

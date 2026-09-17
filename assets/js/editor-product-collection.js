@@ -259,16 +259,29 @@
 	function signatureFor(block) {
 		var a = block.attributes || {};
 		var layout = a.displayLayout || {};
+		function deepNames(blocks, depth) {
+			depth = depth || 0;
+			if (!blocks || depth > 4) {
+				return [];
+			}
+			var out = [];
+			blocks.forEach(function (b) {
+				if (!b) {
+					return;
+				}
+				out.push(b.name || "");
+				if (b.innerBlocks && b.innerBlocks.length) {
+					out = out.concat(deepNames(b.innerBlocks, depth + 1));
+				}
+			});
+			return out;
+		}
 		return [
 			a.collection || "",
 			JSON.stringify(a.query || {}),
 			layout.type || "",
 			a.className || "",
-			(block.innerBlocks || [])
-				.map(function (b) {
-					return b.name;
-				})
-				.join(","),
+			deepNames(block.innerBlocks || []).join(","),
 		].join("|");
 	}
 

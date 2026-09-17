@@ -652,7 +652,10 @@
 			fetch(personalizedAddApi, {
 				method: "POST",
 				credentials: "same-origin",
-				headers: { Accept: "application/json" },
+				headers: {
+					Accept: "application/json",
+					"X-WP-Nonce": window.fairflockRestNonce || ""
+				},
 				body: fd
 			})
 				.then(function (res) {

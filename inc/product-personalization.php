@@ -97,7 +97,7 @@ function fairflock_personalization_labels( $product ) {
 		$upload_label = __( 'Logo hochladen', 'fairflock' );
 	}
 	if ( '' === $upload_hint ) {
-		$upload_hint = __( 'PNG, JPG, SVG oder PDF, max. 5 MB.', 'fairflock' );
+		$upload_hint = __( 'PNG, JPG oder PDF, max. 5 MB.', 'fairflock' );
 	}
 	if ( '' === $text_label ) {
 		$text_label = __( 'Persönlicher Text', 'fairflock' );
@@ -138,11 +138,11 @@ function fairflock_personalization_product_id( $product ) {
  * @return array<string, string> extension => mime
  */
 function fairflock_personalization_allowed_mimes() {
+	// SVG absichtlich nicht: XSS-Risiko ohne Sanitizer (Audit 0.9.224).
 	return array(
 		'jpg'  => 'image/jpeg',
 		'jpeg' => 'image/jpeg',
 		'png'  => 'image/png',
-		'svg'  => 'image/svg+xml',
 		'pdf'  => 'application/pdf',
 	);
 }
@@ -335,7 +335,7 @@ function fairflock_get_personalization_markup( $product, $id_suffix = '' ) {
 		echo '<div class="ff-personalization__panel ff-personalization__panel--upload"' . ( $both ? ' data-ff-panel="upload"' : '' ) . '>';
 		echo '<p class="ff-personalization__field ff-personalization__field--upload">';
 		echo '<label for="' . esc_attr( $uid_file ) . '">' . esc_html( $labels['upload_label'] ) . '</label>';
-		echo '<input type="file" id="' . esc_attr( $uid_file ) . '" name="fairflock_logo_upload" accept=".jpg,.jpeg,.png,.svg,.pdf,image/jpeg,image/png,image/svg+xml,application/pdf" />';
+		echo '<input type="file" id="' . esc_attr( $uid_file ) . '" name="fairflock_logo_upload" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" />';
 		if ( '' !== $labels['upload_hint'] ) {
 			echo '<span class="ff-personalization__note">' . esc_html( $labels['upload_hint'] ) . '</span>';
 		}
@@ -456,6 +456,7 @@ add_action( 'wp_enqueue_scripts', 'fairflock_personalization_enqueue_form_script
  * Registers Store API product extension + personalized cart endpoint.
  *
  * @since 0.9.153
+ * @since 0.9.224 REST requires wp_rest nonce; no public unauthenticated upload.
  *
  * @return void
  */
@@ -466,12 +467,49 @@ function fairflock_personalization_register_rest_routes() {
 		array(
 			'methods'             => 'POST',
 			'callback'            => 'fairflock_rest_add_personalized_to_cart',
-			'permission_callback' => '__return_true',
+			'permission_callback' => 'fairflock_rest_personalized_cart_permission',
 		)
 	);
 }
 add_action( 'rest_api_init', 'fairflock_personalization_register_rest_routes' );
 add_action( 'woocommerce_init', 'fairflock_personalization_register_store_api_extension', 20 );
+
+/**
+ * Permission: valid wp_rest nonce + light rate limit (guests ok via cookie nonce).
+ *
+ * @since 0.9.224
+ *
+ * @param WP_REST_Request $request Request.
+ * @return true|WP_Error
+ */
+function fairflock_rest_personalized_cart_permission( $request ) {
+	$nonce = $request->get_header( 'X-WP-Nonce' );
+	if ( ! is_string( $nonce ) || '' === $nonce ) {
+		$nonce = (string) $request->get_param( '_wpnonce' );
+	}
+
+	if ( '' === $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+		return new WP_Error(
+			'ff_rest_forbidden',
+			__( 'Ungültige oder abgelaufene Anfrage. Bitte Seite neu laden.', 'fairflock' ),
+			array( 'status' => 403 )
+		);
+	}
+
+	$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? (string) $_SERVER['REMOTE_ADDR'] : 'unknown';
+	$key = 'ff_pers_rl_' . md5( $ip );
+	$n   = (int) get_transient( $key );
+	if ( $n >= 40 ) {
+		return new WP_Error(
+			'ff_rest_rate',
+			__( 'Zu viele Anfragen. Bitte kurz warten.', 'fairflock' ),
+			array( 'status' => 429 )
+		);
+	}
+	set_transient( $key, $n + 1, MINUTE_IN_SECONDS );
+
+	return true;
+}
 
 /**
  * Registers Store API extension on woocommerce_init (preferred timing).
@@ -584,6 +622,12 @@ function fairflock_rest_add_personalized_to_cart( $request ) {
 	$product = wc_get_product( $product_id );
 	if ( ! $product || ! $product->is_purchasable() ) {
 		return new WP_Error( 'ff_bad_product', __( 'Produkt nicht bestellbar.', 'fairflock' ), array( 'status' => 400 ) );
+	}
+
+	$upload_on = fairflock_product_has_logo_upload( $product );
+	$text_on   = fairflock_product_has_personal_text( $product );
+	if ( ! $upload_on && ! $text_on ) {
+		return new WP_Error( 'ff_no_personalization', __( 'Personalisierung ist für dieses Produkt nicht aktiv.', 'fairflock' ), array( 'status' => 400 ) );
 	}
 
 	// Mirror $_POST / $_FILES for existing cart helpers.
@@ -757,21 +801,11 @@ function fairflock_personalization_validate_uploaded_file( $file ) {
 	$allowed  = fairflock_personalization_allowed_mimes();
 
 	if ( ! isset( $allowed[ $ext ] ) ) {
-		return new WP_Error( 'ff_upload_type', __( 'Erlaubt sind PNG, JPG, SVG oder PDF.', 'fairflock' ) );
+		return new WP_Error( 'ff_upload_type', __( 'Erlaubt sind PNG, JPG oder PDF.', 'fairflock' ) );
 	}
 
-	$ft     = wp_check_filetype_and_ext( $file['tmp_name'], $filename, $allowed );
+	$ft       = wp_check_filetype_and_ext( $file['tmp_name'], $filename, $allowed );
 	$filetype = isset( $ft['type'] ) ? $ft['type'] : '';
-
-	// SVG: core filetype checks are often empty — allow when extension matches and content looks like SVG.
-	if ( 'svg' === $ext ) {
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$head = strtolower( (string) file_get_contents( $file['tmp_name'], false, null, 0, 512 ) );
-		if ( false === strpos( $head, '<svg' ) && false === strpos( $head, '<?xml' ) ) {
-			return new WP_Error( 'ff_upload_svg', __( 'Ungültige SVG-Datei.', 'fairflock' ) );
-		}
-		return true;
-	}
 
 	if ( ! $filetype || ! in_array( $filetype, $allowed, true ) ) {
 		return new WP_Error( 'ff_upload_mime', __( 'Dateityp nicht erlaubt.', 'fairflock' ) );

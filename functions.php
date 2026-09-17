@@ -10,10 +10,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'FAIRFLOCK_VERSION', '0.9.222' );
 define( 'FAIRFLOCK_DIR', get_template_directory() );
 define( 'FAIRFLOCK_URI', get_template_directory_uri() );
 
+// Single source of truth: style.css Version header (packaging + cache bust).
+$_fairflock_theme = wp_get_theme( get_template() );
+define( 'FAIRFLOCK_VERSION', (string) ( $_fairflock_theme->get( 'Version' ) ?: '0.0.0' ) );
+unset( $_fairflock_theme );
+
+require_once FAIRFLOCK_DIR . '/inc/tenant-safety.php';
 require_once FAIRFLOCK_DIR . '/inc/setup.php';
 require_once FAIRFLOCK_DIR . '/inc/legal-pages.php';
 require_once FAIRFLOCK_DIR . '/inc/defaults.php';

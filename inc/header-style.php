@@ -236,7 +236,7 @@ function fairflock_header_style_render_block( $block_content, $block ) {
 
 	return $block_content;
 }
-add_filter( 'render_block', 'fairflock_header_style_render_block', 10, 2 );
+add_filter( 'render_block_core/group', 'fairflock_header_style_render_block', 10, 2 );
 
 /**
  * Registers admin submenu.

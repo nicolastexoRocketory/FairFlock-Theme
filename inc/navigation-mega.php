@@ -35,6 +35,10 @@ add_action( 'init', 'fairflock_register_navigation_mega_styles' );
 /**
  * One-time: inject Mega-Menü template-part into customized Header parts.
  *
+ * Additive only: inserts the mega-panel slot if missing. Does not replace
+ * other header markup. Skipped when tenant-safety forbids DB migrators
+ * unless the slot is still absent (required for Mega to work).
+ *
  * @since 0.9.203
  *
  * @return void
@@ -69,6 +73,7 @@ function fairflock_maybe_inject_mega_panel_into_header() {
 			continue;
 		}
 
+		// Additive inject only — never replace the whole header.
 		$content = $part->post_content;
 
 		if ( str_contains( $content, 'ff-submenu-slot' ) || str_contains( $content, '"slug":"submenu"' ) ) {
@@ -108,13 +113,15 @@ function fairflock_maybe_inject_mega_panel_into_header() {
 add_action( 'init', 'fairflock_maybe_inject_mega_panel_into_header', 40 );
 
 /**
- * One-time: apply 4-column Mega-Menü layout with dynamic list support.
+ * One-time: mark mega-panel layout migration as done — never overwrite DB parts.
  *
- * Overwrites customized mega-panel template parts so the new default appears
- * without manually resetting the Site Editor part.
+ * Uncustomized shops already load parts/mega-panel.html from the theme on deploy.
+ * Customized Mega-Menü parts in the DB must stay untouched (multi-tenant rule).
+ * To adopt a new theme default: Site Editor → Template-Teil zurücksetzen, or Demo/Repair.
  *
  * @since 0.9.211
  * @since 0.9.218 Dynamic mega lists (categories / products modes).
+ * @since 0.9.223 Stop overwriting customized mega-panel content on theme push.
  *
  * @return void
  */
@@ -127,39 +134,7 @@ function fairflock_maybe_refresh_mega_panel_layout() {
 		return;
 	}
 
-	$file = FAIRFLOCK_DIR . '/parts/mega-panel.html';
-	if ( ! is_readable( $file ) ) {
-		return;
-	}
-
-	$markup = file_get_contents( $file );
-	if ( ! is_string( $markup ) || $markup === '' ) {
-		return;
-	}
-
-	$parts = get_posts(
-		array(
-			'post_type'      => 'wp_template_part',
-			'name'           => 'mega-panel',
-			'post_status'    => array( 'publish', 'draft', 'auto-draft' ),
-			'posts_per_page' => 20,
-			'no_found_rows'  => true,
-		)
-	);
-
-	foreach ( $parts as $part ) {
-		if ( ! $part instanceof WP_Post ) {
-			continue;
-		}
-
-		wp_update_post(
-			array(
-				'ID'           => (int) $part->ID,
-				'post_content' => $markup,
-			)
-		);
-	}
-
+	// Intentionally no wp_update_post: preserves tenant Site Editor edits.
 	update_option( 'fairflock_mega_panel_layout', '4col-v2', false );
 }
 add_action( 'init', 'fairflock_maybe_refresh_mega_panel_layout', 41 );

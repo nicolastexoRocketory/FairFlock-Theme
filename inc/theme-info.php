@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.224',
+			'items'   => array(
+				__( 'Security/Perf: Personalized-ATC mit REST-Nonce; kein SVG-Upload; Conditional Assets; Version nur aus style.css; ZIP-Allowlist.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.223',
+			'items'   => array(
+				__( 'Multi-Tenant: Theme-Push überschreibt keine angepassten Mega-Menü-/Collections-Inhalte in der DB.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.222',
 			'items'   => array(
 				__( 'Mega-Menü: Kategorien-Spalte doppelt breit, Linkliste zweispaltig.', 'fairflock' ),

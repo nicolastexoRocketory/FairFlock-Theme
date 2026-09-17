@@ -30,15 +30,65 @@ add_filter( 'should_load_separate_core_block_assets', '__return_true' );
 add_filter( 'should_load_block_assets_on_demand', '__return_true' );
 
 /**
+ * Whether the current request is a thin legal/account surface (skip shop chrome JS).
+ *
+ * @since 0.9.224
+ *
+ * @return bool
+ */
+function fairflock_is_thin_storefront_surface() {
+	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+		return true;
+	}
+	if ( function_exists( 'is_cart' ) && is_cart() ) {
+		return true;
+	}
+	if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+		return true;
+	}
+	if ( is_page( array( 'impressum', 'datenschutz', 'agb', 'widerruf', 'versand-zahlung' ) ) ) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Singular / front content contains a CSS/class marker (cheap string check).
+ *
+ * @since 0.9.224
+ *
+ * @param string $needle Marker.
+ * @return bool
+ */
+function fairflock_content_contains_marker( $needle ) {
+	$needle = (string) $needle;
+	if ( '' === $needle ) {
+		return false;
+	}
+
+	if ( is_singular() ) {
+		$post = get_post();
+		if ( $post instanceof WP_Post && is_string( $post->post_content ) && str_contains( $post->post_content, $needle ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Frontend asset policy.
  *
  * @since 0.2.0
  * @since 0.3.0 Enqueues lightweight header/footer component CSS.
  * @since 0.4.0 Enqueues header search script (defer).
+ * @since 0.9.224 Conditional feature scripts; REST nonce for personalized ATC.
  *
  * @return void
  */
 function fairflock_enqueue_frontend_assets() {
+	$thin = fairflock_is_thin_storefront_surface();
+
 	wp_enqueue_style(
 		'fairflock-components',
 		FAIRFLOCK_URI . '/assets/css/components.css',
@@ -46,12 +96,15 @@ function fairflock_enqueue_frontend_assets() {
 		FAIRFLOCK_VERSION
 	);
 
-	wp_enqueue_style(
-		'fairflock-hero-slider',
-		FAIRFLOCK_URI . '/assets/css/hero-slider.css',
-		array( 'fairflock-components' ),
-		FAIRFLOCK_VERSION
-	);
+	$needs_hero = is_front_page() || is_home() || fairflock_content_contains_marker( 'ff-hero' );
+	if ( $needs_hero ) {
+		wp_enqueue_style(
+			'fairflock-hero-slider',
+			FAIRFLOCK_URI . '/assets/css/hero-slider.css',
+			array( 'fairflock-components' ),
+			FAIRFLOCK_VERSION
+		);
+	}
 
 	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
 		wp_enqueue_style(
@@ -110,6 +163,7 @@ function fairflock_enqueue_frontend_assets() {
 		);
 	}
 
+	// Shell: search, scroll, mega, cart, account — almost every storefront page.
 	wp_enqueue_script(
 		'fairflock-header-search',
 		FAIRFLOCK_URI . '/assets/js/header-search.js',
@@ -144,42 +198,9 @@ function fairflock_enqueue_frontend_assets() {
 	);
 
 	wp_enqueue_script(
-		'fairflock-hero-slider',
-		FAIRFLOCK_URI . '/assets/js/hero-slider.js',
-		array(),
-		FAIRFLOCK_VERSION,
-		array(
-			'strategy'  => 'defer',
-			'in_footer' => true,
-		)
-	);
-
-	wp_enqueue_script(
-		'fairflock-products-slider',
-		FAIRFLOCK_URI . '/assets/js/products-slider.js',
-		array(),
-		FAIRFLOCK_VERSION,
-		array(
-			'strategy'  => 'defer',
-			'in_footer' => true,
-		)
-	);
-
-	wp_enqueue_script(
 		'fairflock-cart-drawer',
 		FAIRFLOCK_URI . '/assets/js/cart-drawer.js',
 		array(),
-		FAIRFLOCK_VERSION,
-		array(
-			'strategy'  => 'defer',
-			'in_footer' => true,
-		)
-	);
-
-	wp_enqueue_script(
-		'fairflock-product-modal',
-		FAIRFLOCK_URI . '/assets/js/product-modal.js',
-		array( 'fairflock-personalization' ),
 		FAIRFLOCK_VERSION,
 		array(
 			'strategy'  => 'defer',
@@ -198,16 +219,62 @@ function fairflock_enqueue_frontend_assets() {
 		)
 	);
 
-	wp_enqueue_script(
-		'fairflock-faq-accordion',
-		FAIRFLOCK_URI . '/assets/js/faq-accordion.js',
-		array(),
-		FAIRFLOCK_VERSION,
-		array(
-			'strategy'  => 'defer',
-			'in_footer' => true,
-		)
-	);
+	if ( $needs_hero ) {
+		wp_enqueue_script(
+			'fairflock-hero-slider',
+			FAIRFLOCK_URI . '/assets/js/hero-slider.js',
+			array(),
+			FAIRFLOCK_VERSION,
+			array(
+				'strategy'  => 'defer',
+				'in_footer' => true,
+			)
+		);
+	}
+
+	$needs_products_slider = is_front_page()
+		|| fairflock_content_contains_marker( 'ff-products' )
+		|| fairflock_content_contains_marker( 'ff-products-slider' );
+	if ( $needs_products_slider ) {
+		wp_enqueue_script(
+			'fairflock-products-slider',
+			FAIRFLOCK_URI . '/assets/js/products-slider.js',
+			array(),
+			FAIRFLOCK_VERSION,
+			array(
+				'strategy'  => 'defer',
+				'in_footer' => true,
+			)
+		);
+	}
+
+	$needs_faq = fairflock_content_contains_marker( 'ff-faq' )
+		|| fairflock_content_contains_marker( 'wp-block-details' );
+	if ( $needs_faq ) {
+		wp_enqueue_script(
+			'fairflock-faq-accordion',
+			FAIRFLOCK_URI . '/assets/js/faq-accordion.js',
+			array(),
+			FAIRFLOCK_VERSION,
+			array(
+				'strategy'  => 'defer',
+				'in_footer' => true,
+			)
+		);
+	}
+
+	if ( ! $thin ) {
+		wp_enqueue_script(
+			'fairflock-product-modal',
+			FAIRFLOCK_URI . '/assets/js/product-modal.js',
+			array( 'fairflock-personalization' ),
+			FAIRFLOCK_VERSION,
+			array(
+				'strategy'  => 'defer',
+				'in_footer' => true,
+			)
+		);
+	}
 
 	$shop     = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' );
 	$cart     = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'cart' ) : home_url( '/cart/' );
@@ -232,19 +299,22 @@ function fairflock_enqueue_frontend_assets() {
 		'before'
 	);
 
-	$personalized_api = function_exists( 'rest_url' ) ? rest_url( 'fairflock/v1/cart/add-personalized' ) : '/wp-json/fairflock/v1/cart/add-personalized';
-	$product_bases    = function_exists( 'fairflock_get_product_link_bases' )
-		? fairflock_get_product_link_bases()
-		: array( 'product', 'produkt' );
+	if ( ! $thin && wp_script_is( 'fairflock-product-modal', 'enqueued' ) ) {
+		$personalized_api = function_exists( 'rest_url' ) ? rest_url( 'fairflock/v1/cart/add-personalized' ) : '/wp-json/fairflock/v1/cart/add-personalized';
+		$product_bases    = function_exists( 'fairflock_get_product_link_bases' )
+			? fairflock_get_product_link_bases()
+			: array( 'product', 'produkt' );
 
-	wp_add_inline_script(
-		'fairflock-product-modal',
-		'window.fairflockSearchApi=' . wp_json_encode( $api ) . ';'
-		. 'window.fairflockCartApi=' . wp_json_encode( $cart_api ) . ';'
-		. 'window.fairflockPersonalizedAddApi=' . wp_json_encode( $personalized_api ) . ';'
-		. 'window.fairflockProductBases=' . wp_json_encode( array_values( $product_bases ) ) . ';',
-		'before'
-	);
+		wp_add_inline_script(
+			'fairflock-product-modal',
+			'window.fairflockSearchApi=' . wp_json_encode( $api ) . ';'
+			. 'window.fairflockCartApi=' . wp_json_encode( $cart_api ) . ';'
+			. 'window.fairflockPersonalizedAddApi=' . wp_json_encode( $personalized_api ) . ';'
+			. 'window.fairflockRestNonce=' . wp_json_encode( wp_create_nonce( 'wp_rest' ) ) . ';'
+			. 'window.fairflockProductBases=' . wp_json_encode( array_values( $product_bases ) ) . ';',
+			'before'
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', 'fairflock_enqueue_frontend_assets', 20 );
 

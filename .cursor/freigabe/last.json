@@ -1,12 +1,12 @@
 {
-  "savedAt": "2026-09-17T06:48:44.914Z",
+  "savedAt": "2026-09-17T07:12:12.196Z",
   "verdict": "allow",
   "headline": "Risikoarm — keine Freigabe nötig",
-  "command": "bash ops/scripts/sync-to-playground.sh",
+  "command": "bash ops/scripts/sync-to-playground.sh && php -l functions.php && php -l inc/product-personalization.php && php -l inc/performance.php && php -l inc/header-search.php && php -l inc/password-protection.php && php -l inc/tenant-safety.php && grep -E '^Version:' style.css && grep -n \"FAIRFLOCK_VERSION\" functions.php | head -5",
   "gates": [],
   "notes": [
     {
-      "id": "n0",
+      "id": "n9",
       "tokenIds": [
         "t0"
       ],
@@ -21,7 +21,7 @@
       "risk": "none"
     },
     {
-      "id": "n1",
+      "id": "n10",
       "tokenIds": [
         "t2"
       ],
@@ -34,7 +34,562 @@
       "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
       "category": "structure",
       "risk": "low"
+    },
+    {
+      "id": "sep-t4",
+      "tokenIds": [
+        "t4"
+      ],
+      "start": 39,
+      "end": 41,
+      "line": 1,
+      "code": "&&",
+      "title": "Nur bei Erfolg weiter",
+      "summary": "Der rechte Befehl läuft nur, wenn der linke mit Exit 0 endet.",
+      "detail": "Verkettet zwei Aktionen. Der zweite Teil kann der eigentlich gefährliche sein.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n11",
+      "tokenIds": [
+        "t6"
+      ],
+      "start": 42,
+      "end": 45,
+      "line": 1,
+      "code": "php",
+      "title": "Befehl „php“",
+      "summary": "Befehl „php“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „php“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n12",
+      "tokenIds": [
+        "t8"
+      ],
+      "start": 46,
+      "end": 48,
+      "line": 1,
+      "code": "-l",
+      "title": "Option -l",
+      "summary": "Schaltet die Option -l ein.",
+      "detail": "Eine Befehlsoption. Sie verändert, wie php arbeitet.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n13",
+      "tokenIds": [
+        "t10"
+      ],
+      "start": 49,
+      "end": 62,
+      "line": 1,
+      "code": "functions.php",
+      "title": "Argument",
+      "summary": "Übergibt „functions.php“ an php.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t12",
+      "tokenIds": [
+        "t12"
+      ],
+      "start": 63,
+      "end": 65,
+      "line": 1,
+      "code": "&&",
+      "title": "Nur bei Erfolg weiter",
+      "summary": "Der rechte Befehl läuft nur, wenn der linke mit Exit 0 endet.",
+      "detail": "Verkettet zwei Aktionen. Der zweite Teil kann der eigentlich gefährliche sein.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n14",
+      "tokenIds": [
+        "t14"
+      ],
+      "start": 66,
+      "end": 69,
+      "line": 1,
+      "code": "php",
+      "title": "Befehl „php“",
+      "summary": "Befehl „php“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „php“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n15",
+      "tokenIds": [
+        "t16"
+      ],
+      "start": 70,
+      "end": 72,
+      "line": 1,
+      "code": "-l",
+      "title": "Option -l",
+      "summary": "Schaltet die Option -l ein.",
+      "detail": "Eine Befehlsoption. Sie verändert, wie php arbeitet.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n16",
+      "tokenIds": [
+        "t18"
+      ],
+      "start": 73,
+      "end": 104,
+      "line": 1,
+      "code": "inc/product-personalization.php",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf inc/product-personalization.php im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t20",
+      "tokenIds": [
+        "t20"
+      ],
+      "start": 105,
+      "end": 107,
+      "line": 1,
+      "code": "&&",
+      "title": "Nur bei Erfolg weiter",
+      "summary": "Der rechte Befehl läuft nur, wenn der linke mit Exit 0 endet.",
+      "detail": "Verkettet zwei Aktionen. Der zweite Teil kann der eigentlich gefährliche sein.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n17",
+      "tokenIds": [
+        "t22"
+      ],
+      "start": 108,
+      "end": 111,
+      "line": 1,
+      "code": "php",
+      "title": "Befehl „php“",
+      "summary": "Befehl „php“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „php“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n18",
+      "tokenIds": [
+        "t24"
+      ],
+      "start": 112,
+      "end": 114,
+      "line": 1,
+      "code": "-l",
+      "title": "Option -l",
+      "summary": "Schaltet die Option -l ein.",
+      "detail": "Eine Befehlsoption. Sie verändert, wie php arbeitet.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n19",
+      "tokenIds": [
+        "t26"
+      ],
+      "start": 115,
+      "end": 134,
+      "line": 1,
+      "code": "inc/performance.php",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf inc/performance.php im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t28",
+      "tokenIds": [
+        "t28"
+      ],
+      "start": 135,
+      "end": 137,
+      "line": 1,
+      "code": "&&",
+      "title": "Nur bei Erfolg weiter",
+      "summary": "Der rechte Befehl läuft nur, wenn der linke mit Exit 0 endet.",
+      "detail": "Verkettet zwei Aktionen. Der zweite Teil kann der eigentlich gefährliche sein.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n20",
+      "tokenIds": [
+        "t30"
+      ],
+      "start": 138,
+      "end": 141,
+      "line": 1,
+      "code": "php",
+      "title": "Befehl „php“",
+      "summary": "Befehl „php“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „php“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n21",
+      "tokenIds": [
+        "t32"
+      ],
+      "start": 142,
+      "end": 144,
+      "line": 1,
+      "code": "-l",
+      "title": "Option -l",
+      "summary": "Schaltet die Option -l ein.",
+      "detail": "Eine Befehlsoption. Sie verändert, wie php arbeitet.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n22",
+      "tokenIds": [
+        "t34"
+      ],
+      "start": 145,
+      "end": 166,
+      "line": 1,
+      "code": "inc/header-search.php",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf inc/header-search.php im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t36",
+      "tokenIds": [
+        "t36"
+      ],
+      "start": 167,
+      "end": 169,
+      "line": 1,
+      "code": "&&",
+      "title": "Nur bei Erfolg weiter",
+      "summary": "Der rechte Befehl läuft nur, wenn der linke mit Exit 0 endet.",
+      "detail": "Verkettet zwei Aktionen. Der zweite Teil kann der eigentlich gefährliche sein.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n23",
+      "tokenIds": [
+        "t38"
+      ],
+      "start": 170,
+      "end": 173,
+      "line": 1,
+      "code": "php",
+      "title": "Befehl „php“",
+      "summary": "Befehl „php“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „php“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n24",
+      "tokenIds": [
+        "t40"
+      ],
+      "start": 174,
+      "end": 176,
+      "line": 1,
+      "code": "-l",
+      "title": "Option -l",
+      "summary": "Schaltet die Option -l ein.",
+      "detail": "Eine Befehlsoption. Sie verändert, wie php arbeitet.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n25",
+      "tokenIds": [
+        "t42"
+      ],
+      "start": 177,
+      "end": 204,
+      "line": 1,
+      "code": "inc/password-protection.php",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf inc/password-protection.php im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t44",
+      "tokenIds": [
+        "t44"
+      ],
+      "start": 205,
+      "end": 207,
+      "line": 1,
+      "code": "&&",
+      "title": "Nur bei Erfolg weiter",
+      "summary": "Der rechte Befehl läuft nur, wenn der linke mit Exit 0 endet.",
+      "detail": "Verkettet zwei Aktionen. Der zweite Teil kann der eigentlich gefährliche sein.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n26",
+      "tokenIds": [
+        "t46"
+      ],
+      "start": 208,
+      "end": 211,
+      "line": 1,
+      "code": "php",
+      "title": "Befehl „php“",
+      "summary": "Befehl „php“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „php“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n27",
+      "tokenIds": [
+        "t48"
+      ],
+      "start": 212,
+      "end": 214,
+      "line": 1,
+      "code": "-l",
+      "title": "Option -l",
+      "summary": "Schaltet die Option -l ein.",
+      "detail": "Eine Befehlsoption. Sie verändert, wie php arbeitet.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n28",
+      "tokenIds": [
+        "t50"
+      ],
+      "start": 215,
+      "end": 236,
+      "line": 1,
+      "code": "inc/tenant-safety.php",
+      "title": "Pfad",
+      "summary": "Bezieht sich auf inc/tenant-safety.php im Dateisystem.",
+      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t52",
+      "tokenIds": [
+        "t52"
+      ],
+      "start": 237,
+      "end": 239,
+      "line": 1,
+      "code": "&&",
+      "title": "Nur bei Erfolg weiter",
+      "summary": "Der rechte Befehl läuft nur, wenn der linke mit Exit 0 endet.",
+      "detail": "Verkettet zwei Aktionen. Der zweite Teil kann der eigentlich gefährliche sein.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n29",
+      "tokenIds": [
+        "t54"
+      ],
+      "start": 240,
+      "end": 244,
+      "line": 1,
+      "code": "grep",
+      "title": "grep",
+      "summary": "grep wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von grep.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n30",
+      "tokenIds": [
+        "t56"
+      ],
+      "start": 245,
+      "end": 247,
+      "line": 1,
+      "code": "-E",
+      "title": "Option -E",
+      "summary": "Schaltet die Option -E ein.",
+      "detail": "Eine Befehlsoption. Sie verändert, wie grep arbeitet.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n31",
+      "tokenIds": [
+        "t58"
+      ],
+      "start": 248,
+      "end": 259,
+      "line": 1,
+      "code": "'^Version:'",
+      "title": "Argument",
+      "summary": "Übergibt „^Version:“ an grep.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n32",
+      "tokenIds": [
+        "t60"
+      ],
+      "start": 260,
+      "end": 269,
+      "line": 1,
+      "code": "style.css",
+      "title": "Argument",
+      "summary": "Übergibt „style.css“ an grep.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t62",
+      "tokenIds": [
+        "t62"
+      ],
+      "start": 270,
+      "end": 272,
+      "line": 1,
+      "code": "&&",
+      "title": "Nur bei Erfolg weiter",
+      "summary": "Der rechte Befehl läuft nur, wenn der linke mit Exit 0 endet.",
+      "detail": "Verkettet zwei Aktionen. Der zweite Teil kann der eigentlich gefährliche sein.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n33",
+      "tokenIds": [
+        "t64"
+      ],
+      "start": 273,
+      "end": 277,
+      "line": 1,
+      "code": "grep",
+      "title": "grep",
+      "summary": "grep wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von grep.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n34",
+      "tokenIds": [
+        "t66"
+      ],
+      "start": 278,
+      "end": 280,
+      "line": 1,
+      "code": "-n",
+      "title": "Option -n",
+      "summary": "Schaltet die Option -n ein.",
+      "detail": "Eine Befehlsoption. Sie verändert, wie grep arbeitet.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n35",
+      "tokenIds": [
+        "t68"
+      ],
+      "start": 281,
+      "end": 300,
+      "line": 1,
+      "code": "\"FAIRFLOCK_VERSION\"",
+      "title": "Argument",
+      "summary": "Übergibt „FAIRFLOCK_VERSION“ an grep.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "n36",
+      "tokenIds": [
+        "t70"
+      ],
+      "start": 301,
+      "end": 314,
+      "line": 1,
+      "code": "functions.php",
+      "title": "Argument",
+      "summary": "Übergibt „functions.php“ an grep.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
+    },
+    {
+      "id": "sep-t72",
+      "tokenIds": [
+        "t72"
+      ],
+      "start": 315,
+      "end": 316,
+      "line": 1,
+      "code": "|",
+      "title": "Pipe",
+      "summary": "Die Ausgabe links wird zur Eingabe rechts.",
+      "detail": "Besonders gefährlich, wenn rechts eine Shell steht (sh, bash). Dann wird heruntergeladener Text ausgeführt.",
+      "category": "structure",
+      "risk": "medium"
+    },
+    {
+      "id": "n37",
+      "tokenIds": [
+        "t74"
+      ],
+      "start": 317,
+      "end": 321,
+      "line": 1,
+      "code": "head",
+      "title": "Befehl „head“",
+      "summary": "Befehl „head“ wird als ausführbares Programm gestartet.",
+      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „head“.",
+      "category": "structure",
+      "risk": "none"
+    },
+    {
+      "id": "n38",
+      "tokenIds": [
+        "t76"
+      ],
+      "start": 322,
+      "end": 324,
+      "line": 1,
+      "code": "-5",
+      "title": "Argument",
+      "summary": "Übergibt „-5“ an head.",
+      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
+      "category": "structure",
+      "risk": "low"
     }
   ],
-  "userMessage": "Ohne Rückfrage\n\nbash ops/scripts/sync-to-playground.sh\n\nWas die Teile tun:\n  1. ops/scripts/sync-to-playground.sh — Bezieht sich auf ops/scripts/sync-to-playground.sh im Dateisystem. [Niedrig]"
+  "userMessage": "Ohne Rückfrage\n\nbash ops/scripts/sync-to-playground.sh && php -l functions.php && php -l inc/product-personalization.php && php -l inc/performance.php && php -l inc/header-search.php && php -l inc/password-protection.php && php -l inc/tenant-safety.php && grep -E '^Version:' style.css && grep -n \"FAIRFLOCK_VERSION\" functions.php | head -5\n\nWas die Teile tun:\n  1. ops/scripts/sync-to-playground.sh — Bezieht sich auf ops/scripts/sync-to-playground.sh im Dateisystem. [Niedrig]\n  2. -l — Schaltet die Option -l ein. [Niedrig]\n  3. functions.php — Übergibt „functions.php“ an php. [Niedrig]\n  4. -l — Schaltet die Option -l ein. [Niedrig]\n  5. inc/product-personalization.php — Bezieht sich auf inc/product-personalization.php im Dateisystem. [Niedrig]\n  6. -l — Schaltet die Option -l ein. [Niedrig]\n  7. inc/performance.php — Bezieht sich auf inc/performance.php im Dateisystem. [Niedrig]\n  8. -l — Schaltet die Option -l ein. [Niedrig]\n  9. inc/header-search.php — Bezieht sich auf inc/header-search.php im Dateisystem. [Niedrig]\n  10. -l — Schaltet die Option -l ein. [Niedrig]\n  11. inc/password-protection.php — Bezieht sich auf inc/password-protection.php im Dateisystem. [Niedrig]\n  12. -l — Schaltet die Option -l ein. [Niedrig]\n  13. inc/tenant-safety.php — Bezieht sich auf inc/tenant-safety.php im Dateisystem. [Niedrig]\n  14. -E — Schaltet die Option -E ein. [Niedrig]\n  15. '^Version:' — Übergibt „^Version:“ an grep. [Niedrig]\n  16. style.css — Übergibt „style.css“ an grep. [Niedrig]\n  17. -n — Schaltet die Option -n ein. [Niedrig]\n  18. \"FAIRFLOCK_VERSION\" — Übergibt „FAIRFLOCK_VERSION“ an grep. [Niedrig]\n  19. functions.php — Übergibt „functions.php“ an grep. [Niedrig]\n  20. | — Die Ausgabe links wird zur Eingabe rechts. [Mittel]\n  21. -5 — Übergibt „-5“ an head. [Niedrig]"
 }

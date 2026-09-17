@@ -110,7 +110,7 @@ function fairflock_unsplash_credit_render_footer( $block_content, $block ) {
 
 	return substr( $block_content, 0, $pos ) . $credit . substr( $block_content, $pos );
 }
-add_filter( 'render_block', 'fairflock_unsplash_credit_render_footer', 20, 2 );
+add_filter( 'render_block_core/group', 'fairflock_unsplash_credit_render_footer', 20, 2 );
 
 /**
  * Fallback if the footer template part has no .ff-footer__bottom.

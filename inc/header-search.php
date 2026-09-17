@@ -26,20 +26,21 @@ function fairflock_print_cart_link_script() {
 		return;
 	}
 
+	if ( ! wp_script_is( 'fairflock-cart-drawer', 'enqueued' ) && ! wp_script_is( 'fairflock-header-search', 'enqueued' ) ) {
+		return;
+	}
+
 	$url   = esc_url( wc_get_cart_url() );
 	$count = WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
-	?>
-	<script>
-	(function () {
-		var link = document.querySelector('.ff-cart .wp-block-button__link') || document.getElementById('ffCartLink');
-		var badge = document.getElementById('ffCartCount') || (link && link.querySelector('.ff-cart__count'));
-		if (link) link.setAttribute('href', <?php echo wp_json_encode( $url ); ?>);
-		if (badge) badge.textContent = <?php echo wp_json_encode( (string) $count ); ?>;
-	})();
-	</script>
-	<?php
+	$js    = '(function(){var link=document.querySelector(".ff-cart .wp-block-button__link")||document.getElementById("ffCartLink");'
+		. 'var badge=document.getElementById("ffCartCount")||(link&&link.querySelector(".ff-cart__count"));'
+		. 'if(link)link.setAttribute("href",' . wp_json_encode( $url ) . ');'
+		. 'if(badge)badge.textContent=' . wp_json_encode( (string) $count ) . ';})();';
+
+	$handle = wp_script_is( 'fairflock-cart-drawer', 'enqueued' ) ? 'fairflock-cart-drawer' : 'fairflock-header-search';
+	wp_add_inline_script( $handle, $js, 'after' );
 }
-add_action( 'wp_footer', 'fairflock_print_cart_link_script', 20 );
+add_action( 'wp_enqueue_scripts', 'fairflock_print_cart_link_script', 30 );
 
 /**
  * Product suggestions for the search mega (empty query).

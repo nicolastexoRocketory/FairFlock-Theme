@@ -61,3 +61,29 @@ Automatischer Deploy bei jedem Tag kann später freigeschaltet werden.
 - Deploy betrifft **nur** den Theme-Ordner (`--remote-sub-directory` + `--delete` nur dort).  
 - Keine Kundenmedien, keine DB.  
 - Site-Editor-Overrides in der DB bleiben erhalten.
+
+## 5. Multi-Tenant: individuelle Änderungen bleiben erhalten
+
+### Was ein Theme-Push tut
+
+| Ebene | Beim Deploy | Nutzer-Anpassungen |
+|-------|-------------|-------------------|
+| Dateien unter `wp-content/themes/fairflock` | Werden ersetzt | — |
+| Medien / Uploads | Unberührt | bleiben |
+| Datenbank (Seiten, Produkte, Options) | Unberührt vom rsync | bleiben |
+| Site-Editor-Templates (`wp_template` / `wp_template_part`) | Liegen in der **DB**, nicht im Theme-ZIP | bleiben und **überschreiben** Theme-Dateien |
+
+Shops, die Header, Mega-Menü, Footer oder Templates im Site Editor angepasst haben, behalten diese DB-Kopien. Neue Theme-Defaults gelten automatisch nur, wenn **kein** angepasstes Template-Part in der DB liegt.
+
+### Regel im Code (`inc/tenant-safety.php`)
+
+- **Verboten** bei automatischem `init`: komplette Template-Parts/Seiten mit Theme-Datei überschreiben.
+- **Erlaubt**: additive Fixes (fehlenden Slot einfügen, wenn noch nicht vorhanden).
+- **Explizit**: Demo-Inhalt mit Checkbox „Überschreiben“, oder Filter `fairflock_may_migrate_db_content`.
+
+Neues Mega-Layout für einen Shop, der das Mega-Menü schon angepasst hat:
+
+1. Site Editor → Template-Teile → Mega-Menü → auf Theme-Default zurücksetzen, **oder**
+2. Inhalt manuell nachziehen.
+
+Niemals eine neue „Refresh“-Migration bauen, die `wp_update_post` mit der kompletten `parts/*.html` auf alle Shops schreibt.

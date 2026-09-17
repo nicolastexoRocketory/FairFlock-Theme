@@ -758,6 +758,12 @@ function fairflock_maybe_reset_collections_part_invalid_styles() {
 		return;
 	}
 
+	// Full content replace — blocked by default so theme pushes keep tenant edits.
+	if ( ! fairflock_may_migrate_db_content( 'collections_part_reset' ) ) {
+		update_option( 'fairflock_collections_part_bg_fix', '1' );
+		return;
+	}
+
 	$parts = get_posts(
 		array(
 			'post_type'      => 'wp_template_part',

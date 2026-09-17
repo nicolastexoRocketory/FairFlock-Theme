@@ -139,14 +139,24 @@ function fairflock_site_password_handle_submit() {
 		return;
 	}
 
-	$token   = fairflock_site_password_token();
-	$expire  = time() + 14 * DAY_IN_SECONDS;
-	$secure  = is_ssl();
+	$token    = fairflock_site_password_token();
+	$expire   = time() + 14 * DAY_IN_SECONDS;
+	$secure   = is_ssl();
 	$httponly = true;
+	$name     = fairflock_site_password_cookie_name();
+	$opts     = array(
+		'expires'  => $expire,
+		'path'     => COOKIEPATH,
+		'domain'   => COOKIE_DOMAIN,
+		'secure'   => $secure,
+		'httponly' => $httponly,
+		'samesite' => 'Lax',
+	);
 
-	setcookie( fairflock_site_password_cookie_name(), $token, $expire, COOKIEPATH, COOKIE_DOMAIN, $secure, $httponly );
+	setcookie( $name, $token, $opts );
 	if ( COOKIEPATH !== SITECOOKIEPATH ) {
-		setcookie( fairflock_site_password_cookie_name(), $token, $expire, SITECOOKIEPATH, COOKIE_DOMAIN, $secure, $httponly );
+		$opts['path'] = SITECOOKIEPATH;
+		setcookie( $name, $token, $opts );
 	}
 
 	$redirect = wp_validate_redirect(

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Baut dist/fairflock-<version>.zip mit Top-Level-Ordner "fairflock/" (WP-Upload & Deploy).
+# Allowlist: nur Theme-Runtime, kein Agency-Tooling (.cursor, ops, docs, …).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -17,15 +18,34 @@ ZIP_NAME="fairflock-${VERSION}.zip"
 rm -rf "$STAGE"
 mkdir -p "$STAGE/fairflock" "$OUT_DIR"
 
+# Nur Auslieferungspfade — alles andere bleibt draußen.
 rsync -a \
-  --exclude '.git' \
-  --exclude '.gitignore' \
-  --exclude 'ops' \
-  --exclude 'dist' \
-  --exclude 'README.md' \
-  --exclude '.DS_Store' \
-  --exclude '*.zip' \
+  --include='style.css' \
+  --include='functions.php' \
+  --include='theme.json' \
+  --include='screenshot.png' \
+  --include='readme.txt' \
+  --include='assets/' \
+  --include='assets/***' \
+  --include='inc/' \
+  --include='inc/***' \
+  --include='parts/' \
+  --include='parts/***' \
+  --include='patterns/' \
+  --include='patterns/***' \
+  --include='styles/' \
+  --include='styles/***' \
+  --include='templates/' \
+  --include='templates/***' \
+  --include='languages/' \
+  --include='languages/***' \
+  --exclude='*' \
   "$ROOT/" "$STAGE/fairflock/"
+
+if [[ ! -f "$STAGE/fairflock/style.css" || ! -f "$STAGE/fairflock/functions.php" ]]; then
+  echo "Staging unvollständig — style.css/functions.php fehlen." >&2
+  exit 1
+fi
 
 (
   cd "$STAGE"

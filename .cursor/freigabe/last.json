@@ -1,5 +1,5 @@
 {
-  "savedAt": "2026-09-16T18:31:34.500Z",
+  "savedAt": "2026-09-17T06:48:44.914Z",
   "verdict": "allow",
   "headline": "Risikoarm — keine Freigabe nötig",
   "command": "bash ops/scripts/sync-to-playground.sh",

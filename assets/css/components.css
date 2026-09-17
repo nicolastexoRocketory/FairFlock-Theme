@@ -982,11 +982,43 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 	flex-shrink: 1;
 }
 
+/*
+ * Kollektionen (Live-Kategorien): Spalte doppelt so breit,
+ * Linkliste fließt in zwei Spalten — weniger Leerraum neben Beliebt/Service.
+ */
+.ff-mega-panel__cols > .wp-block-column:has(.ff-mega-list--categories) {
+	flex: 2 1 0% !important;
+	flex-basis: 0% !important;
+	width: auto !important;
+	max-width: none !important;
+}
+
+.ff-mega-list--categories .ff-mega-panel__links,
+.ff-mega-list--categories .ff-mega-list__live {
+	column-count: 2;
+	column-gap: 28px;
+}
+
+.ff-mega-list--categories .ff-mega-panel__links > li,
+.ff-mega-list--categories .ff-mega-list__live > li {
+	break-inside: avoid;
+	-webkit-column-break-inside: avoid;
+	page-break-inside: avoid;
+}
+
+/* Promo-Card-Spalte: nie auf volle Mega-Höhe strecken */
+.ff-mega-panel__cols > .wp-block-column:has(.ff-mega-panel__card) {
+	flex-grow: 0;
+	align-self: start !important;
+	height: fit-content !important;
+}
+
 .ff-mega-panel__card {
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
-	height: auto;
+	height: fit-content;
+	max-height: none;
 	align-self: start;
 	overflow: hidden;
 	border-radius: var(--wp--custom--radius--md, 12px);
@@ -1094,8 +1126,24 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 		flex-grow: 1 !important;
 	}
 
+	.ff-mega-panel__cols > .wp-block-column:has(.ff-mega-list--categories) {
+		flex-basis: 100% !important;
+	}
+
+	.ff-mega-list--categories .ff-mega-panel__links,
+	.ff-mega-list--categories .ff-mega-list__live {
+		column-count: 2;
+	}
+
 	.ff-mega-panel__cols > .wp-block-column:last-child {
 		flex-basis: 100% !important;
+	}
+}
+
+@media (max-width: 700px) {
+	.ff-mega-list--categories .ff-mega-panel__links,
+	.ff-mega-list--categories .ff-mega-list__live {
+		column-count: 1;
 	}
 }
 

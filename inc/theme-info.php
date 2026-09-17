@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.222',
+			'items'   => array(
+				__( 'Mega-Menü: Kategorien-Spalte doppelt breit, Linkliste zweispaltig.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.221',
 			'items'   => array(
 				__( 'Mega-Menü: Spaltenbreiten aus dem Site Editor werden wieder angewendet.', 'fairflock' ),

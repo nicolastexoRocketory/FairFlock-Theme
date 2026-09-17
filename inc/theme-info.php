@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.228',
+			'items'   => array(
+				__( 'Warenkorb: Kein Erfolgs-Banner oben — Button wird „Wurde hinzugefügt“, Drawer öffnet sich.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.227',
 			'items'   => array(
 				__( 'Produkt-Slider: Spalten-Einstellung (2–6) steuert wieder die Kartenbreite.', 'fairflock' ),

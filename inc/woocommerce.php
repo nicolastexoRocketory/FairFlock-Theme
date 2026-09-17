@@ -566,3 +566,59 @@ function fairflock_maybe_restore_shop_price_filter() {
 	update_option( 'fairflock_shop_price_filter', '1' );
 }
 add_action( 'init', 'fairflock_maybe_restore_shop_price_filter', 36 );
+
+/**
+ * Suppress the top “added to cart” banner — feedback is on the button + drawer.
+ *
+ * @since 0.9.228
+ *
+ * @param string $message Notice HTML.
+ * @return string
+ */
+function fairflock_suppress_add_to_cart_banner( $message ) {
+	return '';
+}
+add_filter( 'wc_add_to_cart_message_html', 'fairflock_suppress_add_to_cart_banner' );
+add_filter( 'woocommerce_add_to_cart_message_html', 'fairflock_suppress_add_to_cart_banner' );
+
+/**
+ * Remember a successful add so the next page load can open the cart drawer.
+ *
+ * Skips AJAX/REST (drawer opens immediately via JS in those flows).
+ *
+ * @since 0.9.228
+ *
+ * @return void
+ */
+function fairflock_flag_just_added_to_cart() {
+	if ( wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+		return;
+	}
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+	WC()->session->set( 'ff_atc_feedback', 1 );
+}
+add_action( 'woocommerce_add_to_cart', 'fairflock_flag_just_added_to_cart', 20 );
+
+/**
+ * Expose just-added flag to the cart drawer script.
+ *
+ * @since 0.9.228
+ *
+ * @return void
+ */
+function fairflock_expose_just_added_flag() {
+	if ( ! function_exists( 'WC' ) || ! WC()->session ) {
+		return;
+	}
+	if ( ! WC()->session->get( 'ff_atc_feedback' ) ) {
+		return;
+	}
+	WC()->session->set( 'ff_atc_feedback', null );
+
+	if ( wp_script_is( 'fairflock-cart-drawer', 'enqueued' ) ) {
+		wp_add_inline_script( 'fairflock-cart-drawer', 'window.fairflockJustAddedToCart=true;', 'before' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'fairflock_expose_just_added_flag', 25 );

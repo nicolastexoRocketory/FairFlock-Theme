@@ -577,16 +577,17 @@
 
 		function finishAddSuccess() {
 			setStatus("Zum Warenkorb hinzugefügt.");
-			document.body.dispatchEvent(new CustomEvent("wc-blocks_added_to_cart"));
-			var cartOpen =
-				document.querySelector(".ff-cart .wp-block-button__link") ||
-				document.querySelector(".ff-cart a");
 			closeModal();
-			if (cartOpen) {
-				window.setTimeout(function () {
-					cartOpen.click();
-				}, 180);
-			}
+			window.setTimeout(function () {
+				if (typeof window.fairflockOnAddedToCart === "function") {
+					window.fairflockOnAddedToCart();
+					return;
+				}
+				document.body.dispatchEvent(new CustomEvent("wc-blocks_added_to_cart"));
+				if (typeof window.fairflockOpenCart === "function") {
+					window.fairflockOpenCart();
+				}
+			}, 180);
 		}
 
 		function validatePersonalizationClient() {

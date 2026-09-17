@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.227',
+			'items'   => array(
+				__( 'Produkt-Slider: Spalten-Einstellung (2–6) steuert wieder die Kartenbreite.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.226',
+			'items'   => array(
+				__( 'Navigation: schlichter Hover — Label + Indicator als Einheit, ohne Pill und Underline.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.225',
 			'items'   => array(
 				__( 'Editor: Darstellung im Canvas, Bento-Spans, Mega-Liste/FAQ stabiler — Editor ≈ Frontend.', 'fairflock' ),

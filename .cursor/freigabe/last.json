@@ -1,12 +1,12 @@
 {
-  "savedAt": "2026-09-17T07:20:08.725Z",
+  "savedAt": "2026-09-17T07:28:17.329Z",
   "verdict": "allow",
   "headline": "Risikoarm — keine Freigabe nötig",
-  "command": "bash ops/scripts/sync-to-playground.sh && grep -E '^Version:' style.css && test -f assets/js/editor-darstellung.js && test -f assets/js/editor-bento.js && echo OK",
+  "command": "bash ops/scripts/sync-to-playground.sh && grep -E '^Version:' style.css",
   "gates": [],
   "notes": [
     {
-      "id": "n4",
+      "id": "n1",
       "tokenIds": [
         "t0"
       ],
@@ -21,7 +21,7 @@
       "risk": "none"
     },
     {
-      "id": "n5",
+      "id": "n2",
       "tokenIds": [
         "t2"
       ],
@@ -51,7 +51,7 @@
       "risk": "none"
     },
     {
-      "id": "n6",
+      "id": "n3",
       "tokenIds": [
         "t6"
       ],
@@ -66,7 +66,7 @@
       "risk": "none"
     },
     {
-      "id": "n7",
+      "id": "n4",
       "tokenIds": [
         "t8"
       ],
@@ -81,7 +81,7 @@
       "risk": "low"
     },
     {
-      "id": "n8",
+      "id": "n5",
       "tokenIds": [
         "t10"
       ],
@@ -96,7 +96,7 @@
       "risk": "low"
     },
     {
-      "id": "n9",
+      "id": "n6",
       "tokenIds": [
         "t12"
       ],
@@ -109,172 +109,7 @@
       "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
       "category": "structure",
       "risk": "low"
-    },
-    {
-      "id": "sep-t14",
-      "tokenIds": [
-        "t14"
-      ],
-      "start": 72,
-      "end": 74,
-      "line": 1,
-      "code": "&&",
-      "title": "Nur bei Erfolg weiter",
-      "summary": "Der rechte Befehl läuft nur, wenn der linke mit Exit 0 endet.",
-      "detail": "Verkettet zwei Aktionen. Der zweite Teil kann der eigentlich gefährliche sein.",
-      "category": "structure",
-      "risk": "none"
-    },
-    {
-      "id": "n10",
-      "tokenIds": [
-        "t16"
-      ],
-      "start": 75,
-      "end": 79,
-      "line": 1,
-      "code": "test",
-      "title": "Befehl „test“",
-      "summary": "Befehl „test“ wird als ausführbares Programm gestartet.",
-      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „test“.",
-      "category": "structure",
-      "risk": "none"
-    },
-    {
-      "id": "n11",
-      "tokenIds": [
-        "t18"
-      ],
-      "start": 80,
-      "end": 82,
-      "line": 1,
-      "code": "-f",
-      "title": "Erzwingen (Kurzform)",
-      "summary": "Dieselbe Familie wie --force: Schutzabfragen fallen weg.",
-      "detail": "Bei git push ist -f ein Force-Push. Bei rm unterdrückt -f Rückfragen.",
-      "category": "structure",
-      "risk": "critical"
-    },
-    {
-      "id": "n12",
-      "tokenIds": [
-        "t20"
-      ],
-      "start": 83,
-      "end": 114,
-      "line": 1,
-      "code": "assets/js/editor-darstellung.js",
-      "title": "Pfad",
-      "summary": "Bezieht sich auf assets/js/editor-darstellung.js im Dateisystem.",
-      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
-      "category": "structure",
-      "risk": "low"
-    },
-    {
-      "id": "sep-t22",
-      "tokenIds": [
-        "t22"
-      ],
-      "start": 115,
-      "end": 117,
-      "line": 1,
-      "code": "&&",
-      "title": "Nur bei Erfolg weiter",
-      "summary": "Der rechte Befehl läuft nur, wenn der linke mit Exit 0 endet.",
-      "detail": "Verkettet zwei Aktionen. Der zweite Teil kann der eigentlich gefährliche sein.",
-      "category": "structure",
-      "risk": "none"
-    },
-    {
-      "id": "n13",
-      "tokenIds": [
-        "t24"
-      ],
-      "start": 118,
-      "end": 122,
-      "line": 1,
-      "code": "test",
-      "title": "Befehl „test“",
-      "summary": "Befehl „test“ wird als ausführbares Programm gestartet.",
-      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von Befehl „test“.",
-      "category": "structure",
-      "risk": "none"
-    },
-    {
-      "id": "n14",
-      "tokenIds": [
-        "t26"
-      ],
-      "start": 123,
-      "end": 125,
-      "line": 1,
-      "code": "-f",
-      "title": "Erzwingen (Kurzform)",
-      "summary": "Dieselbe Familie wie --force: Schutzabfragen fallen weg.",
-      "detail": "Bei git push ist -f ein Force-Push. Bei rm unterdrückt -f Rückfragen.",
-      "category": "structure",
-      "risk": "critical"
-    },
-    {
-      "id": "n15",
-      "tokenIds": [
-        "t28"
-      ],
-      "start": 126,
-      "end": 151,
-      "line": 1,
-      "code": "assets/js/editor-bento.js",
-      "title": "Pfad",
-      "summary": "Bezieht sich auf assets/js/editor-bento.js im Dateisystem.",
-      "detail": "Lokaler oder absoluter Pfad. Die Wirkung hängt vom Befehl links davon ab.",
-      "category": "structure",
-      "risk": "low"
-    },
-    {
-      "id": "sep-t30",
-      "tokenIds": [
-        "t30"
-      ],
-      "start": 152,
-      "end": 154,
-      "line": 1,
-      "code": "&&",
-      "title": "Nur bei Erfolg weiter",
-      "summary": "Der rechte Befehl läuft nur, wenn der linke mit Exit 0 endet.",
-      "detail": "Verkettet zwei Aktionen. Der zweite Teil kann der eigentlich gefährliche sein.",
-      "category": "structure",
-      "risk": "none"
-    },
-    {
-      "id": "n16",
-      "tokenIds": [
-        "t32"
-      ],
-      "start": 155,
-      "end": 159,
-      "line": 1,
-      "code": "echo",
-      "title": "echo",
-      "summary": "echo wird als ausführbares Programm gestartet.",
-      "detail": "Das ist der Einstiegspunkt. Alle folgenden Wörter sind Unterbefehle, Optionen oder Argumente von echo.",
-      "category": "structure",
-      "risk": "none"
-    },
-    {
-      "id": "n17",
-      "tokenIds": [
-        "t34"
-      ],
-      "start": 160,
-      "end": 162,
-      "line": 1,
-      "code": "OK",
-      "title": "Argument",
-      "summary": "Übergibt „OK“ an echo.",
-      "detail": "Ein Positionsargument. Bedeutung ergibt sich aus dem Befehl links.",
-      "category": "structure",
-      "risk": "low"
     }
   ],
-  "userMessage": "Ohne Rückfrage\n\nbash ops/scripts/sync-to-playground.sh && grep -E '^Version:' style.css && test -f assets/js/editor-darstellung.js && test -f assets/js/editor-bento.js && echo OK\n\nWas die Teile tun:\n  1. ops/scripts/sync-to-playground.sh — Bezieht sich auf ops/scripts/sync-to-playground.sh im Dateisystem. [Niedrig]\n  2. -E — Schaltet die Option -E ein. [Niedrig]\n  3. '^Version:' — Übergibt „^Version:“ an grep. [Niedrig]\n  4. style.css — Übergibt „style.css“ an grep. [Niedrig]\n  5. -f — Dieselbe Familie wie --force: Schutzabfragen fallen weg. [Kritisch]\n  6. assets/js/editor-darstellung.js — Bezieht sich auf assets/js/editor-darstellung.js im Dateisystem. [Niedrig]\n  7. -f — Dieselbe Familie wie --force: Schutzabfragen fallen weg. [Kritisch]\n  8. assets/js/editor-bento.js — Bezieht sich auf assets/js/editor-bento.js im Dateisystem. [Niedrig]\n  9. OK — Übergibt „OK“ an echo. [Niedrig]"
+  "userMessage": "Ohne Rückfrage\n\nbash ops/scripts/sync-to-playground.sh && grep -E '^Version:' style.css\n\nWas die Teile tun:\n  1. ops/scripts/sync-to-playground.sh — Bezieht sich auf ops/scripts/sync-to-playground.sh im Dateisystem. [Niedrig]\n  2. -E — Schaltet die Option -E ein. [Niedrig]\n  3. '^Version:' — Übergibt „^Version:“ an grep. [Niedrig]\n  4. style.css — Übergibt „style.css“ an grep. [Niedrig]"
 }

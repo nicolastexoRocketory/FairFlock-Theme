@@ -20,6 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.221',
+			'items'   => array(
+				__( 'Mega-Menü: Spaltenbreiten aus dem Site Editor werden wieder angewendet.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.220',
+			'items'   => array(
+				__( 'Editor: Mega-Liste erscheint wieder im Block-Inserter (JS-Variation für core/group).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.219',
+			'items'   => array(
+				__( 'Mega-Menü: Promo-Card nur so hoch wie der Inhalt; Nav-Hover-Underline ohne Doppelstrich und Abstand zu Trennstrichen.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.218',
 			'items'   => array(
 				__( 'Mega-Menü: Listen manuell, alle Kategorien live oder Produkte einer Kategorie (Site Editor).', 'fairflock' ),

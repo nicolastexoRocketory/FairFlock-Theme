@@ -13,63 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers a Group variation “Mega-Liste”.
+ * Enqueues Mega-Liste variation + inspector (JS registration required for core/group).
  *
  * @since 0.9.218
- *
- * @return void
- */
-function fairflock_register_mega_list_variation() {
-	if ( ! function_exists( 'register_block_variation' ) ) {
-		return;
-	}
-
-	register_block_variation(
-		'core/group',
-		array(
-			'name'        => 'fairflock-mega-list',
-			'title'       => __( 'Mega-Liste', 'fairflock' ),
-			'description' => __( 'Liste im Mega-Menü: manuell, alle Kategorien oder Produkte einer Kategorie.', 'fairflock' ),
-			'category'    => 'theme',
-			'icon'        => 'menu',
-			'keywords'    => array( 'mega', 'liste', 'kategorie', 'produkte', 'menü' ),
-			'attributes'  => array(
-				'className' => 'ff-mega-list ff-mega-list--manual',
-				'layout'    => array(
-					'type' => 'default',
-				),
-				'metadata'  => array(
-					'name' => __( 'Mega-Liste', 'fairflock' ),
-				),
-			),
-			'innerBlocks' => array(
-				array(
-					'core/list',
-					array(
-						'className' => 'ff-mega-panel__links',
-						'fontSize'  => 'small',
-					),
-					array(
-						array(
-							'core/list-item',
-							array(
-								'content' => '<a href="/shop/">' . __( 'Beispiel-Link', 'fairflock' ) . '</a>',
-							),
-						),
-					),
-				),
-			),
-			'scope'       => array( 'inserter', 'block', 'transform' ),
-			'isActive'    => array( 'className' ),
-		)
-	);
-}
-add_action( 'init', 'fairflock_register_mega_list_variation' );
-
-/**
- * Enqueues inspector controls for Mega-Liste groups.
- *
- * @since 0.9.218
+ * @since 0.9.220 Variation via JS — PHP core/group variations are overwritten in the editor.
  *
  * @return void
  */
@@ -86,8 +33,10 @@ function fairflock_enqueue_mega_list_editor_assets() {
 		array(
 			'wp-api-fetch',
 			'wp-block-editor',
+			'wp-blocks',
 			'wp-components',
 			'wp-compose',
+			'wp-dom-ready',
 			'wp-element',
 			'wp-hooks',
 			'wp-i18n',
@@ -101,18 +50,20 @@ function fairflock_enqueue_mega_list_editor_assets() {
 		'fairflockMegaList',
 		array(
 			'i18n' => array(
-				'panel'       => __( 'Mega-Liste', 'fairflock' ),
-				'mode'        => __( 'Inhalt', 'fairflock' ),
-				'manual'      => __( 'Manuell (eigene Links)', 'fairflock' ),
-				'categories'  => __( 'Alle Kategorien (live)', 'fairflock' ),
-				'products'    => __( 'Produkte einer Kategorie (live)', 'fairflock' ),
-				'category'    => __( 'Kategorie', 'fairflock' ),
-				'categoryHelp'=> __( 'Welche Produktkategorie angezeigt werden soll.', 'fairflock' ),
-				'loading'     => __( 'Kategorien werden geladen…', 'fairflock' ),
-				'hintManual'  => __( 'Links in der Liste unten selbst bearbeiten.', 'fairflock' ),
-				'hintCats'    => __( 'Frontend zeigt alle Produktkategorien live. Die Liste im Editor dient nur als Platzhalter.', 'fairflock' ),
-				'hintProds'   => __( 'Frontend zeigt Produkte der gewählten Kategorie live. Die Liste im Editor dient nur als Platzhalter.', 'fairflock' ),
-				'noCategory'  => __( '— Kategorie wählen —', 'fairflock' ),
+				'panel'         => __( 'Mega-Liste', 'fairflock' ),
+				'variationDesc' => __( 'Liste im Mega-Menü: manuell, alle Kategorien oder Produkte einer Kategorie.', 'fairflock' ),
+				'exampleLink'   => __( 'Beispiel-Link', 'fairflock' ),
+				'mode'          => __( 'Inhalt', 'fairflock' ),
+				'manual'        => __( 'Manuell (eigene Links)', 'fairflock' ),
+				'categories'    => __( 'Alle Kategorien (live)', 'fairflock' ),
+				'products'      => __( 'Produkte einer Kategorie (live)', 'fairflock' ),
+				'category'      => __( 'Kategorie', 'fairflock' ),
+				'categoryHelp'  => __( 'Welche Produktkategorie angezeigt werden soll.', 'fairflock' ),
+				'loading'       => __( 'Kategorien werden geladen…', 'fairflock' ),
+				'hintManual'    => __( 'Links in der Liste unten selbst bearbeiten.', 'fairflock' ),
+				'hintCats'      => __( 'Frontend zeigt alle Produktkategorien live. Die Liste im Editor dient nur als Platzhalter.', 'fairflock' ),
+				'hintProds'     => __( 'Frontend zeigt Produkte der gewählten Kategorie live. Die Liste im Editor dient nur als Platzhalter.', 'fairflock' ),
+				'noCategory'    => __( '— Kategorie wählen —', 'fairflock' ),
 			),
 		)
 	);

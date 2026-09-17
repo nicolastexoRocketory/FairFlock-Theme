@@ -526,7 +526,7 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
 	align-self: center;
 	width: 0;
 	height: 14px;
-	margin-inline: 10px;
+	margin-inline: 14px;
 	border-left: 1px solid;
 	border-left-color: inherit;
 	background: none;
@@ -558,16 +558,22 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu > .wp-block-navigation-item__content,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu > .wp-block-navigation-submenu__toggle:not(:empty) {
 	isolation: isolate;
+	text-decoration: none !important;
 }
+
+/*
+ * Underline nur am Label (Link ODER Toggle-mit-Text) — nie an beiden,
+ * sonst Doppelstrich. Abstand zu Trennstrichen + über dem Header-Rand.
+ */
 
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::after,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu > .wp-block-navigation-item__content::after,
-.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu > .wp-block-navigation-submenu__toggle:not(:empty)::after {
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:not(:has(> .wp-block-navigation-item__content)) > .wp-block-navigation-submenu__toggle:not(:empty)::after {
 	content: "";
 	position: absolute;
-	left: 8px;
-	right: 8px;
-	bottom: 5px;
+	left: 14px;
+	right: 14px;
+	bottom: 9px;
 	height: 1.5px;
 	border-radius: 1px;
 	background: currentColor;
@@ -583,11 +589,11 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item:focus-within > .wp-block-navigation-item__content,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:hover > .wp-block-navigation-item__content,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within > .wp-block-navigation-item__content,
-.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:hover > .wp-block-navigation-submenu__toggle:not(:empty),
-.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within > .wp-block-navigation-submenu__toggle:not(:empty),
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:not(:has(> .wp-block-navigation-item__content)):hover > .wp-block-navigation-submenu__toggle:not(:empty),
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:not(:has(> .wp-block-navigation-item__content)):focus-within > .wp-block-navigation-submenu__toggle:not(:empty),
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item > .wp-block-navigation-item__content,
 .ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-item__content,
-.ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle:not(:empty) {
+.ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active:not(:has(> .wp-block-navigation-item__content)) > .wp-block-navigation-submenu__toggle:not(:empty) {
 	background-color: color-mix(in srgb, currentColor 10%, transparent);
 }
 
@@ -595,18 +601,18 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item:focus-within > .wp-block-navigation-item__content::after,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:hover > .wp-block-navigation-item__content::after,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within > .wp-block-navigation-item__content::after,
-.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:hover > .wp-block-navigation-submenu__toggle:not(:empty)::after,
-.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within > .wp-block-navigation-submenu__toggle:not(:empty)::after,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:not(:has(> .wp-block-navigation-item__content)):hover > .wp-block-navigation-submenu__toggle:not(:empty)::after,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:not(:has(> .wp-block-navigation-item__content)):focus-within > .wp-block-navigation-submenu__toggle:not(:empty)::after,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item > .wp-block-navigation-item__content::after,
 .ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-item__content::after,
-.ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle:not(:empty)::after {
+.ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active:not(:has(> .wp-block-navigation-item__content)) > .wp-block-navigation-submenu__toggle:not(:empty)::after {
 	transform: scaleX(1);
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::after,
 	.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu > .wp-block-navigation-item__content::after,
-	.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu > .wp-block-navigation-submenu__toggle:not(:empty)::after {
+	.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:not(:has(> .wp-block-navigation-item__content)) > .wp-block-navigation-submenu__toggle:not(:empty)::after {
 		transition: none;
 	}
 }
@@ -946,28 +952,42 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 	color: inherit;
 }
 
-/* 4 Spalten: 3× Links + 1× Promo-Card */
+/* Mega-Spalten: Flex wie core/columns — Editor-Breiten (flex-basis) gelten */
 .ff-mega-panel__cols.wp-block-columns,
 .ff-mega-panel .ff-mega-panel__cols {
-	display: grid !important;
-	grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(220px, 1.15fr);
-	gap: 28px !important;
-	align-items: start;
+	display: flex !important;
 	flex-wrap: nowrap !important;
+	align-items: start !important;
+	gap: 28px !important;
 }
 
 .ff-mega-panel__cols > .wp-block-column {
-	flex-basis: auto !important;
-	width: auto !important;
-	max-width: none !important;
 	margin: 0 !important;
+	align-self: start !important;
+	height: auto !important;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+/* Ohne gesetzte Breite: gleichmäßig wachsen (WP-Default) */
+.ff-mega-panel__cols > .wp-block-column:not([style*="flex-basis"]):not([style*="width"]) {
+	flex-grow: 1;
+	flex-basis: 0;
+}
+
+/* Mit Editor-Breite: exakt diese Basis, kein Mitwachsen */
+.ff-mega-panel__cols > .wp-block-column[style*="flex-basis"],
+.ff-mega-panel__cols > .wp-block-column[style*="width"] {
+	flex-grow: 0;
+	flex-shrink: 1;
 }
 
 .ff-mega-panel__card {
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
-	height: 100%;
+	height: auto;
+	align-self: start;
 	overflow: hidden;
 	border-radius: var(--wp--custom--radius--md, 12px);
 	background: var(--ff-surface, var(--wp--custom--surface, #fff));
@@ -996,7 +1016,7 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	flex: 1 1 auto;
+	flex: 0 0 auto;
 }
 
 .ff-mega-panel__card-body p {
@@ -1066,11 +1086,16 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 @media (max-width: 1100px) {
 	.ff-mega-panel__cols.wp-block-columns,
 	.ff-mega-panel .ff-mega-panel__cols {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		flex-wrap: wrap !important;
+	}
+
+	.ff-mega-panel__cols > .wp-block-column {
+		flex-basis: calc(50% - 14px) !important;
+		flex-grow: 1 !important;
 	}
 
 	.ff-mega-panel__cols > .wp-block-column:last-child {
-		grid-column: 1 / -1;
+		flex-basis: 100% !important;
 	}
 }
 

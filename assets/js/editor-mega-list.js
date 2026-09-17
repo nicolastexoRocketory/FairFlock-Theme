@@ -1,8 +1,11 @@
 /**
- * Mega-Liste: Inspector for core/group.ff-mega-list modes.
+ * Mega-Liste: Variation + Inspector for core/group.ff-mega-list modes.
+ *
+ * Variation must be registered in JS — PHP core/group variations are
+ * overwritten by the Group block’s client variations (Trac #60856).
  */
 (function (wp, config) {
-	if (!wp || !wp.hooks || !wp.compose || !wp.element || !wp.blockEditor || !wp.components) {
+	if (!wp || !wp.hooks || !wp.compose || !wp.element || !wp.blockEditor || !wp.components || !wp.blocks) {
 		return;
 	}
 
@@ -20,6 +23,41 @@
 
 	function hasClass(className, token) {
 		return typeof className === "string" && (" " + className + " ").indexOf(" " + token + " ") !== -1;
+	}
+
+	function registerMegaListVariation() {
+		wp.blocks.registerBlockVariation("core/group", {
+			name: "fairflock-mega-list",
+			title: i18n.panel || "Mega-Liste",
+			description:
+				i18n.variationDesc ||
+				"Liste im Mega-Menü: manuell, alle Kategorien oder Produkte einer Kategorie.",
+			category: "theme",
+			icon: "menu",
+			keywords: ["mega", "liste", "kategorie", "produkte", "menü", "fairflock"],
+			attributes: {
+				className: "ff-mega-list ff-mega-list--manual",
+				layout: { type: "default" },
+				metadata: { name: i18n.panel || "Mega-Liste" },
+			},
+			innerBlocks: [
+				[
+					"core/list",
+					{ className: "ff-mega-panel__links", fontSize: "small" },
+					[["core/list-item", { content: i18n.exampleLink || "Beispiel-Link" }]],
+				],
+			],
+			scope: ["inserter", "block", "transform"],
+			isActive: function (blockAttributes) {
+				return hasClass(blockAttributes && blockAttributes.className, "ff-mega-list");
+			},
+		});
+	}
+
+	if (wp.domReady) {
+		wp.domReady(registerMegaListVariation);
+	} else {
+		registerMegaListVariation();
 	}
 
 	function parseMode(className) {

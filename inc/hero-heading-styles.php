@@ -224,5 +224,12 @@ function fairflock_register_hero_center_style() {
 			'label' => __( 'Hero: Inhalt mittig', 'fairflock' ),
 		)
 	);
+	register_block_style(
+		'core/group',
+		array(
+			'name'  => 'ff-hero-nav-cluster',
+			'label' => __( 'Hero-Nav: Pfeile neben Punkten', 'fairflock' ),
+		)
+	);
 }
 add_action( 'init', 'fairflock_register_hero_center_style' );

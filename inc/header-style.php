@@ -68,6 +68,35 @@ function fairflock_mega_width_choices() {
 }
 
 /**
+ * Hero slider navigation layout choices.
+ *
+ * @since 0.9.235
+ *
+ * @return array<string, string>
+ */
+function fairflock_hero_nav_layout_choices() {
+	return array(
+		'edges'   => __( 'Pfeile außen, Punkte mittig', 'fairflock' ),
+		'cluster' => __( 'Pfeile neben den Punkten (Gruppe mittig)', 'fairflock' ),
+	);
+}
+
+/**
+ * Collections grid column choices (desktop).
+ *
+ * @since 0.9.236
+ *
+ * @return array<int, string>
+ */
+function fairflock_collections_cols_choices() {
+	return array(
+		2 => __( '2 Spalten', 'fairflock' ),
+		3 => __( '3 Spalten', 'fairflock' ),
+		4 => __( '4 Spalten', 'fairflock' ),
+	);
+}
+
+/**
  * Current header style.
  *
  * @since 0.9.173
@@ -124,6 +153,34 @@ function fairflock_get_mega_width() {
 }
 
 /**
+ * Current hero nav layout.
+ *
+ * @since 0.9.235
+ *
+ * @return string edges|cluster
+ */
+function fairflock_get_hero_nav_layout() {
+	$layout = (string) get_option( 'fairflock_hero_nav_layout', 'edges' );
+	$ok     = array_keys( fairflock_hero_nav_layout_choices() );
+
+	return in_array( $layout, $ok, true ) ? $layout : 'edges';
+}
+
+/**
+ * Desktop column count for the collections grid.
+ *
+ * @since 0.9.236
+ *
+ * @return int 2–4
+ */
+function fairflock_get_collections_cols() {
+	$cols = (int) get_option( 'fairflock_collections_cols', 3 );
+	$ok   = array_keys( fairflock_collections_cols_choices() );
+
+	return in_array( $cols, $ok, true ) ? $cols : 3;
+}
+
+/**
  * Hero slideshow height in vh (all devices).
  *
  * @since 0.9.216
@@ -163,6 +220,29 @@ function fairflock_print_hero_height_css() {
 add_action( 'wp_enqueue_scripts', 'fairflock_print_hero_height_css', 25 );
 
 /**
+ * Prints CSS variable for collections column count.
+ *
+ * @since 0.9.236
+ *
+ * @return void
+ */
+function fairflock_print_collections_cols_css() {
+	$cols = fairflock_get_collections_cols();
+	$css  = sprintf( ':root{--ff-collections-cols:%d;}', $cols );
+
+	if ( wp_style_is( 'fairflock-components', 'enqueued' ) || wp_style_is( 'fairflock-components', 'registered' ) ) {
+		wp_add_inline_style( 'fairflock-components', $css );
+		return;
+	}
+
+	printf(
+		'<style id="fairflock-collections-cols">%s</style>' . "\n",
+		$css // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- numeric CSS only
+	);
+}
+add_action( 'wp_enqueue_scripts', 'fairflock_print_collections_cols_css', 25 );
+
+/**
  * Hero height also in the block editor canvas.
  *
  * @since 0.9.216
@@ -180,6 +260,23 @@ function fairflock_print_hero_height_css_editor() {
 add_action( 'enqueue_block_editor_assets', 'fairflock_print_hero_height_css_editor', 25 );
 
 /**
+ * Collections columns also in the block editor canvas.
+ *
+ * @since 0.9.236
+ *
+ * @return void
+ */
+function fairflock_print_collections_cols_css_editor() {
+	$cols = fairflock_get_collections_cols();
+	$css  = sprintf(
+		'.editor-styles-wrapper,.block-editor-iframe__body{--ff-collections-cols:%d;}',
+		$cols
+	);
+	wp_add_inline_style( 'wp-edit-blocks', $css );
+}
+add_action( 'enqueue_block_editor_assets', 'fairflock_print_collections_cols_css_editor', 25 );
+
+/**
  * Adds body classes for CSS clearance / layout / shapes.
  *
  * @since 0.9.173
@@ -192,6 +289,8 @@ function fairflock_header_style_body_class( $classes ) {
 	$classes[] = 'ff-content-width-' . fairflock_get_content_width();
 	$classes[] = 'ff-shape-' . fairflock_get_shape_style();
 	$classes[] = 'ff-mega-width-' . fairflock_get_mega_width();
+	$classes[] = 'ff-hero-nav-' . fairflock_get_hero_nav_layout();
+	$classes[] = 'ff-collections-cols-' . fairflock_get_collections_cols();
 
 	return $classes;
 }
@@ -227,6 +326,8 @@ function fairflock_enqueue_darstellung_editor_bridge() {
 				'ff-content-width-' . fairflock_get_content_width(),
 				'ff-shape-' . fairflock_get_shape_style(),
 				'ff-mega-width-' . fairflock_get_mega_width(),
+				'ff-hero-nav-' . fairflock_get_hero_nav_layout(),
+				'ff-collections-cols-' . fairflock_get_collections_cols(),
 			),
 			'headerMod'   => 'ff-header--' . fairflock_get_header_style(),
 		)
@@ -328,14 +429,24 @@ function fairflock_header_style_handle_admin_save() {
 	$mega_ok  = array_keys( fairflock_mega_width_choices() );
 	$mega     = in_array( $mega_raw, $mega_ok, true ) ? $mega_raw : 'bar';
 
+	$hero_nav_raw = isset( $_POST['fairflock_hero_nav_layout'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_hero_nav_layout'] ) ) : 'edges';
+	$hero_nav_ok  = array_keys( fairflock_hero_nav_layout_choices() );
+	$hero_nav     = in_array( $hero_nav_raw, $hero_nav_ok, true ) ? $hero_nav_raw : 'edges';
+
 	$hero_vh = isset( $_POST['fairflock_hero_height_vh'] ) ? (int) wp_unslash( $_POST['fairflock_hero_height_vh'] ) : 80;
 	$hero_vh = max( 40, min( 100, $hero_vh ) );
+
+	$cols_raw = isset( $_POST['fairflock_collections_cols'] ) ? (int) wp_unslash( $_POST['fairflock_collections_cols'] ) : 3;
+	$cols_ok  = array_keys( fairflock_collections_cols_choices() );
+	$cols     = in_array( $cols_raw, $cols_ok, true ) ? $cols_raw : 3;
 
 	update_option( 'fairflock_header_style', $header, false );
 	update_option( 'fairflock_content_width', $width, false );
 	update_option( 'fairflock_shape_style', $shape, false );
 	update_option( 'fairflock_mega_width', $mega, false );
+	update_option( 'fairflock_hero_nav_layout', $hero_nav, false );
 	update_option( 'fairflock_hero_height_vh', $hero_vh, false );
+	update_option( 'fairflock_collections_cols', $cols, false );
 
 	wp_safe_redirect(
 		add_query_arg(
@@ -370,7 +481,11 @@ function fairflock_header_style_render_admin_page() {
 	$shape_choices  = fairflock_shape_style_choices();
 	$mega_current   = fairflock_get_mega_width();
 	$mega_choices   = fairflock_mega_width_choices();
+	$hero_nav_cur   = fairflock_get_hero_nav_layout();
+	$hero_nav_opts  = fairflock_hero_nav_layout_choices();
 	$hero_vh        = fairflock_get_hero_height_vh();
+	$cols_current   = fairflock_get_collections_cols();
+	$cols_choices   = fairflock_collections_cols_choices();
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Darstellung', 'fairflock' ); ?></h1>
@@ -378,7 +493,7 @@ function fairflock_header_style_render_admin_page() {
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Einstellungen gespeichert.', 'fairflock' ); ?></p></div>
 		<?php endif; ?>
 
-		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite, Formen, Mega-Menü und Hero — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
+		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite, Formen, Mega-Menü, Hero und Kollektionen — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
 
 		<form method="post" action="">
 			<?php wp_nonce_field( 'fairflock_header_style_settings' ); ?>
@@ -463,6 +578,38 @@ function fairflock_header_style_render_admin_page() {
 						<span>vh</span>
 						<p class="description">
 							<?php esc_html_e( 'Höhe der Hero-Slideshow in Viewport-Höhe (vh), gilt für alle Geräte. Standard: 80. Erlaubt: 40–100.', 'fairflock' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Hero-Navigation', 'fairflock' ); ?></th>
+					<td>
+						<fieldset>
+							<?php foreach ( $hero_nav_opts as $key => $label ) : ?>
+								<label style="display:block;margin:0 0 10px;">
+									<input type="radio" name="fairflock_hero_nav_layout" value="<?php echo esc_attr( $key ); ?>" <?php checked( $hero_nav_cur, $key ); ?> />
+									<strong><?php echo esc_html( $label ); ?></strong>
+								</label>
+							<?php endforeach; ?>
+						</fieldset>
+						<p class="description">
+							<?php esc_html_e( 'Steuert die Pfeile und Punkte am unteren Hero-Rand. „Neben den Punkten“ fasst alles zu einer mittigen Gruppe zusammen.', 'fairflock' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Kollektionen-Spalten', 'fairflock' ); ?></th>
+					<td>
+						<fieldset>
+							<?php foreach ( $cols_choices as $key => $label ) : ?>
+								<label style="display:inline-block;margin:0 16px 10px 0;">
+									<input type="radio" name="fairflock_collections_cols" value="<?php echo esc_attr( (string) $key ); ?>" <?php checked( $cols_current, $key ); ?> />
+									<strong><?php echo esc_html( $label ); ?></strong>
+								</label>
+							<?php endforeach; ?>
+						</fieldset>
+						<p class="description">
+							<?php esc_html_e( 'Desktop-Raster der Kollektionen-Karten (Startseite und /kategorien/). Auf dem Handy bleibt der horizontale Slider. „Mehr anzeigen“ zeigt weiterhin 3 Reihen.', 'fairflock' ); ?>
 						</p>
 					</td>
 				</tr>

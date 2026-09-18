@@ -492,6 +492,30 @@
 	background: var(--ff-surface, #fff);
 }
 
+/*
+ * Hero-Nav „cluster“: ← ••• → als eine mittige Gruppe
+ * (FairFlock → Darstellung → Hero-Navigation)
+ */
+body.ff-hero-nav-cluster .fs-nav,
+.fs-slider.is-style-ff-hero-nav-cluster .fs-nav {
+	width: auto;
+	max-width: none;
+	grid-template-columns: auto auto auto;
+	gap: 10px;
+	justify-items: center;
+}
+
+body.ff-hero-nav-cluster .fs-nav .slider-btn,
+.fs-slider.is-style-ff-hero-nav-cluster .fs-nav .slider-btn {
+	justify-self: center;
+}
+
+body.ff-hero-nav-cluster .fs-nav .fs-dots,
+.fs-slider.is-style-ff-hero-nav-cluster .fs-nav .fs-dots {
+	justify-self: center;
+	padding-inline: 4px;
+}
+
 /* Trust marquee */
 .strip {
 	width: var(--ff-shell, min(1240px, calc(100% - 2 * var(--ff-gutter, 32px))));
@@ -619,6 +643,18 @@
 		width: auto;
 		max-width: none;
 		grid-template-columns: 32px 1fr 32px;
+	}
+
+	body.ff-hero-nav-cluster .fs-nav,
+	.fs-slider.is-style-ff-hero-nav-cluster .fs-nav {
+		left: 50%;
+		right: auto;
+		bottom: 1.5em;
+		translate: -50% 0;
+		inset: auto auto 1.5em auto;
+		width: auto;
+		grid-template-columns: auto auto auto;
+		gap: 8px;
 	}
 
 	.fs-nav .slider-btn {

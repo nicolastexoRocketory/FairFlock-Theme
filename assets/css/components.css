@@ -5270,7 +5270,7 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 .ff-collections-grid,
 .wp-block-group.ff-collections-grid {
 	display: grid !important;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-columns: repeat(var(--ff-collections-cols, 3), minmax(0, 1fr));
 	gap: 16px;
 	align-items: stretch;
 	width: 100%;
@@ -5450,7 +5450,7 @@ a.ff-collection-card,
 	);
 }
 
-/* Desktop: 3 Reihen (9 Karten), Rest hinter „Mehr anzeigen“. */
+/* Desktop: 3 Reihen sichtbar, Rest hinter „Mehr anzeigen“ (Spalten × 3). */
 .ff-collections-expand,
 .wp-block-buttons.ff-collections-expand {
 	display: none;
@@ -5464,8 +5464,20 @@ a.ff-collection-card,
 }
 
 @media (min-width: 961px) {
-	.ff-collections-grid.is-collapsed > .ff-collection-card:nth-child(n + 10),
-	.ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card:nth-child(n + 10) {
+	body.ff-collections-cols-2 .ff-collections-grid.is-collapsed > .ff-collection-card:nth-child(n + 7),
+	body.ff-collections-cols-2 .ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card:nth-child(n + 7) {
+		display: none !important;
+	}
+
+	body.ff-collections-cols-3 .ff-collections-grid.is-collapsed > .ff-collection-card:nth-child(n + 10),
+	body.ff-collections-cols-3 .ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card:nth-child(n + 10),
+	body:not(.ff-collections-cols-2):not(.ff-collections-cols-4) .ff-collections-grid.is-collapsed > .ff-collection-card:nth-child(n + 10),
+	body:not(.ff-collections-cols-2):not(.ff-collections-cols-4) .ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card:nth-child(n + 10) {
+		display: none !important;
+	}
+
+	body.ff-collections-cols-4 .ff-collections-grid.is-collapsed > .ff-collection-card:nth-child(n + 13),
+	body.ff-collections-cols-4 .ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card:nth-child(n + 13) {
 		display: none !important;
 	}
 
@@ -5480,10 +5492,10 @@ a.ff-collection-card,
 	}
 }
 
-.editor-styles-wrapper .ff-collections-grid.is-collapsed > .ff-collection-card:nth-child(n + 10),
-.editor-styles-wrapper .ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card:nth-child(n + 10),
-.block-editor-iframe__body .ff-collections-grid.is-collapsed > .ff-collection-card:nth-child(n + 10),
-.block-editor-iframe__body .ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card:nth-child(n + 10) {
+.editor-styles-wrapper .ff-collections-grid.is-collapsed > .ff-collection-card:nth-child(n + 7),
+.editor-styles-wrapper .ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card:nth-child(n + 7),
+.block-editor-iframe__body .ff-collections-grid.is-collapsed > .ff-collection-card:nth-child(n + 7),
+.block-editor-iframe__body .ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card:nth-child(n + 7) {
 	display: grid !important;
 }
 

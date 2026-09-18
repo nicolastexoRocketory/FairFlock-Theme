@@ -175,7 +175,19 @@
 	}
 
 	var DESKTOP_MQ = "(min-width: 961px)";
-	var COLLECTIONS_VISIBLE = 9; /* 3 Spalten × 3 Reihen */
+	var COLLECTIONS_ROWS = 3;
+
+	function collectionsVisibleCount(grid) {
+		var raw = window.getComputedStyle(grid).getPropertyValue("--ff-collections-cols");
+		var cols = parseInt(raw, 10);
+		if (!cols || cols < 2) {
+			cols = 3;
+		}
+		if (cols > 4) {
+			cols = 4;
+		}
+		return cols * COLLECTIONS_ROWS;
+	}
 
 	function initCollectionsExpand(section) {
 		var grid = section.querySelector(".ff-collections-grid");
@@ -208,7 +220,8 @@
 		}
 
 		function syncVisibility() {
-			var needsToggle = isDesktop() && cardCount() > COLLECTIONS_VISIBLE;
+			var visible = collectionsVisibleCount(grid);
+			var needsToggle = isDesktop() && cardCount() > visible;
 			expand.hidden = !needsToggle;
 			expand.classList.toggle("is-visible", needsToggle);
 			if (!needsToggle) {
@@ -226,7 +239,7 @@
 		btn.setAttribute("aria-expanded", "false");
 		btn.addEventListener("click", function (event) {
 			event.preventDefault();
-			if (!isDesktop() || cardCount() <= COLLECTIONS_VISIBLE) {
+			if (!isDesktop() || cardCount() <= collectionsVisibleCount(grid)) {
 				return;
 			}
 			setExpanded(!grid.classList.contains("is-expanded"));

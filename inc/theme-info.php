@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.236',
+			'items'   => array(
+				__( 'Darstellung: Kollektionen-Spalten — 2, 3 oder 4 Spalten am Desktop einstellbar.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.235',
+			'items'   => array(
+				__( 'Darstellung: Hero-Navigation — Pfeile optional direkt neben den Punkten (mittig).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.234',
 			'items'   => array(
 				__( 'Hero: Stil „Inhalt mittig“ zentriert Text, Titel und Buttons zuverlässig horizontal.', 'fairflock' ),

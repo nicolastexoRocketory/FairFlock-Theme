@@ -77,8 +77,8 @@ $cards = array(
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"className":"ff-bento","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
-		<div class="wp-block-group ff-bento">
+		<!-- wp:group {"className":"ff-bento ff-bento--manual","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
+		<div class="wp-block-group ff-bento ff-bento--manual">
 <?php foreach ( $cards as $card ) : ?>
 			<!-- wp:group {"className":"<?php echo esc_attr( $card['class'] ); ?>","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"default"}} -->
 			<div class="wp-block-group <?php echo esc_attr( $card['class'] ); ?>">

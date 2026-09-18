@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.237',
+			'items'   => array(
+				__( 'Kategorien-Bento: Inhalt wählbar — Kollektionen, Produkte einer Kategorie oder Seiten/Beiträge (live).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.236',
 			'items'   => array(
 				__( 'Darstellung: Kollektionen-Spalten — 2, 3 oder 4 Spalten am Desktop einstellbar.', 'fairflock' ),

@@ -6,8 +6,11 @@
 	--ff-ease: cubic-bezier(0.16, 1, 0.3, 1);
 	--ff-header-top: 16px;
 	--ff-header-height: 72px;
-	/* Shared content width: same outer edges for every homepage section */
-	--ff-gutter: var(--wp--preset--spacing--40, 32px);
+	/*
+	 * Full-width / shell gutter (Styles → Layout → Innenabstand equivalent).
+	 * Desktop 4em · Tablet 2em · Mobile 1em — alignfull content insets via --ff-shell.
+	 */
+	--ff-gutter: 4em;
 	--ff-shell: min(1240px, calc(100% - 2 * var(--ff-gutter)));
 	/*
 	 * Clearance under fixed header. Includes bar padding (+16) and title air (+2rem).
@@ -20,6 +23,18 @@
 	--ff-surface: var(--wp--custom--surface, #ffffff);
 	/* Fixed ink for cinematic cards/overlays — does not flip in Dark */
 	--ff-ink: #0e1114;
+}
+
+/*
+ * Keep WP root padding in sync with --ff-gutter.
+ * useRootPaddingAwareAlignments lets .alignfull bleed; shells use --ff-shell
+ * so full-width sections still get this horizontal inset.
+ */
+body,
+.editor-styles-wrapper,
+.block-editor-iframe__body {
+	--wp--style--root--padding-left: var(--ff-gutter);
+	--wp--style--root--padding-right: var(--ff-gutter);
 }
 
 /* —— Inhaltsbreite: Volle Breite (FairFlock → Darstellung) —— */
@@ -210,7 +225,7 @@ body.single-product:not(.home):not(.front-page) .wp-site-blocks > .woocommerce >
 	translate: none;
 	z-index: 70;
 	width: var(--ff-shell);
-	max-width: calc(100% - 64px);
+	max-width: var(--ff-shell);
 	margin-inline: auto;
 	padding: 0;
 	background: transparent;
@@ -4927,16 +4942,24 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 
 @media (max-width: 960px) {
 	:root {
-		--ff-gutter: 1em;
+		--ff-gutter: 2em;
 		--ff-header-top: 1em;
 		--ff-shell: calc(100% - 2 * var(--ff-gutter));
 	}
 
-	/* Equal left/right inset — avoid translate centering drift */
+	body,
+	.editor-styles-wrapper,
+	.block-editor-iframe__body {
+		--wp--style--root--padding-left: var(--ff-gutter);
+		--wp--style--root--padding-right: var(--ff-gutter);
+	}
+
+	/* Equal left/right inset — keep header tighter than content gutters (2em/4em) */
 	body:not(.block-editor-iframe__body) .ff-header {
-		left: var(--ff-gutter);
-		right: var(--ff-gutter);
+		left: 1em;
+		right: 1em;
 		translate: none;
+		inset-inline: 1em;
 		width: auto;
 		max-width: none;
 	}
@@ -4945,6 +4968,7 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 	body:not(.block-editor-iframe__body) .ff-header.ff-header--edge {
 		left: 0;
 		right: 0;
+		inset-inline: 0;
 		width: 100%;
 	}
 
@@ -4952,8 +4976,89 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 		max-width: none;
 	}
 
-	.ff-header__nav {
+	.ff-header__bar {
+		gap: 10px;
+		padding-inline: 10px;
+		min-width: 0;
+	}
+
+	.ff-header__brand {
+		min-width: 0;
+		flex: 1 1 auto;
+	}
+
+	.ff-header__brand .wp-block-site-logo img {
+		max-height: 36px;
+		width: auto;
+		max-width: min(160px, 42vw);
+	}
+
+	/*
+	 * Mobile nav: hide desktop link row when overlay is off (menu lives in search).
+	 * If overlayMenu is mobile/always, keep the hamburger — never hide the whole nav.
+	 */
+	.ff-header__nav:not(:has(.wp-block-navigation__responsive-container-open)) {
 		display: none !important;
+	}
+
+	.ff-header__nav:has(.wp-block-navigation__responsive-container-open) {
+		display: flex !important;
+		flex: 0 0 auto;
+		justify-content: flex-end;
+		min-width: 0;
+		align-items: center;
+	}
+
+	.ff-header__nav .wp-block-navigation__responsive-container-open {
+		display: flex !important;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		padding: 0;
+		border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+		border-radius: var(--wp--custom--radius--sm, 8px);
+		background: color-mix(in srgb, currentColor 6%, transparent);
+		color: inherit;
+	}
+
+	.ff-header__nav .wp-block-navigation__responsive-container-open svg {
+		width: 22px;
+		height: 22px;
+		fill: currentColor;
+	}
+
+	.ff-header__nav .wp-block-navigation__responsive-container:not(.is-menu-open) {
+		display: none;
+	}
+
+	.ff-header__nav .wp-block-navigation__responsive-dialog,
+	.ff-header__nav .wp-block-navigation__responsive-container.is-menu-open {
+		background: var(--ff-surface, #fff);
+		color: var(--wp--preset--color--contrast, #0e1114);
+	}
+
+	.ff-header__nav .wp-block-navigation__responsive-container.is-menu-open {
+		padding: 1em;
+		box-sizing: border-box;
+	}
+
+	.ff-header__nav .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0;
+		width: 100%;
+	}
+
+	.ff-header__nav .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item + .wp-block-navigation-item::before {
+		display: none;
+	}
+
+	.ff-header__nav .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
+		display: block;
+		padding: 14px 4px;
+		white-space: normal;
+		border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
 	}
 
 	.ff-header__icons .ff-search-toggle .wp-block-button__link,
@@ -5088,6 +5193,18 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 }
 
 @media (max-width: 560px) {
+	:root {
+		--ff-gutter: 1em;
+		--ff-shell: calc(100% - 2 * var(--ff-gutter));
+	}
+
+	body,
+	.editor-styles-wrapper,
+	.block-editor-iframe__body {
+		--wp--style--root--padding-left: var(--ff-gutter);
+		--wp--style--root--padding-right: var(--ff-gutter);
+	}
+
 	.ff-search-mega {
 		grid-template-columns: 1fr;
 	}

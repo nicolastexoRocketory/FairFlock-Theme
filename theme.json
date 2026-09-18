@@ -188,9 +188,9 @@
 		"spacing": {
 			"padding": {
 				"top": "0",
-				"right": "var:preset|spacing|40",
+				"right": "4em",
 				"bottom": "0",
-				"left": "var:preset|spacing|40"
+				"left": "4em"
 			},
 			"blockGap": "var:preset|spacing|40"
 		},

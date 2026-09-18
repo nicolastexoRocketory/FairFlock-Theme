@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.239',
+			'items'   => array(
+				__( 'Mobile Header/Nav: fester 1em-Inset, Logo skaliert, Overlay-Hamburger bleibt sichtbar.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.238',
+			'items'   => array(
+				__( 'Full-Width-Innenabstand: Desktop 4em, Tablet 2em, Mobile 1em (--ff-gutter / Root-Padding).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.237',
 			'items'   => array(
 				__( 'Kategorien-Bento: Inhalt wählbar — Kollektionen, Produkte einer Kategorie oder Seiten/Beiträge (live).', 'fairflock' ),

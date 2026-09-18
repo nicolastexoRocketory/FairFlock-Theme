@@ -3,7 +3,8 @@
  * Hero-Slider-Titel folgen Global Styles (Elemente h1 / h2 / heading).
  *
  * Theme-CSS setzt nur Layout + Weiß; Typografie kommt aus den Site-Editor-
- * Einstellungen und schlägt Block-Font-Klassen (has-*-font-family).
+ * Einstellungen. Block-Schriftgröße (S–XXL / custom) hat Vorrang vor dem
+ * Global-Styles-Default.
  *
  * @package FairFlock
  * @since 0.9.207
@@ -114,7 +115,11 @@ function fairflock_get_heading_element_css_props( $element ) {
 /**
  * Builds CSS rules applying Global Styles typography to hero titles.
  *
+ * font-size only as default — block presets (has-*-font-size) and inline
+ * sizes keep priority. Other typography still follows Global Styles.
+ *
  * @since 0.9.207
+ * @since 0.9.233 Block font-size overrides Global Styles defaults.
  *
  * @return string
  */
@@ -127,25 +132,41 @@ function fairflock_get_hero_heading_styles_css() {
 			continue;
 		}
 
-		$decls = array();
-		foreach ( $props as $prop => $val ) {
-			$decls[] = $prop . ':' . $val . ' !important';
+		$font_size = '';
+		if ( isset( $props['font-size'] ) ) {
+			$font_size = $props['font-size'];
+			unset( $props['font-size'] );
 		}
 
-		$selector = '.fs-slider .fs-slide ' . $tag
+		$base_selector = '.fs-slider .fs-slide ' . $tag
 			. ',.fs-slider .fs-slide ' . $tag . '.wp-block-heading'
 			. ',.fs-slider .fs-slide ' . $tag . '[class*="-font-family"]'
 			. ',.block-editor-iframe__body .fs-slider .fs-slide ' . $tag
 			. ',.editor-styles-wrapper .fs-slider .fs-slide ' . $tag;
 
-		$blocks[] = $selector . '{' . implode( ';', $decls ) . '}';
+		if ( $props ) {
+			$decls = array();
+			foreach ( $props as $prop => $val ) {
+				$decls[] = $prop . ':' . $val . ' !important';
+			}
+			$blocks[] = $base_selector . '{' . implode( ';', $decls ) . '}';
+		}
+
+		if ( $font_size !== '' ) {
+			/* Only when the block has no size class / inline size */
+			$size_selector = '.fs-slider .fs-slide ' . $tag . ':not([class*="-font-size"]):not([style*="font-size"])'
+				. ',.fs-slider .fs-slide ' . $tag . '.wp-block-heading:not([class*="-font-size"]):not([style*="font-size"])'
+				. ',.block-editor-iframe__body .fs-slider .fs-slide ' . $tag . ':not([class*="-font-size"]):not([style*="font-size"])'
+				. ',.editor-styles-wrapper .fs-slider .fs-slide ' . $tag . ':not([class*="-font-size"]):not([style*="font-size"])';
+			$blocks[]      = $size_selector . '{font-size:' . $font_size . ' !important;}';
+		}
 	}
 
 	if ( ! $blocks ) {
 		return '';
 	}
 
-	return "/* FairFlock: Hero-Titel = Global Styles h1–h6 */\n" . implode( "\n", $blocks );
+	return "/* FairFlock: Hero-Titel = Global Styles h1–h6 (Größe nur als Fallback) */\n" . implode( "\n", $blocks );
 }
 
 /**
@@ -185,3 +206,23 @@ function fairflock_print_hero_heading_styles_editor() {
 	wp_add_inline_style( 'wp-edit-blocks', $css );
 }
 add_action( 'enqueue_block_editor_assets', 'fairflock_print_hero_heading_styles_editor', 30 );
+
+/**
+ * Registers “Zentriert” style for Hero slides (Site Editor → Block → Stile).
+ *
+ * Apply to a Slide group (class fs-slide) or its Inhalts-Group (fs-slide-inner).
+ *
+ * @since 0.9.232
+ *
+ * @return void
+ */
+function fairflock_register_hero_center_style() {
+	register_block_style(
+		'core/group',
+		array(
+			'name'  => 'ff-hero-center',
+			'label' => __( 'Hero: zentriert', 'fairflock' ),
+		)
+	);
+}
+add_action( 'init', 'fairflock_register_hero_center_style' );

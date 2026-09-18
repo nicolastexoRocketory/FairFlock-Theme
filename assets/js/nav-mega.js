@@ -2,13 +2,17 @@
  * Opt-in Mega menu: opens editable template-part panel under the header.
  *
  * Trigger: Navigation item with block style “Mega” (is-style-ff-mega).
- * Content: Template part “Mega-Menü” (.ff-mega-panel-slot).
- * Position: flush under header bar, full viewport width (no edge/nav gap).
+ * Content: Template part “Mega-Menü” (.ff-mega-panel-slot) — moved to <body>
+ * so fixed positioning is viewport-relative (header translate would otherwise
+ * create a containing block and leave a gap).
+ * Motion: slide + fade open/close.
  */
 (function () {
 	var MQ = "(min-width: 961px)";
-	var CLOSE_MS = 220;
+	var CLOSE_MS = 180;
+	var ANIM_MS = 280;
 	var closeTimer = null;
+	var animTimer = null;
 	var openItem = null;
 
 	function ready(fn) {
@@ -51,6 +55,13 @@
 		}
 	}
 
+	function clearAnimTimer() {
+		if (animTimer) {
+			window.clearTimeout(animTimer);
+			animTimer = null;
+		}
+	}
+
 	function clearInlineBox(slot) {
 		if (!slot) {
 			return;
@@ -60,54 +71,100 @@
 		});
 	}
 
+	/**
+	 * Escape header transform containing-block (same pattern as cart drawer).
+	 */
+	function ensureSlotOnBody(slot) {
+		if (!slot || slot.parentElement === document.body) {
+			return slot;
+		}
+		document.body.appendChild(slot);
+		return slot;
+	}
+
 	function positionSlot(slot) {
 		var bar = headerBar();
 		if (!slot || !bar || !isDesktop()) {
-			clearInlineBox(slot);
 			return;
 		}
 
 		var rect = bar.getBoundingClientRect();
-		/* Bündig unter der Header-Leiste, randlos über die volle Viewport-Breite (CSS). */
-		slot.style.setProperty("top", Math.round(rect.bottom) + "px", "important");
+		/* -1px overlap kills hairline gaps under the bar */
+		var top = Math.max(0, Math.round(rect.bottom) - 1);
+		slot.style.setProperty("top", top + "px", "important");
 		slot.style.removeProperty("left");
 		slot.style.removeProperty("right");
 		slot.style.removeProperty("width");
 		slot.style.removeProperty("max-width");
-		slot.style.removeProperty("transform");
+		/* transform is owned by CSS animation — do not clear while open */
 	}
 
 	function openMega(item) {
 		clearCloseTimer();
-		var slot = panelSlot();
+		clearAnimTimer();
+		var slot = ensureSlotOnBody(panelSlot());
 		if (!slot || !isDesktop()) {
 			return;
 		}
+
 		openItem = item || openItem;
+		slot.classList.remove("is-closing");
 		document.documentElement.classList.add("is-ff-mega-open");
-		slot.classList.add("is-open");
-		slot.setAttribute("aria-hidden", "false");
 		positionSlot(slot);
+
+		/* Force reflow so re-open still animates after a fast close */
+		if (!slot.classList.contains("is-open")) {
+			void slot.offsetWidth;
+			slot.classList.add("is-open");
+		}
+
+		slot.setAttribute("aria-hidden", "false");
 		if (openItem) {
+			megaItems().forEach(function (el) {
+				if (el !== openItem) {
+					el.classList.remove("is-ff-mega-active");
+					el.setAttribute("aria-expanded", "false");
+				}
+			});
 			openItem.classList.add("is-ff-mega-active");
 			openItem.setAttribute("aria-expanded", "true");
 		}
 	}
 
+	function finishClose(slot) {
+		if (!slot) {
+			return;
+		}
+		slot.classList.remove("is-closing");
+		slot.classList.remove("is-open");
+		slot.setAttribute("aria-hidden", "true");
+		clearInlineBox(slot);
+	}
+
 	function closeMega() {
 		clearCloseTimer();
+		clearAnimTimer();
 		var slot = panelSlot();
 		document.documentElement.classList.remove("is-ff-mega-open");
-		if (slot) {
-			slot.classList.remove("is-open");
-			slot.setAttribute("aria-hidden", "true");
-			clearInlineBox(slot);
-		}
+
 		megaItems().forEach(function (item) {
 			item.classList.remove("is-ff-mega-active");
 			item.setAttribute("aria-expanded", "false");
 		});
 		openItem = null;
+
+		if (!slot || (!slot.classList.contains("is-open") && !slot.classList.contains("is-closing"))) {
+			return;
+		}
+
+		slot.classList.add("is-closing");
+		slot.classList.remove("is-open");
+		slot.setAttribute("aria-hidden", "true");
+
+		animTimer = window.setTimeout(function () {
+			finishClose(slot);
+			animTimer = null;
+		}, ANIM_MS);
 	}
 
 	function scheduleClose() {
@@ -182,6 +239,7 @@
 			return;
 		}
 
+		ensureSlotOnBody(slot);
 		items.forEach(bindItem);
 		bindSlot(slot);
 
@@ -192,7 +250,7 @@
 					closeMega();
 					return;
 				}
-				if (slot.classList.contains("is-open")) {
+				if (slot.classList.contains("is-open") || slot.classList.contains("is-closing")) {
 					positionSlot(slot);
 				}
 			},
@@ -202,7 +260,10 @@
 		window.addEventListener(
 			"scroll",
 			function () {
-				if (slot.classList.contains("is-open") && isDesktop()) {
+				if (
+					isDesktop() &&
+					(slot.classList.contains("is-open") || slot.classList.contains("is-closing"))
+				) {
 					positionSlot(slot);
 				}
 			},
@@ -210,7 +271,10 @@
 		);
 
 		document.addEventListener("keydown", function (event) {
-			if (event.key === "Escape" && slot.classList.contains("is-open")) {
+			if (
+				event.key === "Escape" &&
+				(slot.classList.contains("is-open") || slot.classList.contains("is-closing"))
+			) {
 				closeMega();
 			}
 		});

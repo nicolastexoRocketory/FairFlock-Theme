@@ -871,38 +871,58 @@ html.is-ff-mega-open .ff-header__bar {
 }
 
 .ff-mega-panel-slot {
-	display: none;
 	box-sizing: border-box;
 	z-index: 90;
 }
 
-body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-open {
-	display: block !important;
+/* Frontend: fixed under nav — animiert ein/aus (kein display:none, sonst keine Transition) */
+body:not(.block-editor-iframe__body) .ff-mega-panel-slot {
+	display: block;
 	position: fixed !important;
-	/* top via nav-mega.js — bündig unter der Nav, ohne Lücke */
 	left: 0 !important;
 	right: 0 !important;
 	width: 100% !important;
 	max-width: none !important;
-	transform: none !important;
 	padding: 0;
 	margin: 0;
-	pointer-events: auto;
 	box-sizing: border-box;
 	z-index: 90;
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate3d(0, -12px, 0);
+	transition:
+		opacity 0.28s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		transform 0.28s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		visibility 0.28s;
 }
 
-/* Unsichtbare Hover-Brücke nach oben (kein sichtbarer Abstand zur Nav) */
-body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-open::before {
+body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-open {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+	transform: translate3d(0, 0, 0);
+}
+
+body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-closing {
+	visibility: visible;
+	opacity: 0;
+	pointer-events: none;
+	transform: translate3d(0, -12px, 0);
+}
+
+/* Unsichtbare Hover-Brücke (Mausweg Nav → Panel, ohne sichtbaren Abstand) */
+body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-open::before,
+body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-closing::before {
 	content: "";
 	position: absolute;
 	left: 0;
 	right: 0;
-	top: -14px;
-	height: 14px;
+	top: -6px;
+	height: 8px;
 }
 
-/* Slot ist immer randlos; Panel ebenfalls bündig (kein Seiten-/Nav-Abstand) */
+/* Slot ist immer randlos; Panel bündig unter der Nav (kein Seiten-/Nav-Abstand) */
 body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
 	width: 100%;
 	max-width: none;
@@ -916,6 +936,18 @@ body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
 	border-radius: 0;
 	background: var(--ff-surface, var(--wp--custom--surface, #fff));
 	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot {
+		transition: none;
+		transform: none;
+	}
+
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-open,
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-closing {
+		transform: none;
+	}
 }
 
 /* Optional: Innenbreite der Inhalte (FairFlock → Darstellung → Mega-Menü Breite) */
@@ -1249,10 +1281,7 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	display: none !important;
 }
 
-/* Mega-Panel-Slot: Frontend nur bei .is-open (JS); Editor sichtbar über Slot-Regeln oben */
-body:not(.block-editor-iframe__body) .ff-mega-panel-slot:not(.is-open) {
-	display: none !important;
-}
+/* Mega-Panel-Slot: Sichtbarkeit steuert .is-open / .is-closing (siehe oben) */
 
 .block-editor-iframe__body .is-root-container > .ff-submenu-slot,
 .block-editor-iframe__body .is-root-container > .ff-nav-sub,

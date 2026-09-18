@@ -77,6 +77,42 @@
 	z-index: 1;
 }
 
+/*
+ * Hero: zentriert — Block-Stil „Hero: zentriert“ am Slide oder am Inhalts-Group.
+ * Text, Titel, Kicker und CTAs mittig; vertikal in der Hero-Mitte.
+ */
+.fs-slide.is-style-ff-hero-center,
+.fs-slide:has(> .fs-slide-inner.is-style-ff-hero-center) {
+	align-items: center;
+}
+
+.fs-slide.is-style-ff-hero-center .fs-slide-inner,
+.fs-slide-inner.is-style-ff-hero-center,
+.wp-block-group.fs-slide-inner.is-style-ff-hero-center {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+}
+
+.fs-slide.is-style-ff-hero-center .fs-slide-inner .wp-block-heading,
+.fs-slide.is-style-ff-hero-center .fs-slide-inner .fs-text,
+.fs-slide.is-style-ff-hero-center .fs-slide-inner .fs-kicker,
+.fs-slide-inner.is-style-ff-hero-center .wp-block-heading,
+.fs-slide-inner.is-style-ff-hero-center .fs-text,
+.fs-slide-inner.is-style-ff-hero-center .fs-kicker {
+	margin-inline: auto;
+}
+
+.fs-slide.is-style-ff-hero-center .cta-row,
+.fs-slide.is-style-ff-hero-center .cta-row.wp-block-buttons,
+.fs-slide.is-style-ff-hero-center .cta-row.is-layout-flex,
+.fs-slide-inner.is-style-ff-hero-center .cta-row,
+.fs-slide-inner.is-style-ff-hero-center .cta-row.wp-block-buttons,
+.fs-slide-inner.is-style-ff-hero-center .cta-row.is-layout-flex {
+	justify-content: center !important;
+}
+
 .fs-slide-media {
 	position: absolute;
 	inset: 0;

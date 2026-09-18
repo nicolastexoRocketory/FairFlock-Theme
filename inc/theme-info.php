@@ -20,6 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.233',
+			'items'   => array(
+				__( 'Hero: individuelle Titel-Schriftgröße (S–XXL) greift wieder.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.232',
+			'items'   => array(
+				__( 'Hero: Block-Stil „Hero: zentriert“ — Inhalt horizontal und vertikal mittig.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.231',
+			'items'   => array(
+				__( 'Mega-Menü: bündig unter der Nav + Ein-/Ausfahr-Animation.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.230',
 			'items'   => array(
 				__( 'Demo Content / Wizard: Germanized for WooCommerce als erforderliches Plugin.', 'fairflock' ),

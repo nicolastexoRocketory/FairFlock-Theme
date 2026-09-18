@@ -414,6 +414,12 @@ function fairflock_demo_content_recommended_plugins() {
 			'note'     => __( 'Shop-Grundlage — Produkte, Warenkorb, Kasse.', 'fairflock' ),
 		),
 		array(
+			'slug'     => 'woocommerce-germanized',
+			'name'     => 'Germanized for WooCommerce',
+			'required' => true,
+			'note'     => __( 'DE-Recht: Button-Lösung, MwSt./Versand/Lieferzeit, Checkout-Checkboxen, PDF. Pro für Rechnungen. Nicht parallel mit German Market.', 'fairflock' ),
+		),
+		array(
 			'slug'     => 'complianz-gdpr',
 			'name'     => 'Complianz',
 			'required' => true,
@@ -519,7 +525,7 @@ function fairflock_demo_content_render_admin_page() {
 					}
 
 					$install_url = $can_install
-						? admin_url( 'plugin-install.php?s=' . rawurlencode( $plugin['name'] ) . '&tab=search&type=term' )
+						? admin_url( 'plugin-install.php?s=' . rawurlencode( $plugin['slug'] ) . '&tab=search&type=term' )
 						: '';
 					$plugins_url = admin_url( 'plugins.php' );
 					?>

@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.230',
+			'items'   => array(
+				__( 'Demo Content / Wizard: Germanized for WooCommerce als erforderliches Plugin.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.229',
+			'items'   => array(
+				__( 'Header: Seitentitel mit gemessenem Abstand — kein Abschneiden unter der Leiste.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.228',
 			'items'   => array(
 				__( 'Warenkorb: Kein Erfolgs-Banner oben — Button wird „Wurde hinzugefügt“, Drawer öffnet sich.', 'fairflock' ),

@@ -18,6 +18,7 @@ body.woocommerce-account .ff-account-page,
 	width: 100% !important;
 	max-width: none !important;
 	margin-inline: 0 !important;
+	padding-top: var(--ff-header-clearance) !important;
 	padding-left: 0 !important;
 	padding-right: 0 !important;
 	box-sizing: border-box;

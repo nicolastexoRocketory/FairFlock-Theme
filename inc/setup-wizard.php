@@ -109,7 +109,7 @@ function fairflock_setup_wizard_steps() {
 	return array(
 		'plugins'      => array(
 			'title'       => __( 'Plugins aktivieren', 'fairflock' ),
-			'description' => __( 'WooCommerce und Complianz sind die Grundlage. Yoast SEO ist optional, aber sinnvoll.', 'fairflock' ),
+			'description' => __( 'WooCommerce, Germanized und Complianz sind die Grundlage. Yoast SEO ist optional, aber sinnvoll.', 'fairflock' ),
 			'links'       => array(
 				array(
 					'label' => __( 'Zu den Plugins', 'fairflock' ),
@@ -189,7 +189,7 @@ function fairflock_setup_wizard_steps() {
 		),
 		'legal'        => array(
 			'title'       => __( 'Rechtliche Seiten', 'fairflock' ),
-			'description' => __( 'Impressum, Datenschutz, AGB, Widerruf, Versand & Zahlung — mit FairFlock-Daten vorbelegt.', 'fairflock' ),
+			'description' => __( 'Impressum, Datenschutz, AGB, Widerruf, Versand & Zahlung — mit FairFlock-Daten vorbelegt. Germanized verlinkt AGB/Widerruf dorthin.', 'fairflock' ),
 			'links'       => array(
 				array(
 					'label' => __( 'Demo Content (Rechtliches)', 'fairflock' ),
@@ -344,18 +344,24 @@ function fairflock_setup_wizard_step_status( $key, $step ) {
 	switch ( $key ) {
 		case 'plugins':
 			$woo = class_exists( 'WooCommerce' );
+			$gzd = function_exists( 'fairflock_demo_content_plugin_status' )
+				? fairflock_demo_content_plugin_status( 'woocommerce-germanized' )
+				: array( 'active' => false );
 			$cmp = function_exists( 'fairflock_demo_content_plugin_status' )
 				? fairflock_demo_content_plugin_status( 'complianz-gdpr' )
 				: array( 'active' => false );
-			if ( $woo && ! empty( $cmp['active'] ) ) {
+			if ( $woo && ! empty( $gzd['active'] ) && ! empty( $cmp['active'] ) ) {
 				return array(
 					'done' => true,
-					'note' => __( 'WooCommerce und Complianz sind aktiv.', 'fairflock' ),
+					'note' => __( 'WooCommerce, Germanized und Complianz sind aktiv.', 'fairflock' ),
 				);
 			}
 			$missing = array();
 			if ( ! $woo ) {
 				$missing[] = 'WooCommerce';
+			}
+			if ( empty( $gzd['active'] ) ) {
+				$missing[] = 'Germanized';
 			}
 			if ( empty( $cmp['active'] ) ) {
 				$missing[] = 'Complianz';

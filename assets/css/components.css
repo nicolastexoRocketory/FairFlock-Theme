@@ -9,8 +9,11 @@
 	/* Shared content width: same outer edges for every homepage section */
 	--ff-gutter: var(--wp--preset--spacing--40, 32px);
 	--ff-shell: min(1240px, calc(100% - 2 * var(--ff-gutter)));
-	/* Floating header clearance for titles/content (not used on front-page hero) */
-	--ff-header-clearance: calc(var(--ff-header-top) + var(--ff-header-height) + 1.5rem);
+	/*
+	 * Clearance under fixed header. Includes bar padding (+16) and title air (+2rem).
+	 * JS (header-scroll) overwrites with the measured header bottom when available.
+	 */
+	--ff-header-clearance: calc(var(--ff-header-top) + var(--ff-header-height) + 16px + 2rem);
 	/* Einheitliche Sektions-H2 (etwas größer als bisheriges large/1.5rem) */
 	--ff-section-title: var(--wp--preset--font-size--section, clamp(1.75rem, 2.8vw, 2.25rem));
 	/* Elevated panels — flips with Style Variation Light/Dark via --wp--custom--surface */
@@ -109,6 +112,8 @@ body.ff-shape-sharp .ff-legal-page .ff-legal-panel {
  * Homepage / front page keep padding-top: 0 so the hero docks to the viewport top.
  * Note: some environments omit body.front-page even with a static front page —
  * always exclude body.home as well.
+ * Also target nested mains (Woo page-content-wrapper / .woocommerce) and
+ * known page shells so titles never sit under the bar.
  */
 body.home .wp-site-blocks,
 body.front-page .wp-site-blocks {
@@ -121,14 +126,20 @@ body.front-page .wp-site-blocks > main {
 	margin-top: 0 !important;
 }
 
-body:not(.home):not(.front-page) .wp-site-blocks > main {
+body:not(.home):not(.front-page) .wp-site-blocks > main,
+body:not(.home):not(.front-page) .wp-site-blocks > .woocommerce > main,
+body:not(.home):not(.front-page) .wp-site-blocks main.ff-cart-page,
+body:not(.home):not(.front-page) .wp-site-blocks main.ff-checkout-page,
+body:not(.home):not(.front-page) .wp-site-blocks main.ff-page,
+body:not(.home):not(.front-page) .wp-site-blocks main.ff-shop,
+body:not(.home):not(.front-page) .wp-site-blocks main.ff-account-page,
+body:not(.home):not(.front-page) .wp-site-blocks main.ff-legal-page {
 	padding-top: var(--ff-header-clearance) !important;
 }
 
 /* —— Header style: edge (full-bleed, no radius) —— */
 body.ff-header-style-edge {
 	--ff-header-top: 0px;
-	--ff-header-clearance: calc(var(--ff-header-height) + 1.5rem);
 }
 
 body.ff-header-style-edge .ff-header,
@@ -6671,6 +6682,7 @@ a.ff-bento-card,
 	max-width: var(--ff-shell);
 	margin-inline: auto;
 	box-sizing: border-box;
+	padding-top: var(--ff-header-clearance) !important;
 	padding-left: 0 !important;
 	padding-right: 0 !important;
 }

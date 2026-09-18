@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.234',
+			'items'   => array(
+				__( 'Hero: Stil „Inhalt mittig“ zentriert Text, Titel und Buttons zuverlässig horizontal.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.233',
 			'items'   => array(
 				__( 'Hero: individuelle Titel-Schriftgröße (S–XXL) greift wieder.', 'fairflock' ),

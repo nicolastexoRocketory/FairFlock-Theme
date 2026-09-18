@@ -78,39 +78,99 @@
 }
 
 /*
- * Hero: zentriert — Block-Stil „Hero: zentriert“ am Slide oder am Inhalts-Group.
- * Text, Titel, Kicker und CTAs mittig; vertikal in der Hero-Mitte.
+ * Hero: Inhalt mittig — Block-Stil „Hero: Inhalt mittig“ am Slide,
+ * am Inhalts-Group (fs-slide-inner) oder am ganzen Hero-Karussell.
+ * Alles horizontal zentriert + vertikal in der Hero-Mitte.
  */
+.fs-slider.is-style-ff-hero-center .fs-slide,
+.ff-hero-pattern.is-style-ff-hero-center .fs-slide,
 .fs-slide.is-style-ff-hero-center,
 .fs-slide:has(> .fs-slide-inner.is-style-ff-hero-center) {
-	align-items: center;
+	align-items: center !important;
+	justify-items: center;
 }
 
+.fs-slider.is-style-ff-hero-center .fs-slide-inner,
+.ff-hero-pattern.is-style-ff-hero-center .fs-slide-inner,
 .fs-slide.is-style-ff-hero-center .fs-slide-inner,
 .fs-slide-inner.is-style-ff-hero-center,
 .wp-block-group.fs-slide-inner.is-style-ff-hero-center {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	justify-content: center;
+	text-align: center !important;
+	width: var(--fs-shell) !important;
+	max-width: var(--fs-shell) !important;
 }
 
+.fs-slider.is-style-ff-hero-center .fs-slide-inner > *,
+.ff-hero-pattern.is-style-ff-hero-center .fs-slide-inner > *,
+.fs-slide.is-style-ff-hero-center .fs-slide-inner > *,
+.fs-slide-inner.is-style-ff-hero-center > * {
+	align-self: center !important;
+	margin-inline: auto !important;
+	text-align: center !important;
+}
+
+/* Block-Ausrichtung links/rechts darf die Mitte nicht überschreiben */
+.fs-slider.is-style-ff-hero-center .fs-slide-inner .has-text-align-left,
+.fs-slider.is-style-ff-hero-center .fs-slide-inner .has-text-align-right,
+.ff-hero-pattern.is-style-ff-hero-center .fs-slide-inner .has-text-align-left,
+.ff-hero-pattern.is-style-ff-hero-center .fs-slide-inner .has-text-align-right,
+.fs-slide.is-style-ff-hero-center .fs-slide-inner .has-text-align-left,
+.fs-slide.is-style-ff-hero-center .fs-slide-inner .has-text-align-right,
+.fs-slide-inner.is-style-ff-hero-center .has-text-align-left,
+.fs-slide-inner.is-style-ff-hero-center .has-text-align-right,
+.fs-slider.is-style-ff-hero-center .fs-slide-inner .wp-block-heading,
+.fs-slider.is-style-ff-hero-center .fs-slide-inner p,
+.fs-slide.is-style-ff-hero-center .fs-slide-inner .wp-block-heading,
+.fs-slide.is-style-ff-hero-center .fs-slide-inner p,
+.fs-slide-inner.is-style-ff-hero-center .wp-block-heading,
+.fs-slide-inner.is-style-ff-hero-center p {
+	text-align: center !important;
+}
+
+.fs-slider.is-style-ff-hero-center .fs-slide-inner .wp-block-heading,
+.fs-slider.is-style-ff-hero-center .fs-slide-inner .fs-text,
+.fs-slider.is-style-ff-hero-center .fs-slide-inner .fs-kicker,
 .fs-slide.is-style-ff-hero-center .fs-slide-inner .wp-block-heading,
 .fs-slide.is-style-ff-hero-center .fs-slide-inner .fs-text,
 .fs-slide.is-style-ff-hero-center .fs-slide-inner .fs-kicker,
 .fs-slide-inner.is-style-ff-hero-center .wp-block-heading,
 .fs-slide-inner.is-style-ff-hero-center .fs-text,
 .fs-slide-inner.is-style-ff-hero-center .fs-kicker {
-	margin-inline: auto;
+	margin-inline: auto !important;
+	max-width: min(100%, 36rem);
 }
 
+.fs-slider.is-style-ff-hero-center .fs-slide-inner .wp-block-heading,
+.fs-slide.is-style-ff-hero-center .fs-slide-inner .wp-block-heading,
+.fs-slide-inner.is-style-ff-hero-center .wp-block-heading {
+	max-width: min(100%, 18ch);
+}
+
+.fs-slider.is-style-ff-hero-center .cta-row,
+.fs-slider.is-style-ff-hero-center .cta-row.wp-block-buttons,
+.fs-slider.is-style-ff-hero-center .cta-row.is-layout-flex,
+.fs-slider.is-style-ff-hero-center .cta-row.is-content-justification-left,
+.fs-slider.is-style-ff-hero-center .cta-row.is-content-justification-right,
+.ff-hero-pattern.is-style-ff-hero-center .cta-row,
 .fs-slide.is-style-ff-hero-center .cta-row,
 .fs-slide.is-style-ff-hero-center .cta-row.wp-block-buttons,
 .fs-slide.is-style-ff-hero-center .cta-row.is-layout-flex,
+.fs-slide.is-style-ff-hero-center .cta-row.is-content-justification-left,
+.fs-slide.is-style-ff-hero-center .cta-row.is-content-justification-right,
 .fs-slide-inner.is-style-ff-hero-center .cta-row,
 .fs-slide-inner.is-style-ff-hero-center .cta-row.wp-block-buttons,
-.fs-slide-inner.is-style-ff-hero-center .cta-row.is-layout-flex {
+.fs-slide-inner.is-style-ff-hero-center .cta-row.is-layout-flex,
+.fs-slide-inner.is-style-ff-hero-center .cta-row.is-content-justification-left,
+.fs-slide-inner.is-style-ff-hero-center .cta-row.is-content-justification-right {
+	display: flex !important;
 	justify-content: center !important;
+	align-items: center !important;
+	width: auto !important;
+	margin-inline: auto !important;
 }
 
 .fs-slide-media {

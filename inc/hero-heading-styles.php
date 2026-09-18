@@ -221,7 +221,7 @@ function fairflock_register_hero_center_style() {
 		'core/group',
 		array(
 			'name'  => 'ff-hero-center',
-			'label' => __( 'Hero: zentriert', 'fairflock' ),
+			'label' => __( 'Hero: Inhalt mittig', 'fairflock' ),
 		)
 	);
 }

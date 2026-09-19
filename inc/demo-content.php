@@ -60,10 +60,13 @@ function fairflock_demo_content_packages() {
 			),
 		),
 		'category_page' => array(
-			'label'       => __( 'Seite „Kategorien“', 'fairflock' ),
-			'description' => __( 'Stellt sicher, dass die Seite /kategorien/ existiert und die Theme-Vorlage für die Kategorie-Übersicht nutzt.', 'fairflock' ),
-			'risk'        => __( 'Legt die Seite nur an, wenn sie fehlt; Inhalt wird für die Live-Vorlage geleert.', 'fairflock' ),
-			'overwrite'   => null,
+			'label'       => __( 'Seite „Kollektionen“', 'fairflock' ),
+			'description' => __( 'Legt /kategorien/ an bzw. setzt die Theme-Vorlage zurück: Kollektionen-Widget + Produkt-Slider „Bestseller“ darunter.', 'fairflock' ),
+			'risk'        => __( 'Ohne Haken bleibt eine bestehende Seite unberührt.', 'fairflock' ),
+			'overwrite'   => array(
+				'name'  => 'fairflock_demo_overwrite_category',
+				'label' => __( 'Bestehende Kollektionen-Seite überschreiben', 'fairflock' ),
+			),
 		),
 		'about_page'    => array(
 			'label'       => __( 'Seite „Über uns“', 'fairflock' ),
@@ -114,16 +117,19 @@ function fairflock_demo_content_handle_submit() {
 		exit;
 	}
 
-	$overwrite       = ! empty( $_POST['fairflock_demo_overwrite_front'] );
-	$overwrite_legal = ! empty( $_POST['fairflock_demo_overwrite_legal'] );
-	$overwrite_about = ! empty( $_POST['fairflock_demo_overwrite_about'] );
-	$results         = array();
+	$overwrite          = ! empty( $_POST['fairflock_demo_overwrite_front'] );
+	$overwrite_legal    = ! empty( $_POST['fairflock_demo_overwrite_legal'] );
+	$overwrite_about    = ! empty( $_POST['fairflock_demo_overwrite_about'] );
+	$overwrite_category = ! empty( $_POST['fairflock_demo_overwrite_category'] );
+	$results            = array();
 
 	foreach ( $selected as $key ) {
 		if ( 'legal_pages' === $key ) {
 			$results[ $key ] = fairflock_demo_content_install_package( $key, $overwrite_legal );
 		} elseif ( 'about_page' === $key ) {
 			$results[ $key ] = fairflock_demo_content_install_package( $key, $overwrite_about );
+		} elseif ( 'category_page' === $key ) {
+			$results[ $key ] = fairflock_demo_content_install_package( $key, $overwrite_category );
 		} else {
 			$results[ $key ] = fairflock_demo_content_install_package( $key, $overwrite );
 		}
@@ -173,7 +179,7 @@ function fairflock_demo_content_install_package( $package, $overwrite = false ) 
 				),
 			);
 		case 'category_page':
-			return fairflock_demo_content_install_category_page();
+			return fairflock_demo_content_install_category_page( (bool) $overwrite );
 		case 'about_page':
 			return fairflock_demo_content_install_about_page( (bool) $overwrite );
 		default:
@@ -349,34 +355,77 @@ function fairflock_demo_content_install_about_page( $overwrite = false ) {
 }
 
 /**
- * Ensures the categories overview page exists.
+ * Ensures the collections/categories page exists (theme template owns the layout).
  *
  * @since 0.9.154
+ * @since 0.9.252 Overwrite resets customized template + empty body; layout = collections + Bestseller-Slider.
  *
+ * @param bool $overwrite Reset existing page / customized template.
  * @return array{ok:bool,message:string}
  */
-function fairflock_demo_content_install_category_page() {
+function fairflock_demo_content_install_category_page( $overwrite = false ) {
 	$existing = get_page_by_path( 'kategorien' );
+
 	if ( $existing instanceof WP_Post && 'publish' === $existing->post_status ) {
-		// Prefer empty body — template page-kategorien.html owns the layout.
-		if ( is_string( $existing->post_content ) && $existing->post_content !== '' ) {
-			wp_update_post(
-				array(
-					'ID'           => (int) $existing->ID,
-					'post_content' => '',
+		$has_content = is_string( $existing->post_content ) && '' !== trim( $existing->post_content );
+		$custom_tpl  = fairflock_demo_content_has_custom_page_kategorien_template();
+
+		if ( ( $has_content || $custom_tpl ) && ! $overwrite ) {
+			$edit = get_edit_post_link( $existing->ID, 'raw' );
+			return array(
+				'ok'      => true,
+				'message' => sprintf(
+					/* translators: %s: edit link */
+					__( 'Seite „Kollektionen“ existiert bereits — Überschreiben nicht aktiviert. %s', 'fairflock' ),
+					$edit ? '<a href="' . esc_url( $edit ) . '">' . esc_html__( 'Seite bearbeiten', 'fairflock' ) . '</a>' : ''
 				),
-				true
 			);
 		}
+
+		if ( $overwrite ) {
+			if ( $has_content ) {
+				$cleared = wp_update_post(
+					array(
+						'ID'           => (int) $existing->ID,
+						'post_title'   => __( 'Kollektionen', 'fairflock' ),
+						'post_status'  => 'publish',
+						'post_content' => '',
+					),
+					true
+				);
+				if ( is_wp_error( $cleared ) ) {
+					return array(
+						'ok'      => false,
+						'message' => $cleared->get_error_message(),
+					);
+				}
+			} else {
+				wp_update_post(
+					array(
+						'ID'         => (int) $existing->ID,
+						'post_title' => __( 'Kollektionen', 'fairflock' ),
+					),
+					true
+				);
+			}
+
+			fairflock_demo_content_reset_page_kategorien_template();
+		}
+
+		$view = get_permalink( $existing->ID );
 		return array(
 			'ok'      => true,
-			'message' => __( 'Seite „Kategorien“ war bereits vorhanden (Vorlage aktiv).', 'fairflock' ),
+			'message' => sprintf(
+				/* translators: %s: view link */
+				__( 'Kollektionen-Seite bereit (Widget + Bestseller-Slider). %s', 'fairflock' ),
+				$view ? '<a href="' . esc_url( $view ) . '">' . esc_html__( 'Ansehen', 'fairflock' ) . '</a>' : ''
+			),
 		);
 	}
 
 	$page_id = wp_insert_post(
 		array(
-			'post_title'   => __( 'Kategorien', 'fairflock' ),
+			'post_title'   => __( 'Kollektionen', 'fairflock' ),
 			'post_name'    => 'kategorien',
 			'post_status'  => 'publish',
 			'post_type'    => 'page',
@@ -392,10 +441,72 @@ function fairflock_demo_content_install_category_page() {
 		);
 	}
 
+	$view = get_permalink( (int) $page_id );
 	return array(
 		'ok'      => true,
-		'message' => __( 'Seite „Kategorien“ angelegt.', 'fairflock' ),
+		'message' => sprintf(
+			/* translators: %s: view link */
+			__( 'Seite „Kollektionen“ angelegt (Widget + Bestseller-Slider). %s', 'fairflock' ),
+			$view ? '<a href="' . esc_url( $view ) . '">' . esc_html__( 'Ansehen', 'fairflock' ) . '</a>' : ''
+		),
 	);
+}
+
+/**
+ * Whether a customized page-kategorien template exists in the DB.
+ *
+ * @since 0.9.252
+ *
+ * @return bool
+ */
+function fairflock_demo_content_has_custom_page_kategorien_template() {
+	if ( ! function_exists( 'get_block_templates' ) ) {
+		return false;
+	}
+
+	$templates = get_block_templates(
+		array(
+			'slug__in' => array( 'page-kategorien' ),
+		),
+		'wp_template'
+	);
+
+	foreach ( $templates as $template ) {
+		if ( isset( $template->source ) && 'custom' === $template->source && ! empty( $template->wp_id ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Removes a customized page-kategorien template so the theme file applies.
+ *
+ * Explicit Demo-Content overwrite only.
+ *
+ * @since 0.9.252
+ *
+ * @return void
+ */
+function fairflock_demo_content_reset_page_kategorien_template() {
+	if ( ! function_exists( 'get_block_templates' ) ) {
+		return;
+	}
+
+	$templates = get_block_templates(
+		array(
+			'slug__in' => array( 'page-kategorien' ),
+		),
+		'wp_template'
+	);
+
+	foreach ( $templates as $template ) {
+		if ( empty( $template->wp_id ) || ( isset( $template->source ) && 'custom' !== $template->source ) ) {
+			continue;
+		}
+		wp_delete_post( (int) $template->wp_id, true );
+	}
 }
 
 /**

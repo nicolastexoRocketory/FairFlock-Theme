@@ -483,7 +483,7 @@ function fairflock_maybe_seed_category_overview_page() {
 
 	$page_id = wp_insert_post(
 		array(
-			'post_title'   => __( 'Kategorien', 'fairflock' ),
+			'post_title'   => __( 'Kollektionen', 'fairflock' ),
 			'post_name'    => 'kategorien',
 			'post_status'  => 'publish',
 			'post_type'    => 'page',

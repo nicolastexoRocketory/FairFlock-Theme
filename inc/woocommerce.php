@@ -176,6 +176,21 @@ function fairflock_register_woocommerce_patterns() {
 			'content'     => fairflock_get_collections_slider_pattern_content(),
 		)
 	);
+
+	register_block_pattern(
+		'fairflock/bestsellers-slider',
+		array(
+			'title'       => __( 'Bestseller Slider', 'fairflock' ),
+			'description' => __( 'Produkt-Slider für die Kategorie „Bestseller“ (Slug bestseller / bestsellers).', 'fairflock' ),
+			'categories'  => array( 'fairflock', 'fairflock-shop', 'woocommerce' ),
+			'keywords'    => array(
+				__( 'Bestseller', 'fairflock' ),
+				__( 'Slider', 'fairflock' ),
+				__( 'Kategorie', 'fairflock' ),
+			),
+			'content'     => fairflock_get_bestsellers_slider_pattern_content(),
+		)
+	);
 }
 add_action( 'init', 'fairflock_register_woocommerce_patterns', 12 );
 
@@ -424,6 +439,91 @@ function fairflock_get_collections_slider_pattern_content() {
 			'more_url'    => $more_url,
 			'more_label'  => $more_label,
 			'query_id'    => 42,
+			'tax_query'   => $tax_query,
+			'collection'  => 'woocommerce/product-collection/by-category',
+		)
+	);
+}
+
+/**
+ * Finds the Bestseller product category (slug or name).
+ *
+ * @since 0.9.252
+ *
+ * @return WP_Term|null
+ */
+function fairflock_get_bestsellers_term() {
+	if ( ! taxonomy_exists( 'product_cat' ) ) {
+		return null;
+	}
+
+	$slugs = array( 'bestseller', 'bestsellers', 'best-seller', 'best-sellers' );
+	foreach ( $slugs as $slug ) {
+		$term = get_term_by( 'slug', $slug, 'product_cat' );
+		if ( $term instanceof WP_Term ) {
+			return $term;
+		}
+	}
+
+	$terms = get_terms(
+		array(
+			'taxonomy'   => 'product_cat',
+			'hide_empty' => false,
+			'number'     => 50,
+		)
+	);
+
+	if ( empty( $terms ) || is_wp_error( $terms ) ) {
+		return null;
+	}
+
+	foreach ( $terms as $term ) {
+		if ( ! $term instanceof WP_Term ) {
+			continue;
+		}
+		$name = function_exists( 'mb_strtolower' ) ? mb_strtolower( $term->name ) : strtolower( $term->name );
+		if ( $name === 'bestseller' || $name === 'bestsellers' ) {
+			return $term;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Markup for the Bestseller product slider (Kollektionen-Seite).
+ *
+ * @since 0.9.252
+ *
+ * @return string
+ */
+function fairflock_get_bestsellers_slider_pattern_content() {
+	$term      = fairflock_get_bestsellers_term();
+	$tax_query = array();
+	$more_url  = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
+	$heading   = __( 'Bestseller', 'fairflock' );
+	$lead      = __( 'Die beliebtesten Stücke — Kategorie „Bestseller“ im Shop anlegen bzw. zuweisen.', 'fairflock' );
+	$more_label = __( 'Alle Bestseller →', 'fairflock' );
+
+	if ( $term instanceof WP_Term ) {
+		$tax_query['product_cat'] = array( (int) $term->term_id );
+		$link                     = get_term_link( $term );
+		if ( ! is_wp_error( $link ) ) {
+			$more_url = $link;
+		}
+		$heading = $term->name;
+		$lead    = __( 'Aktuelle Highlights aus der Bestseller-Kategorie.', 'fairflock' );
+	}
+
+	return fairflock_get_product_slider_pattern_markup(
+		array(
+			'name'        => __( 'Bestseller', 'fairflock' ),
+			'extra_class' => 'ff-pattern-products--bestsellers',
+			'heading'     => $heading,
+			'lead'        => $lead,
+			'more_url'    => $more_url,
+			'more_label'  => $more_label,
+			'query_id'    => 52,
 			'tax_query'   => $tax_query,
 			'collection'  => 'woocommerce/product-collection/by-category',
 		)

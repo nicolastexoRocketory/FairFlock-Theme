@@ -7111,8 +7111,8 @@ a.ff-bento-card,
 	padding-top: var(--ff-header-clearance) !important;
 }
 
-/* Page uses same collections chrome; hide “Alle Produkte” (homepage keeps it). */
-.ff-page--collections .ff-pattern-link-more,
+/* Page uses same collections chrome; hide “Alle Produkte” only on collections. */
+.ff-page--collections .ff-pattern-collections .ff-pattern-link-more,
 .ff-pattern-collections--page .ff-pattern-link-more {
 	display: none !important;
 }

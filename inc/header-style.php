@@ -202,8 +202,14 @@ function fairflock_get_hero_height_vh() {
  */
 function fairflock_print_hero_height_css() {
 	$vh = fairflock_get_hero_height_vh();
+	/*
+	 * Desktop: fixed vh. Mobile: min-height only so long slide copy
+	 * (centered hero + CTA) is not clipped by overflow:hidden.
+	 */
 	$css = sprintf(
-		':root{--ff-hero-vh:%1$dvh;}body:not(.block-editor-iframe__body) .fs-slider{height:var(--ff-hero-vh);min-height:var(--ff-hero-vh);}',
+		':root{--ff-hero-vh:%1$dvh;}'
+		. 'body:not(.block-editor-iframe__body) .fs-slider{height:var(--ff-hero-vh);min-height:var(--ff-hero-vh);}'
+		. '@media (max-width:960px){body:not(.block-editor-iframe__body) .fs-slider{height:auto;min-height:var(--ff-hero-vh);}}',
 		$vh
 	);
 

@@ -20,6 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.244',
+			'items'   => array(
+				__( 'Mobile Hero: Höhe wächst mit Inhalt — CTA wird nicht mehr abgeschnitten; Nav-Pfeile einheitlich.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.243',
+			'items'   => array(
+				__( 'Warenkorb-Badge bleibt rund (kein Geister-Quadrat bei Formen → Eckig); Cart-Wrapper ohne zweiten Rahmen.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.242',
+			'items'   => array(
+				__( 'Mobile Nav (Randlos/Eckig): kein Doppelrahmen am Warenkorb, einheitliche Icon-Boxen, Gutter-Padding.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.241',
 			'items'   => array(
 				__( 'Hero-Nav-Pfeile nur noch unter Darstellung — unabhängig vom Stil „Inhalt mittig“.', 'fairflock' ),

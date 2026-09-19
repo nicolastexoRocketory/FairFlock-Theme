@@ -51,6 +51,21 @@ body.ff-shape-sharp {
 	--fs-r-sm: 0px;
 }
 
+/* Icon-Chrome in der Nav folgt Formen → Eckig */
+body.ff-shape-sharp .ff-header__icons,
+body.ff-shape-sharp .ff-header__actions {
+	--ff-icon-radius: 0;
+}
+
+body.ff-shape-sharp .ff-header__icons .wp-block-button__link,
+body.ff-shape-sharp .ff-header__actions .wp-block-button__link,
+body.ff-shape-sharp .ff-header__icons .ff-account,
+body.ff-shape-sharp .ff-header__actions .ff-account,
+body.ff-shape-sharp .ff-header__icons .wp-block-woocommerce-customer-account,
+body.ff-shape-sharp .ff-header__actions .wp-block-woocommerce-customer-account {
+	border-radius: 0 !important;
+}
+
 body.ff-shape-sharp .ff-header__bar,
 body.ff-shape-sharp .ff-header--floating .ff-header__bar,
 body.ff-shape-sharp .fs-slider .slider-btn,
@@ -178,6 +193,9 @@ body.ff-header-style-edge .ff-header__bar,
 .ff-header.ff-header--edge .ff-header__bar {
 	border-radius: 0;
 	box-shadow: 0 1px 0 rgba(14, 17, 20, 0.08);
+	padding-left: var(--ff-gutter, 1em);
+	padding-right: var(--ff-gutter, 1em);
+	box-sizing: border-box;
 }
 
 body.ff-header-style-edge .ff-header__icons,
@@ -1838,6 +1856,15 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	border-radius: 0 !important;
 	background: transparent !important;
 	box-shadow: none !important;
+	overflow: hidden !important;
+}
+
+/* Logged-in Gravatar must not spill out of the 40×40 account face. */
+.ff-header__icons .ff-account .wc-block-customer-account__avatar,
+.ff-header__actions .ff-account .wc-block-customer-account__avatar,
+.ff-header__icons .ff-account .avatar,
+.ff-header__actions .ff-account .avatar {
+	display: none !important;
 }
 
 /* Icons via CSS so buttons stay stylable in the Site Editor */
@@ -1872,11 +1899,17 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	translate: -50% -50%;
 }
 
+/*
+ * Cart wrapper must not paint a box — badge positions on the link face.
+ * display:contents removes the second frame under Randlos/Eckig.
+ */
+.ff-header__icons .ff-cart,
+.ff-header__actions .ff-cart {
+	display: contents !important;
+}
+
 .ff-cart {
 	position: relative;
-	display: flex !important;
-	align-items: center;
-	align-self: center;
 	margin: 0 !important;
 }
 
@@ -1888,6 +1921,53 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	margin: 0 !important;
 }
 
+/*
+ * Only the icon “face” (link / account) draws the box.
+ * Wrapper borders create the double-frame glitch on the cart.
+ */
+.ff-header__icons .wp-block-button,
+.ff-header__icons .ff-search-toggle,
+.ff-header__icons .ff-cart,
+.ff-header__actions .wp-block-button,
+.ff-header__actions .ff-search-toggle,
+.ff-header__actions .ff-cart {
+	border: 0 !important;
+	border-width: 0 !important;
+	border-style: none !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
+	outline: none !important;
+	padding: 0 !important;
+	width: auto !important;
+	min-width: 0 !important;
+	max-width: none !important;
+	height: auto !important;
+	min-height: 0 !important;
+	line-height: 0 !important;
+}
+
+.ff-header__icons .ff-search-toggle .wp-block-button__link,
+.ff-header__icons .ff-cart .wp-block-button__link,
+.ff-header__icons .ff-search-toggle.is-style-fill .wp-block-button__link,
+.ff-header__icons .ff-cart.is-style-fill .wp-block-button__link,
+.ff-header__icons .ff-search-toggle .wp-element-button,
+.ff-header__icons .ff-cart .wp-element-button,
+.ff-header__actions .ff-search-toggle .wp-block-button__link,
+.ff-header__actions .ff-cart .wp-block-button__link,
+.ff-header__actions .ff-search-toggle.is-style-fill .wp-block-button__link,
+.ff-header__actions .ff-cart.is-style-fill .wp-block-button__link,
+.ff-header__actions .ff-search-toggle .wp-element-button,
+.ff-header__actions .ff-cart .wp-element-button {
+	border-width: 1px !important;
+	border-style: solid !important;
+	border-radius: var(--ff-icon-radius, 8px) !important;
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+/* Count: always a pill — never follow Formen → Eckig (that caused the ghost square). */
 .ff-cart__count {
 	position: absolute;
 	top: -4px;
@@ -1899,14 +1979,23 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	height: 18px;
 	margin: 0;
 	padding: 0 4px;
-	border-radius: 999px;
+	border: 0 !important;
+	border-radius: 999px !important;
 	background: var(--wp--preset--color--brand, #377530);
 	color: #fff;
 	font-size: 0.6875rem !important;
 	font-weight: 700;
 	line-height: 1 !important;
 	letter-spacing: 0;
-	z-index: 1;
+	z-index: 2;
+	pointer-events: none;
+}
+
+/* Count sits on the link face (not a second wrapper box). */
+.ff-header__icons .ff-cart .wp-block-button__link,
+.ff-header__actions .ff-cart .wp-block-button__link {
+	overflow: visible !important;
+	position: relative !important;
 }
 
 /* —— Search overlay —— */
@@ -5037,9 +5126,15 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 
 	.ff-header__bar {
 		gap: 10px;
-		padding: 8px 10px;
+		padding-block: 8px;
+		padding-inline: 10px;
 		min-width: 0;
 		align-items: center;
+	}
+
+	body.ff-header-style-edge .ff-header__bar,
+	.ff-header.ff-header--edge .ff-header__bar {
+		padding-inline: var(--ff-gutter, 1em);
 	}
 
 	.ff-header__brand {

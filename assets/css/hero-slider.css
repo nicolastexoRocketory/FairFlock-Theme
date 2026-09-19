@@ -617,11 +617,31 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 	/*
 	 * Content is end-aligned; without top padding a tall copy block
 	 * (kicker/overtitle) can sit under the fixed header on small screens.
-	 * Höhe kommt global aus --ff-hero-vh (FairFlock → Darstellung).
+	 * Höhe: min aus --ff-hero-vh; wächst mit dem aktiven Slide (kein CTA-Clip).
 	 */
+	.fs-slider {
+		height: auto;
+		min-height: var(--ff-hero-vh, 80vh);
+	}
+
+	.fs-slides {
+		position: relative;
+		min-height: var(--ff-hero-vh, 80vh);
+	}
+
 	.fs-slide {
-		padding-top: 6em;
+		position: absolute;
+		inset: 0;
+		padding-top: 5.5em;
 		box-sizing: border-box;
+	}
+
+	/* Aktiver Slide bestimmt die Höhe — Inhalt + CTA bleiben sichtbar */
+	.fs-slide.is-active {
+		position: relative;
+		inset: auto;
+		width: 100%;
+		min-height: var(--ff-hero-vh, 80vh);
 	}
 
 	.fs-slide-inner,
@@ -629,44 +649,66 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 		width: calc(100% - 2em);
 		max-width: calc(100% - 2em);
 		padding-inline: 1em;
-		padding-bottom: calc(2em + 32px + 2em);
+		/* Platz für absolute Nav (Pfeile/Punkte) unter dem CTA */
+		padding-bottom: calc(1.25em + 40px + 1.25em);
+		padding-top: 0.5em;
+	}
+
+	/* Inhalt mittig: in der gewachsenen Fläche zentrieren, nicht abschneiden */
+	.fs-slider.is-style-ff-hero-center .fs-slide.is-active,
+	.ff-hero-pattern.is-style-ff-hero-center .fs-slide.is-active,
+	.fs-slide.is-active.is-style-ff-hero-center,
+	.fs-slide.is-active:has(> .fs-slide-inner.is-style-ff-hero-center) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.fs-nav {
 		left: auto;
 		right: auto;
 		translate: none;
-		inset: auto 1.5em 1.5em 1.5em;
+		inset: auto 1em 1em 1em;
 		width: auto;
 		max-width: none;
-		grid-template-columns: 32px 1fr 32px;
+		grid-template-columns: 40px 1fr 40px;
 	}
 
 	body.ff-hero-nav-cluster .fs-nav {
 		left: 50%;
 		right: auto;
-		bottom: 1.5em;
+		bottom: 1em;
 		translate: -50% 0;
-		inset: auto auto 1.5em auto;
+		inset: auto auto 1em auto;
 		width: auto;
 		grid-template-columns: auto auto auto;
 		gap: 8px;
 	}
 
 	.fs-nav .slider-btn {
-		width: 32px;
-		height: 32px;
-		background: transparent;
-		border-color: transparent;
+		width: 40px;
+		height: 40px;
+		background: transparent !important;
+		border: 0 !important;
+		border-radius: 0 !important;
 		backdrop-filter: none;
+		box-shadow: none !important;
+		outline: none;
 		color: #fff;
 	}
 
-	.fs-nav .slider-btn:hover:not(:disabled) {
-		background: transparent;
-		border-color: transparent;
+	.fs-nav .slider-btn:hover:not(:disabled),
+	.fs-nav .slider-btn:focus-visible {
+		background: transparent !important;
+		border: 0 !important;
 		color: #fff;
 		opacity: 0.8;
+		outline: none;
+	}
+
+	.fs-nav .slider-btn .ico {
+		width: 18px;
+		height: 18px;
 	}
 }
 

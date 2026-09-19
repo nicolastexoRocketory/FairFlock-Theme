@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.246',
+			'items'   => array(
+				__( 'Kollektions-Cards: kein „Zur Kollektion“-Text — Hover zoont Bild und verstärkt Overlay leicht.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.245',
 			'items'   => array(
 				__( 'Hero-Nav „Pfeile neben Punkten“ auf Mobil wieder mittig zentriert.', 'fairflock' ),

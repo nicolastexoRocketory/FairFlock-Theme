@@ -5582,12 +5582,11 @@ a.ff-collection-card,
 	text-decoration: none;
 	isolation: isolate;
 	box-sizing: border-box;
-	transition: transform 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .ff-collection-card:hover,
+.ff-collection-card:focus-within,
 .ff-collection-card:focus-visible {
-	transform: translateY(-4px);
 	color: #fff;
 	text-decoration: none;
 }
@@ -5597,6 +5596,14 @@ a.ff-collection-card,
 	inset: 0;
 	z-index: -2;
 	background: center / cover no-repeat;
+	transform: scale(1);
+	transition: transform 0.55s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+	will-change: transform;
+}
+
+.ff-collection-card:hover .ff-collection-card__bg,
+.ff-collection-card:focus-within .ff-collection-card__bg {
+	transform: scale(1.06);
 }
 
 .ff-collection-card::after {
@@ -5605,6 +5612,17 @@ a.ff-collection-card,
 	inset: 0;
 	z-index: -1;
 	background: linear-gradient(180deg, transparent 25%, rgba(14, 17, 20, 0.88) 100%);
+	transition: background 0.4s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+	pointer-events: none;
+}
+
+.ff-collection-card:hover::after,
+.ff-collection-card:focus-within::after {
+	background: linear-gradient(
+		180deg,
+		rgba(14, 17, 20, 0.16) 0%,
+		rgba(14, 17, 20, 0.92) 100%
+	);
 }
 
 .ff-collection-card.is-brand {
@@ -5630,18 +5648,26 @@ a.ff-collection-card,
 	color: #fff;
 }
 
-.ff-collection-card p {
+.ff-collection-card > p:not(.ff-collection-card__meta) {
 	margin: 0;
 	font-size: 0.875rem;
 	line-height: 1.45;
 	color: rgba(255, 255, 255, 0.82);
 }
 
+/*
+ * „Zur Kollektion“-Text aus — ganze Karte bleibt klickbar.
+ * Im Editor sichtbar lassen, damit der Link bearbeitbar bleibt.
+ */
 .ff-collection-card__meta {
-	margin-top: 16px;
-	font-size: 0.875rem;
-	font-weight: 700;
-	color: rgba(255, 255, 255, 0.92);
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	margin: 0 !important;
+	padding: 0;
+	font-size: 0;
+	line-height: 0;
+	color: transparent;
 }
 
 .ff-collection-card:has(.ff-collection-card__meta a[href]:not([href=""]):not([href="#"])) {
@@ -5649,27 +5675,42 @@ a.ff-collection-card,
 }
 
 .ff-collection-card__meta a {
-	position: static;
-	color: inherit;
-	text-decoration: none;
+	display: block;
+	width: 100%;
+	height: 100%;
+	color: transparent;
+	text-decoration: none !important;
+	font-size: 0;
 }
 
-/* Gesamte Karte klickbar, wenn „Zur Kollektion“ verlinkt ist. */
 .ff-collection-card__meta a::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	z-index: 1;
+	content: none;
 }
 
-.ff-collection-card__meta a:hover,
-.ff-collection-card__meta a:focus-visible {
+.editor-styles-wrapper .ff-collection-card__meta,
+.block-editor-iframe__body .ff-collection-card__meta {
+	position: static;
+	inset: auto;
+	margin-top: 16px !important;
+	font-size: 0.875rem;
+	font-weight: 700;
+	line-height: 1.4;
+	color: rgba(255, 255, 255, 0.92);
+}
+
+.editor-styles-wrapper .ff-collection-card__meta a,
+.block-editor-iframe__body .ff-collection-card__meta a {
+	display: inline;
+	width: auto;
+	height: auto;
+	font-size: inherit;
+	color: inherit;
 	text-decoration: underline;
 }
 
-.editor-styles-wrapper .ff-collection-card__meta a::before,
-.block-editor-iframe__body .ff-collection-card__meta a::before {
-	content: none;
+.editor-styles-wrapper .ff-collection-card:hover .ff-collection-card__bg,
+.block-editor-iframe__body .ff-collection-card:hover .ff-collection-card__bg {
+	transform: none;
 }
 
 .ff-collection-card--1 {

@@ -112,6 +112,13 @@ HTML;
 	}
 
 	$class_attr = esc_attr( implode( ' ', $classes ) );
+	$aria       = esc_attr(
+		sprintf(
+			/* translators: %s: category/collection name */
+			__( '%s – Zur Kollektion', 'fairflock' ),
+			$term->name
+		)
+	);
 
 	return <<<HTML
 			<!-- wp:group {"className":"{$class_attr}","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"default"}} -->
@@ -125,7 +132,7 @@ HTML;
 				<!-- /wp:paragraph -->
 
 				<!-- wp:paragraph {"className":"ff-collection-card__meta"} -->
-				<p class="ff-collection-card__meta"><a href="{$href}">{$cta}</a></p>
+				<p class="ff-collection-card__meta"><a href="{$href}" aria-label="{$aria}">{$cta}</a></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:group -->
@@ -162,6 +169,13 @@ function fairflock_get_collections_cards_markup() {
 		$title = esc_html( $item[0] );
 		$text  = esc_html( $item[1] );
 		$label = esc_html( $cta );
+		$aria  = esc_attr(
+			sprintf(
+				/* translators: %s: category/collection name */
+				__( '%s – Zur Kollektion', 'fairflock' ),
+				$item[0]
+			)
+		);
 		$cards .= <<<HTML
 			<!-- wp:group {"className":"ff-collection-card {$mod}","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"default"}} -->
 			<div class="wp-block-group ff-collection-card {$mod}">
@@ -172,7 +186,7 @@ function fairflock_get_collections_cards_markup() {
 				<p>{$text}</p>
 				<!-- /wp:paragraph -->
 				<!-- wp:paragraph {"className":"ff-collection-card__meta"} -->
-				<p class="ff-collection-card__meta"><a href="{$shop}">{$label}</a></p>
+				<p class="ff-collection-card__meta"><a href="{$shop}" aria-label="{$aria}">{$label}</a></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:group -->

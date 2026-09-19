@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.245',
+			'items'   => array(
+				__( 'Hero-Nav „Pfeile neben Punkten“ auf Mobil wieder mittig zentriert.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.244',
 			'items'   => array(
 				__( 'Mobile Hero: Höhe wächst mit Inhalt — CTA wird nicht mehr abgeschnitten; Nav-Pfeile einheitlich.', 'fairflock' ),

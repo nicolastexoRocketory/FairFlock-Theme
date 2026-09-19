@@ -593,7 +593,7 @@ function fairflock_header_style_render_admin_page() {
 							<?php endforeach; ?>
 						</fieldset>
 						<p class="description">
-							<?php esc_html_e( 'Steuert die Pfeile und Punkte am unteren Hero-Rand. „Neben den Punkten“ fasst alles zu einer mittigen Gruppe zusammen.', 'fairflock' ); ?>
+							<?php esc_html_e( 'Pfeile und Punkte am unteren Hero-Rand — shopweit, unabhängig vom Block-Stil „Hero: Inhalt mittig“. „Neben den Punkten“ fasst alles zu einer mittigen Gruppe zusammen.', 'fairflock' ); ?>
 						</p>
 					</td>
 				</tr>

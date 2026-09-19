@@ -211,8 +211,11 @@ add_action( 'enqueue_block_editor_assets', 'fairflock_print_hero_heading_styles_
  * Registers “Zentriert” style for Hero slides (Site Editor → Block → Stile).
  *
  * Apply to a Slide group (class fs-slide) or its Inhalts-Group (fs-slide-inner).
+ * Hero-Nav arrow layout is NOT a block style — it lives under
+ * FairFlock → Darstellung → Hero-Navigation (combinable with this style).
  *
  * @since 0.9.232
+ * @since 0.9.241 Removed ff-hero-nav-cluster block style (use Darstellung instead).
  *
  * @return void
  */
@@ -224,12 +227,10 @@ function fairflock_register_hero_center_style() {
 			'label' => __( 'Hero: Inhalt mittig', 'fairflock' ),
 		)
 	);
-	register_block_style(
-		'core/group',
-		array(
-			'name'  => 'ff-hero-nav-cluster',
-			'label' => __( 'Hero-Nav: Pfeile neben Punkten', 'fairflock' ),
-		)
-	);
+
+	// Drop legacy style so it no longer competes with “Inhalt mittig” in Stile.
+	if ( function_exists( 'unregister_block_style' ) ) {
+		unregister_block_style( 'core/group', 'ff-hero-nav-cluster' );
+	}
 }
 add_action( 'init', 'fairflock_register_hero_center_style' );

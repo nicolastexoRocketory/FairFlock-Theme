@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.241',
+			'items'   => array(
+				__( 'Hero-Nav-Pfeile nur noch unter Darstellung — unabhängig vom Stil „Inhalt mittig“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.240',
+			'items'   => array(
+				__( 'Mobile Header-Icons: einheitliche Größe, Radius und vertikale Ausrichtung.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.239',
 			'items'   => array(
 				__( 'Mobile Header/Nav: fester 1em-Inset, Logo skaliert, Overlay-Hamburger bleibt sichtbar.', 'fairflock' ),

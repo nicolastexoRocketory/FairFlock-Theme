@@ -494,10 +494,9 @@
 
 /*
  * Hero-Nav „cluster“: ← ••• → als eine mittige Gruppe
- * (FairFlock → Darstellung → Hero-Navigation)
+ * (FairFlock → Darstellung → Hero-Navigation — unabhängig vom Stil „Inhalt mittig“)
  */
-body.ff-hero-nav-cluster .fs-nav,
-.fs-slider.is-style-ff-hero-nav-cluster .fs-nav {
+body.ff-hero-nav-cluster .fs-nav {
 	width: auto;
 	max-width: none;
 	grid-template-columns: auto auto auto;
@@ -505,13 +504,11 @@ body.ff-hero-nav-cluster .fs-nav,
 	justify-items: center;
 }
 
-body.ff-hero-nav-cluster .fs-nav .slider-btn,
-.fs-slider.is-style-ff-hero-nav-cluster .fs-nav .slider-btn {
+body.ff-hero-nav-cluster .fs-nav .slider-btn {
 	justify-self: center;
 }
 
-body.ff-hero-nav-cluster .fs-nav .fs-dots,
-.fs-slider.is-style-ff-hero-nav-cluster .fs-nav .fs-dots {
+body.ff-hero-nav-cluster .fs-nav .fs-dots {
 	justify-self: center;
 	padding-inline: 4px;
 }
@@ -645,8 +642,7 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots,
 		grid-template-columns: 32px 1fr 32px;
 	}
 
-	body.ff-hero-nav-cluster .fs-nav,
-	.fs-slider.is-style-ff-hero-nav-cluster .fs-nav {
+	body.ff-hero-nav-cluster .fs-nav {
 		left: 50%;
 		right: auto;
 		bottom: 1.5em;

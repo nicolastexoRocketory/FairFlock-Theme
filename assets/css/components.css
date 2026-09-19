@@ -1124,11 +1124,29 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 	box-sizing: border-box;
 }
 
+/*
+ * Default height only — no !important, otherwise Cover-Resize im Editor
+ * (inline min-height) wird überschrieben und die Höhe lässt sich nicht ändern.
+ */
 .ff-mega-panel__card-media.wp-block-cover,
 .ff-mega-panel__card .wp-block-cover {
-	min-height: 160px !important;
+	min-height: 160px;
+	height: auto;
 	border-radius: 0;
 	overflow: hidden;
+}
+
+/* Editor: Resize-Handle am Cover-Unterrand nicht abschneiden */
+.editor-styles-wrapper .ff-mega-panel__card,
+.block-editor-iframe__body .ff-mega-panel__card {
+	overflow: visible;
+}
+
+.editor-styles-wrapper .ff-mega-panel__card-media.wp-block-cover,
+.editor-styles-wrapper .ff-mega-panel__card .wp-block-cover,
+.block-editor-iframe__body .ff-mega-panel__card-media.wp-block-cover,
+.block-editor-iframe__body .ff-mega-panel__card .wp-block-cover {
+	overflow: visible;
 }
 
 .ff-mega-panel__card-media .wp-block-heading,

@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.248',
+			'items'   => array(
+				__( 'Mega-Menü Promo-Card: Cover-Höhe im Editor wieder per Resize einstellbar.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.247',
 			'items'   => array(
 				__( 'Kollektionen im Site Editor: alle Cards sichtbar (kein „Mehr anzeigen“-Verstecken).', 'fairflock' ),

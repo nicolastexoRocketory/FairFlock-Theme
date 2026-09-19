@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.250',
+			'items'   => array(
+				__( 'Kollektionen-Widget: Kategorien im Editor ausschließen (live auf der Website).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.249',
+			'items'   => array(
+				__( 'Responsive Innenabstände: Viewport-Breakpoints + Nav-Padding überschreibt Block-Werte nicht mehr.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.248',
 			'items'   => array(
 				__( 'Mega-Menü Promo-Card: Cover-Höhe im Editor wieder per Resize einstellbar.', 'fairflock' ),

@@ -189,8 +189,13 @@ body:not(.block-editor-iframe__body) .ff-header.ff-header--edge {
 	max-width: none;
 }
 
-body.ff-header-style-edge .ff-header__bar,
-.ff-header.ff-header--edge .ff-header__bar {
+/*
+ * Randlos: Gutter als Fallback für horizontalen Innenabstand.
+ * :where() hält die Spezifität niedrig — Block-Editor-Padding
+ * (inkl. @mobile / @tablet) gewinnt klar darüber.
+ */
+:where(body.ff-header-style-edge) :where(.ff-header__bar),
+:where(.ff-header.ff-header--edge) :where(.ff-header__bar) {
 	border-radius: 0;
 	box-shadow: 0 1px 0 rgba(14, 17, 20, 0.08);
 	padding-left: var(--ff-gutter, 1em);
@@ -5144,15 +5149,8 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 
 	.ff-header__bar {
 		gap: 10px;
-		padding-block: 8px;
-		padding-inline: 10px;
 		min-width: 0;
 		align-items: center;
-	}
-
-	body.ff-header-style-edge .ff-header__bar,
-	.ff-header.ff-header--edge .ff-header__bar {
-		padding-inline: var(--ff-gutter, 1em);
 	}
 
 	.ff-header__brand {

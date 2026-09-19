@@ -14,10 +14,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Product categories for the overview (skips Uncategorized / shop default).
  *
  * @since 0.9.99
+ * @since 0.9.250 Optional extra term IDs to exclude.
  *
+ * @param array<int, int> $extra_exclude Extra term IDs to exclude.
  * @return array<int, WP_Term>
  */
-function fairflock_get_category_overview_terms() {
+function fairflock_get_category_overview_terms( $extra_exclude = array() ) {
 	if ( ! taxonomy_exists( 'product_cat' ) ) {
 		return array();
 	}
@@ -27,6 +29,17 @@ function fairflock_get_category_overview_terms() {
 	if ( $default > 0 ) {
 		$exclude[] = $default;
 	}
+
+	if ( is_array( $extra_exclude ) ) {
+		foreach ( $extra_exclude as $id ) {
+			$id = (int) $id;
+			if ( $id > 0 ) {
+				$exclude[] = $id;
+			}
+		}
+	}
+
+	$exclude = array_values( array_unique( array_filter( array_map( 'intval', $exclude ) ) ) );
 
 	$terms = get_terms(
 		array(
@@ -54,6 +67,35 @@ function fairflock_get_category_overview_terms() {
 	}
 
 	return $out;
+}
+
+/**
+ * Parses excluded category IDs from a collections section className.
+ *
+ * Token: ff-collections-exclude-{id}-{id}-…
+ *
+ * @since 0.9.250
+ *
+ * @param string $class_name Block className.
+ * @return array<int, int>
+ */
+function fairflock_collections_parse_exclude_ids( $class_name ) {
+	if ( ! preg_match( '/(?:^|\s)ff-collections-exclude-((?:\d+-)*\d+)(?:\s|$)/', (string) $class_name, $m ) ) {
+		return array();
+	}
+
+	$ids = array();
+	foreach ( explode( '-', $m[1] ) as $part ) {
+		$id = (int) $part;
+		if ( $id > 0 ) {
+			$ids[] = $id;
+		}
+	}
+
+	$ids = array_values( array_unique( $ids ) );
+	sort( $ids, SORT_NUMERIC );
+
+	return $ids;
 }
 
 /**
@@ -143,12 +185,14 @@ HTML;
  * Card markup only (for homepage collections grid).
  *
  * @since 0.9.133
+ * @since 0.9.250 Optional category IDs to exclude.
  *
+ * @param array<int, int> $exclude Extra term IDs to exclude.
  * @return string
  */
-function fairflock_get_collections_cards_markup() {
+function fairflock_get_collections_cards_markup( $exclude = array() ) {
 	$shop  = esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' ) );
-	$terms = fairflock_get_category_overview_terms();
+	$terms = fairflock_get_category_overview_terms( $exclude );
 	$cta   = __( 'Zur Kollektion →', 'fairflock' );
 	$cards = '';
 
@@ -198,6 +242,92 @@ HTML;
 }
 
 /**
+ * Replaces the collections grid inner HTML with live category cards.
+ *
+ * @since 0.9.250
+ *
+ * @param string $html     Rendered section HTML.
+ * @param string $inner    Replacement inner HTML.
+ * @return string|null
+ */
+function fairflock_collections_replace_grid_inner( $html, $inner ) {
+	if ( ! is_string( $html ) || $html === '' || ! is_string( $inner ) ) {
+		return null;
+	}
+
+	if ( ! preg_match( '/<div\b(?=[^>]*\bff-collections-grid\b)[^>]*>/i', $html, $m, PREG_OFFSET_CAPTURE ) ) {
+		return null;
+	}
+
+	$open_tag   = $m[0][0];
+	$open_start = (int) $m[0][1];
+	$inner_start = $open_start + strlen( $open_tag );
+	$pos         = $inner_start;
+	$depth       = 1;
+	$len         = strlen( $html );
+
+	while ( $pos < $len && $depth > 0 ) {
+		$next_open  = stripos( $html, '<div', $pos );
+		$next_close = stripos( $html, '</div>', $pos );
+
+		if ( false === $next_close ) {
+			return null;
+		}
+
+		if ( false !== $next_open && $next_open < $next_close ) {
+			++$depth;
+			$pos = $next_open + 4;
+			continue;
+		}
+
+		--$depth;
+		if ( 0 === $depth ) {
+			$before = substr( $html, 0, $inner_start );
+			$after  = substr( $html, $next_close );
+			return $before . $inner . $after;
+		}
+		$pos = $next_close + 6;
+	}
+
+	return null;
+}
+
+/**
+ * Live-replaces collections grid cards on the frontend (respects exclusions).
+ *
+ * @since 0.9.250
+ *
+ * @param string               $block_content Rendered HTML.
+ * @param array<string, mixed> $block         Parsed block.
+ * @return string
+ */
+function fairflock_render_collections_section( $block_content, $block ) {
+	if ( empty( $block['blockName'] ) || 'core/group' !== $block['blockName'] ) {
+		return $block_content;
+	}
+
+	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	$class = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
+
+	if ( ! str_contains( $class, 'ff-pattern-collections' ) ) {
+		return $block_content;
+	}
+
+	$exclude = fairflock_collections_parse_exclude_ids( $class );
+	$markup  = fairflock_get_collections_cards_markup( $exclude );
+	$live    = do_blocks( $markup );
+
+	if ( ! is_string( $live ) || $live === '' ) {
+		return $block_content;
+	}
+
+	$replaced = fairflock_collections_replace_grid_inner( $block_content, $live );
+
+	return is_string( $replaced ) ? $replaced : $block_content;
+}
+add_filter( 'render_block_core/group', 'fairflock_render_collections_section', 20, 2 );
+
+/**
  * Full collections section markup (homepage widget + /kategorien/).
  *
  * @since 0.9.142
@@ -218,13 +348,13 @@ function fairflock_get_collections_section_markup( array $args = array() ) {
 	$anchor    = isset( $args['anchor'] ) ? (string) $args['anchor'] : 'kollektionen';
 	$extra     = isset( $args['extra_class'] ) ? trim( (string) $args['extra_class'] ) : '';
 
-	$shop  = esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' ) );
-	$cards = fairflock_get_collections_cards_markup();
+	$shop        = esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' ) );
+	$section_cls = trim( 'ff-pattern-collections ' . $extra );
+	$cards       = fairflock_get_collections_cards_markup( fairflock_collections_parse_exclude_ids( $section_cls ) );
 
 	$heading_esc = esc_html( $heading );
 	$lead_esc    = esc_html( $lead );
 	$anchor_esc  = esc_attr( $anchor );
-	$section_cls = trim( 'ff-pattern-collections ' . $extra );
 	$expand_more      = __( 'Mehr anzeigen', 'fairflock' );
 	$expand_less      = __( 'Weniger anzeigen', 'fairflock' );
 	$expand_more_esc  = esc_html( $expand_more );

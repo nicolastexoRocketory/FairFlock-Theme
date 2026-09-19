@@ -68,3 +68,17 @@ function fairflock_body_class_front_page( $classes ) {
 	return $classes;
 }
 add_filter( 'body_class', 'fairflock_body_class_front_page' );
+
+/**
+ * Keep WP 7.1 responsive block styles editable (padding etc. per device).
+ *
+ * @since 0.9.249
+ *
+ * @param array<string, mixed> $settings Editor settings.
+ * @return array<string, mixed>
+ */
+function fairflock_enable_responsive_editing( $settings ) {
+	$settings['responsiveEditingEnabled'] = true;
+	return $settings;
+}
+add_filter( 'block_editor_settings_all', 'fairflock_enable_responsive_editing' );

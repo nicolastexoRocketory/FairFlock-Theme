@@ -28,6 +28,7 @@ require_once FAIRFLOCK_DIR . '/inc/editor-bento.php';
 require_once FAIRFLOCK_DIR . '/inc/bento-content.php';
 require_once FAIRFLOCK_DIR . '/inc/editor-mega-list.php';
 require_once FAIRFLOCK_DIR . '/inc/editor-product-collection.php';
+require_once FAIRFLOCK_DIR . '/inc/editor-collections.php';
 require_once FAIRFLOCK_DIR . '/inc/performance.php';
 require_once FAIRFLOCK_DIR . '/inc/woocommerce.php';
 require_once FAIRFLOCK_DIR . '/inc/category-overview.php';

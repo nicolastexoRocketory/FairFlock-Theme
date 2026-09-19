@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.251',
+			'items'   => array(
+				__( 'Kategorien-Seite: gleiches Kollektionen-Widget wie Startseite (Template-Part, Slider funktioniert).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.250',
 			'items'   => array(
 				__( 'Kollektionen-Widget: Kategorien im Editor ausschließen (live auf der Website).', 'fairflock' ),

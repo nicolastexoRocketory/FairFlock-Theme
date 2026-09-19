@@ -434,40 +434,35 @@ HTML;
 }
 
 /**
- * Full pattern markup for the category overview page (= collections layout, no shop CTA).
+ * Full pattern markup for the category overview page.
  *
  * @since 0.9.99
  * @since 0.9.142 Same shell/grid as homepage collections, without “Alle Produkte”.
+ * @since 0.9.251 Prefer template-part collections (same widget as homepage).
  *
  * @return string
  */
 function fairflock_get_category_overview_markup() {
-	return fairflock_get_collections_section_markup(
-		array(
-			'show_more_link' => false,
-			'heading'        => __( 'Kollektionen', 'fairflock' ),
-			'lead'           => __( 'Alle Welten auf einen Blick — von Neuheiten bis Klassikern.', 'fairflock' ),
-			'anchor'         => 'kollektionen',
-			'extra_class'    => 'ff-pattern-collections--page',
-		)
-	);
+	return '<!-- wp:template-part {"slug":"collections","theme":"fairflock","area":"uncategorized"} /-->';
 }
 
 /**
- * Page body for legacy seeds (prefer template page-kategorien.html).
+ * Page body for legacy seeds (prefer empty + template page-kategorien.html).
  *
  * @since 0.9.99
+ * @since 0.9.251 Empty — template owns the live collections widget.
  *
  * @return string
  */
 function fairflock_get_category_overview_page_content() {
-	return fairflock_get_category_overview_markup();
+	return '';
 }
 
 /**
  * One-time: publish /kategorien/ without overwriting an existing page.
  *
  * @since 0.9.99
+ * @since 0.9.251 Empty body — page-kategorien.html loads the collections template-part.
  *
  * @return void
  */
@@ -492,7 +487,7 @@ function fairflock_maybe_seed_category_overview_page() {
 			'post_name'    => 'kategorien',
 			'post_status'  => 'publish',
 			'post_type'    => 'page',
-			'post_content' => fairflock_get_category_overview_page_content(),
+			'post_content' => '',
 		),
 		true
 	);

@@ -3,8 +3,8 @@
  * Title: Kategorie-Übersicht
  * Slug: fairflock/category-overview
  * Categories: fairflock, fairflock-shop
- * Description: Gleiches Kollektionen-Layout wie auf der Startseite — ohne „Alle Produkte“.
+ * Description: Identisches Kollektionen-Widget wie auf der Startseite (Template-Part).
  * Viewport Width: 1240
  */
-
-echo fairflock_get_category_overview_markup();
+?>
+<!-- wp:template-part {"slug":"collections","theme":"fairflock","area":"uncategorized"} /-->

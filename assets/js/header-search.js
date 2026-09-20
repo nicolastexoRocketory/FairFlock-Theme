@@ -390,9 +390,9 @@
       html +=
         '<li class="ff-search-menu-account"><a href="' +
         escapeHtml(accountMenuHref()).replace(/"/g, "&quot;") +
-        '" data-ff-search-account="1">Konto</a></li>';
+        '" data-ff-search-account="1"><span class="ff-search-menu-account__icon" aria-hidden="true"></span>Account</a></li>';
       html +=
-        '<li class="ff-search-menu-cart"><a href="#ff-open-cart" data-ff-search-cart="1">Warenkorb</a></li>';
+        '<li class="ff-search-menu-cart"><a href="#ff-open-cart" data-ff-search-cart="1"><span class="ff-search-menu-cart__icon" aria-hidden="true"></span>Warenkorb</a></li>';
 
       if (html) {
         target.innerHTML = html;
@@ -498,7 +498,15 @@
       closeBtn.addEventListener("click", function (e) {
         e.preventDefault();
         closeSearch();
-        toggle.focus();
+        var focusTarget = burger || toggle;
+        if (toggle && toggle.offsetParent !== null) {
+          focusTarget = toggle;
+        } else if (burger) {
+          focusTarget = burger;
+        }
+        if (focusTarget && typeof focusTarget.focus === "function") {
+          focusTarget.focus();
+        }
       });
     }
     if (backdrop) {

@@ -2420,7 +2420,9 @@ ul.ff-search-menu-nav {
 }
 
 .ff-search-menu-nav a {
-	display: block;
+	display: flex;
+	align-items: center;
+	gap: 10px;
 	padding: 8px 0;
 	border-radius: 6px;
 	color: inherit;
@@ -2431,6 +2433,27 @@ ul.ff-search-menu-nav {
 
 .ff-search-menu-nav a:hover {
 	color: var(--wp--preset--color--brand, #377530);
+}
+
+.ff-search-menu-account__icon,
+.ff-search-menu-cart__icon {
+	display: block;
+	width: 20px;
+	height: 20px;
+	flex-shrink: 0;
+	background-color: currentColor;
+	-webkit-mask: center / contain no-repeat;
+	mask: center / contain no-repeat;
+}
+
+.ff-search-menu-account__icon {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='8' r='3.25' stroke='black' stroke-width='1.75'/%3E%3Cpath d='M5.5 19.5c1.6-3.2 4-4.75 6.5-4.75s4.9 1.55 6.5 4.75' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='8' r='3.25' stroke='black' stroke-width='1.75'/%3E%3Cpath d='M5.5 19.5c1.6-3.2 4-4.75 6.5-4.75s4.9 1.55 6.5 4.75' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.ff-search-menu-cart__icon {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4 7h16l-1.2 12.2A2 2 0 0 1 16.8 21H7.2a2 2 0 0 1-2-1.8L4 7z' stroke='black' stroke-width='1.75' stroke-linejoin='round'/%3E%3Cpath d='M8 7a4 4 0 0 1 8 0' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4 7h16l-1.2 12.2A2 2 0 0 1 16.8 21H7.2a2 2 0 0 1-2-1.8L4 7z' stroke='black' stroke-width='1.75' stroke-linejoin='round'/%3E%3Cpath d='M8 7a4 4 0 0 1 8 0' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 .ff-search-mega-products,
@@ -5400,7 +5423,9 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 		height: 18px;
 	}
 
-	/* Mobile: nur Suche + Burger — Account/Cart wandern ins Menü */
+	/* Mobile: nur Burger (statt Lupe) — Account/Cart wandern ins Menü */
+	.ff-header__icons .ff-search-toggle,
+	.ff-header__actions .ff-search-toggle,
 	.ff-header__icons .ff-account,
 	.ff-header__icons .wp-block-woocommerce-customer-account,
 	.ff-header__icons .ff-header__cart-btns,

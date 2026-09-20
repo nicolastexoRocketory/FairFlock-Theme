@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.258',
+			'items'   => array(
+				__( 'Mobile Nav: Burger statt Lupe; Account mit Icon und Label im Menü.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.257',
 			'items'   => array(
 				__( 'Produkt-Slider: Farben für den Hover-Button „Ansehen“ im Site Editor einstellbar.', 'fairflock' ),

@@ -26,6 +26,12 @@ function fairflock_theme_changelog() {
 			),
 		),
 		array(
+			'version' => '0.9.259',
+			'items'   => array(
+				__( 'Darstellung: Desktop-Nav-Layouts — Logo mittig, Suchleiste mittig (zwei Varianten).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.258',
 			'items'   => array(
 				__( 'Mobile Nav: Burger statt Lupe; Account mit Icon und Label im Menü.', 'fairflock' ),

@@ -545,7 +545,42 @@
       openMegaPage(label);
     });
 
-    input.addEventListener("input", syncMega);
+    var inlineInput = document.querySelector(".ff-header-inline-search__input");
+    var inlineForm = document.querySelector("form.ff-header-inline-search");
+
+    if (inlineInput) {
+      inlineInput.addEventListener("focus", function () {
+        input.value = inlineInput.value || "";
+        openSearch({ focusInput: true });
+      });
+      inlineInput.addEventListener("click", function () {
+        input.value = inlineInput.value || "";
+        openSearch({ focusInput: true });
+      });
+    }
+
+    if (inlineForm) {
+      inlineForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var q = ((inlineInput && inlineInput.value) || "").trim();
+        if (q) {
+          window.location.href = productSearchUrl(q);
+        } else {
+          openSearch({ focusInput: true });
+        }
+      });
+    }
+
+    function syncInlineFromOverlay() {
+      if (inlineInput) {
+        inlineInput.value = input.value || "";
+      }
+    }
+
+    input.addEventListener("input", function () {
+      syncInlineFromOverlay();
+      syncMega();
+    });
     input.addEventListener("keyup", syncMega);
     input.addEventListener("search", syncMega);
     input.addEventListener("keydown", function (e) {

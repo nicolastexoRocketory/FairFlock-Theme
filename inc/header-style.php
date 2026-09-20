@@ -11,6 +11,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Desktop navigation layout choices.
+ *
+ * @since 0.9.259
+ *
+ * @return array<string, string>
+ */
+function fairflock_nav_layout_choices() {
+	return array(
+		'classic'       => __( 'Standard: Logo links, Menü mittig, Icons rechts', 'fairflock' ),
+		'logo-center'   => __( 'Logo mittig, Menü links, Icons rechts', 'fairflock' ),
+		'search-mid'    => __( 'Logo + Menü links, Suchleiste mittig, Icons rechts', 'fairflock' ),
+		'search-center' => __( 'Logo links, Suchleiste mittig, Menü + Icons rechts', 'fairflock' ),
+	);
+}
+
+/**
+ * Current desktop navigation layout.
+ *
+ * @since 0.9.259
+ *
+ * @return string classic|logo-center|search-mid|search-center
+ */
+function fairflock_get_nav_layout() {
+	$layout = (string) get_option( 'fairflock_nav_layout', 'classic' );
+	$ok     = array_keys( fairflock_nav_layout_choices() );
+
+	return in_array( $layout, $ok, true ) ? $layout : 'classic';
+}
+
+/**
  * Allowed header style keys.
  *
  * @since 0.9.173
@@ -292,6 +322,7 @@ add_action( 'enqueue_block_editor_assets', 'fairflock_print_collections_cols_css
  */
 function fairflock_header_style_body_class( $classes ) {
 	$classes[] = 'ff-header-style-' . fairflock_get_header_style();
+	$classes[] = 'ff-nav-layout-' . fairflock_get_nav_layout();
 	$classes[] = 'ff-content-width-' . fairflock_get_content_width();
 	$classes[] = 'ff-shape-' . fairflock_get_shape_style();
 	$classes[] = 'ff-mega-width-' . fairflock_get_mega_width();
@@ -329,6 +360,7 @@ function fairflock_enqueue_darstellung_editor_bridge() {
 		array(
 			'bodyClasses' => array(
 				'ff-header-style-' . fairflock_get_header_style(),
+				'ff-nav-layout-' . fairflock_get_nav_layout(),
 				'ff-content-width-' . fairflock_get_content_width(),
 				'ff-shape-' . fairflock_get_shape_style(),
 				'ff-mega-width-' . fairflock_get_mega_width(),
@@ -336,6 +368,7 @@ function fairflock_enqueue_darstellung_editor_bridge() {
 				'ff-collections-cols-' . fairflock_get_collections_cols(),
 			),
 			'headerMod'   => 'ff-header--' . fairflock_get_header_style(),
+			'navLayout'   => 'ff-header--nav-' . fairflock_get_nav_layout(),
 		)
 	);
 }
@@ -367,6 +400,7 @@ function fairflock_header_style_render_block( $block_content, $block ) {
 
 	$style = fairflock_get_header_style();
 	$mod   = 'ff-header--' . $style;
+	$nav   = 'ff-header--nav-' . fairflock_get_nav_layout();
 
 	if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 		return $block_content;
@@ -375,6 +409,7 @@ function fairflock_header_style_render_block( $block_content, $block ) {
 	$processor = new WP_HTML_Tag_Processor( $block_content );
 	if ( $processor->next_tag( array( 'class_name' => 'ff-header' ) ) ) {
 		$processor->add_class( $mod );
+		$processor->add_class( $nav );
 		return $processor->get_updated_html();
 	}
 
@@ -423,6 +458,10 @@ function fairflock_header_style_handle_admin_save() {
 	$header_ok  = array_keys( fairflock_header_style_choices() );
 	$header     = in_array( $header_raw, $header_ok, true ) ? $header_raw : 'floating';
 
+	$nav_raw = isset( $_POST['fairflock_nav_layout'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_nav_layout'] ) ) : 'classic';
+	$nav_ok  = array_keys( fairflock_nav_layout_choices() );
+	$nav     = in_array( $nav_raw, $nav_ok, true ) ? $nav_raw : 'classic';
+
 	$width_raw = isset( $_POST['fairflock_content_width'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_content_width'] ) ) : 'shell';
 	$width_ok  = array_keys( fairflock_content_width_choices() );
 	$width     = in_array( $width_raw, $width_ok, true ) ? $width_raw : 'shell';
@@ -447,6 +486,7 @@ function fairflock_header_style_handle_admin_save() {
 	$cols     = in_array( $cols_raw, $cols_ok, true ) ? $cols_raw : 3;
 
 	update_option( 'fairflock_header_style', $header, false );
+	update_option( 'fairflock_nav_layout', $nav, false );
 	update_option( 'fairflock_content_width', $width, false );
 	update_option( 'fairflock_shape_style', $shape, false );
 	update_option( 'fairflock_mega_width', $mega, false );
@@ -481,6 +521,8 @@ function fairflock_header_style_render_admin_page() {
 
 	$header_current = fairflock_get_header_style();
 	$header_choices = fairflock_header_style_choices();
+	$nav_current    = fairflock_get_nav_layout();
+	$nav_choices    = fairflock_nav_layout_choices();
 	$width_current  = fairflock_get_content_width();
 	$width_choices  = fairflock_content_width_choices();
 	$shape_current  = fairflock_get_shape_style();
@@ -517,6 +559,22 @@ function fairflock_header_style_render_admin_page() {
 						</fieldset>
 						<p class="description">
 							<?php esc_html_e( 'Schwebend: abgerundete Leiste mit Abstand zum Rand (Standard). Randlos: volle Breite, oben bündig, ohne Rundungen.', 'fairflock' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Desktop-Nav-Layout', 'fairflock' ); ?></th>
+					<td>
+						<fieldset>
+							<?php foreach ( $nav_choices as $key => $label ) : ?>
+								<label style="display:block;margin:0 0 10px;">
+									<input type="radio" name="fairflock_nav_layout" value="<?php echo esc_attr( $key ); ?>" <?php checked( $nav_current, $key ); ?> />
+									<strong><?php echo esc_html( $label ); ?></strong>
+								</label>
+							<?php endforeach; ?>
+						</fieldset>
+						<p class="description">
+							<?php esc_html_e( 'Anordnung von Logo, Menü, Suchleiste und Icons am Desktop. Auf dem Handy bleibt das Burger-Menü. Layouts mit Suchleiste blenden das Lupen-Icon aus.', 'fairflock' ); ?>
 						</p>
 					</td>
 				</tr>
@@ -625,3 +683,77 @@ function fairflock_header_style_render_admin_page() {
 	</div>
 	<?php
 }
+
+/**
+ * Markup for the desktop inline header search field.
+ *
+ * @since 0.9.259
+ *
+ * @return string
+ */
+function fairflock_get_header_inline_search_markup() {
+	$action = home_url( '/' );
+	$id     = 'ffHeaderInlineSearch';
+
+	ob_start();
+	?>
+	<div class="ff-header__search">
+		<form class="ff-header-inline-search" role="search" method="get" action="<?php echo esc_url( $action ); ?>">
+			<label class="screen-reader-text" for="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Suche', 'fairflock' ); ?></label>
+			<span class="ff-header-inline-search__icon" aria-hidden="true"></span>
+			<input
+				id="<?php echo esc_attr( $id ); ?>"
+				class="ff-header-inline-search__input"
+				type="search"
+				name="s"
+				value="<?php echo esc_attr( get_search_query() ); ?>"
+				placeholder="<?php echo esc_attr__( 'Suchen…', 'fairflock' ); ?>"
+				autocomplete="off"
+			/>
+			<?php if ( class_exists( 'WooCommerce' ) ) : ?>
+				<input type="hidden" name="post_type" value="product" />
+			<?php endif; ?>
+			<button type="submit" class="ff-header-inline-search__submit screen-reader-text">
+				<?php esc_html_e( 'Suchen', 'fairflock' ); ?>
+			</button>
+		</form>
+	</div>
+	<?php
+	return (string) ob_get_clean();
+}
+
+/**
+ * Injects the inline search into the header bar (before icons).
+ *
+ * @since 0.9.259
+ *
+ * @param string               $block_content Rendered HTML.
+ * @param array<string, mixed> $block         Parsed block.
+ * @return string
+ */
+function fairflock_inject_header_inline_search( $block_content, $block ) {
+	if ( empty( $block['blockName'] ) || 'core/group' !== $block['blockName'] || ! is_string( $block_content ) ) {
+		return $block_content;
+	}
+
+	$class = isset( $block['attrs']['className'] ) ? (string) $block['attrs']['className'] : '';
+	if ( ! preg_match( '/(^|\s)ff-header__bar(\s|$)/', $class ) ) {
+		return $block_content;
+	}
+
+	if ( str_contains( $block_content, 'ff-header__search' ) ) {
+		return $block_content;
+	}
+
+	$search = fairflock_get_header_inline_search_markup();
+
+	$updated = preg_replace(
+		'/(<div[^>]*\bff-header__icons\b)/',
+		$search . '$1',
+		$block_content,
+		1
+	);
+
+	return is_string( $updated ) ? $updated : $block_content;
+}
+add_filter( 'render_block_core/group', 'fairflock_inject_header_inline_search', 20, 2 );

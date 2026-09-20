@@ -9,6 +9,19 @@
 
 	var bodyClasses = config.bodyClasses || [];
 	var headerMod = config.headerMod || "";
+	var navLayout = config.navLayout || "";
+
+	function paintHeader(el) {
+		if (!el || !el.classList || el.className.match(/(^|\s)ff-header__/)) {
+			return;
+		}
+		if (headerMod) {
+			el.classList.add(headerMod);
+		}
+		if (navLayout) {
+			el.classList.add(navLayout);
+		}
+	}
 
 	function paintDoc(doc) {
 		if (!doc || !doc.body) {
@@ -19,14 +32,7 @@
 				doc.body.classList.add(c);
 			}
 		});
-		if (headerMod) {
-			var headers = doc.querySelectorAll(".ff-header");
-			headers.forEach(function (el) {
-				if (el && el.classList && !el.className.match(/(^|\s)ff-header__/)) {
-					el.classList.add(headerMod);
-				}
-			});
-		}
+		doc.querySelectorAll(".ff-header").forEach(paintHeader);
 	}
 
 	function paint() {
@@ -44,13 +50,7 @@
 					wrap.classList.add(c);
 				}
 			});
-			if (headerMod) {
-				wrap.querySelectorAll(".ff-header").forEach(function (el) {
-					if (el && !el.className.match(/(^|\s)ff-header__/)) {
-						el.classList.add(headerMod);
-					}
-				});
-			}
+			wrap.querySelectorAll(".ff-header").forEach(paintHeader);
 		}
 	}
 

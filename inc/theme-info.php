@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.260',
+			'items'   => array(
+				__( 'Kontaktformular: Gutenberg-Block mit Admin, SMTP, Turnstile und FairFlock-Tokens.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.258',
 			'items'   => array(
 				__( 'Mobile Nav: Burger statt Lupe; Account mit Icon und Label im Menü.', 'fairflock' ),

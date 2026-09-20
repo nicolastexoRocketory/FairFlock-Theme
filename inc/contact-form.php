@@ -260,6 +260,7 @@ function fairflock_form_count_unmailed_entries() {
 require_once FAIRFLOCK_DIR . '/inc/contact-form-mail.php';
 require_once FAIRFLOCK_DIR . '/inc/contact-form-submit.php';
 require_once FAIRFLOCK_DIR . '/inc/contact-form-render.php';
+require_once FAIRFLOCK_DIR . '/inc/contact-form-admin.php';
 
 /**
  * Enqueues frontend form CSS/JS (and Turnstile when enabled).

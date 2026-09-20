@@ -1,0 +1,242 @@
+/**
+ * FairFlock contact form — Delil layout/UX, FairFlock theme tokens.
+ */
+
+.ff-form-wrap {
+	--ff-form-accent: var(--wp--preset--color--brand, #377530);
+	--ff-form-text: var(--wp--preset--color--contrast, #0e1114);
+	--ff-form-muted: var(--wp--preset--color--muted, #66707a);
+	--ff-form-border: color-mix(in srgb, var(--ff-form-text) 14%, transparent);
+	--ff-form-input-bg: var(--wp--preset--color--base, #f3f5f4);
+	--ff-form-surface: #fff;
+	font-family: inherit;
+	color: var(--ff-form-text);
+	max-width: 720px;
+	margin: 0 auto;
+}
+
+.ff-form-wrap *,
+.ff-form-wrap *::before,
+.ff-form-wrap *::after {
+	box-sizing: border-box;
+	border-radius: 0 !important;
+}
+
+.ff-form__title {
+	margin: 0 0 10px;
+	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-size: 1.75rem;
+	font-weight: 800;
+	color: var(--ff-form-text);
+	letter-spacing: -0.02em;
+}
+
+.ff-form__intro {
+	margin: 0 0 24px;
+	color: var(--ff-form-muted);
+	font-size: 0.95rem;
+	line-height: 1.6;
+}
+
+.ff-form__grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	margin-bottom: 20px;
+}
+
+.ff-form__field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.ff-form__field--full {
+	grid-column: 1 / -1;
+}
+
+.ff-form__field--half {
+	grid-column: span 1;
+}
+
+.ff-form__label {
+	font-size: 0.8125rem;
+	font-weight: 700;
+	color: var(--ff-form-text);
+}
+
+.ff-form__required {
+	color: var(--ff-form-accent);
+	margin-left: 2px;
+}
+
+.ff-form__input,
+.ff-form__textarea,
+.ff-form__select {
+	width: 100%;
+	background: var(--ff-form-input-bg) !important;
+	border: 1px solid var(--ff-form-border) !important;
+	color: var(--ff-form-text) !important;
+	padding: 12px 14px;
+	font-family: inherit;
+	font-size: 0.9375rem;
+	line-height: 1.4;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.ff-form__textarea {
+	min-height: 140px;
+	resize: vertical;
+}
+
+.ff-form__input:focus,
+.ff-form__textarea:focus,
+.ff-form__select:focus {
+	outline: none !important;
+	border-color: color-mix(in srgb, var(--ff-form-accent) 55%, transparent) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-form-accent) 18%, transparent) !important;
+}
+
+.ff-form__input::placeholder,
+.ff-form__textarea::placeholder {
+	color: color-mix(in srgb, var(--ff-form-muted) 85%, transparent);
+}
+
+.ff-form__checkbox-wrap {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding-top: 4px;
+}
+
+.ff-form__checkbox {
+	width: 18px;
+	height: 18px;
+	margin-top: 2px;
+	flex-shrink: 0;
+	accent-color: var(--ff-form-accent);
+}
+
+.ff-form__checkbox-label {
+	font-size: 0.875rem;
+	line-height: 1.5;
+	color: var(--ff-form-muted);
+}
+
+.ff-form__checkbox-label a {
+	color: var(--ff-form-text);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.ff-form__checkbox-label a:hover {
+	color: var(--ff-form-accent);
+}
+
+.ff-form__privacy {
+	margin-bottom: 20px;
+}
+
+.ff-form__turnstile {
+	margin-bottom: 16px;
+}
+
+.ff-form__hp {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.ff-form__actions {
+	margin-top: 4px;
+}
+
+.ff-form__submit {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	background: var(--ff-form-accent) !important;
+	color: #fff !important;
+	border: none !important;
+	padding: 14px 32px;
+	font-family: inherit;
+	font-size: 1rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+	box-shadow: 0 4px 14px color-mix(in srgb, var(--ff-form-accent) 28%, transparent);
+	min-width: 200px;
+}
+
+.ff-form__submit:hover:not(:disabled) {
+	transform: translateY(-1px);
+	box-shadow: 0 6px 18px color-mix(in srgb, var(--ff-form-accent) 38%, transparent);
+}
+
+.ff-form__submit:disabled {
+	opacity: 0.7;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.ff-form__submit-loading {
+	display: none;
+}
+
+.ff-form.is-loading .ff-form__submit-text {
+	display: none;
+}
+
+.ff-form.is-loading .ff-form__submit-loading {
+	display: inline;
+}
+
+.ff-form__notice {
+	margin-top: 16px;
+	padding: 14px 16px;
+	font-size: 0.9rem;
+	line-height: 1.5;
+	border: 1px solid transparent;
+}
+
+.ff-form__notice--success {
+	background: color-mix(in srgb, var(--ff-form-accent) 12%, transparent);
+	border-color: color-mix(in srgb, var(--ff-form-accent) 35%, transparent);
+	color: var(--ff-form-text);
+}
+
+.ff-form__notice--error {
+	background: color-mix(in srgb, #b32d2e 8%, transparent);
+	border-color: color-mix(in srgb, #b32d2e 35%, transparent);
+	color: #b32d2e;
+}
+
+.ff-form__field.is-invalid .ff-form__input,
+.ff-form__field.is-invalid .ff-form__textarea,
+.ff-form__field.is-invalid .ff-form__select {
+	border-color: #b32d2e !important;
+}
+
+.ff-form-block-editor .ff-form-wrap {
+	pointer-events: none;
+}
+
+@media (max-width: 640px) {
+	.ff-form__grid {
+		grid-template-columns: 1fr;
+	}
+
+	.ff-form__field--half {
+		grid-column: 1 / -1;
+	}
+
+	.ff-form__submit {
+		width: 100%;
+	}
+}

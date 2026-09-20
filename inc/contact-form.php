@@ -263,6 +263,89 @@ require_once FAIRFLOCK_DIR . '/inc/contact-form-render.php';
 require_once FAIRFLOCK_DIR . '/inc/contact-form-admin.php';
 
 /**
+ * Registers the Gutenberg contact form block.
+ *
+ * @since 0.9.260
+ *
+ * @return void
+ */
+function fairflock_form_register_block() {
+	$block_dir = FAIRFLOCK_DIR . '/blocks/contact-form';
+	if ( ! is_readable( $block_dir . '/block.json' ) ) {
+		return;
+	}
+
+	$ver = defined( 'FAIRFLOCK_VERSION' ) ? FAIRFLOCK_VERSION : FAIRFLOCK_FORM_VERSION;
+
+	wp_register_script(
+		'fairflock-contact-form-editor',
+		FAIRFLOCK_URI . '/assets/js/contact-form-editor.js',
+		array(
+			'wp-blocks',
+			'wp-element',
+			'wp-block-editor',
+			'wp-components',
+			'wp-server-side-render',
+			'wp-i18n',
+		),
+		$ver,
+		true
+	);
+
+	wp_localize_script(
+		'fairflock-contact-form-editor',
+		'fairflockFormEditor',
+		array(
+			'adminUrl' => admin_url( 'admin.php?page=fairflock-formular' ),
+		)
+	);
+
+	$css = FAIRFLOCK_DIR . '/assets/css/contact-form.css';
+	if ( is_readable( $css ) ) {
+		wp_register_style(
+			'fairflock-contact-form',
+			FAIRFLOCK_URI . '/assets/css/contact-form.css',
+			array(),
+			$ver
+		);
+	}
+
+	$js = FAIRFLOCK_DIR . '/assets/js/contact-form.js';
+	if ( is_readable( $js ) ) {
+		wp_register_script(
+			'fairflock-contact-form',
+			FAIRFLOCK_URI . '/assets/js/contact-form.js',
+			array(),
+			$ver,
+			true
+		);
+	}
+
+	register_block_type(
+		$block_dir,
+		array(
+			'render_callback' => 'fairflock_form_render_block',
+			'editor_script'   => 'fairflock-contact-form-editor',
+			'style'           => is_readable( $css ) ? 'fairflock-contact-form' : null,
+			'view_script'     => is_readable( $js ) ? 'fairflock-contact-form' : null,
+		)
+	);
+}
+add_action( 'init', 'fairflock_form_register_block' );
+
+/**
+ * Block render callback.
+ *
+ * @since 0.9.260
+ *
+ * @param array<string, mixed> $attributes Block attributes.
+ * @return string
+ */
+function fairflock_form_render_block( $attributes = array() ) {
+	return fairflock_form_shortcode();
+}
+
+/**
  * Enqueues frontend form CSS/JS (and Turnstile when enabled).
  *
  * @since 0.9.260

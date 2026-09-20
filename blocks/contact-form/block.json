@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "fairflock/contact-form",
+	"title": "Kontaktformular",
+	"category": "widgets",
+	"icon": "email",
+	"description": "FairFlock Kontaktformular. Einstellungen unter FairFlock → Formular.",
+	"keywords": ["formular", "kontakt", "form", "email", "fairflock"],
+	"textdomain": "fairflock",
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"],
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
+	}
+}

@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.257',
+			'items'   => array(
+				__( 'Produkt-Slider: Farben für den Hover-Button „Ansehen“ im Site Editor einstellbar.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.256',
 			'items'   => array(
 				__( 'Hero-Slideshow: Button-Farben aus dem Editor werden nicht mehr überschrieben.', 'fairflock' ),

@@ -7677,6 +7677,11 @@ a.ff-bento-card,
 	border-radius: inherit;
 }
 
+.ff-shop__collection {
+	--ff-prod-view-bg: color-mix(in srgb, var(--ff-ink, #0e1114) 82%, transparent);
+	--ff-prod-view-fg: #fff;
+}
+
 .ff-shop__collection .wc-block-components-product-image::after {
 	content: "Ansehen";
 	position: absolute;
@@ -7686,12 +7691,12 @@ a.ff-bento-card,
 	opacity: 0;
 	padding: 8px 16px;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: color-mix(in srgb, var(--ff-ink, #0e1114) 82%, transparent);
+	background: var(--ff-prod-view-bg);
 	backdrop-filter: blur(6px);
 	-webkit-backdrop-filter: blur(6px);
 	font-size: 0.875rem;
 	font-weight: 700;
-	color: #fff;
+	color: var(--ff-prod-view-fg);
 	pointer-events: none;
 	transition: opacity 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
 		translate 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
@@ -7941,6 +7946,8 @@ a.ff-bento-card,
 	min-width: 0;
 	max-width: 100%;
 	overflow-x: clip;
+	--ff-prod-view-bg: color-mix(in srgb, var(--ff-ink, #0e1114) 82%, transparent);
+	--ff-prod-view-fg: #fff;
 }
 
 .ff-pattern-products--woo .ff-prod-slider__track.wp-block-woocommerce-product-collection,
@@ -8077,6 +8084,11 @@ a.ff-bento-card,
 	border-radius: inherit;
 }
 
+.ff-pattern-products--woo {
+	--ff-prod-view-bg: color-mix(in srgb, var(--ff-ink, #0e1114) 82%, transparent);
+	--ff-prod-view-fg: #fff;
+}
+
 .ff-pattern-products--woo .wc-block-components-product-image::after {
 	content: "Ansehen";
 	position: absolute;
@@ -8086,12 +8098,12 @@ a.ff-bento-card,
 	opacity: 0;
 	padding: 8px 16px;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: color-mix(in srgb, var(--ff-ink, #0e1114) 82%, transparent);
+	background: var(--ff-prod-view-bg);
 	backdrop-filter: blur(6px);
 	-webkit-backdrop-filter: blur(6px);
 	font-size: 0.875rem;
 	font-weight: 700;
-	color: #fff;
+	color: var(--ff-prod-view-fg);
 	pointer-events: none;
 	transition: opacity 0.35s var(--ff-ease), translate 0.35s var(--ff-ease);
 }

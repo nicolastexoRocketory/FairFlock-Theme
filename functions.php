@@ -37,6 +37,7 @@ require_once FAIRFLOCK_DIR . '/inc/submenu-styles.php';
 require_once FAIRFLOCK_DIR . '/inc/hero-heading-styles.php';
 require_once FAIRFLOCK_DIR . '/inc/navigation-mega.php';
 require_once FAIRFLOCK_DIR . '/inc/header-style.php';
+require_once FAIRFLOCK_DIR . '/inc/contact-form.php';
 require_once FAIRFLOCK_DIR . '/inc/csv-import.php';
 require_once FAIRFLOCK_DIR . '/inc/product-modal.php';
 require_once FAIRFLOCK_DIR . '/inc/account-popup.php';

@@ -829,41 +829,62 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 	transform: translateY(-2px);
 }
 
-.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link,
-.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link {
-	background: #fff !important;
-	color: var(--fs-ink, #0e1114) !important;
-	border: 0 !important;
+/*
+ * Default Hero-CTA looks (white / glass / brand) — only when the editor
+ * has NOT set a background or text color on the button link.
+ * Custom colors from the Site Editor must win over these defaults.
+ */
+.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:where(:not(.has-background)),
+.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:where(:not(.has-background)) {
+	background: #fff;
+	border: 0;
 }
 
-.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:hover,
-.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:focus-visible,
-.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:hover,
-.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:focus-visible {
-	background: #f2f4f3 !important;
-	color: var(--fs-ink, #0e1114) !important;
+.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:where(:not(.has-text-color)),
+.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:where(:not(.has-text-color)) {
+	color: var(--fs-ink, #0e1114);
 }
 
-.fs-slider .cta-row .wp-block-button.btn-glass .wp-block-button__link {
-	background: rgba(255, 255, 255, 0.12) !important;
-	color: #fff !important;
-	border: 1px solid rgba(255, 255, 255, 0.28) !important;
+.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:where(:not(.has-background)):hover,
+.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:where(:not(.has-background)):focus-visible,
+.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:where(:not(.has-background)):hover,
+.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:where(:not(.has-background)):focus-visible {
+	background: #f2f4f3;
+}
+
+.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:where(:not(.has-text-color)):hover,
+.fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:where(:not(.has-text-color)):focus-visible,
+.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:where(:not(.has-text-color)):hover,
+.fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:where(:not(.has-text-color)):focus-visible {
+	color: var(--fs-ink, #0e1114);
+}
+
+.fs-slider .cta-row .wp-block-button.btn-glass .wp-block-button__link:where(:not(.has-background)) {
+	background: rgba(255, 255, 255, 0.12);
+	border: 1px solid rgba(255, 255, 255, 0.28);
 	backdrop-filter: blur(8px);
 	-webkit-backdrop-filter: blur(8px);
 }
 
-.fs-slider .cta-row .wp-block-button.btn-glass .wp-block-button__link:hover,
-.fs-slider .cta-row .wp-block-button.btn-glass .wp-block-button__link:focus-visible {
-	background: rgba(255, 255, 255, 0.18) !important;
+.fs-slider .cta-row .wp-block-button.btn-glass .wp-block-button__link:where(:not(.has-text-color)) {
+	color: #fff;
 }
 
-.fs-slider .cta-row .wp-block-button.btn-brand .wp-block-button__link {
-	background: var(--fs-brand, #377530) !important;
-	color: #fff !important;
-	border: 0 !important;
+.fs-slider .cta-row .wp-block-button.btn-glass .wp-block-button__link:where(:not(.has-background)):hover,
+.fs-slider .cta-row .wp-block-button.btn-glass .wp-block-button__link:where(:not(.has-background)):focus-visible {
+	background: rgba(255, 255, 255, 0.18);
 }
 
-.fs-slider .cta-row .wp-block-button.btn-brand .wp-block-button__link:hover,
-.fs-slider .cta-row .wp-block-button.btn-brand .wp-block-button__link:focus-visible {
-	background: var(--fs-brand-deep, #2a5c25) !important;
+.fs-slider .cta-row .wp-block-button.btn-brand .wp-block-button__link:where(:not(.has-background)) {
+	background: var(--fs-brand, #377530);
+	border: 0;
+}
+
+.fs-slider .cta-row .wp-block-button.btn-brand .wp-block-button__link:where(:not(.has-text-color)) {
+	color: #fff;
+}
+
+.fs-slider .cta-row .wp-block-button.btn-brand .wp-block-button__link:where(:not(.has-background)):hover,
+.fs-slider .cta-row .wp-block-button.btn-brand .wp-block-button__link:where(:not(.has-background)):focus-visible {
+	background: var(--fs-brand-deep, #2a5c25);
 }

@@ -20,6 +20,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.256',
+			'items'   => array(
+				__( 'Hero-Slideshow: Button-Farben aus dem Editor werden nicht mehr überschrieben.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.255',
+			'items'   => array(
+				__( 'Kollektionen: „Mehr/Weniger anzeigen“ als zwei gestaltbare Buttons im Site Editor.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.254',
+			'items'   => array(
+				__( 'Mobile Nav: nur Suche + Burger; Konto und Warenkorb im Burger-Menü.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.253',
+			'items'   => array(
+				__( 'Mobiles Suchpanel: Mega-Menü-Punkt öffnet das Mega-Menü als eigene Unterseite.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.252',
 			'items'   => array(
 				__( 'Demo Content Kollektionen: Überschreiben + Bestseller-Produkt-Slider unter dem Widget.', 'fairflock' ),

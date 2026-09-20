@@ -35,11 +35,16 @@
 			);
 			if (icon) return icon.closest("a") || icon;
 
-			var inHeader = el.closest(".ff-header");
-			if (!inHeader) return null;
-
 			var link = el.closest("a[href]");
-			if (link && accountUrlNeedle(link.getAttribute("href"))) {
+			if (!link) return null;
+
+			if (link.getAttribute("data-ff-search-account") === "1") {
+				return link;
+			}
+
+			var inHeader = el.closest(".ff-header");
+			var inSearch = el.closest(".ff-search-layer, #ffSearchLayer");
+			if ((inHeader || inSearch) && accountUrlNeedle(link.getAttribute("href"))) {
 				return link;
 			}
 			return null;

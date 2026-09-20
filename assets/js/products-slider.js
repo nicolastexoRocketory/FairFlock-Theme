@@ -195,14 +195,35 @@
 		if (!grid || !expand) {
 			return;
 		}
-		var btn = expand.querySelector(".wp-block-button__link, a, button");
-		if (!btn || bound.has(expand)) {
+		if (bound.has(expand)) {
+			return;
+		}
+
+		var wrapMore = expand.querySelector(".ff-collections-expand__btn--more");
+		var wrapLess = expand.querySelector(".ff-collections-expand__btn--less");
+		var btnMore = wrapMore
+			? wrapMore.querySelector(".wp-block-button__link, a, button")
+			: null;
+		var btnLess = wrapLess
+			? wrapLess.querySelector(".wp-block-button__link, a, button")
+			: null;
+		var btnLegacy = expand.querySelector(
+			".ff-collections-expand__btn:not(.ff-collections-expand__btn--more):not(.ff-collections-expand__btn--less) .wp-block-button__link, .ff-collections-expand__btn:not(.ff-collections-expand__btn--more):not(.ff-collections-expand__btn--less) a"
+		);
+
+		if (!btnMore && !btnLegacy) {
 			return;
 		}
 		bound.add(expand);
 
-		var labelMore = btn.getAttribute("data-ff-label-more") || "Mehr anzeigen";
-		var labelLess = btn.getAttribute("data-ff-label-less") || "Weniger anzeigen";
+		var labelMore =
+			(btnMore && (btnMore.textContent || "").trim()) ||
+			(btnLegacy && (btnLegacy.getAttribute("data-ff-label-more") || btnLegacy.textContent || "").trim()) ||
+			"Mehr anzeigen";
+		var labelLess =
+			(btnLess && (btnLess.textContent || "").trim()) ||
+			(btnLegacy && (btnLegacy.getAttribute("data-ff-label-less") || "").trim()) ||
+			"Weniger anzeigen";
 
 		function cardCount() {
 			return grid.querySelectorAll(".ff-collection-card").length;
@@ -212,11 +233,31 @@
 			return window.matchMedia(DESKTOP_MQ).matches;
 		}
 
+		function setButtonState(expanded) {
+			if (wrapMore) {
+				wrapMore.hidden = !!expanded;
+				wrapMore.setAttribute("aria-hidden", expanded ? "true" : "false");
+			}
+			if (wrapLess) {
+				wrapLess.hidden = !expanded;
+				wrapLess.setAttribute("aria-hidden", expanded ? "false" : "true");
+			}
+			if (btnMore) {
+				btnMore.setAttribute("aria-expanded", expanded ? "true" : "false");
+			}
+			if (btnLess) {
+				btnLess.setAttribute("aria-expanded", expanded ? "true" : "false");
+			}
+			if (btnLegacy && !btnMore) {
+				btnLegacy.textContent = expanded ? labelLess : labelMore;
+				btnLegacy.setAttribute("aria-expanded", expanded ? "true" : "false");
+			}
+		}
+
 		function setExpanded(expanded) {
 			grid.classList.toggle("is-collapsed", !expanded);
 			grid.classList.toggle("is-expanded", expanded);
-			btn.textContent = expanded ? labelLess : labelMore;
-			btn.setAttribute("aria-expanded", expanded ? "true" : "false");
+			setButtonState(expanded);
 		}
 
 		function syncVisibility() {
@@ -226,25 +267,38 @@
 			expand.classList.toggle("is-visible", needsToggle);
 			if (!needsToggle) {
 				grid.classList.remove("is-collapsed", "is-expanded");
-				btn.textContent = labelMore;
-				btn.setAttribute("aria-expanded", "false");
+				setButtonState(false);
 				return;
 			}
 			if (!grid.classList.contains("is-expanded")) {
 				setExpanded(false);
+			} else {
+				setButtonState(true);
 			}
 		}
 
-		btn.setAttribute("role", "button");
-		btn.setAttribute("aria-expanded", "false");
-		btn.addEventListener("click", function (event) {
+		function onToggle(event) {
 			event.preventDefault();
 			if (!isDesktop() || cardCount() <= collectionsVisibleCount(grid)) {
 				return;
 			}
 			setExpanded(!grid.classList.contains("is-expanded"));
-		});
+		}
 
+		if (btnMore) {
+			btnMore.setAttribute("role", "button");
+			btnMore.addEventListener("click", onToggle);
+		}
+		if (btnLess) {
+			btnLess.setAttribute("role", "button");
+			btnLess.addEventListener("click", onToggle);
+		}
+		if (btnLegacy && !btnMore) {
+			btnLegacy.setAttribute("role", "button");
+			btnLegacy.addEventListener("click", onToggle);
+		}
+
+		setButtonState(false);
 		window.addEventListener("resize", syncVisibility);
 		syncVisibility();
 	}

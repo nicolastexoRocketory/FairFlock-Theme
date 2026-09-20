@@ -1507,10 +1507,12 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
  */
 .ff-header__icons .ff-search-toggle,
 .ff-header__icons .ff-cart,
+.ff-header__icons .ff-nav-burger,
 .ff-header__icons .ff-account,
 .ff-header__icons .wp-block-woocommerce-customer-account,
 .ff-header__actions .ff-search-toggle,
 .ff-header__actions .ff-cart,
+.ff-header__actions .ff-nav-burger,
 .ff-header__actions .ff-account,
 .ff-header__actions .wp-block-woocommerce-customer-account {
 	--ff-i-fg: var(--ff-icon-fg);
@@ -1722,14 +1724,18 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 /* Shared face — Defaults nur wenn das Icon KEINE eigene Editor-Farbe hat */
 .ff-header__icons .ff-search-toggle .wp-block-button__link,
 .ff-header__icons .ff-cart .wp-block-button__link,
+.ff-header__icons .ff-nav-burger .wp-block-button__link,
 .ff-header__icons .ff-cart.is-style-fill .wp-block-button__link,
 .ff-header__icons .ff-search-toggle.is-style-outline .wp-block-button__link,
 .ff-header__icons .ff-search-toggle.is-style-fill .wp-block-button__link,
+.ff-header__icons .ff-nav-burger.is-style-fill .wp-block-button__link,
 .ff-header__actions .ff-search-toggle .wp-block-button__link,
 .ff-header__actions .ff-cart .wp-block-button__link,
+.ff-header__actions .ff-nav-burger .wp-block-button__link,
 .ff-header__actions .ff-cart.is-style-fill .wp-block-button__link,
 .ff-header__actions .ff-search-toggle.is-style-outline .wp-block-button__link,
-.ff-header__actions .ff-search-toggle.is-style-fill .wp-block-button__link {
+.ff-header__actions .ff-search-toggle.is-style-fill .wp-block-button__link,
+.ff-header__actions .ff-nav-burger.is-style-fill .wp-block-button__link {
 	position: relative;
 	display: grid !important;
 	place-items: center;
@@ -1758,22 +1764,28 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 /* Gruppen-Defaults — greifen nicht, sobald am Icon selbst Farben gesetzt sind */
 .ff-header__icons .ff-search-toggle .wp-block-button__link:not(.has-background),
 .ff-header__icons .ff-cart .wp-block-button__link:not(.has-background),
+.ff-header__icons .ff-nav-burger .wp-block-button__link:not(.has-background),
 .ff-header__actions .ff-search-toggle .wp-block-button__link:not(.has-background),
-.ff-header__actions .ff-cart .wp-block-button__link:not(.has-background) {
+.ff-header__actions .ff-cart .wp-block-button__link:not(.has-background),
+.ff-header__actions .ff-nav-burger .wp-block-button__link:not(.has-background) {
 	background-color: var(--ff-i-bg);
 }
 
 .ff-header__icons .ff-search-toggle .wp-block-button__link:not(.has-text-color),
 .ff-header__icons .ff-cart .wp-block-button__link:not(.has-text-color),
+.ff-header__icons .ff-nav-burger .wp-block-button__link:not(.has-text-color),
 .ff-header__actions .ff-search-toggle .wp-block-button__link:not(.has-text-color),
-.ff-header__actions .ff-cart .wp-block-button__link:not(.has-text-color) {
+.ff-header__actions .ff-cart .wp-block-button__link:not(.has-text-color),
+.ff-header__actions .ff-nav-burger .wp-block-button__link:not(.has-text-color) {
 	color: var(--ff-i-fg);
 }
 
 .ff-header__icons .ff-search-toggle .wp-block-button__link:not(.has-border-color),
 .ff-header__icons .ff-cart .wp-block-button__link:not(.has-border-color),
+.ff-header__icons .ff-nav-burger .wp-block-button__link:not(.has-border-color),
 .ff-header__actions .ff-search-toggle .wp-block-button__link:not(.has-border-color),
-.ff-header__actions .ff-cart .wp-block-button__link:not(.has-border-color) {
+.ff-header__actions .ff-cart .wp-block-button__link:not(.has-border-color),
+.ff-header__actions .ff-nav-burger .wp-block-button__link:not(.has-border-color) {
 	border-color: var(--ff-i-line);
 }
 
@@ -1892,7 +1904,8 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 
 /* Icons via CSS so buttons stay stylable in the Site Editor */
 .ff-search-toggle .wp-block-button__link::before,
-.ff-cart .wp-block-button__link::before {
+.ff-cart .wp-block-button__link::before,
+.ff-nav-burger .wp-block-button__link::before {
 	content: "";
 	width: 18px;
 	height: 18px;
@@ -1912,14 +1925,26 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4 7h16l-1.2 12.2A2 2 0 0 1 16.8 21H7.2a2 2 0 0 1-2-1.8L4 7z' stroke='black' stroke-width='1.75' stroke-linejoin='round'/%3E%3Cpath d='M8 7a4 4 0 0 1 8 0' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
+.ff-nav-burger .wp-block-button__link::before {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
 .ff-header__icons .ff-search-toggle .wp-block-button__link::before,
 .ff-header__icons .ff-cart .wp-block-button__link::before,
+.ff-header__icons .ff-nav-burger .wp-block-button__link::before,
 .ff-header__actions .ff-search-toggle .wp-block-button__link::before,
-.ff-header__actions .ff-cart .wp-block-button__link::before {
+.ff-header__actions .ff-cart .wp-block-button__link::before,
+.ff-header__actions .ff-nav-burger .wp-block-button__link::before {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	translate: -50% -50%;
+}
+
+/* Burger: nur Mobile — Desktop behält Text-Nav + Account/Cart */
+.ff-nav-burger {
+	display: none !important;
 }
 
 /*
@@ -2113,6 +2138,114 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 .ff-search-layer.is-open .ff-search-shell {
 	opacity: 1;
 	transform: translateY(0);
+}
+
+/* Mega-Unterseite im Suchpanel (Nav-Item mit Stil „Mega“) */
+.ff-search-mega-back,
+.ff-search-mega-page-title {
+	display: none;
+}
+
+.ff-search-shell.is-mega-page .ff-search-mega-back {
+	display: grid;
+	place-items: center;
+	flex: 0 0 auto;
+	width: 40px;
+	height: 40px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-size: 1.25rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.ff-search-shell.is-mega-page .ff-search-mega-page-title {
+	display: block;
+	flex: 1 1 auto;
+	min-width: 0;
+	margin: 0;
+	padding: 0 4px;
+	font-weight: 700;
+	font-size: 1rem;
+	line-height: 1.3;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.ff-search-shell.is-mega-page .ff-search-field,
+.ff-search-shell.is-mega-page .wp-block-search {
+	display: none !important;
+}
+
+.ff-search-shell.is-mega-page .ff-search-mega {
+	display: none !important;
+}
+
+.ff-search-mega-page {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow: auto;
+	padding: 12px 0 8px;
+	box-sizing: border-box;
+}
+
+.ff-search-mega-page__body {
+	width: 100%;
+}
+
+.ff-search-mega-page .ff-mega-panel {
+	padding: 0 !important;
+	background: transparent !important;
+	color: inherit !important;
+	box-shadow: none !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	max-width: none !important;
+}
+
+.ff-search-mega-page .ff-mega-panel__cols.wp-block-columns,
+.ff-search-mega-page .ff-mega-panel .ff-mega-panel__cols {
+	display: flex !important;
+	flex-direction: column !important;
+	flex-wrap: nowrap !important;
+	gap: 28px !important;
+}
+
+.ff-search-mega-page .ff-mega-panel__cols > .wp-block-column,
+.ff-search-mega-page .ff-mega-panel__cols > .wp-block-column[style*="flex-basis"],
+.ff-search-mega-page .ff-mega-panel__cols > .wp-block-column[style*="width"],
+.ff-search-mega-page .ff-mega-panel__cols > .wp-block-column:has(.ff-mega-list--categories),
+.ff-search-mega-page .ff-mega-panel__cols > .wp-block-column:has(.ff-mega-panel__card) {
+	flex: 0 0 auto !important;
+	flex-basis: auto !important;
+	width: 100% !important;
+	max-width: none !important;
+}
+
+.ff-search-mega-page .ff-mega-list--categories .ff-mega-panel__links,
+.ff-search-mega-page .ff-mega-list--categories .ff-mega-list__live {
+	column-count: 1;
+}
+
+.ff-search-menu-mega {
+	display: flex !important;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.ff-search-menu-mega__chev {
+	flex: 0 0 auto;
+	opacity: 0.55;
+	font-weight: 400;
+	font-size: 1.15em;
+	line-height: 1;
 }
 
 /* Search bar — same language as homepage header icons / bar */
@@ -5242,7 +5375,9 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 	.ff-header__icons .ff-search-toggle .wp-block-button__link,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link,
 	.ff-header__icons .ff-cart .wp-block-button__link,
-	.ff-header__actions .ff-cart .wp-block-button__link {
+	.ff-header__actions .ff-cart .wp-block-button__link,
+	.ff-header__icons .ff-nav-burger .wp-block-button__link,
+	.ff-header__actions .ff-nav-burger .wp-block-button__link {
 		width: 40px !important;
 		min-width: 40px !important;
 		max-width: 40px !important;
@@ -5254,13 +5389,31 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 	.ff-header__icons .ff-search-toggle .wp-block-button__link::before,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link::before,
 	.ff-header__icons .ff-cart .wp-block-button__link::before,
-	.ff-header__actions .ff-cart .wp-block-button__link::before {
+	.ff-header__actions .ff-cart .wp-block-button__link::before,
+	.ff-header__icons .ff-nav-burger .wp-block-button__link::before,
+	.ff-header__actions .ff-nav-burger .wp-block-button__link::before {
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		translate: -50% -50%;
 		width: 18px;
 		height: 18px;
+	}
+
+	/* Mobile: nur Suche + Burger — Account/Cart wandern ins Menü */
+	.ff-header__icons .ff-account,
+	.ff-header__icons .wp-block-woocommerce-customer-account,
+	.ff-header__icons .ff-header__cart-btns,
+	.ff-header__icons .ff-cart,
+	.ff-header__actions .ff-account,
+	.ff-header__actions .wp-block-woocommerce-customer-account,
+	.ff-header__actions .ff-header__cart-btns,
+	.ff-header__actions .ff-cart {
+		display: none !important;
+	}
+
+	.ff-nav-burger {
+		display: flex !important;
 	}
 
 	.ff-cart__count {
@@ -5793,6 +5946,7 @@ a.ff-collection-card,
 	width: 100%;
 	margin: 8px 0 0;
 	justify-content: center;
+	gap: 12px;
 }
 
 .ff-collections-expand__btn .wp-block-button__link {
@@ -5827,9 +5981,15 @@ a.ff-collection-card,
 	body:not(.block-editor-iframe__body) .wp-block-buttons.ff-collections-expand.is-visible[hidden] {
 		display: none !important;
 	}
+
+	/* Frontend: nur den aktiven Zustand zeigen (Mehr ODER Weniger). */
+	body:not(.block-editor-iframe__body) .ff-collections-expand .ff-collections-expand__btn--more[hidden],
+	body:not(.block-editor-iframe__body) .ff-collections-expand .ff-collections-expand__btn--less[hidden] {
+		display: none !important;
+	}
 }
 
-/* Site Editor / Canvas: alle Karten sichtbar, Expand-Button ausgeblendet. */
+/* Site Editor / Canvas: alle Karten + beide Expand-Buttons sichtbar zum Gestalten. */
 .editor-styles-wrapper .ff-collections-grid.is-collapsed > .ff-collection-card,
 .editor-styles-wrapper .ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card,
 .block-editor-iframe__body .ff-collections-grid.is-collapsed > .ff-collection-card,
@@ -5838,8 +5998,19 @@ a.ff-collection-card,
 }
 
 .editor-styles-wrapper .ff-collections-expand,
-.block-editor-iframe__body .ff-collections-expand {
-	display: none !important;
+.block-editor-iframe__body .ff-collections-expand,
+.editor-styles-wrapper .wp-block-buttons.ff-collections-expand,
+.block-editor-iframe__body .wp-block-buttons.ff-collections-expand {
+	display: flex !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+}
+
+.editor-styles-wrapper .ff-collections-expand .ff-collections-expand__btn--more,
+.editor-styles-wrapper .ff-collections-expand .ff-collections-expand__btn--less,
+.block-editor-iframe__body .ff-collections-expand .ff-collections-expand__btn--more,
+.block-editor-iframe__body .ff-collections-expand .ff-collections-expand__btn--less {
+	display: flex !important;
 }
 
 /* —— Bento (styleguide) —— */

@@ -355,11 +355,10 @@ function fairflock_get_collections_section_markup( array $args = array() ) {
 	$heading_esc = esc_html( $heading );
 	$lead_esc    = esc_html( $lead );
 	$anchor_esc  = esc_attr( $anchor );
-	$expand_more      = __( 'Mehr anzeigen', 'fairflock' );
-	$expand_less      = __( 'Weniger anzeigen', 'fairflock' );
-	$expand_more_esc  = esc_html( $expand_more );
-	$expand_more_attr = esc_attr( $expand_more );
-	$expand_less_attr = esc_attr( $expand_less );
+	$expand_more     = __( 'Mehr anzeigen', 'fairflock' );
+	$expand_less     = __( 'Weniger anzeigen', 'fairflock' );
+	$expand_more_esc = esc_html( $expand_more );
+	$expand_less_esc = esc_html( $expand_less );
 
 	$more_html = '';
 	if ( $show_more ) {
@@ -420,9 +419,13 @@ HTML;
 		<!-- /wp:group -->
 
 		<!-- wp:buttons {"className":"ff-collections-expand","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
-		<div class="wp-block-buttons ff-collections-expand" hidden>
-			<!-- wp:button {"className":"ff-collections-expand__btn is-style-outline"} -->
-			<div class="wp-block-button ff-collections-expand__btn is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-collections-more" data-ff-label-more="{$expand_more_attr}" data-ff-label-less="{$expand_less_attr}">{$expand_more_esc}</a></div>
+		<div class="wp-block-buttons ff-collections-expand">
+			<!-- wp:button {"metadata":{"name":"Mehr anzeigen"},"className":"ff-collections-expand__btn ff-collections-expand__btn--more is-style-outline"} -->
+			<div class="wp-block-button ff-collections-expand__btn ff-collections-expand__btn--more is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-collections-more">{$expand_more_esc}</a></div>
+			<!-- /wp:button -->
+
+			<!-- wp:button {"metadata":{"name":"Weniger anzeigen"},"className":"ff-collections-expand__btn ff-collections-expand__btn--less is-style-outline"} -->
+			<div class="wp-block-button ff-collections-expand__btn ff-collections-expand__btn--less is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-collections-less">{$expand_less_esc}</a></div>
 			<!-- /wp:button -->
 		</div>
 		<!-- /wp:buttons -->

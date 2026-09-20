@@ -5642,9 +5642,7 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 		height: 18px;
 	}
 
-	/* Mobile: nur Burger (statt Lupe) — Account/Cart wandern ins Menü */
-	.ff-header__icons .ff-search-toggle,
-	.ff-header__actions .ff-search-toggle,
+	/* Mobile: Suche + Burger in der Leiste (nur Icons); Account/Cart nur im Menü */
 	.ff-header__icons .ff-account,
 	.ff-header__icons .wp-block-woocommerce-customer-account,
 	.ff-header__icons .ff-header__cart-btns,
@@ -5656,8 +5654,55 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 		display: none !important;
 	}
 
+	.ff-header__icons .ff-search-toggle,
+	.ff-header__actions .ff-search-toggle {
+		display: flex !important;
+	}
+
 	.ff-nav-burger {
 		display: flex !important;
+	}
+
+	/* Mobile-Icons ohne Kontur / Fläche — nur Glyph */
+	.ff-header__icons,
+	.ff-header__actions {
+		border: 0 !important;
+		border-width: 0 !important;
+		background: transparent !important;
+		box-shadow: none !important;
+		padding: 0 !important;
+		gap: 4px;
+	}
+
+	.ff-header__icons .ff-search-toggle .wp-block-button__link,
+	.ff-header__actions .ff-search-toggle .wp-block-button__link,
+	.ff-header__icons .ff-nav-burger .wp-block-button__link,
+	.ff-header__actions .ff-nav-burger .wp-block-button__link,
+	.ff-header__icons .ff-search-toggle.is-style-fill .wp-block-button__link,
+	.ff-header__actions .ff-search-toggle.is-style-fill .wp-block-button__link,
+	.ff-header__icons .ff-nav-burger.is-style-fill .wp-block-button__link,
+	.ff-header__actions .ff-nav-burger.is-style-fill .wp-block-button__link {
+		border: 0 !important;
+		border-width: 0 !important;
+		border-color: transparent !important;
+		background: transparent !important;
+		background-color: transparent !important;
+		box-shadow: none !important;
+		width: 40px !important;
+		min-width: 40px !important;
+		max-width: 40px !important;
+		height: 40px !important;
+		padding: 0 !important;
+	}
+
+	.ff-header__icons .ff-search-toggle .wp-block-button__link:hover,
+	.ff-header__actions .ff-search-toggle .wp-block-button__link:hover,
+	.ff-header__icons .ff-nav-burger .wp-block-button__link:hover,
+	.ff-header__actions .ff-nav-burger .wp-block-button__link:hover {
+		background: transparent !important;
+		transform: none;
+		filter: none;
+		opacity: 0.75;
 	}
 
 	.ff-cart__count {

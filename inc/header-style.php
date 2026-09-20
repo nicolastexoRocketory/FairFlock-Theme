@@ -757,3 +757,70 @@ function fairflock_inject_header_inline_search( $block_content, $block ) {
 	return is_string( $updated ) ? $updated : $block_content;
 }
 add_filter( 'render_block_core/group', 'fairflock_inject_header_inline_search', 20, 2 );
+
+/**
+ * Markup for the mobile nav burger (opens search/menu layer).
+ *
+ * @since 0.9.261
+ *
+ * @return string
+ */
+function fairflock_get_header_nav_burger_markup() {
+	return '<div class="wp-block-button ff-nav-burger is-style-fill">'
+		. '<a class="wp-block-button__link wp-element-button" href="#ff-open-menu" aria-label="'
+		. esc_attr__( 'Menü', 'fairflock' )
+		. '" aria-controls="ffSearchLayer" aria-expanded="false">'
+		. esc_html__( 'Menü', 'fairflock' )
+		. '</a></div>';
+}
+
+/**
+ * Injects the mobile burger after the search toggle when missing
+ * (customized headers often still lack the block from theme updates).
+ *
+ * @since 0.9.261
+ *
+ * @param string               $block_content Rendered HTML.
+ * @param array<string, mixed> $block         Parsed block.
+ * @return string
+ */
+function fairflock_inject_header_nav_burger( $block_content, $block ) {
+	if ( empty( $block['blockName'] ) || 'core/buttons' !== $block['blockName'] || ! is_string( $block_content ) ) {
+		return $block_content;
+	}
+
+	$class = isset( $block['attrs']['className'] ) ? (string) $block['attrs']['className'] : '';
+	if ( ! preg_match( '/(^|\s)ff-header__action-btns(\s|$)/', $class ) ) {
+		return $block_content;
+	}
+	if ( preg_match( '/(^|\s)ff-header__cart-btns(\s|$)/', $class ) ) {
+		return $block_content;
+	}
+	if ( str_contains( $block_content, 'ff-nav-burger' ) ) {
+		return $block_content;
+	}
+	if ( ! str_contains( $block_content, 'ff-search-toggle' ) ) {
+		return $block_content;
+	}
+
+	$burger  = fairflock_get_header_nav_burger_markup();
+	$updated = preg_replace(
+		'/(<div[^>]*\bff-search-toggle\b[^>]*>[\s\S]*?<\/div>)/',
+		'$1' . $burger,
+		$block_content,
+		1
+	);
+
+	if ( ! is_string( $updated ) || $updated === $block_content ) {
+		// Fallback: insert before closing buttons wrapper.
+		$updated = preg_replace(
+			'/(<\/div>\s*)$/',
+			$burger . '$1',
+			$block_content,
+			1
+		);
+	}
+
+	return is_string( $updated ) ? $updated : $block_content;
+}
+add_filter( 'render_block_core/buttons', 'fairflock_inject_header_nav_burger', 20, 2 );

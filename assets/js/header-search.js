@@ -35,7 +35,7 @@
       document.querySelector(".ff-cart .wp-block-button__link") ||
       document.querySelector(".ff-cart a");
 
-    if (!layer || !toggle || !mega || !hitsWrap) {
+    if (!layer || (!toggle && !burger) || !mega || !hitsWrap) {
       return;
     }
 
@@ -76,10 +76,12 @@
       cartBtn.appendChild(badge);
     }
 
-    toggle.setAttribute("aria-controls", "ffSearchLayer");
-    toggle.setAttribute("aria-expanded", "false");
-    if (!toggle.getAttribute("aria-label")) {
-      toggle.setAttribute("aria-label", "Suche öffnen");
+    if (toggle) {
+      toggle.setAttribute("aria-controls", "ffSearchLayer");
+      toggle.setAttribute("aria-expanded", "false");
+      if (!toggle.getAttribute("aria-label")) {
+        toggle.setAttribute("aria-label", "Suche öffnen");
+      }
     }
     if (burger) {
       burger.setAttribute("aria-controls", "ffSearchLayer");
@@ -449,7 +451,9 @@
     }
 
     function setSearchTriggersExpanded(open) {
-      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (toggle) {
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      }
       if (burger) {
         burger.setAttribute("aria-expanded", open ? "true" : "false");
       }
@@ -480,11 +484,13 @@
       setSearchTriggersExpanded(false);
     }
 
-    toggle.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      openSearch({ focusInput: true });
-    });
+    if (toggle) {
+      toggle.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openSearch({ focusInput: true });
+      });
+    }
 
     if (burger) {
       burger.addEventListener("click", function (e) {
@@ -607,7 +613,15 @@
         return;
       }
       closeSearch();
-      toggle.focus();
+      var focusTarget = burger || toggle;
+      if (toggle && toggle.offsetParent !== null) {
+        focusTarget = toggle;
+      } else if (burger) {
+        focusTarget = burger;
+      }
+      if (focusTarget && typeof focusTarget.focus === "function") {
+        focusTarget.focus();
+      }
     });
 
     ensureMegaPageUi();

@@ -147,5 +147,3 @@ function fairflock_form_parse_options( $options_str ) {
 	}
 	return $out;
 }
-
-/* ============================================================

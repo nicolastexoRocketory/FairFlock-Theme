@@ -729,5 +729,3 @@ function fairflock_form_send_mail( $submitted, $opts, $by_name = array() ) {
 
 	return new WP_Error( 'send_failed', $msg );
 }
-
-/* ============================================================

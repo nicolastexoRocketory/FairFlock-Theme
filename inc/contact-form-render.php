@@ -150,5 +150,3 @@ function fairflock_form_render_privacy_field( $opts ) {
 	echo '<span class="ff-form__required">*</span>';
 	echo '</label></div></div>';
 }
-
-/* ============================================================

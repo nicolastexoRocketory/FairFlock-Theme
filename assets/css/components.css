@@ -6278,17 +6278,51 @@ a.ff-collection-card,
 
 	/* Frontend: nur den aktiven Zustand zeigen (Mehr ODER Weniger). */
 	body:not(.block-editor-iframe__body) .ff-collections-expand .ff-collections-expand__btn--more[hidden],
-	body:not(.block-editor-iframe__body) .ff-collections-expand .ff-collections-expand__btn--less[hidden] {
+	body:not(.block-editor-iframe__body) .ff-collections-expand .ff-collections-expand__btn--less[hidden],
+	body:not(.block-editor-iframe__body) .ff-collections-expand .ff-collections-expand__btn--more.is-ff-expand-hidden,
+	body:not(.block-editor-iframe__body) .ff-collections-expand .ff-collections-expand__btn--less.is-ff-expand-hidden {
+		display: none !important;
+	}
+
+	body:not(.block-editor-iframe__body) .ff-collections-expand.is-ff-expand-hidden,
+	body:not(.block-editor-iframe__body) .wp-block-buttons.ff-collections-expand.is-ff-expand-hidden {
 		display: none !important;
 	}
 }
 
-/* Site Editor / Canvas: alle Karten + beide Expand-Buttons sichtbar zum Gestalten. */
-.editor-styles-wrapper .ff-collections-grid.is-collapsed > .ff-collection-card,
-.editor-styles-wrapper .ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card,
-.block-editor-iframe__body .ff-collections-grid.is-collapsed > .ff-collection-card,
-.block-editor-iframe__body .ff-collections-grid.is-collapsed > .wp-block-group.ff-collection-card {
+/* Site Editor / Canvas: alle Karten sichtbar — kein Collapse, kein Mobile-Slider. */
+.editor-styles-wrapper .ff-collections-grid,
+.block-editor-iframe__body .ff-collections-grid,
+.editor-styles-wrapper .wp-block-group.ff-collections-grid,
+.block-editor-iframe__body .wp-block-group.ff-collections-grid {
 	display: grid !important;
+	grid-template-columns: repeat(var(--ff-collections-cols, 3), minmax(0, 1fr)) !important;
+	flex-wrap: unset !important;
+	overflow: visible !important;
+	overflow-x: visible !important;
+	scroll-snap-type: none !important;
+	height: auto !important;
+}
+
+.editor-styles-wrapper .ff-collections-grid .ff-collection-card,
+.editor-styles-wrapper .ff-collections-grid .wp-block-group.ff-collection-card,
+.block-editor-iframe__body .ff-collections-grid .ff-collection-card,
+.block-editor-iframe__body .ff-collections-grid .wp-block-group.ff-collection-card,
+.editor-styles-wrapper .ff-collections-grid.is-collapsed .ff-collection-card,
+.editor-styles-wrapper .ff-collections-grid.is-collapsed .wp-block-group.ff-collection-card,
+.block-editor-iframe__body .ff-collections-grid.is-collapsed .ff-collection-card,
+.block-editor-iframe__body .ff-collections-grid.is-collapsed .wp-block-group.ff-collection-card,
+.editor-styles-wrapper .ff-collections-grid > .block-editor-block-list__layout > *,
+.block-editor-iframe__body .ff-collections-grid > .block-editor-block-list__layout > * {
+	display: grid !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+	height: auto !important;
+	max-height: none !important;
+	flex: none !important;
+	width: auto !important;
+	max-width: none !important;
+	min-width: 0 !important;
 }
 
 .editor-styles-wrapper .ff-collections-expand,
@@ -6303,8 +6337,37 @@ a.ff-collection-card,
 .editor-styles-wrapper .ff-collections-expand .ff-collections-expand__btn--more,
 .editor-styles-wrapper .ff-collections-expand .ff-collections-expand__btn--less,
 .block-editor-iframe__body .ff-collections-expand .ff-collections-expand__btn--more,
-.block-editor-iframe__body .ff-collections-expand .ff-collections-expand__btn--less {
+.block-editor-iframe__body .ff-collections-expand .ff-collections-expand__btn--less,
+.editor-styles-wrapper .ff-collections-expand .ff-collections-expand__btn--more.is-ff-expand-hidden,
+.editor-styles-wrapper .ff-collections-expand .ff-collections-expand__btn--less.is-ff-expand-hidden,
+.block-editor-iframe__body .ff-collections-expand .ff-collections-expand__btn--more.is-ff-expand-hidden,
+.block-editor-iframe__body .ff-collections-expand .ff-collections-expand__btn--less.is-ff-expand-hidden {
 	display: flex !important;
+}
+
+@media (max-width: 960px) {
+	.editor-styles-wrapper .ff-collections-grid,
+	.block-editor-iframe__body .ff-collections-grid,
+	.editor-styles-wrapper .wp-block-group.ff-collections-grid,
+	.block-editor-iframe__body .wp-block-group.ff-collections-grid {
+		display: grid !important;
+		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+		overflow: visible !important;
+		overflow-x: visible !important;
+		scroll-snap-type: none !important;
+	}
+
+	.editor-styles-wrapper .ff-collections-grid > *,
+	.block-editor-iframe__body .ff-collections-grid > *,
+	.editor-styles-wrapper .wp-block-group.ff-collections-grid > *,
+	.block-editor-iframe__body .wp-block-group.ff-collections-grid > *,
+	.editor-styles-wrapper .ff-collections-grid > .block-editor-block-list__layout > *,
+	.block-editor-iframe__body .ff-collections-grid > .block-editor-block-list__layout > * {
+		flex: none !important;
+		width: auto !important;
+		max-width: none !important;
+		min-width: 0 !important;
+	}
 }
 
 /* —— Bento (styleguide) —— */

@@ -190,6 +190,14 @@
 	}
 
 	function initCollectionsExpand(section) {
+		if (
+			document.body.classList.contains("block-editor-iframe__body") ||
+			document.body.classList.contains("block-editor-page") ||
+			document.documentElement.classList.contains("block-editor-block-preview__content-iframe")
+		) {
+			return;
+		}
+
 		var grid = section.querySelector(".ff-collections-grid");
 		var expand = section.querySelector(".ff-collections-expand");
 		if (!grid || !expand) {
@@ -233,24 +241,21 @@
 			return window.matchMedia(DESKTOP_MQ).matches;
 		}
 
+		function setHidden(el, hide) {
+			if (!el) {
+				return;
+			}
+			/* CSS class only — never set HTML hidden/aria (breaks Site Editor validation). */
+			el.classList.toggle("is-ff-expand-hidden", !!hide);
+			el.removeAttribute("hidden");
+			el.removeAttribute("aria-hidden");
+		}
+
 		function setButtonState(expanded) {
-			if (wrapMore) {
-				wrapMore.hidden = !!expanded;
-				wrapMore.setAttribute("aria-hidden", expanded ? "true" : "false");
-			}
-			if (wrapLess) {
-				wrapLess.hidden = !expanded;
-				wrapLess.setAttribute("aria-hidden", expanded ? "false" : "true");
-			}
-			if (btnMore) {
-				btnMore.setAttribute("aria-expanded", expanded ? "true" : "false");
-			}
-			if (btnLess) {
-				btnLess.setAttribute("aria-expanded", expanded ? "true" : "false");
-			}
+			setHidden(wrapMore, !!expanded);
+			setHidden(wrapLess, !expanded);
 			if (btnLegacy && !btnMore) {
 				btnLegacy.textContent = expanded ? labelLess : labelMore;
-				btnLegacy.setAttribute("aria-expanded", expanded ? "true" : "false");
 			}
 		}
 
@@ -263,8 +268,9 @@
 		function syncVisibility() {
 			var visible = collectionsVisibleCount(grid);
 			var needsToggle = isDesktop() && cardCount() > visible;
-			expand.hidden = !needsToggle;
 			expand.classList.toggle("is-visible", needsToggle);
+			expand.classList.toggle("is-ff-expand-hidden", !needsToggle);
+			expand.removeAttribute("hidden");
 			if (!needsToggle) {
 				grid.classList.remove("is-collapsed", "is-expanded");
 				setButtonState(false);
@@ -286,15 +292,12 @@
 		}
 
 		if (btnMore) {
-			btnMore.setAttribute("role", "button");
 			btnMore.addEventListener("click", onToggle);
 		}
 		if (btnLess) {
-			btnLess.setAttribute("role", "button");
 			btnLess.addEventListener("click", onToggle);
 		}
 		if (btnLegacy && !btnMore) {
-			btnLegacy.setAttribute("role", "button");
 			btnLegacy.addEventListener("click", onToggle);
 		}
 

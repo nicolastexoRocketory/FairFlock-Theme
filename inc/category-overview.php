@@ -396,11 +396,11 @@ HTML;
 			<div class="wp-block-group ff-card-slider__actions">
 				<!-- wp:buttons {"metadata":{"name":"Slider-Pfeile"},"className":"ff-card-slider__nav","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
 				<div class="wp-block-buttons ff-card-slider__nav">
-					<!-- wp:button {"metadata":{"name":"Zurück"},"className":"ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"} -->
+					<!-- wp:button {"metadata":{"name":"Zurück"},"className":"ff-card-slider__btn ff-card-slider__btn\u002d\u002dprev is-style-outline"} -->
 					<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-cards-prev">←</a></div>
 					<!-- /wp:button -->
 
-					<!-- wp:button {"metadata":{"name":"Weiter"},"className":"ff-card-slider__btn ff-card-slider__btn--next is-style-outline"} -->
+					<!-- wp:button {"metadata":{"name":"Weiter"},"className":"ff-card-slider__btn ff-card-slider__btn\u002d\u002dnext is-style-outline"} -->
 					<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--next is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-cards-next">→</a></div>
 					<!-- /wp:button -->
 				</div>
@@ -412,19 +412,19 @@ HTML;
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"className":"ff-collections-grid is-collapsed","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
-		<div class="wp-block-group ff-collections-grid is-collapsed">
+		<!-- wp:group {"className":"ff-collections-grid","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
+		<div class="wp-block-group ff-collections-grid">
 {$cards}
 		</div>
 		<!-- /wp:group -->
 
 		<!-- wp:buttons {"className":"ff-collections-expand","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"center"}} -->
 		<div class="wp-block-buttons ff-collections-expand">
-			<!-- wp:button {"metadata":{"name":"Mehr anzeigen"},"className":"ff-collections-expand__btn ff-collections-expand__btn--more is-style-outline"} -->
+			<!-- wp:button {"metadata":{"name":"Mehr anzeigen"},"className":"ff-collections-expand__btn ff-collections-expand__btn\u002d\u002dmore is-style-outline"} -->
 			<div class="wp-block-button ff-collections-expand__btn ff-collections-expand__btn--more is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-collections-more">{$expand_more_esc}</a></div>
 			<!-- /wp:button -->
 
-			<!-- wp:button {"metadata":{"name":"Weniger anzeigen"},"className":"ff-collections-expand__btn ff-collections-expand__btn--less is-style-outline"} -->
+			<!-- wp:button {"metadata":{"name":"Weniger anzeigen"},"className":"ff-collections-expand__btn ff-collections-expand__btn\u002d\u002dless is-style-outline"} -->
 			<div class="wp-block-button ff-collections-expand__btn ff-collections-expand__btn--less is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-collections-less">{$expand_less_esc}</a></div>
 			<!-- /wp:button -->
 		</div>

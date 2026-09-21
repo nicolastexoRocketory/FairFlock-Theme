@@ -806,7 +806,7 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
 	display: block;
 	align-self: center;
 	width: 0;
-	height: 14px;
+	height: 22px;
 	margin-inline: 14px;
 	border-left: 1px solid;
 	border-left-color: inherit;
@@ -5643,12 +5643,17 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 	}
 
 	/* Mobile: Suche + Burger in der Leiste (nur Icons); Account/Cart nur im Menü */
+	.ff-header .ff-account,
+	.ff-header .wp-block-woocommerce-customer-account,
+	.ff-header .wp-block-woocommerce-customer-account.ff-account,
 	.ff-header__icons .ff-account,
 	.ff-header__icons .wp-block-woocommerce-customer-account,
+	.ff-header__icons .wp-block-woocommerce-customer-account.ff-account,
 	.ff-header__icons .ff-header__cart-btns,
 	.ff-header__icons .ff-cart,
 	.ff-header__actions .ff-account,
 	.ff-header__actions .wp-block-woocommerce-customer-account,
+	.ff-header__actions .wp-block-woocommerce-customer-account.ff-account,
 	.ff-header__actions .ff-header__cart-btns,
 	.ff-header__actions .ff-cart {
 		display: none !important;

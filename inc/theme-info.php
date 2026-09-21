@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.261',
+			'items'   => array(
+				__( 'Hero: Hintergründe auf iPhone/Safari korrekt (kein Ken-Burns-Transform, stabile Cover-Fläche).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.260',
 			'items'   => array(
 				__( 'Kontaktformular: Gutenberg-Block mit Admin, SMTP, Turnstile und FairFlock-Tokens.', 'fairflock' ),

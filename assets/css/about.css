@@ -78,12 +78,15 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 	background-color: #0e1114 !important;
 }
 
-/* Ensure editor-chosen hero image actually shows on the frontend */
+/* Ensure editor-chosen hero image actually shows on the frontend (incl. iOS) */
 .ff-about-hero__cover .wp-block-cover__image-background,
 .ff-about-hero__cover img.wp-block-cover__image-background,
 .ff-about-hero__cover video.wp-block-cover__video-background {
 	position: absolute !important;
-	inset: 0 !important;
+	top: 0 !important;
+	right: 0 !important;
+	bottom: 0 !important;
+	left: 0 !important;
 	width: 100% !important;
 	height: 100% !important;
 	max-width: none !important;
@@ -92,6 +95,8 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 	object-position: center !important;
 	z-index: 0 !important;
 	pointer-events: none;
+	-webkit-transform: translateZ(0);
+	transform: translateZ(0);
 }
 
 .ff-about-hero__cover .wp-block-cover__background {

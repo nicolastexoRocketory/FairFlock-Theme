@@ -175,15 +175,38 @@
 
 .fs-slide-media {
 	position: absolute;
-	inset: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 	z-index: 0;
-	background: center / cover no-repeat;
-	transform: scale(1.06);
+	/* Explicit size — iOS Safari often fails with inset-only empty layers */
+	width: 100%;
+	height: 100%;
+	min-width: 100%;
+	min-height: 100%;
+	box-sizing: border-box;
+	pointer-events: none;
+	/* Longhand only — shorthand would wipe editor background-image */
+	background-color: transparent;
+	background-position: center center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-attachment: scroll;
+	-webkit-background-size: cover;
+	/* Ken Burns (desktop); disabled on touch/mobile below */
+	-webkit-transform: translateZ(0) scale(1.06);
+	transform: translateZ(0) scale(1.06);
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
 	transition: transform 6s linear;
 }
 
-/* Verläufe aus Global Styles (brand / brand-deep / contrast) — keine festen FairFlock-Hex */
-.fs-slide--1 {
+/*
+ * Placeholder gradients — :where() = 0 specificity so Site-Editor images
+ * (inline style or .has-background) always win over these defaults.
+ */
+.fs-slide--1:where(:not([style*="background-image"])) {
 	background:
 		linear-gradient(
 			135deg,
@@ -193,7 +216,7 @@
 		);
 }
 
-.fs-slide--2 {
+.fs-slide--2:where(:not([style*="background-image"])) {
 	background:
 		linear-gradient(
 			160deg,
@@ -203,7 +226,7 @@
 		);
 }
 
-.fs-slide--3 {
+.fs-slide--3:where(:not([style*="background-image"])) {
 	background:
 		linear-gradient(
 			120deg,
@@ -213,7 +236,7 @@
 		);
 }
 
-.fs-slide-media--1 {
+.fs-slide-media--1:where(:not([style*="background-image"]):not(.has-background)) {
 	background-image:
 		linear-gradient(
 			135deg,
@@ -223,7 +246,7 @@
 		);
 }
 
-.fs-slide-media--2 {
+.fs-slide-media--2:where(:not([style*="background-image"]):not(.has-background)) {
 	background-image:
 		linear-gradient(
 			160deg,
@@ -233,7 +256,7 @@
 		);
 }
 
-.fs-slide-media--3 {
+.fs-slide-media--3:where(:not([style*="background-image"]):not(.has-background)) {
 	background-image:
 		linear-gradient(
 			120deg,
@@ -241,10 +264,20 @@
 			var(--fs-ink) 55%,
 			var(--fs-brand) 100%
 		);
+}
+
+/* Editor-set images: keep cover crop reliable (esp. iOS) */
+.fs-slide-media[style*="background-image"],
+.fs-slide-media.has-background {
+	background-size: cover !important;
+	background-position: center center !important;
+	background-repeat: no-repeat !important;
+	background-attachment: scroll !important;
 }
 
 .fs-slide.is-active .fs-slide-media {
-	transform: scale(1.12);
+	-webkit-transform: translateZ(0) scale(1.12);
+	transform: translateZ(0) scale(1.12);
 }
 
 .fs-slide::before {
@@ -613,6 +646,19 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 	background: var(--ff-surface, #fff);
 }
 
+/*
+ * iPhone / touch: Ken Burns + transform breaks background-size:cover paint.
+ * Keep a static, fully filled media layer instead.
+ */
+@media (max-width: 960px), (hover: none) and (pointer: coarse) {
+	.fs-slide-media,
+	.fs-slide.is-active .fs-slide-media {
+		-webkit-transform: none !important;
+		transform: none !important;
+		transition: none !important;
+	}
+}
+
 @media (max-width: 960px) {
 	/*
 	 * Content is end-aligned; without top padding a tall copy block
@@ -631,7 +677,10 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 
 	.fs-slide {
 		position: absolute;
-		inset: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
 		padding-top: 5.5em;
 		box-sizing: border-box;
 	}
@@ -639,9 +688,28 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 	/* Aktiver Slide bestimmt die Höhe — Inhalt + CTA bleiben sichtbar */
 	.fs-slide.is-active {
 		position: relative;
-		inset: auto;
+		top: auto;
+		right: auto;
+		bottom: auto;
+		left: auto;
 		width: 100%;
 		min-height: var(--ff-hero-vh, 80vh);
+		isolation: isolate;
+	}
+
+	/*
+	 * WebKit: abspos media inside a min-height (not height) parent can
+	 * collapse — force a definite fill against the active slide box.
+	 */
+	.fs-slide.is-active .fs-slide-media {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		min-height: 100%;
 	}
 
 	.fs-slide-inner,
@@ -724,6 +792,8 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 	.strip-track {
 		transition: none !important;
 		animation: none !important;
+		-webkit-transform: none !important;
+		transform: none !important;
 	}
 }
 

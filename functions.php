@@ -42,6 +42,7 @@ require_once FAIRFLOCK_DIR . '/inc/csv-import.php';
 require_once FAIRFLOCK_DIR . '/inc/product-modal.php';
 require_once FAIRFLOCK_DIR . '/inc/account-popup.php';
 require_once FAIRFLOCK_DIR . '/inc/product-personalization.php';
+require_once FAIRFLOCK_DIR . '/inc/product-table.php';
 require_once FAIRFLOCK_DIR . '/inc/password-protection.php';
 require_once FAIRFLOCK_DIR . '/inc/unsplash-credit.php';
 require_once FAIRFLOCK_DIR . '/inc/theme-info.php';

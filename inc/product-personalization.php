@@ -335,7 +335,11 @@ function fairflock_get_personalization_markup( $product, $id_suffix = '' ) {
 		echo '<div class="ff-personalization__panel ff-personalization__panel--upload"' . ( $both ? ' data-ff-panel="upload"' : '' ) . '>';
 		echo '<p class="ff-personalization__field ff-personalization__field--upload">';
 		echo '<label for="' . esc_attr( $uid_file ) . '">' . esc_html( $labels['upload_label'] ) . '</label>';
-		echo '<input type="file" id="' . esc_attr( $uid_file ) . '" name="fairflock_logo_upload" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" />';
+		echo '<span class="ff-personalization__file">';
+		echo '<input type="file" class="ff-personalization__file-input" id="' . esc_attr( $uid_file ) . '" name="fairflock_logo_upload" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" />';
+		echo '<span class="ff-personalization__file-name" data-ff-file-name data-empty="' . esc_attr__( 'Keine Datei ausgewählt', 'fairflock' ) . '">' . esc_html__( 'Keine Datei ausgewählt', 'fairflock' ) . '</span>';
+		echo '<button type="button" class="ff-personalization__file-change" data-ff-file-pick>' . esc_html__( 'Datei auswählen', 'fairflock' ) . '</button>';
+		echo '</span>';
 		if ( '' !== $labels['upload_hint'] ) {
 			echo '<span class="ff-personalization__note">' . esc_html( $labels['upload_hint'] ) . '</span>';
 		}
@@ -406,11 +410,29 @@ window.fairflockInitPersonalization=function(root){
     form.setAttribute("enctype","multipart/form-data");
     form.setAttribute("encoding","multipart/form-data");
   }
+  var fileInput=root.querySelector('input[name="fairflock_logo_upload"]');
+  var fileWrap=fileInput?fileInput.closest(".ff-personalization__file"):null;
+  var fileName=fileWrap?fileWrap.querySelector("[data-ff-file-name]"):null;
+  var fileBtn=fileWrap?fileWrap.querySelector("[data-ff-file-pick]"):null;
+  function syncFile(){
+    if(!fileInput||!fileWrap){return;}
+    var file=fileInput.files&&fileInput.files[0];
+    var chosen=!!(file&&file.name);
+    var empty=fileName?fileName.getAttribute("data-empty"):"";
+    fileWrap.classList.toggle("is-chosen",chosen);
+    if(fileName){fileName.textContent=chosen?file.name:empty;}
+    if(fileBtn){fileBtn.textContent=chosen?"ändern":"Datei auswählen";}
+  }
+  if(fileInput&&fileBtn&&!fileInput.getAttribute("data-ff-file-bound")){
+    fileInput.setAttribute("data-ff-file-bound","1");
+    fileBtn.addEventListener("click",function(){fileInput.click();});
+    fileInput.addEventListener("change",syncFile);
+  }
+  syncFile();
   if(!root.getAttribute("data-ff-both")){return;}
   var radios=root.querySelectorAll('input[name="fairflock_personalization_mode"]');
   var panelUpload=root.querySelector('[data-ff-panel="upload"]');
   var panelText=root.querySelector('[data-ff-panel="text"]');
-  var fileInput=root.querySelector('input[name="fairflock_logo_upload"]');
   var textInput=root.querySelector('input[name="fairflock_personal_text"]');
   function setMode(mode){
     radios.forEach(function(r){
@@ -423,7 +445,7 @@ window.fairflockInitPersonalization=function(root){
       if(textInput){textInput.value="";textInput.disabled=true;}
       if(fileInput){fileInput.disabled=false;}
     }else{
-      if(fileInput){fileInput.value="";fileInput.disabled=true;}
+      if(fileInput){fileInput.value="";fileInput.disabled=true;syncFile();}
       if(textInput){textInput.disabled=false;}
     }
   }
@@ -553,6 +575,7 @@ function fairflock_store_api_product_personalization_data( $product ) {
 		'personal_text'  => $text,
 		'enabled'        => ( $upload || $text ),
 		'markup'         => ( $upload || $text ) ? fairflock_get_personalization_markup( $product, '_modal' ) : '',
+		'table_html'     => function_exists( 'fairflock_product_table_markup' ) ? fairflock_product_table_markup( $product ) : '',
 	);
 }
 
@@ -589,7 +612,64 @@ function fairflock_store_api_product_personalization_schema() {
 			'context'     => array( 'view', 'edit' ),
 			'readonly'    => true,
 		),
+		'table_html'    => array(
+			'description' => __( 'Product table HTML shown under the description', 'fairflock' ),
+			'type'        => 'string',
+			'context'     => array( 'view', 'edit' ),
+			'readonly'    => true,
+		),
 	);
+}
+
+/**
+ * Variation id posted with a personalized add, only if it belongs to the product.
+ *
+ * @since 0.9.272
+ *
+ * @param WP_REST_Request $request   Request.
+ * @param int             $parent_id Parent product id.
+ * @return int
+ */
+function fairflock_personalization_variation_id( $request, $parent_id ) {
+	$variation_id = absint( $request->get_param( 'variation_id' ) );
+	if ( ! $variation_id || ! function_exists( 'wc_get_product' ) ) {
+		return 0;
+	}
+
+	$variation = wc_get_product( $variation_id );
+	if ( ! $variation || ! $variation->is_type( 'variation' ) ) {
+		return 0;
+	}
+
+	if ( (int) $variation->get_parent_id() !== (int) $parent_id ) {
+		return 0;
+	}
+
+	return $variation_id;
+}
+
+/**
+ * Attribute map Woo expects when a variation is added to the cart.
+ *
+ * @since 0.9.272
+ *
+ * @param WP_REST_Request $request   Request.
+ * @param int             $parent_id Parent product id.
+ * @return array<string, string>
+ */
+function fairflock_personalization_variation_attrs( $request, $parent_id ) {
+	$variation_id = fairflock_personalization_variation_id( $request, $parent_id );
+	if ( ! $variation_id ) {
+		return array();
+	}
+
+	$variation = wc_get_product( $variation_id );
+	if ( ! $variation || ! method_exists( $variation, 'get_variation_attributes' ) ) {
+		return array();
+	}
+
+	$attrs = $variation->get_variation_attributes();
+	return is_array( $attrs ) ? $attrs : array();
 }
 
 /**
@@ -655,9 +735,12 @@ function fairflock_rest_add_personalized_to_cart( $request ) {
 	}
 
 	$cart_item_data = array();
-	$cart_item_data = apply_filters( 'woocommerce_add_cart_item_data', $cart_item_data, $product_id, 0, $quantity );
 
-	$key = WC()->cart->add_to_cart( $product_id, $quantity, 0, array(), $cart_item_data );
+	if ( WC()->cart && ! did_action( 'woocommerce_load_cart_from_session' ) ) {
+		WC()->cart->get_cart();
+	}
+
+	$key = WC()->cart->add_to_cart( $product_id, $quantity, fairflock_personalization_variation_id( $request, $product_id ), fairflock_personalization_variation_attrs( $request, $product_id ), $cart_item_data );
 	if ( ! $key ) {
 		$notices = wc_get_notices( 'error' );
 		wc_clear_notices();
@@ -838,6 +921,10 @@ function fairflock_personalization_handle_upload( $file ) {
 		'mimes'     => fairflock_personalization_allowed_mimes(),
 	);
 
+	if ( ! function_exists( 'wp_handle_upload' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+	}
+
 	$movefile = wp_handle_upload( $file, $overrides );
 
 	remove_filter( 'upload_dir', 'fairflock_personalization_filter_upload_dir' );
@@ -946,9 +1033,10 @@ function fairflock_personalization_add_cart_item_data( $cart_item_data, $product
 			wc_add_notice( $uploaded->get_error_message(), 'error' );
 			return $cart_item_data;
 		}
+		$original_name = isset( $_FILES['fairflock_logo_upload']['name'] ) ? sanitize_file_name( wp_unslash( $_FILES['fairflock_logo_upload']['name'] ) ) : '';
 		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_PATH ]  = $uploaded['file'];
 		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_URL ]   = $uploaded['url'];
-		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_NAME ]  = $uploaded['name'];
+		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_NAME ]  = $original_name ? $original_name : $uploaded['name'];
 		$cart_item_data[ FAIRFLOCK_CART_UPLOAD_LABEL ] = $labels['upload_label'];
 		$cart_item_data['unique_key']                  = md5( microtime() . $uploaded['file'] );
 	}

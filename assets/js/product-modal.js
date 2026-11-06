@@ -37,6 +37,85 @@
 		var galleryIndex = 0;
 		var galleryImages = [];
 		var currentProduct = null;
+		var selectedOptions = {};
+
+		function variationAttrs(p) {
+			if (!p || !Array.isArray(p.attributes)) return [];
+			return p.attributes.filter(function (attr) {
+				return attr && attr.has_variations && Array.isArray(attr.terms) && attr.terms.length;
+			});
+		}
+
+		function renderSizePicker(p) {
+			var attrs = variationAttrs(p);
+			if (!attrs.length || !Array.isArray(p.variations) || !p.variations.length) return "";
+			selectedOptions = {};
+			return attrs
+				.map(function (attr, index) {
+					var labelId = "ffSizeLabel" + index;
+					var buttons = attr.terms
+						.map(function (term) {
+							var label = term.name || term.slug || "";
+							var value = term.slug || label;
+							if (!label) return "";
+							if (term.default || attr.terms.length === 1) {
+								selectedOptions[attr.name] = value;
+							}
+							var on = selectedOptions[attr.name] === value;
+							return (
+								'<button type="button" class="ff-product-modal__size' +
+								(on ? " is-selected" : "") +
+								'" data-ff-size-attr="' +
+								escapeHtml(attr.name) +
+								'" data-ff-size-value="' +
+								escapeHtml(value) +
+								'" aria-pressed="' +
+								(on ? "true" : "false") +
+								'">' +
+								escapeHtml(label) +
+								"</button>"
+							);
+						})
+						.filter(Boolean)
+						.join("");
+					if (!buttons) return "";
+					return (
+						'<div class="ff-product-modal__sizes">' +
+						'<p class="ff-product-modal__sizes-label" id="' +
+						labelId +
+						'">' +
+						escapeHtml(attr.name) +
+						"</p>" +
+						'<div class="ff-product-modal__sizes-options" role="group" aria-labelledby="' +
+						labelId +
+						'">' +
+						buttons +
+						"</div></div>"
+					);
+				})
+				.filter(Boolean)
+				.join("");
+		}
+
+		function selectedVariationId(p) {
+			var attrs = variationAttrs(p);
+			if (!attrs.length) return 0;
+			var missing = attrs.some(function (attr) {
+				return !selectedOptions[attr.name];
+			});
+			if (missing) return 0;
+			var found = (p.variations || []).find(function (variation) {
+				return attrs.every(function (attr) {
+					var chosen = selectedOptions[attr.name];
+					var row = (variation.attributes || []).find(function (item) {
+						return item && item.name === attr.name;
+					});
+					if (!row || row.value == null || row.value === "") return true;
+					return String(row.value) === String(chosen);
+				});
+			});
+			return found ? Number(found.id) : 0;
+		}
 
 		function escapeHtml(s) {
 			return String(s).replace(/[&<>"']/g, function (c) {
@@ -297,7 +376,7 @@
 						: attr.options
 						? (Array.isArray(attr.options) ? attr.options : []).join(", ")
 						: "";
-					if (!name || !terms) return "";
+					if (!name || !terms || attr.has_variations) return "";
 					return renderMetaRow(name, escapeHtml(terms));
 				})
 				.filter(Boolean)
@@ -387,12 +466,45 @@
 					? " is-backorder"
 					: " is-in";
 			return (
-				'<p class="ff-product-modal__availability' +
+				'<span class="ff-product-modal__fact' +
 				cls +
 				'">' +
+				'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3.5 8 12 4l8.5 4v8L12 20l-8.5-4V8z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M12 12.2 20.5 8M12 12.2V20M12 12.2 3.5 8" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></svg>' +
 				escapeHtml(text) +
-				"</p>"
+				"</span>"
 			);
+		}
+
+		function deliveryLabel(p) {
+			var raw = String(p.short_description || "")
+				.replace(/<[^>]+>/g, " ")
+				.replace(/&nbsp;/g, " ")
+				.replace(/\s+/g, " ");
+			var match = raw.match(/Lieferzeit\s+([0-9]+\s*[–\-]\s*[0-9]+|[0-9]+)/i);
+			if (match) {
+				var span = match[1].replace(/\s+/g, "").replace(/-/g, "–");
+				return "Lieferung in " + span + " Tagen";
+			}
+			if (/sofort/i.test(raw)) {
+				return "Lieferung in 1–2 Tagen";
+			}
+			return "";
+		}
+
+		function renderFacts(p) {
+			var stock = renderStock(p);
+			var delivery = deliveryLabel(p);
+			if (!stock && !delivery) return "";
+			var ship = delivery
+				? (stock
+						? '<span class="ff-product-modal__fact-rule" aria-hidden="true"></span>'
+						: "") +
+				  '<span class="ff-product-modal__fact">' +
+				  '<svg viewBox="0 0 24 24" width="18" height="16" aria-hidden="true"><path d="M2.5 7.5h11v7.5h-11z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M13.5 10.5h4.2L21 14v1.5h-7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><circle cx="6.5" cy="17.2" r="1.5" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="17" cy="17.2" r="1.5" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>' +
+				  escapeHtml(delivery) +
+				  "</span>"
+				: "";
+			return '<p class="ff-product-modal__facts">' + stock + ship + "</p>";
 		}
 
 		function renderRating(p) {
@@ -418,7 +530,8 @@
 			var ext = (p && p.extensions && p.extensions.fairflock) || {};
 			return {
 				enabled: !!ext.enabled,
-				markup: typeof ext.markup === "string" ? ext.markup : ""
+				markup: typeof ext.markup === "string" ? ext.markup : "",
+				tableHtml: typeof ext.table_html === "string" ? ext.table_html : ""
 			};
 		}
 
@@ -430,16 +543,16 @@
 			var showLong =
 				longDesc &&
 				longDesc.replace(/\s+/g, "") !== String(shortDesc).replace(/\s+/g, "");
-			var btnText =
-				(p.add_to_cart && (p.add_to_cart.single_text || p.add_to_cart.text)) ||
-				"In den Warenkorb";
 			var purchasable = p.is_purchasable !== false && p.is_in_stock !== false;
+			var sizePicker = renderSizePicker(p);
 			var hasOptions = !!p.has_options || (Array.isArray(p.variations) && p.variations.length > 0);
+			var canChooseHere = !!sizePicker;
 			var personalization = getPersonalization(p);
 			var personalizationHtml =
-				!hasOptions && personalization.enabled && personalization.markup
+				(!hasOptions || canChooseHere) && personalization.enabled && personalization.markup
 					? personalization.markup
 					: "";
+			var startsCollapsed = personalization.enabled && !!personalizationHtml;
 
 			var factsRows =
 				renderCategories(p.categories) +
@@ -459,53 +572,82 @@
 				  "</dl>"
 				: "";
 
-			var optionsNote = hasOptions
-				? '<p class="ff-product-modal__note">Varianten und Optionen wählst du auf der Produktseite.</p>'
+			var optionsNote =
+				hasOptions && !canChooseHere
+					? '<p class="ff-product-modal__note">Varianten und Optionen wählst du auf der Produktseite.</p>'
+					: "";
+
+			var descriptionBody = showLong ? longDesc : shortDesc;
+			var descriptionHtml =
+				descriptionBody || personalization.tableHtml
+					? '<div class="ff-product-modal__description">' +
+					  (descriptionBody || "") +
+					  personalization.tableHtml +
+					  "</div>"
+					: "";
+
+			var detailsInner =
+				topMeta +
+				(showLong && shortDesc ? '<div class="ff-product-modal__excerpt">' + shortDesc + "</div>" : "") +
+				renderAttributes(p.attributes) +
+				facts +
+				optionsNote;
+			var details = detailsInner
+				? '<div class="ff-product-modal__details">' + detailsInner + "</div>"
 				: "";
+
+			var headHtml =
+				'<div class="ff-product-modal__head">' +
+				'<h2 id="ffProductTitle" class="ff-product-modal__title">' +
+				safeText(p.name || "") +
+				"</h2>" +
+				renderRating(p) +
+				renderPriceBlock(p) +
+				renderFacts(p) +
+				"</div>";
 
 			bodyEl.innerHTML =
 				'<div class="ff-product-modal__grid">' +
 				renderGallery(images) +
 				'<div class="ff-product-modal__copy">' +
 				'<div class="ff-product-modal__scroll">' +
-				'<h2 id="ffProductTitle" class="ff-product-modal__title">' +
-				safeText(p.name || "") +
-				"</h2>" +
-				renderRating(p) +
-				renderPriceBlock(p) +
-				renderStock(p) +
-				topMeta +
-				renderAttributes(p.attributes) +
-				(shortDesc ? '<div class="ff-product-modal__excerpt">' + shortDesc + "</div>" : "") +
-				(showLong
-					? '<div class="ff-product-modal__description"><h3 class="ff-product-modal__section-title">Beschreibung</h3>' +
-					  longDesc +
-					  "</div>"
-					: "") +
-				facts +
-				optionsNote +
+				descriptionHtml +
+				details +
 				"</div>" +
-				'<div class="ff-product-modal__actions">' +
+				'<div class="ff-product-modal__actions' +
+				(startsCollapsed ? " is-collapsed" : "") +
+				'">' +
+				(startsCollapsed
+					? '<button type="button" class="ff-product-modal__collapse" data-ff-collapse aria-expanded="false" aria-label="Konfiguration einklappen">' +
+					  '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+					  "</button>"
+					: "") +
+				'<div class="ff-product-modal__config">' +
+				headHtml +
+				sizePicker +
 				(personalizationHtml
 					? '<div class="ff-product-modal__personalization">' + personalizationHtml + "</div>"
 					: "") +
-				(purchasable && !hasOptions
+				(!purchasable && !hasOptions
+					? '<p class="ff-product-modal__stock">Derzeit nicht verfügbar</p>'
+					: "") +
+				'<div class="ff-product-modal__buttons">' +
+				(purchasable && (!hasOptions || canChooseHere)
 					? '<button type="button" class="ff-product-modal__cart" data-ff-add-id="' +
 					  String(p.id) +
 					  '"' +
 					  (personalization.enabled ? ' data-ff-personalized="1"' : "") +
-					  ">" +
-					  escapeHtml(btnText) +
-					  "</button>"
-					: hasOptions
-					? ""
-					: '<p class="ff-product-modal__stock">Derzeit nicht verfügbar</p>') +
+					  ">Hinzufügen</button>"
+					: "") +
 				'<a class="ff-product-modal__full" href="' +
 				escapeHtml(p.permalink || "#") +
-				'">' +
-				(hasOptions ? "Optionen wählen →" : "Zur Produktseite →") +
-				"</a>" +
+				'">Zur Seite</a>' +
+				"</div>" +
 				'<p class="ff-product-modal__status" id="ffProductStatus" hidden></p>' +
+				"</div>" +
+				(startsCollapsed
+					? '<button type="button" class="ff-product-modal__configure" data-ff-configure>Konfigurieren</button>'
+					: "") +
 				"</div>" +
 				"</div></div>";
 
@@ -531,6 +673,7 @@
 			galleryImages = [];
 			galleryIndex = 0;
 			currentProduct = null;
+			selectedOptions = {};
 		}
 
 		function loadProduct(slug) {
@@ -628,6 +771,14 @@
 			var fd = new FormData();
 			fd.append("id", String(productId));
 			fd.append("quantity", "1");
+			if (currentProduct && variationAttrs(currentProduct).length) {
+				var variationId = selectedVariationId(currentProduct);
+				if (!variationId) {
+					setStatus(missingSizeMessage(currentProduct), true);
+					return;
+				}
+				fd.append("variation_id", String(variationId));
+			}
 
 			if (root) {
 				var modeInput = root.querySelector('input[name="fairflock_personalization_mode"]:checked');
@@ -674,10 +825,12 @@
 					finishAddSuccess();
 				})
 				.catch(function (e) {
-					setStatus(
-						(e && e.message) || "Leider nicht hinzugefügt. Bitte erneut versuchen.",
-						true
-					);
+					var msg = (e && e.message) || "";
+					msg = msg.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+					if (!msg || /kritischer Fehler/i.test(msg)) {
+						msg = "Leider nicht hinzugefügt. Bitte erneut versuchen.";
+					}
+					setStatus(msg, true);
 				})
 				.finally(function () {
 					if (btn) {
@@ -687,8 +840,29 @@
 				});
 		}
 
+		function missingSizeMessage(p) {
+			var names = variationAttrs(p)
+				.filter(function (attr) {
+					return !selectedOptions[attr.name];
+				})
+				.map(function (attr) {
+					return attr.name;
+				});
+			if (!names.length) return "Diese Kombination ist nicht verfügbar.";
+			return "Bitte " + names.join(" und ") + " wählen.";
+		}
+
 		function addToCart(productId, btn) {
 			setStatus("");
+			var cartId = Number(productId);
+			if (currentProduct && variationAttrs(currentProduct).length) {
+				cartId = selectedVariationId(currentProduct);
+				if (!cartId) {
+					setStatus(missingSizeMessage(currentProduct), true);
+					return;
+				}
+			}
+
 			if (btn && btn.getAttribute("data-ff-personalized") === "1") {
 				addPersonalizedToCart(productId, btn);
 				return;
@@ -712,7 +886,7 @@
 						method: "POST",
 						credentials: "same-origin",
 						headers: headers,
-						body: JSON.stringify({ id: Number(productId), quantity: 1 })
+						body: JSON.stringify({ id: cartId, quantity: 1 })
 					});
 				})
 				.then(function (res) {
@@ -752,6 +926,47 @@
 				if (thumb && layer.contains(thumb)) {
 					e.preventDefault();
 					setGalleryIndex(Number(thumb.getAttribute("data-ff-thumb")));
+					return;
+				}
+
+				var configureBtn = e.target.closest && e.target.closest("[data-ff-configure]");
+				if (configureBtn && layer.contains(configureBtn)) {
+					e.preventDefault();
+					var openPanel = configureBtn.closest(".ff-product-modal__actions");
+					if (openPanel) {
+						openPanel.classList.remove("is-collapsed");
+						var openToggle = openPanel.querySelector("[data-ff-collapse]");
+						if (openToggle) openToggle.setAttribute("aria-expanded", "true");
+					}
+					return;
+				}
+
+				var collapseBtn = e.target.closest && e.target.closest("[data-ff-collapse]");
+				if (collapseBtn && layer.contains(collapseBtn)) {
+					e.preventDefault();
+					var closePanel = collapseBtn.closest(".ff-product-modal__actions");
+					if (closePanel) {
+						closePanel.classList.add("is-collapsed");
+						collapseBtn.setAttribute("aria-expanded", "false");
+					}
+					return;
+				}
+
+				var sizeBtn = e.target.closest && e.target.closest("[data-ff-size-value]");
+				if (sizeBtn && layer.contains(sizeBtn)) {
+					e.preventDefault();
+					var attrName = sizeBtn.getAttribute("data-ff-size-attr");
+					var attrValue = sizeBtn.getAttribute("data-ff-size-value");
+					if (attrName) selectedOptions[attrName] = attrValue;
+					var group = sizeBtn.parentElement;
+					if (group) {
+						group.querySelectorAll(".ff-product-modal__size").forEach(function (button) {
+							var on = button === sizeBtn;
+							button.classList.toggle("is-selected", on);
+							button.setAttribute("aria-pressed", on ? "true" : "false");
+						});
+					}
+					setStatus("");
 					return;
 				}
 

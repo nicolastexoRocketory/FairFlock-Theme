@@ -20,6 +20,120 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.286',
+			'items'   => array(
+				__( 'Produkttabelle: Umlaute wie „Größe“ bleiben auf der Produktseite erhalten.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.285',
+			'items'   => array(
+				__( 'FairFlock → Produkte: Tabellenvorlagen, die man am Produkt auswählen kann.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.284',
+			'items'   => array(
+				__( 'Produkttabelle: bis zu 16 Spalten, breite Tabellen lassen sich seitlich scrollen.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.283',
+			'items'   => array(
+				__( 'Produkt-Popup: „Konfigurieren“ nur, wenn die Personalisierung am Produkt aktiv ist.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.282',
+			'items'   => array(
+				__( 'Produkttabelle im Backend: kompakte Tabelle statt großer Einzelfelder.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.281',
+			'items'   => array(
+				__( 'Produkt-Popup: Konfiguration startet eingeklappt, Lager und Lieferzeit stehen als Textzeile.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.280',
+			'items'   => array(
+				__( 'Druckmotiv: neben der angehängten Datei steht „ändern“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.279',
+			'items'   => array(
+				__( 'Produkt-Popup: Name, Preis und Lagerstatus stehen über der Personalisierung.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.278',
+			'items'   => array(
+				__( 'Produkte: Tabelle im Produktdaten-Bereich, Anzeige direkt unter der Beschreibung.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.277',
+			'items'   => array(
+				__( 'Bestellübersicht: angehängte Datei steht beim zugehörigen Produkt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.276',
+			'items'   => array(
+				__( 'Produktbeschreibung: Leerzeilen aus dem Editor bleiben als Abstand sichtbar.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.275',
+			'items'   => array(
+				__( 'Produkt-Popup: Druckmotiv-Upload legt das Produkt in den Warenkorb, statt einen kritischen Fehler zu zeigen.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.274',
+			'items'   => array(
+				__( 'Produkt-Popup: Bilder links untereinander scrollbar, Slideshow nur auf Mobil.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.273',
+			'items'   => array(
+				__( 'Produkt-Popup: Hinzufügen mit Warenkorb-Icon und Zur Seite in einer Zeile.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.272',
+			'items'   => array(
+				__( 'Produkt-Popup: Größen direkt wählbar, Fenster bis 90 Prozent der Bildschirmhöhe.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.271',
+			'items'   => array(
+				__( 'Produkt-Popup: Titel, Preis und Lagerstatus in einer Karte, Beschreibung ohne Überschrift, weitere Angaben darunter.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.270',
+			'items'   => array(
+				__( 'Shop: Ansicht ist ein Button, die Spaltenzahl öffnet sich als Menü.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.269',
+			'items'   => array(
+				__( 'Shop: Ansicht neben der Sortierung, Produkte pro Zeile wählbar (2–5).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.268',
+			'items'   => array(
+				__( 'Formular im Backend: übersichtliche Karten statt der überladenen Feldtabelle.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.267',
 			'items'   => array(
 				__( 'Produkt-Popup: Bild immer vollständig sichtbar (nicht beschnitten).', 'fairflock' ),

@@ -46,7 +46,8 @@ function fairflock_form_admin_menu() {
 
 add_action( 'admin_enqueue_scripts', 'fairflock_form_admin_assets' );
 function fairflock_form_admin_assets( $hook ) {
-	if ( ! in_array( $hook, array( 'fairflock-setup_page_fairflock-formular', 'fairflock-setup_page_fairflock-form-eintraege' ), true ) ) {
+	$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+	if ( ! in_array( $page, array( 'fairflock-formular', 'fairflock-form-eintraege' ), true ) ) {
 		return;
 	}
 	wp_enqueue_script( 'jquery' );
@@ -58,36 +59,56 @@ function fairflock_form_admin_assets( $hook ) {
 function fairflock_form_admin_css() {
 	?>
 	<style>
-	.ff-form-admin { max-width: 920px; }
-	.ff-form-admin-intro { background:#fff; border-left:4px solid #377530; padding:12px 16px; margin:14px 0 20px; font-size:13.5px; line-height:1.6; }
-	.ff-form-acc { background:#fff; border:1px solid #dcdcde; margin-bottom:12px; overflow:hidden; }
-	.ff-form-acc-summary { cursor:pointer; list-style:none; padding:14px 18px; font-size:14px; font-weight:600; background:#fafafa; display:flex; justify-content:space-between; align-items:center; }
-	.ff-form-acc-summary::-webkit-details-marker { display:none; }
-	.ff-form-acc-summary::after { content:"▾"; color:#787c82; }
-	.ff-form-acc[open] .ff-form-acc-summary::after { transform:rotate(180deg); }
-	.ff-form-acc-body { padding:18px 20px; border-top:1px solid #dcdcde; }
-	.ff-form-field { margin-bottom:16px; }
-	.ff-form-field label { display:block; font-weight:600; font-size:13px; margin-bottom:6px; }
-	.ff-form-field input[type=text], .ff-form-field input[type=email], .ff-form-field input[type=number], .ff-form-field input[type=password], .ff-form-field select, .ff-form-field textarea { width:100%; max-width:640px; padding:8px 10px; border:1px solid #8c8f94; font-size:13.5px; }
-	.ff-form-hint { font-weight:400; color:#787c82; font-size:12px; margin-left:6px; }
-	.ff-form-save-bar { position:sticky; bottom:10px; z-index:10; background:#fff; padding:12px 16px; border:1px solid #dcdcde; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.08); }
-	.ff-form-fields-table { border:1px solid #c3c4c7; overflow:hidden; background:#fff; }
-	.ff-form-fields-head, .ff-form-field-row {
-		display:grid;
-		grid-template-columns:24px 1.1fr 0.9fr 0.8fr 0.55fr 0.9fr 0.7fr 1.1fr 28px;
-		gap:8px; align-items:start; padding:8px 10px;
-	}
-	.ff-form-fields-head { background:#f0f0f1; font-size:11px; font-weight:700; text-transform:uppercase; border-bottom:1px solid #c3c4c7; }
-	.ff-form-field-row { border-bottom:1px solid #e2e4e7; }
-	.ff-form-field-row:last-child { border-bottom:none; }
-	.ff-form-field-row input, .ff-form-field-row select, .ff-form-field-row textarea { width:100%; padding:6px 8px; border:1px solid #8c8f94; font-size:12.5px; }
-	.ff-form-field-row textarea { min-height:52px; resize:vertical; }
-	.ff-form-drag { cursor:grab; color:#8c8f94; text-align:center; }
-	.ff-form-remove { background:none; border:none; color:#b32d2e; cursor:pointer; font-size:16px; }
-	@media (max-width:960px) {
-		.ff-form-fields-head { display:none; }
-		.ff-form-field-row { grid-template-columns:24px 1fr 28px; grid-template-rows:auto; }
-		.ff-form-field-row > *:not(.ff-form-drag):not(.ff-form-remove) { grid-column:2; }
+	.ff-form-admin, .ff-form-admin * { box-sizing: border-box; }
+	.ff-form-admin { max-width: 880px; }
+	.ff-form-lead { margin: 6px 0 0; max-width: 62ch; color: #50575e; font-size: 14px; line-height: 1.55; }
+	.ff-form-overview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 18px 0 20px; }
+	.ff-form-overview article { background: #fff; border: 1px solid #dcdcde; border-top: 3px solid #c3c4c7; padding: 16px 18px; min-width: 0; }
+	.ff-form-overview article.is-ok { border-top-color: #377530; }
+	.ff-form-overview article.is-warn { border-top-color: #dba617; }
+	.ff-form-kicker { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #646970; }
+	.ff-form-overview h2 { margin: 0 0 6px; font-size: 16px; font-weight: 600; line-height: 1.35; color: #1d2327; overflow-wrap: anywhere; }
+	.ff-form-overview p { margin: 0; color: #50575e; font-size: 13px; line-height: 1.5; }
+	.ff-form-overview a { display: inline-block; margin-top: 8px; }
+	.ff-form-acc { background: #fff; border: 1px solid #dcdcde; margin-bottom: 12px; }
+	.ff-form-acc-summary { cursor: pointer; list-style: none; padding: 14px 18px; background: #f6f7f7; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+	.ff-form-acc-summary::-webkit-details-marker { display: none; }
+	.ff-form-acc-summary::after { content: "▾"; color: #787c82; flex: none; }
+	.ff-form-acc[open] .ff-form-acc-summary::after { transform: rotate(180deg); }
+	.ff-form-acc-title { display: block; font-size: 15px; font-weight: 600; color: #1d2327; }
+	.ff-form-acc-lead { display: block; margin-top: 2px; font-size: 13px; font-weight: 400; color: #646970; line-height: 1.4; }
+	.ff-form-acc-body { padding: 18px 20px 8px; border-top: 1px solid #dcdcde; }
+	.ff-form-field { margin-bottom: 16px; }
+	.ff-form-field > label, .ff-form-field > .ff-form-label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #1d2327; }
+	.ff-form-field input[type=text], .ff-form-field input[type=email], .ff-form-field input[type=number], .ff-form-field input[type=password], .ff-form-field select, .ff-form-field textarea { width: 100%; max-width: 100%; padding: 8px 10px; border: 1px solid #8c8f94; border-radius: 2px; font-size: 14px; line-height: 1.4; background: #fff; }
+	.ff-form-field textarea { min-height: 72px; resize: vertical; }
+	.ff-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
+	.ff-form-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+	.ff-form-hint { font-weight: 400; color: #646970; font-size: 12px; }
+	.ff-form-note { margin: 0 0 16px; padding: 10px 12px; background: #f6f7f7; border-left: 3px solid #377530; color: #1d2327; font-size: 13px; line-height: 1.5; }
+	.ff-form-check { display: flex; align-items: flex-start; gap: 8px; font-weight: 600; font-size: 14px; line-height: 1.4; }
+	.ff-form-field > label.ff-form-check { display: flex; margin-bottom: 0; }
+	.ff-form-check input { margin: 3px 0 0; }
+	.ff-form-save-bar { position: sticky; bottom: 10px; z-index: 10; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: #fff; padding: 12px 16px; border: 1px solid #dcdcde; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+	.ff-form-fields { border: 1px solid #dcdcde; background: #fff; }
+	.ff-form-field-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) 36px; gap: 8px; align-items: start; padding: 14px 12px; border-bottom: 1px solid #e2e4e7; }
+	.ff-form-field-row:last-child { border-bottom: none; }
+	.ff-form-field-card { display: grid; gap: 12px; min-width: 0; }
+	.ff-form-field-line { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+	.ff-form-field-line--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+	.ff-form-field-card label { display: flex; flex-direction: column; gap: 4px; min-width: 0; font-size: 12px; font-weight: 600; color: #1d2327; }
+	.ff-form-field-card input, .ff-form-field-card select, .ff-form-field-card textarea { width: 100%; max-width: none; padding: 8px 10px; border: 1px solid #8c8f94; border-radius: 2px; font-size: 14px; font-weight: 400; background: #fff; }
+	.ff-form-field-card textarea { min-height: 72px; resize: vertical; }
+	.ff-form-field-card label.ff-form-field-options { display: none; }
+	.ff-form-field-row.is-choice .ff-form-field-card label.ff-form-field-options { display: flex; }
+	.ff-form-field-key { max-width: 280px; }
+	.ff-form-drag { cursor: grab; color: #8c8f94; text-align: center; padding-top: 22px; font-size: 16px; line-height: 1; }
+	.ff-form-remove { background: none; border: none; color: #b32d2e; cursor: pointer; font-size: 18px; line-height: 1; padding: 22px 4px 0; }
+	.ff-form-add-field { margin-top: 12px; }
+	@media (max-width: 782px) {
+		.ff-form-overview, .ff-form-grid, .ff-form-grid--3, .ff-form-field-line, .ff-form-field-line--3 { grid-template-columns: 1fr; }
+		.ff-form-field-row { grid-template-columns: 28px minmax(0, 1fr); }
+		.ff-form-remove { grid-column: 2; padding-top: 0; text-align: left; }
 	}
 	.ff-form-entries-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #c3c4c7; }
 	.ff-form-entries-table th, .ff-form-entries-table td { padding:10px 12px; text-align:left; border-bottom:1px solid #e2e4e7; font-size:13px; vertical-align:top; }
@@ -110,6 +131,10 @@ function fairflock_form_admin_js() {
 	?>
 	<script>
 	jQuery(function($){
+		function syncChoice(row){
+			var type = row.find('select[name*="[type]"]').val();
+			row.toggleClass('is-choice', type === 'select');
+		}
 		function initSortable(){
 			$('#ff-form-fields-list').sortable({
 				handle: '.ff-form-drag',
@@ -118,6 +143,12 @@ function fairflock_form_admin_js() {
 			});
 		}
 		initSortable();
+		$('#ff-form-fields-list .ff-form-field-row').each(function(){
+			syncChoice($(this));
+		});
+		$(document).on('change', 'select[name*="[type]"]', function(){
+			syncChoice($(this).closest('.ff-form-field-row'));
+		});
 		$(document).on('click', '.ff-form-add-field', function(){
 			var tpl = document.getElementById('ff-form-field-template');
 			if (!tpl) return;
@@ -145,34 +176,56 @@ function fairflock_form_admin_field_row( $row = array() ) {
 			'width'       => 'full',
 		)
 	);
+	$choice = 'select' === $row['type'] ? ' is-choice' : '';
+	$types  = array(
+		'text'     => 'Text',
+		'email'    => 'E-Mail',
+		'tel'      => 'Telefon',
+		'textarea' => 'Mehrzeilig',
+		'select'   => 'Auswahl',
+		'checkbox' => 'Checkbox',
+	);
 	?>
-	<div class="ff-form-field-row">
-		<span class="ff-form-drag" title="Ziehen">⠿</span>
-		<input type="text" name="fairflock_form[fields][label][]" value="<?php echo esc_attr( $row['label'] ); ?>" placeholder="Bezeichnung">
-		<input type="text" name="fairflock_form[fields][name][]" value="<?php echo esc_attr( $row['name'] ); ?>" placeholder="feldname">
-		<select name="fairflock_form[fields][type][]">
-			<?php
-			$types = array(
-				'text'     => 'Text',
-				'email'    => 'E-Mail',
-				'tel'      => 'Telefon',
-				'textarea' => 'Textarea',
-				'select'   => 'Auswahl',
-				'checkbox' => 'Checkbox',
-			);
-			foreach ( $types as $val => $lbl ) {
-				echo '<option value="' . esc_attr( $val ) . '"' . selected( $row['type'], $val, false ) . '>' . esc_html( $lbl ) . '</option>';
-			}
-			?>
-		</select>
-		<label><select name="fairflock_form[fields][required][]"><option value="0" <?php selected( $row['required'], '0' ); ?>>Nein</option><option value="1" <?php selected( $row['required'], '1' ); ?>>Ja</option></select></label>
-		<input type="text" name="fairflock_form[fields][placeholder][]" value="<?php echo esc_attr( $row['placeholder'] ); ?>" placeholder="Platzhalter">
-		<select name="fairflock_form[fields][width][]">
-			<option value="full" <?php selected( $row['width'], 'full' ); ?>>Volle Breite</option>
-			<option value="half" <?php selected( $row['width'], 'half' ); ?>>Halbe Breite</option>
-		</select>
-		<textarea name="fairflock_form[fields][options][]" placeholder="Optionen (pro Zeile, nur Auswahl)" rows="2"><?php echo esc_textarea( $row['options'] ); ?></textarea>
-		<button type="button" class="ff-form-remove" title="Entfernen">✕</button>
+	<div class="ff-form-field-row<?php echo esc_attr( $choice ); ?>">
+		<span class="ff-form-drag" title="Reihenfolge ändern">⠿</span>
+		<div class="ff-form-field-card">
+			<div class="ff-form-field-line">
+				<label>Bezeichnung
+					<input type="text" name="fairflock_form[fields][label][]" value="<?php echo esc_attr( $row['label'] ); ?>" placeholder="z. B. Name">
+				</label>
+				<label>Platzhalter
+					<input type="text" name="fairflock_form[fields][placeholder][]" value="<?php echo esc_attr( $row['placeholder'] ); ?>" placeholder="z. B. Dein Name">
+				</label>
+			</div>
+			<div class="ff-form-field-line ff-form-field-line--3">
+				<label>Art
+					<select name="fairflock_form[fields][type][]">
+						<?php foreach ( $types as $val => $lbl ) : ?>
+							<option value="<?php echo esc_attr( $val ); ?>" <?php selected( $row['type'], $val ); ?>><?php echo esc_html( $lbl ); ?></option>
+						<?php endforeach; ?>
+					</select>
+				</label>
+				<label>Pflichtfeld
+					<select name="fairflock_form[fields][required][]">
+						<option value="0" <?php selected( $row['required'], '0' ); ?>>Nein</option>
+						<option value="1" <?php selected( $row['required'], '1' ); ?>>Ja</option>
+					</select>
+				</label>
+				<label>Breite
+					<select name="fairflock_form[fields][width][]">
+						<option value="full" <?php selected( $row['width'], 'full' ); ?>>Ganze Zeile</option>
+						<option value="half" <?php selected( $row['width'], 'half' ); ?>>Halbe Zeile</option>
+					</select>
+				</label>
+			</div>
+			<label class="ff-form-field-options">Auswahlmöglichkeiten <span class="ff-form-hint">eine pro Zeile</span>
+				<textarea name="fairflock_form[fields][options][]" rows="3" placeholder="Option 1&#10;Option 2"><?php echo esc_textarea( $row['options'] ); ?></textarea>
+			</label>
+			<label class="ff-form-field-key">Interner Name <span class="ff-form-hint">nur Kleinbuchstaben, z. B. email</span>
+				<input type="text" name="fairflock_form[fields][name][]" value="<?php echo esc_attr( $row['name'] ); ?>" placeholder="feldname">
+			</label>
+		</div>
+		<button type="button" class="ff-form-remove" title="Feld entfernen">✕</button>
 	</div>
 	<?php
 }
@@ -251,15 +304,42 @@ function fairflock_form_admin_page() {
 	$last_mail_success = get_option( FAIRFLOCK_FORM_MAIL_SUCCESS_OPT );
 	$smtp_debug        = get_option( FAIRFLOCK_FORM_SMTP_DEBUG_OPT );
 	$smtp_on           = ! empty( $opts['smtp_enabled'] ) && '1' === $opts['smtp_enabled'] && ! empty( $opts['smtp_host'] );
+	$entries_url       = admin_url( 'admin.php?page=fairflock-form-eintraege' );
+	$field_count       = is_array( $opts['fields'] ) ? count( $opts['fields'] ) : 0;
+	$recipients        = fairflock_form_parse_recipients( $opts['recipient_email'] ?? '' );
+	$unmailed          = fairflock_form_count_unmailed_entries();
 	?>
 	<div class="wrap ff-form-admin">
 		<h1>Formular</h1>
-		<p class="ff-form-admin-intro">Konfiguriere Felder, E-Mail-Empfang und SMTP. Alle Einsendungen werden zusätzlich unter <strong>Einträge</strong> gespeichert. Einbindung: Gutenberg-Block „Kontaktformular“ oder Shortcode <code>[fairflock_contact_form]</code></p>
-		<?php if ( ! $smtp_on ) : ?>
-			<div class="notice notice-error"><p><strong>SMTP ist nicht aktiv.</strong> Der Versand nutzt PHP-Mail – auf den meisten Hostern blockiert. Bitte SMTP aktivieren und „Test-E-Mail senden“ klicken. Einsendungen landen trotzdem unter <a href="<?php echo esc_url( admin_url( 'admin.php?page=fairflock-form-eintraege' ) ); ?>">Einträge</a>.</p></div>
-		<?php else : ?>
-			<div class="notice notice-info"><p><strong>SMTP aktiv:</strong> <?php echo esc_html( $opts['smtp_host'] ); ?>:<?php echo esc_html( $opts['smtp_port'] ); ?> · Benutzer: <?php echo esc_html( fairflock_form_get_smtp_user( $opts ) ?: '—' ); ?> · Absender: <?php echo esc_html( $opts['smtp_from_email'] ?: get_option( 'admin_email' ) ); ?> · Empfänger: <?php echo esc_html( $opts['recipient_email'] ); ?></p></div>
-		<?php endif; ?>
+		<p class="ff-form-lead">Hier stellst du das Kontaktformular ein: was Besucher sehen, welche Felder es gibt und wohin die Nachricht geht. Jede Einsendung bleibt unter Eingegangene Nachrichten gespeichert.</p>
+		<div class="ff-form-overview">
+			<article class="<?php echo $smtp_on ? 'is-ok' : 'is-warn'; ?>">
+				<p class="ff-form-kicker">Versand</p>
+				<?php if ( $smtp_on ) : ?>
+					<h2>E-Mails gehen raus</h2>
+					<p>Über <?php echo esc_html( $opts['smtp_host'] ); ?>. Absender: <?php echo esc_html( $opts['smtp_from_email'] ?: get_option( 'admin_email' ) ); ?>.</p>
+				<?php else : ?>
+					<h2>E-Mails gehen noch nicht raus</h2>
+					<p>Nachrichten werden gespeichert. Für den Versand unten „E-Mail-Versand“ ausfüllen und eine Test-Mail schicken.</p>
+				<?php endif; ?>
+			</article>
+			<article class="<?php echo $recipients ? 'is-ok' : 'is-warn'; ?>">
+				<p class="ff-form-kicker">Empfänger</p>
+				<?php if ( $recipients ) : ?>
+					<h2><?php echo esc_html( implode( ', ', $recipients ) ); ?></h2>
+					<p>An diese Adressen geht jede neue Nachricht.</p>
+				<?php else : ?>
+					<h2>Noch keine Adresse</h2>
+					<p>Trag unten ein, wer die Nachrichten bekommen soll.</p>
+				<?php endif; ?>
+			</article>
+			<article class="is-ok">
+				<p class="ff-form-kicker">Nachrichten</p>
+				<h2><?php echo esc_html( sprintf( _n( '%d Feld im Formular', '%d Felder im Formular', $field_count, 'fairflock' ), $field_count ) ); ?></h2>
+				<p><?php echo $unmailed > 0 ? esc_html( sprintf( _n( '%d Nachricht noch nicht per E-Mail rausgegangen.', '%d Nachrichten noch nicht per E-Mail rausgegangen.', $unmailed, 'fairflock' ), $unmailed ) ) : 'Alle gespeicherten Nachrichten wurden verschickt oder es gibt noch keine.'; ?></p>
+				<a href="<?php echo esc_url( $entries_url ); ?>">Eingegangene Nachrichten ansehen</a>
+			</article>
+		</div>
 		<?php if ( is_array( $last_mail_success ) && ! empty( $last_mail_success['time'] ) ) : ?>
 			<div class="notice notice-success"><p><strong>Letzter erfolgreicher Versand</strong> (<?php echo esc_html( wp_date( 'd.m.Y H:i', $last_mail_success['time'] ) ); ?>): an <?php echo esc_html( $last_mail_success['to'] ?? '' ); ?> via <?php echo esc_html( $last_mail_success['method'] ?? '' ); ?>.</p></div>
 		<?php endif; ?>
@@ -278,116 +358,148 @@ function fairflock_form_admin_page() {
 		<form method="post">
 			<?php wp_nonce_field( 'fairflock_form_save', 'fairflock_form_nonce' ); ?>
 			<div class="ff-form-save-bar">
-				<button type="submit" name="fairflock_form_save" value="1" class="button button-primary button-hero">Änderungen speichern</button>
-				<button type="submit" name="fairflock_form_test_mail" value="1" class="button" style="margin-left:8px;">Test-E-Mail senden</button>
+				<button type="submit" name="fairflock_form_save" value="1" class="button button-primary">Änderungen speichern</button>
+				<button type="submit" name="fairflock_form_test_mail" value="1" class="button">Test-E-Mail senden</button>
 			</div>
 
 			<details class="ff-form-acc" open>
-				<summary class="ff-form-acc-summary">Formular-Texte</summary>
+				<summary class="ff-form-acc-summary">
+					<span>
+						<span class="ff-form-acc-title">Texte auf der Seite</span>
+						<span class="ff-form-acc-lead">Überschrift, Einleitung und was nach dem Absenden steht.</span>
+					</span>
+				</summary>
 				<div class="ff-form-acc-body">
-					<div class="ff-form-field"><label>Überschrift</label><input type="text" name="fairflock_form[form_title]" value="<?php echo esc_attr( $opts['form_title'] ); ?>"></div>
-					<div class="ff-form-field"><label>Intro-Text</label><textarea name="fairflock_form[form_intro]" rows="3"><?php echo esc_textarea( $opts['form_intro'] ); ?></textarea></div>
-					<div class="ff-form-field"><label>Button-Text</label><input type="text" name="fairflock_form[submit_text]" value="<?php echo esc_attr( $opts['submit_text'] ); ?>"></div>
-					<div class="ff-form-field"><label>Erfolgsmeldung</label><textarea name="fairflock_form[success_message]" rows="2"><?php echo esc_textarea( $opts['success_message'] ); ?></textarea></div>
-					<div class="ff-form-field"><label>Fehlermeldung</label><textarea name="fairflock_form[error_message]" rows="2"><?php echo esc_textarea( $opts['error_message'] ); ?></textarea></div>
+					<div class="ff-form-grid">
+						<div class="ff-form-field"><label>Überschrift</label><input type="text" name="fairflock_form[form_title]" value="<?php echo esc_attr( $opts['form_title'] ); ?>"></div>
+						<div class="ff-form-field"><label>Text auf dem Button</label><input type="text" name="fairflock_form[submit_text]" value="<?php echo esc_attr( $opts['submit_text'] ); ?>"></div>
+					</div>
+					<div class="ff-form-field"><label>Einleitung</label><textarea name="fairflock_form[form_intro]" rows="3"><?php echo esc_textarea( $opts['form_intro'] ); ?></textarea></div>
+					<div class="ff-form-grid">
+						<div class="ff-form-field"><label>Meldung bei Erfolg</label><textarea name="fairflock_form[success_message]" rows="3"><?php echo esc_textarea( $opts['success_message'] ); ?></textarea></div>
+						<div class="ff-form-field"><label>Meldung bei einem Fehler</label><textarea name="fairflock_form[error_message]" rows="3"><?php echo esc_textarea( $opts['error_message'] ); ?></textarea></div>
+					</div>
 				</div>
 			</details>
 
 			<details class="ff-form-acc" open>
-				<summary class="ff-form-acc-summary">Formular-Felder</summary>
+				<summary class="ff-form-acc-summary">
+					<span>
+						<span class="ff-form-acc-title">Felder</span>
+						<span class="ff-form-acc-lead">Am Griff links ziehen, um die Reihenfolge zu ändern. Auswahlmöglichkeiten erscheinen nur bei der Art „Auswahl“.</span>
+					</span>
+				</summary>
 				<div class="ff-form-acc-body">
-					<p class="description">Feldname nur Kleinbuchstaben/Zahlen/Unterstrich (z. B. <code>email</code>). Bei „Auswahl“ Optionen pro Zeile eintragen.</p>
-					<div class="ff-form-fields-table">
-						<div class="ff-form-fields-head">
-							<span></span><span>Bezeichnung</span><span>Feldname</span><span>Typ</span><span>Pflicht</span><span>Platzhalter</span><span>Breite</span><span>Optionen</span><span></span>
-						</div>
-						<div id="ff-form-fields-list">
-							<?php foreach ( $opts['fields'] as $field ) : ?>
-								<?php fairflock_form_admin_field_row( $field ); ?>
-							<?php endforeach; ?>
-						</div>
+					<div class="ff-form-fields" id="ff-form-fields-list">
+						<?php foreach ( $opts['fields'] as $field ) : ?>
+							<?php fairflock_form_admin_field_row( $field ); ?>
+						<?php endforeach; ?>
 					</div>
 					<template id="ff-form-field-template">
 						<?php fairflock_form_admin_field_row(); ?>
 					</template>
-					<p><button type="button" class="button ff-form-add-field">+ Feld hinzufügen</button></p>
+					<p><button type="button" class="button ff-form-add-field">Feld hinzufügen</button></p>
 				</div>
 			</details>
 
 			<details class="ff-form-acc">
-				<summary class="ff-form-acc-summary">Cloudflare Turnstile (Spam-Schutz)</summary>
+				<summary class="ff-form-acc-summary">
+					<span>
+						<span class="ff-form-acc-title">Datenschutz</span>
+						<span class="ff-form-acc-lead">Pflicht-Haken und wie oft jemand das Formular absenden darf.</span>
+					</span>
+				</summary>
 				<div class="ff-form-acc-body">
-					<p class="description" style="margin-top:0;">Keys in der <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer">Cloudflare-Konsole</a> unter <strong>Turnstile</strong> anlegen. Domain nach dem Go-Live eintragen – bis dahin kann Turnstile deaktiviert bleiben.</p>
 					<div class="ff-form-field">
-						<label><input type="checkbox" name="fairflock_form[cf_turnstile_enabled]" value="1" <?php checked( $opts['cf_turnstile_enabled'] ?? '0', '1' ); ?>> Cloudflare Turnstile aktivieren</label>
+						<label class="ff-form-check"><input type="checkbox" name="fairflock_form[privacy_enabled]" value="1" <?php checked( $opts['privacy_enabled'] ?? '1', '1' ); ?>> Besucher müssen den Datenschutz bestätigen</label>
 					</div>
-					<div class="ff-form-field"><label>Site Key (öffentlich)</label><input type="text" name="fairflock_form[cf_turnstile_site_key]" value="<?php echo esc_attr( $opts['cf_turnstile_site_key'] ?? '' ); ?>" placeholder="0x4AAAAAAA…"></div>
-					<div class="ff-form-field"><label>Secret Key <span class="ff-form-hint">(leer lassen = unverändert)</span></label><input type="password" name="fairflock_form[cf_turnstile_secret_key]" value="" autocomplete="new-password" placeholder="<?php echo ! empty( $opts['cf_turnstile_secret_key'] ) ? '••••••••' : ''; ?>"></div>
+					<div class="ff-form-field"><label>Text neben dem Haken</label><textarea name="fairflock_form[privacy_text]" rows="2"><?php echo esc_textarea( $opts['privacy_text'] ?? '' ); ?></textarea></div>
+					<div class="ff-form-field"><label>Link zur Datenschutzerklärung <span class="ff-form-hint">z. B. /datenschutz</span></label><input type="text" name="fairflock_form[privacy_url]" value="<?php echo esc_attr( $opts['privacy_url'] ?? '' ); ?>"></div>
+					<div class="ff-form-grid">
+						<div class="ff-form-field"><label>Höchstens so viele Absendungen pro Besucher</label><input type="number" min="1" name="fairflock_form[rate_limit_count]" value="<?php echo esc_attr( $opts['rate_limit_count'] ?? 5 ); ?>"></div>
+						<div class="ff-form-field"><label>In diesem Zeitraum (Minuten)</label><input type="number" min="1" name="fairflock_form[rate_limit_minutes]" value="<?php echo esc_attr( $opts['rate_limit_minutes'] ?? 60 ); ?>"></div>
+					</div>
 				</div>
 			</details>
 
 			<details class="ff-form-acc">
-				<summary class="ff-form-acc-summary">Datenschutz &amp; Spam-Schutz</summary>
+				<summary class="ff-form-acc-summary">
+					<span>
+						<span class="ff-form-acc-title">Extra Spam-Schutz</span>
+						<span class="ff-form-acc-lead">Optional. Nur nötig, wenn ihr Cloudflare Turnstile nutzt.</span>
+					</span>
+				</summary>
 				<div class="ff-form-acc-body">
+					<p class="ff-form-note">Die Schlüssel legt ihr in der <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer">Cloudflare-Konsole</a> unter Turnstile an. Bis die Domain online ist, kann der Schutz aus bleiben.</p>
 					<div class="ff-form-field">
-						<label><input type="checkbox" name="fairflock_form[privacy_enabled]" value="1" <?php checked( $opts['privacy_enabled'] ?? '1', '1' ); ?>> Pflicht-Checkbox für Datenschutz anzeigen</label>
+						<label class="ff-form-check"><input type="checkbox" name="fairflock_form[cf_turnstile_enabled]" value="1" <?php checked( $opts['cf_turnstile_enabled'] ?? '0', '1' ); ?>> Spam-Schutz aktivieren</label>
 					</div>
-					<div class="ff-form-field"><label>Checkbox-Text</label><textarea name="fairflock_form[privacy_text]" rows="2"><?php echo esc_textarea( $opts['privacy_text'] ?? '' ); ?></textarea></div>
-					<div class="ff-form-field"><label>Link zur Datenschutzerklärung <span class="ff-form-hint">(relativ z. B. /datenschutz oder vollständige URL)</span></label><input type="text" name="fairflock_form[privacy_url]" value="<?php echo esc_attr( $opts['privacy_url'] ?? '' ); ?>"></div>
-					<div class="ff-form-field"><label>Rate-Limit: max. Anfragen pro IP</label><input type="number" min="1" name="fairflock_form[rate_limit_count]" value="<?php echo esc_attr( $opts['rate_limit_count'] ?? 5 ); ?>"></div>
-					<div class="ff-form-field"><label>Rate-Limit: Zeitraum (Minuten)</label><input type="number" min="1" name="fairflock_form[rate_limit_minutes]" value="<?php echo esc_attr( $opts['rate_limit_minutes'] ?? 60 ); ?>"></div>
+					<div class="ff-form-field"><label>Öffentlicher Schlüssel (Site Key)</label><input type="text" name="fairflock_form[cf_turnstile_site_key]" value="<?php echo esc_attr( $opts['cf_turnstile_site_key'] ?? '' ); ?>" placeholder="0x4AAAAAAA…"></div>
+					<div class="ff-form-field"><label>Geheimer Schlüssel <span class="ff-form-hint">leer lassen, wenn er schon gespeichert ist</span></label><input type="password" name="fairflock_form[cf_turnstile_secret_key]" value="" autocomplete="new-password" placeholder="<?php echo ! empty( $opts['cf_turnstile_secret_key'] ) ? '••••••••' : ''; ?>"></div>
 				</div>
 			</details>
 
 			<details class="ff-form-acc">
-				<summary class="ff-form-acc-summary">E-Mail-Einstellungen</summary>
+				<summary class="ff-form-acc-summary">
+					<span>
+						<span class="ff-form-acc-title">Wohin die Nachricht geht</span>
+						<span class="ff-form-acc-lead">Eure Adresse und die Bestätigung, die der Absender bekommt.</span>
+					</span>
+				</summary>
 				<div class="ff-form-acc-body">
-					<div class="ff-form-field"><label>Empfänger-E-Mails <span class="ff-form-hint">(mehrere mit Komma, Semikolon oder Zeilenumbruch trennen)</span></label><input type="text" name="fairflock_form[recipient_email]" value="<?php echo esc_attr( $opts['recipient_email'] ); ?>"></div>
-					<div class="ff-form-field"><label>Betreff (an euch)</label><input type="text" name="fairflock_form[email_subject]" value="<?php echo esc_attr( $opts['email_subject'] ); ?>"></div>
-					<div class="ff-form-field">
-						<label>Reply-To Feldname <span class="ff-form-hint">(Feldname für Antwort-Adresse, z. B. email)</span></label>
-						<input type="text" name="fairflock_form[reply_to_field]" value="<?php echo esc_attr( $opts['reply_to_field'] ); ?>">
+					<div class="ff-form-field"><label>Eure E-Mail-Adressen <span class="ff-form-hint">mehrere mit Komma trennen</span></label><input type="text" name="fairflock_form[recipient_email]" value="<?php echo esc_attr( $opts['recipient_email'] ); ?>"></div>
+					<div class="ff-form-grid">
+						<div class="ff-form-field"><label>Betreff der Mail an euch</label><input type="text" name="fairflock_form[email_subject]" value="<?php echo esc_attr( $opts['email_subject'] ); ?>"></div>
+						<div class="ff-form-field"><label>Feld mit der Antwort-Adresse <span class="ff-form-hint">meist email</span></label><input type="text" name="fairflock_form[reply_to_field]" value="<?php echo esc_attr( $opts['reply_to_field'] ); ?>"></div>
 					</div>
-					<hr style="border:none;border-top:1px solid #dcdcde;margin:18px 0;">
 					<div class="ff-form-field">
-						<label><input type="checkbox" name="fairflock_form[confirm_enabled]" value="1" <?php checked( $opts['confirm_enabled'] ?? '1', '1' ); ?>> Bestätigungsmail an den Kunden senden</label>
-						<p class="description" style="margin:6px 0 0;">Geht an die vom Kunden eingetragene E-Mail (Feld laut Reply-To / email). Enthält eine Zusammenfassung der Angaben.</p>
+						<label class="ff-form-check"><input type="checkbox" name="fairflock_form[confirm_enabled]" value="1" <?php checked( $opts['confirm_enabled'] ?? '1', '1' ); ?>> Dem Absender eine Bestätigung schicken</label>
+						<p class="ff-form-hint" style="margin:6px 0 0;">Geht an die E-Mail aus dem Formular und fasst die Angaben kurz zusammen.</p>
 					</div>
-					<div class="ff-form-field"><label>Betreff (Bestätigung an Kunden)</label><input type="text" name="fairflock_form[confirm_subject]" value="<?php echo esc_attr( $opts['confirm_subject'] ?? '' ); ?>"></div>
-					<div class="ff-form-field"><label>Text der Bestätigung <span class="ff-form-hint">(nach der Anrede „Hallo …,“)</span></label><textarea name="fairflock_form[confirm_intro]" rows="4"><?php echo esc_textarea( $opts['confirm_intro'] ?? '' ); ?></textarea></div>
+					<div class="ff-form-field"><label>Betreff der Bestätigung</label><input type="text" name="fairflock_form[confirm_subject]" value="<?php echo esc_attr( $opts['confirm_subject'] ?? '' ); ?>"></div>
+					<div class="ff-form-field"><label>Text der Bestätigung <span class="ff-form-hint">steht nach „Hallo …,“</span></label><textarea name="fairflock_form[confirm_intro]" rows="4"><?php echo esc_textarea( $opts['confirm_intro'] ?? '' ); ?></textarea></div>
 				</div>
 			</details>
 
 			<details class="ff-form-acc" <?php echo $smtp_on ? '' : 'open'; ?>>
-				<summary class="ff-form-acc-summary">SMTP-Einstellungen (nötig für E-Mail-Versand)</summary>
+				<summary class="ff-form-acc-summary">
+					<span>
+						<span class="ff-form-acc-title">E-Mail-Versand</span>
+						<span class="ff-form-acc-lead">Ohne diese Angaben kommen die Mails auf den meisten Servern nicht an.</span>
+					</span>
+				</summary>
 				<div class="ff-form-acc-body">
-					<p class="description" style="margin-top:0;">Ohne SMTP versendet WordPress über PHP-Mail. Viele Hosts blockieren das. <strong>mStudio / Mittwald:</strong> Host <code>mail.agenturserver.de</code>, Port <code>465</code>, SSL, Benutzername = volle E-Mail, Passwort = Postfach-Passwort.</p>
+					<p class="ff-form-note">Bei Mittwald / mStudio meist: Server <strong>mail.agenturserver.de</strong>, Port <strong>465</strong>, Verschlüsselung <strong>SSL</strong>. Benutzername ist die ganze E-Mail-Adresse, Passwort das vom Postfach.</p>
 					<div class="ff-form-field">
-						<label><input type="checkbox" name="fairflock_form[smtp_enabled]" value="1" <?php checked( $opts['smtp_enabled'], '1' ); ?>> SMTP aktivieren</label>
+						<label class="ff-form-check"><input type="checkbox" name="fairflock_form[smtp_enabled]" value="1" <?php checked( $opts['smtp_enabled'], '1' ); ?>> Versand über den Mailserver aktivieren</label>
 					</div>
-					<div class="ff-form-field"><label>SMTP-Host</label><input type="text" name="fairflock_form[smtp_host]" value="<?php echo esc_attr( $opts['smtp_host'] ); ?>" placeholder="z. B. smtp.ionos.de"></div>
-					<div class="ff-form-field"><label>Port</label><input type="number" name="fairflock_form[smtp_port]" value="<?php echo esc_attr( $opts['smtp_port'] ); ?>" placeholder="587"></div>
+					<div class="ff-form-grid ff-form-grid--3">
+						<div class="ff-form-field"><label>Server</label><input type="text" name="fairflock_form[smtp_host]" value="<?php echo esc_attr( $opts['smtp_host'] ); ?>" placeholder="mail.agenturserver.de"></div>
+						<div class="ff-form-field"><label>Port</label><input type="number" name="fairflock_form[smtp_port]" value="<?php echo esc_attr( $opts['smtp_port'] ); ?>" placeholder="465"></div>
+						<div class="ff-form-field">
+							<label>Verschlüsselung</label>
+							<select name="fairflock_form[smtp_encryption]">
+								<option value="tls" <?php selected( $opts['smtp_encryption'], 'tls' ); ?>>TLS (meist Port 587)</option>
+								<option value="ssl" <?php selected( $opts['smtp_encryption'], 'ssl' ); ?>>SSL (meist Port 465)</option>
+								<option value="none" <?php selected( $opts['smtp_encryption'], 'none' ); ?>>Keine</option>
+							</select>
+						</div>
+					</div>
 					<div class="ff-form-field">
-						<label>Verschlüsselung</label>
-						<select name="fairflock_form[smtp_encryption]">
-							<option value="tls" <?php selected( $opts['smtp_encryption'], 'tls' ); ?>>TLS (587)</option>
-							<option value="ssl" <?php selected( $opts['smtp_encryption'], 'ssl' ); ?>>SSL (465)</option>
-							<option value="none" <?php selected( $opts['smtp_encryption'], 'none' ); ?>>Keine</option>
-						</select>
+						<label class="ff-form-check"><input type="checkbox" name="fairflock_form[smtp_auth]" value="1" <?php checked( $opts['smtp_auth'], '1' ); ?>> Mit Benutzername und Passwort anmelden</label>
 					</div>
-					<div class="ff-form-field">
-						<label><input type="checkbox" name="fairflock_form[smtp_auth]" value="1" <?php checked( $opts['smtp_auth'], '1' ); ?>> SMTP-Authentifizierung</label>
+					<div class="ff-form-grid">
+						<div class="ff-form-field"><label>Benutzername <span class="ff-form-hint">meist die ganze E-Mail-Adresse</span></label><input type="text" name="fairflock_form[smtp_user]" value="<?php echo esc_attr( $opts['smtp_user'] ); ?>" autocomplete="off"></div>
+						<div class="ff-form-field"><label>Passwort <span class="ff-form-hint">leer lassen, wenn es schon gespeichert ist</span></label><input type="password" name="fairflock_form[smtp_pass]" value="" autocomplete="new-password"></div>
+						<div class="ff-form-field"><label>Absender-Adresse <span class="ff-form-hint">muss zum Postfach passen</span></label><input type="email" name="fairflock_form[smtp_from_email]" value="<?php echo esc_attr( $opts['smtp_from_email'] ); ?>"></div>
+						<div class="ff-form-field"><label>Absender-Name</label><input type="text" name="fairflock_form[smtp_from_name]" value="<?php echo esc_attr( $opts['smtp_from_name'] ); ?>"></div>
 					</div>
-					<div class="ff-form-field"><label>Benutzername <span class="ff-form-hint">(meist die vollständige E-Mail-Adresse)</span></label><input type="text" name="fairflock_form[smtp_user]" value="<?php echo esc_attr( $opts['smtp_user'] ); ?>" autocomplete="off"></div>
-					<div class="ff-form-field"><label>Passwort <span class="ff-form-hint">(leer lassen = unverändert)</span></label><input type="password" name="fairflock_form[smtp_pass]" value="" autocomplete="new-password"></div>
-					<div class="ff-form-field"><label>Absender-E-Mail <span class="ff-form-hint">(muss zum SMTP-Konto passen)</span></label><input type="email" name="fairflock_form[smtp_from_email]" value="<?php echo esc_attr( $opts['smtp_from_email'] ); ?>"></div>
-					<div class="ff-form-field"><label>Absender-Name</label><input type="text" name="fairflock_form[smtp_from_name]" value="<?php echo esc_attr( $opts['smtp_from_name'] ); ?>"></div>
 				</div>
 			</details>
 
 			<div class="ff-form-save-bar">
-				<button type="submit" name="fairflock_form_save" value="1" class="button button-primary button-hero">Änderungen speichern</button>
-				<button type="submit" name="fairflock_form_test_mail" value="1" class="button" style="margin-left:8px;">Test-E-Mail senden</button>
+				<button type="submit" name="fairflock_form_save" value="1" class="button button-primary">Änderungen speichern</button>
+				<button type="submit" name="fairflock_form_test_mail" value="1" class="button">Test-E-Mail senden</button>
 			</div>
 		</form>
 	</div>

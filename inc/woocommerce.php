@@ -741,3 +741,174 @@ function fairflock_expose_just_added_flag() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'fairflock_expose_just_added_flag', 25 );
+
+/**
+ * Products per row chosen in the shop toolbar (2–5).
+ *
+ * @since 0.9.269
+ *
+ * @return int
+ */
+function fairflock_shop_columns_count() {
+	$n = 3;
+	if ( isset( $_COOKIE['ff_shop_cols'] ) ) {
+		$raw = absint( wp_unslash( $_COOKIE['ff_shop_cols'] ) );
+		if ( $raw >= 2 && $raw <= 5 ) {
+			$n = $raw;
+		}
+	}
+	return $n;
+}
+
+/**
+ * Applies the saved column count before the grid paints.
+ *
+ * @since 0.9.269
+ *
+ * @param string[] $classes Body classes.
+ * @return string[]
+ */
+function fairflock_shop_columns_body_class( $classes ) {
+	if ( ! function_exists( 'is_woocommerce' ) ) {
+		return $classes;
+	}
+
+	$listing = ( function_exists( 'is_shop' ) && is_shop() )
+		|| ( function_exists( 'is_product_taxonomy' ) && is_product_taxonomy() )
+		|| ( function_exists( 'is_search' ) && is_search() );
+
+	if ( ! $listing ) {
+		return $classes;
+	}
+
+	$classes[] = 'is-cols-' . fairflock_shop_columns_count();
+	return $classes;
+}
+add_filter( 'body_class', 'fairflock_shop_columns_body_class' );
+
+/**
+ * Column picker immediately left of the catalog sort control.
+ *
+ * @since 0.9.269
+ *
+ * @param string $content Rendered block.
+ * @param array  $block   Block data.
+ * @return string
+ */
+function fairflock_shop_columns_control( $content, $block ) {
+	if ( is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+		return $content;
+	}
+	if ( ( $block['blockName'] ?? '' ) !== 'woocommerce/catalog-sorting' ) {
+		return $content;
+	}
+
+	$current = fairflock_shop_columns_count();
+	$options = '';
+	foreach ( array( 2, 3, 4, 5 ) as $cols ) {
+		$options .= sprintf(
+			'<button type="button" class="ff-shop-cols__option" role="menuitemradio" data-cols="%1$d" aria-checked="%2$s">%1$d Spalten</button>',
+			$cols,
+			$cols === $current ? 'true' : 'false'
+		);
+	}
+
+	$icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="4.5" height="16" rx="1" fill="currentColor"/><rect x="9.75" y="4" width="4.5" height="16" rx="1" fill="currentColor"/><rect x="16.5" y="4" width="4.5" height="16" rx="1" fill="currentColor"/></svg>';
+
+	$control  = '<div class="ff-shop-cols">';
+	$control .= '<button type="button" class="ff-shop-cols__btn" aria-expanded="false" aria-haspopup="menu" aria-controls="ff-shop-cols-menu">';
+	$control .= '<span class="ff-shop-cols__icon">' . $icon . '</span>';
+	$control .= '<span class="ff-shop-cols__label">' . esc_html__( 'Ansicht', 'fairflock' ) . '</span>';
+	$control .= '</button>';
+	$control .= '<div class="ff-shop-cols__menu" id="ff-shop-cols-menu" role="menu" aria-label="' . esc_attr__( 'Produkte pro Zeile', 'fairflock' ) . '" hidden>';
+	$control .= $options;
+	$control .= '</div></div>';
+
+	if ( ! has_action( 'wp_footer', 'fairflock_shop_columns_script' ) ) {
+		add_action( 'wp_footer', 'fairflock_shop_columns_script' );
+	}
+
+	return '<div class="ff-shop__view">' . $control . $content . '</div>';
+}
+add_filter( 'render_block', 'fairflock_shop_columns_control', 10, 2 );
+
+/**
+ * Keeps the column choice for the next visit.
+ *
+ * @since 0.9.269
+ *
+ * @return void
+ */
+function fairflock_shop_columns_script() {
+	?>
+	<script>
+	(function () {
+		var roots = document.querySelectorAll(".ff-shop-cols");
+		if (!roots.length) return;
+		var classes = ["is-cols-2", "is-cols-3", "is-cols-4", "is-cols-5"];
+
+		function apply(n) {
+			var i;
+			for (i = 0; i < classes.length; i++) {
+				document.body.classList.remove(classes[i]);
+			}
+			document.body.classList.add("is-cols-" + n);
+			document.cookie = "ff_shop_cols=" + n + ";path=/;max-age=31536000;SameSite=Lax";
+			roots.forEach(function (root) {
+				root.querySelectorAll(".ff-shop-cols__option").forEach(function (option) {
+					option.setAttribute("aria-checked", option.getAttribute("data-cols") === String(n) ? "true" : "false");
+				});
+			});
+		}
+
+		function closeAll(except) {
+			roots.forEach(function (root) {
+				if (root === except) return;
+				var btn = root.querySelector(".ff-shop-cols__btn");
+				var menu = root.querySelector(".ff-shop-cols__menu");
+				if (!btn || !menu) return;
+				btn.setAttribute("aria-expanded", "false");
+				menu.hidden = true;
+			});
+		}
+
+		roots.forEach(function (root) {
+			var btn = root.querySelector(".ff-shop-cols__btn");
+			var menu = root.querySelector(".ff-shop-cols__menu");
+			if (!btn || !menu) return;
+
+			btn.addEventListener("click", function () {
+				var open = btn.getAttribute("aria-expanded") === "true";
+				closeAll(root);
+				btn.setAttribute("aria-expanded", open ? "false" : "true");
+				menu.hidden = open;
+				if (!open) {
+					var current = menu.querySelector('[aria-checked="true"]') || menu.querySelector(".ff-shop-cols__option");
+					if (current) current.focus();
+				}
+			});
+
+			menu.addEventListener("click", function (event) {
+				var option = event.target.closest(".ff-shop-cols__option");
+				if (!option) return;
+				apply(option.getAttribute("data-cols"));
+				btn.setAttribute("aria-expanded", "false");
+				menu.hidden = true;
+				btn.focus();
+			});
+		});
+
+		document.addEventListener("click", function (event) {
+			if (!event.target.closest(".ff-shop-cols")) closeAll();
+		});
+
+		document.addEventListener("keydown", function (event) {
+			if (event.key === "Escape") closeAll();
+		});
+
+		var saved = document.cookie.match(/(?:^|; )ff_shop_cols=([2-5])/);
+		if (saved) apply(saved[1]);
+	})();
+	</script>
+	<?php
+}

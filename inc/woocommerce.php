@@ -104,6 +104,25 @@ function fairflock_remove_sale_flash( $html ) {
 add_filter( 'woocommerce_sale_flash', 'fairflock_remove_sale_flash', 10, 1 );
 
 /**
+ * Product breadcrumb reads as a faded path label.
+ *
+ * @since 0.9.264
+ *
+ * @param array<int, array{0:string,1:string}> $crumbs Crumbs.
+ * @return array<int, array{0:string,1:string}>
+ */
+function fairflock_product_breadcrumb_label( $crumbs ) {
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+		return $crumbs;
+	}
+
+	return array(
+		array( __( 'Zurückgelegter Weg', 'fairflock' ), '' ),
+	);
+}
+add_filter( 'woocommerce_get_breadcrumb', 'fairflock_product_breadcrumb_label' );
+
+/**
  * Prevents Woo from auto-inserting customer-account after Navigation.
  *
  * The account icon lives explicitly in the header actions (left of search).

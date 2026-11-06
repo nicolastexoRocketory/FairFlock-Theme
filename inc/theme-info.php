@@ -20,6 +20,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.267',
+			'items'   => array(
+				__( 'Produkt-Popup: Bild immer vollständig sichtbar (nicht beschnitten).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.266',
+			'items'   => array(
+				__( 'Backend: WordPress-Dashboard entfällt, FairFlock ist die Startseite und der erste Menüpunkt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.265',
+			'items'   => array(
+				__( 'Ähnliche Produkte: Überschrift im H2-Sektionsstil, Abstand unter dem Warenkorb-Button.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.264',
+			'items'   => array(
+				__( 'Produkt-Brotkrumen: Text „Zurückgelegter Weg“, deutlich blasser und transparenter.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.263',
 			'items'   => array(
 				__( 'Produktbeschreibung: gesamter Inhalt in einer Karte, leere Zwischenblöcke ausgeblendet.', 'fairflock' ),

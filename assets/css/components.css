@@ -3166,7 +3166,8 @@ body.is-ff-product-open {
 	display: block;
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	object-fit: contain;
+	object-position: center;
 }
 
 .ff-product-modal__gallery-nav {
@@ -3578,19 +3579,23 @@ body.is-ff-product-open {
 .ff-product .wc-block-breadcrumbs,
 .ff-product .wp-block-woocommerce-breadcrumbs {
 	margin: 0 0 20px !important;
-	font-size: 0.875rem;
-	color: var(--wp--preset--color--muted, #66707a);
+	font-size: 0.8125rem;
+	font-weight: 400;
+	letter-spacing: 0.01em;
+	color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 34%, transparent);
 }
 
 .ff-product .woocommerce-breadcrumb a,
 .ff-product .wc-block-breadcrumbs a {
 	color: inherit;
 	text-decoration: none;
+	opacity: 0.85;
 }
 
 .ff-product .woocommerce-breadcrumb a:hover,
 .ff-product .wc-block-breadcrumbs a:hover {
-	color: var(--wp--preset--color--brand, #377530);
+	color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 55%, transparent);
+	opacity: 1;
 }
 
 .ff-product__hero,
@@ -4921,12 +4926,17 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 
 .ff-product .related.products > h2,
 .ff-product .wp-block-woocommerce-related-products .wp-block-heading,
+.ff-product .wp-block-woocommerce-product-collection > .wp-block-heading,
+.ff-product .wp-block-woocommerce-product-collection > h2,
 .ff-product .wp-block-group:has(.wc-block-product-template) > .wp-block-heading {
 	margin: 0 0 20px !important;
-	font-family: var(--wp--preset--font-family--heading);
-	font-size: var(--ff-section-title, clamp(1.75rem, 2.8vw, 2.25rem));
-	font-weight: 400;
-	letter-spacing: -0.03em;
+	font-family: var(--wp--preset--font-family--heading) !important;
+	font-size: var(--wp--preset--font-size--section, var(--ff-section-title)) !important;
+	font-weight: 400 !important;
+	font-style: normal !important;
+	letter-spacing: -0.03em !important;
+	line-height: 1.25 !important;
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
 }
 
 .ff-product ul.products,
@@ -4943,7 +4953,7 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 .ff-product .wc-block-product-template .wc-block-product,
 .ff-product .wc-block-product-template li {
 	margin: 0 !important;
-	padding: 0 !important;
+	padding: 0 0 16px !important;
 	width: auto !important;
 	background: var(--ff-surface, #fff);
 	border: 1px solid var(--ff-product-line);

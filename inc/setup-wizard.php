@@ -25,7 +25,7 @@ function fairflock_setup_wizard_register_admin() {
 		'fairflock-setup',
 		'fairflock_setup_wizard_render_admin_page',
 		'dashicons-store',
-		58
+		2
 	);
 
 	add_submenu_page(
@@ -38,6 +38,81 @@ function fairflock_setup_wizard_register_admin() {
 	);
 }
 add_action( 'admin_menu', 'fairflock_setup_wizard_register_admin', 9 );
+
+/**
+ * Replaces the WordPress Dashboard with the FairFlock area.
+ *
+ * @since 0.9.266
+ *
+ * @return void
+ */
+function fairflock_replace_wp_dashboard_menu() {
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	remove_menu_page( 'index.php' );
+
+	global $menu;
+	if ( ! is_array( $menu ) ) {
+		return;
+	}
+
+	foreach ( $menu as $position => $item ) {
+		if ( ! isset( $item[2] ) || 'fairflock-setup' !== $item[2] ) {
+			continue;
+		}
+		unset( $menu[ $position ] );
+		$item[4] = 'menu-top menu-top-first menu-icon-generic';
+		$menu[2] = $item;
+		break;
+	}
+}
+add_action( 'admin_menu', 'fairflock_replace_wp_dashboard_menu', 1000 );
+
+/**
+ * Opens FairFlock instead of the WordPress Dashboard.
+ *
+ * @since 0.9.266
+ *
+ * @return void
+ */
+function fairflock_redirect_dashboard_to_fairflock() {
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	wp_safe_redirect( admin_url( 'admin.php?page=fairflock-setup' ) );
+	exit;
+}
+add_action( 'load-index.php', 'fairflock_redirect_dashboard_to_fairflock' );
+
+/**
+ * Points the admin-bar Dashboard link at FairFlock.
+ *
+ * @since 0.9.266
+ *
+ * @param WP_Admin_Bar $bar Admin bar.
+ * @return void
+ */
+function fairflock_admin_bar_dashboard_link( $bar ) {
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	if ( ! $bar->get_node( 'dashboard' ) ) {
+		return;
+	}
+
+	$bar->add_node(
+		array(
+			'id'    => 'dashboard',
+			'title' => __( 'FairFlock', 'fairflock' ),
+			'href'  => admin_url( 'admin.php?page=fairflock-setup' ),
+		)
+	);
+}
+add_action( 'admin_bar_menu', 'fairflock_admin_bar_dashboard_link', 80 );
 
 /**
  * Handles dismiss / restore of optional wizard steps.

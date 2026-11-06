@@ -568,14 +568,17 @@ function fairflock_personalization_register_store_api_extension() {
  * @return array{logo_upload:bool,personal_text:bool,markup:string}
  */
 function fairflock_store_api_product_personalization_data( $product ) {
-	$upload = fairflock_product_has_logo_upload( $product );
-	$text   = fairflock_product_has_personal_text( $product );
+	$upload   = fairflock_product_has_logo_upload( $product );
+	$text     = fairflock_product_has_personal_text( $product );
+	$delivery = function_exists( 'fairflock_product_delivery_view' ) ? fairflock_product_delivery_view( $product ) : null;
 	return array(
-		'logo_upload'    => $upload,
-		'personal_text'  => $text,
-		'enabled'        => ( $upload || $text ),
-		'markup'         => ( $upload || $text ) ? fairflock_get_personalization_markup( $product, '_modal' ) : '',
-		'table_html'     => function_exists( 'fairflock_product_table_markup' ) ? fairflock_product_table_markup( $product ) : '',
+		'logo_upload'      => $upload,
+		'personal_text'    => $text,
+		'enabled'          => ( $upload || $text ),
+		'markup'           => ( $upload || $text ) ? fairflock_get_personalization_markup( $product, '_modal' ) : '',
+		'table_html'       => function_exists( 'fairflock_product_table_markup' ) ? fairflock_product_table_markup( $product ) : '',
+		'delivery_label'   => is_array( $delivery ) ? $delivery['label'] : '',
+		'delivery_tooltip' => is_array( $delivery ) ? $delivery['tooltip'] : '',
 	);
 }
 
@@ -614,6 +617,18 @@ function fairflock_store_api_product_personalization_schema() {
 		),
 		'table_html'    => array(
 			'description' => __( 'Product table HTML shown under the description', 'fairflock' ),
+			'type'        => 'string',
+			'context'     => array( 'view', 'edit' ),
+			'readonly'    => true,
+		),
+		'delivery_label' => array(
+			'description' => __( 'Delivery line shown with the product', 'fairflock' ),
+			'type'        => 'string',
+			'context'     => array( 'view', 'edit' ),
+			'readonly'    => true,
+		),
+		'delivery_tooltip' => array(
+			'description' => __( 'Optional delivery hint for the info icon', 'fairflock' ),
 			'type'        => 'string',
 			'context'     => array( 'view', 'edit' ),
 			'readonly'    => true,

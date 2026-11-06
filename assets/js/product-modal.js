@@ -475,25 +475,54 @@
 			);
 		}
 
-		function deliveryLabel(p) {
-			var raw = String(p.short_description || "")
+		function plainText(html) {
+			return String(html || "")
 				.replace(/<[^>]+>/g, " ")
 				.replace(/&nbsp;/g, " ")
-				.replace(/\s+/g, " ");
-			var match = raw.match(/Lieferzeit\s+([0-9]+\s*[–\-]\s*[0-9]+|[0-9]+)/i);
+				.replace(/\s+/g, " ")
+				.trim();
+		}
+
+		function deliveryLabel(p) {
+			var shortText = plainText(p.short_description);
+			var raw = (shortText + " " + plainText(p.description)).trim();
+			var match = raw.match(/Lieferzeit\s*:?\s*([0-9]+\s*[–\-]\s*[0-9]+|[0-9]+)/i);
 			if (match) {
 				var span = match[1].replace(/\s+/g, "").replace(/-/g, "–");
 				return "Lieferung in " + span + " Tagen";
 			}
-			if (/sofort/i.test(raw)) {
+			if (/sofort/i.test(shortText)) {
 				return "Lieferung in 1–2 Tagen";
 			}
 			return "";
 		}
 
+		function deliveryView(p) {
+			var ext = (p && p.extensions && p.extensions.fairflock) || {};
+			if (typeof ext.delivery_label === "string" && ext.delivery_label) {
+				return {
+					label: ext.delivery_label,
+					tooltip: typeof ext.delivery_tooltip === "string" ? ext.delivery_tooltip : ""
+				};
+			}
+			var label = deliveryLabel(p);
+			return label ? { label: label, tooltip: "" } : null;
+		}
+
+		function deliveryInfo(tooltip) {
+			if (!tooltip) return "";
+			return (
+				'<span class="ff-delivery-info">' +
+				'<button type="button" class="ff-delivery-info__btn" aria-label="Hinweis zur Lieferzeit"><span aria-hidden="true">i</span></button>' +
+				'<span class="ff-delivery-info__tip" role="tooltip">' +
+				escapeHtml(tooltip) +
+				"</span></span>"
+			);
+		}
+
 		function renderFacts(p) {
 			var stock = renderStock(p);
-			var delivery = deliveryLabel(p);
+			var delivery = deliveryView(p);
 			if (!stock && !delivery) return "";
 			var ship = delivery
 				? (stock
@@ -501,7 +530,8 @@
 						: "") +
 				  '<span class="ff-product-modal__fact">' +
 				  '<svg viewBox="0 0 24 24" width="18" height="16" aria-hidden="true"><path d="M2.5 7.5h11v7.5h-11z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M13.5 10.5h4.2L21 14v1.5h-7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><circle cx="6.5" cy="17.2" r="1.5" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="17" cy="17.2" r="1.5" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>' +
-				  escapeHtml(delivery) +
+				  escapeHtml(delivery.label) +
+				  deliveryInfo(delivery.tooltip) +
 				  "</span>"
 				: "";
 			return '<p class="ff-product-modal__facts">' + stock + ship + "</p>";
@@ -610,9 +640,12 @@
 				'<div class="ff-product-modal__grid">' +
 				renderGallery(images) +
 				'<div class="ff-product-modal__copy">' +
+				'<div class="ff-product-modal__read">' +
 				'<div class="ff-product-modal__scroll">' +
 				descriptionHtml +
 				details +
+				"</div>" +
+				'<div class="ff-product-modal__dim" aria-hidden="true"></div>' +
 				"</div>" +
 				'<div class="ff-product-modal__actions' +
 				(startsCollapsed ? " is-collapsed" : "") +
@@ -622,8 +655,9 @@
 					  '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
 					  "</button>"
 					: "") +
-				'<div class="ff-product-modal__config">' +
 				headHtml +
+				'<div class="ff-product-modal__config">' +
+				'<div class="ff-product-modal__config-clip">' +
 				sizePicker +
 				(personalizationHtml
 					? '<div class="ff-product-modal__personalization">' + personalizationHtml + "</div>"
@@ -644,7 +678,7 @@
 				'">Zur Seite</a>' +
 				"</div>" +
 				'<p class="ff-product-modal__status" id="ffProductStatus" hidden></p>' +
-				"</div>" +
+				"</div></div>" +
 				(startsCollapsed
 					? '<button type="button" class="ff-product-modal__configure" data-ff-configure>Konfigurieren</button>'
 					: "") +

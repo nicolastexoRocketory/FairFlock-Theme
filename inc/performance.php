@@ -274,6 +274,16 @@ function fairflock_enqueue_frontend_assets() {
 				'in_footer' => true,
 			)
 		);
+		wp_enqueue_script(
+			'fairflock-product-table',
+			FAIRFLOCK_URI . '/assets/js/product-table.js',
+			array(),
+			FAIRFLOCK_VERSION,
+			array(
+				'strategy'  => 'defer',
+				'in_footer' => true,
+			)
+		);
 	}
 
 	$shop     = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' );

@@ -20,6 +20,55 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.295',
+			'items'   => array(
+				__( 'FairFlock → Lieferzeiten: globale Lieferklassen, optional mit Info-Icon. Am Produkt unter Versand als Lieferdauerklasse wählbar.', 'fairflock' ),
+				__( 'Neue Produktflächen folgen der online eingestellten Palette (Brand, Base, Kontrast, Weiß, Surface).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.294',
+			'items'   => array(
+				__( 'Produkttabelle: das Vollbild auf dem Desktop bleibt auf der Inhaltsbreite der Produktseite.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.292',
+			'items'   => array(
+				__( 'Produktkarten: LKW-Icon und „Lieferung in X Tagen“ unter dem Preis, wenn das Produkt eine Lieferzeit nennt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.291',
+			'items'   => array(
+				__( 'Produkttabelle: Vollbild mit Bild-Slideshow, zentrierter Tabelle, Scroll-Pfeilen und Akzentfarbe am Schließen-Button.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.290',
+			'items'   => array(
+				__( 'Produkt-Popup: „Konfigurieren“ fährt animiert aus und legt einen Schleier über die Beschreibung.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.289',
+			'items'   => array(
+				__( 'Produkttabelle: Button „Tabelle öffnen“ zeigt die Tabelle im Vollbild.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.288',
+			'items'   => array(
+				__( 'Produkt-Popup: kräftigerer Schatten unter der Konfiguration, Lieferzeit auch bei „Lieferzeit:“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.287',
+			'items'   => array(
+				__( 'Produkt-Popup: Name, Preis und Lieferdetails bleiben über „Konfigurieren“ sichtbar.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.286',
 			'items'   => array(
 				__( 'Produkttabelle: Umlaute wie „Größe“ bleiben auf der Produktseite erhalten.', 'fairflock' ),

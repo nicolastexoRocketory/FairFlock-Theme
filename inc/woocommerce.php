@@ -912,3 +912,87 @@ function fairflock_shop_columns_script() {
 	</script>
 	<?php
 }
+
+/**
+ * Delivery sentence for a product card.
+ *
+ * @since 0.9.292
+ *
+ * @param WC_Product $product Product.
+ * @return string Empty when the product names no delivery time.
+ */
+function fairflock_product_delivery_label( $product ) {
+	if ( function_exists( 'fairflock_product_delivery_view' ) ) {
+		$view = fairflock_product_delivery_view( $product );
+		return is_array( $view ) ? $view['label'] : '';
+	}
+
+	return '';
+}
+
+/**
+ * Truck icon plus the delivery sentence, for a product card.
+ *
+ * @since 0.9.292
+ *
+ * @param string $label Already translated label.
+ * @return string
+ */
+function fairflock_product_delivery_markup( $label, $tooltip = '' ) {
+	$icon = '<svg viewBox="0 0 24 24" width="18" height="16" aria-hidden="true"><path d="M2.5 7.5h11v7.5h-11z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M13.5 10.5h4.2L21 14v1.5h-7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><circle cx="6.5" cy="17.2" r="1.5" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="17" cy="17.2" r="1.5" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>';
+	$info = function_exists( 'fairflock_delivery_info_markup' ) ? fairflock_delivery_info_markup( $tooltip ) : '';
+
+	return '<p class="ff-prod-card__delivery">' . $icon . '<span>' . esc_html( $label ) . '</span>' . $info . '</p>';
+}
+
+/**
+ * Shows „Lieferung in X Tagen“ under the price on product cards.
+ *
+ * Injected on render so a customized collection in the Site Editor still
+ * gets the line. The single-product price stays unchanged.
+ *
+ * @since 0.9.292
+ *
+ * @param string   $content  Rendered block.
+ * @param array    $block    Block data.
+ * @param WP_Block $instance Block instance, when WordPress passes it.
+ * @return string
+ */
+function fairflock_render_product_card_delivery( $content, $block, $instance = null ) {
+	if ( ( $block['blockName'] ?? '' ) !== 'woocommerce/product-price' ) {
+		return $content;
+	}
+	if ( ! function_exists( 'wc_get_product' ) ) {
+		return $content;
+	}
+
+	$attrs     = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	$is_single = ! empty( $attrs['isDescendentOfSingleProductTemplate'] );
+	$class     = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
+	$is_card   = ! empty( $attrs['isDescendentOfQueryLoop'] ) || false !== strpos( $class, 'ff-prod-card__price' );
+	if ( $is_single || ! $is_card ) {
+		return $content;
+	}
+
+	$product = null;
+	if ( $instance instanceof WP_Block ) {
+		$post_id = isset( $instance->context['postId'] ) ? (int) $instance->context['postId'] : 0;
+		if ( $post_id > 0 ) {
+			$product = wc_get_product( $post_id );
+		}
+	}
+	if ( ! $product instanceof WC_Product ) {
+		$product = wc_get_product();
+	}
+	if ( ! $product instanceof WC_Product ) {
+		return $content;
+	}
+
+	$view = function_exists( 'fairflock_product_delivery_view' ) ? fairflock_product_delivery_view( $product ) : null;
+	if ( ! is_array( $view ) || '' === $view['label'] ) {
+		return $content;
+	}
+
+	return $content . fairflock_product_delivery_markup( $view['label'], $view['tooltip'] );
+}
+add_filter( 'render_block', 'fairflock_render_product_card_delivery', 12, 3 );

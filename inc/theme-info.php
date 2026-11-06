@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.263',
+			'items'   => array(
+				__( 'Produktbeschreibung: gesamter Inhalt in einer Karte, leere Zwischenblöcke ausgeblendet.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.262',
+			'items'   => array(
+				__( 'Produktseite: Inhaltsbreite 1350px, keine Kurzbeschreibung neben dem Bild, Bild ohne Rahmen, Tags ausgeblendet, SKU in einer Zeile.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.261',
 			'items'   => array(
 				__( 'Hero: Hintergründe auf iPhone/Safari korrekt (kein Ken-Burns-Transform, stabile Cover-Fläche).', 'fairflock' ),

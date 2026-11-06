@@ -3548,9 +3548,10 @@ body.is-ff-product-open {
 	--ff-product-line: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
 	--ff-product-soft: #e8eceb;
 	--ff-product-fog: #f3f5f4;
-	/* Shell auf dem Main wie .ff-shop__shell — sonst kleben alignwide-Blöcke links */
-	width: var(--ff-shell) !important;
-	max-width: var(--ff-shell) !important;
+	/* Produktseite immer 1350px, auch bei „Volle Breite“ */
+	--ff-product-shell: min(1350px, calc(100% - 2 * var(--ff-gutter)));
+	width: var(--ff-product-shell) !important;
+	max-width: var(--ff-product-shell) !important;
 	margin-inline: auto !important;
 	box-sizing: border-box;
 	/* Woo wrappt main → globale .wp-site-blocks > main Clearance greift nicht */
@@ -3615,9 +3616,10 @@ body.is-ff-product-open {
 	width: 100% !important;
 	max-width: none !important;
 	margin: 0 !important;
-	background: var(--ff-product-soft);
-	border: 1px solid var(--ff-product-line);
-	border-radius: var(--wp--custom--radius--md, 16px);
+	background: transparent;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
 	overflow: hidden;
 	isolation: isolate;
 	box-sizing: border-box;
@@ -3627,9 +3629,11 @@ body.is-ff-product-open {
 .ff-product__hero .woocommerce-product-gallery__image,
 .ff-product__hero .wc-block-woocommerce-product-gallery__image {
 	margin: 0 !important;
+	border: 0 !important;
 	border-radius: 0;
+	box-shadow: none !important;
 	overflow: hidden;
-	background: var(--ff-product-soft);
+	background: transparent;
 }
 
 .ff-product__hero .woocommerce-product-gallery__image img,
@@ -3641,6 +3645,8 @@ body.is-ff-product-open {
 	height: auto;
 	max-height: min(640px, 70vh);
 	object-fit: cover;
+	border: 0 !important;
+	box-shadow: none !important;
 	border-radius: 0 !important;
 	margin: 0 !important;
 }
@@ -3768,10 +3774,7 @@ span.onsale,
 
 .ff-product__hero .wp-block-post-excerpt,
 .ff-product__hero .woocommerce-product-details__short-description {
-	margin: 0 !important;
-	color: var(--wp--preset--color--muted, #66707a);
-	font-size: 1rem;
-	line-height: 1.5;
+	display: none !important;
 }
 
 .ff-product__hero .wp-block-post-excerpt p {
@@ -4349,10 +4352,10 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 }
 
 .ff-product__hero .wp-block-woocommerce-product-meta .wp-block-group,
-.ff-product__hero .product_meta > span,
 .ff-product__hero .product_meta .sku_wrapper,
 .ff-product__hero .product_meta .posted_in,
-.ff-product__hero .product_meta .tagged_as {
+.ff-product__hero .wp-block-woocommerce-product-sku,
+.ff-product__hero .wc-block-components-product-sku {
 	display: block;
 	width: 100%;
 	margin: 0;
@@ -4360,6 +4363,20 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 	border: 0 !important;
 	float: none !important;
 	line-height: 1.5;
+}
+
+.ff-product__hero .wp-block-woocommerce-product-sku .wp-block-post-terms__prefix,
+.ff-product__hero .wp-block-woocommerce-product-sku .sku,
+.ff-product__hero .product_meta .sku_wrapper,
+.ff-product__hero .product_meta .sku_wrapper .sku {
+	display: inline;
+	width: auto;
+	white-space: normal;
+}
+
+.ff-product .taxonomy-product_tag,
+.ff-product .tagged_as {
+	display: none !important;
 }
 
 .ff-product__hero .wp-block-woocommerce-product-meta a,
@@ -4482,9 +4499,9 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 	border: 0;
 }
 
-/* Card-Schale für Tab-Inhalte */
-.ff-product .woocommerce-Tabs-panel > *:not(h2):not(script),
-.ff-product .wc-tab > *:not(h2):not(script),
+/* Card-Schale für Tab-Inhalte — Beschreibung ist eine gemeinsame Karte */
+.ff-product .woocommerce-Tabs-panel:not(.woocommerce-Tabs-panel--description) > *:not(h2):not(script),
+.ff-product .wc-tab:not(#tab-description):not(.woocommerce-Tabs-panel--description) > *:not(h2):not(script),
 .ff-product #reviews > #comments,
 .ff-product #reviews > #review_form_wrapper {
 	margin: 0 !important;
@@ -4783,40 +4800,72 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 	font-style: normal !important;
 }
 
-/* Beschreibung: Flatsome-ähnliche Spalten in Card-Grid */
-.ff-product .woocommerce-Tabs-panel--description .col,
-.ff-product #tab-description .col {
+/* Beschreibung: der ganze Tab-Inhalt in einer Karte */
+.ff-product .woocommerce-Tabs-panel--description,
+.ff-product #tab-description {
+	display: block;
+	margin: 0 !important;
+	padding: clamp(24px, 3.5vw, 36px) !important;
+	background: var(--ff-surface, #fff) !important;
+	border: 1px solid var(--ff-product-line) !important;
+	border-radius: var(--wp--custom--radius--md, 16px) !important;
+	box-sizing: border-box;
+}
+
+.ff-product .woocommerce-Tabs-panel--description > *,
+.ff-product #tab-description > *,
+.ff-product #tab-description .col,
+.ff-product .woocommerce-Tabs-panel--description .col {
 	float: none !important;
 	width: auto !important;
 	max-width: none !important;
-	margin: 0 !important;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
 	padding: 0 !important;
-}
-
-.ff-product .woocommerce-Tabs-panel--description,
-.ff-product #tab-description {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-	gap: 20px;
-}
-
-.ff-product .woocommerce-Tabs-panel--description > h2:first-child {
-	grid-column: 1 / -1;
-}
-
-.ff-product #tab-description > *:not(h2):not(.col),
-.ff-product .woocommerce-Tabs-panel--description > *:not(h2):not(.col) {
-	grid-column: 1 / -1;
-}
-
-.ff-product #tab-description .col,
-.ff-product .woocommerce-Tabs-panel--description .col {
-	margin: 0 !important;
-	padding: clamp(24px, 3.5vw, 36px) !important;
-	background: var(--ff-surface, #fff);
-	border: 1px solid var(--ff-product-line);
-	border-radius: var(--wp--custom--radius--md, 16px);
+	background: transparent !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
 	box-sizing: border-box;
+}
+
+.ff-product #tab-description p:empty,
+.ff-product #tab-description div:empty,
+.ff-product #tab-description h2:empty,
+.ff-product #tab-description h3:empty,
+.ff-product #tab-description h4:empty,
+.ff-product .woocommerce-Tabs-panel--description p:empty,
+.ff-product .woocommerce-Tabs-panel--description div:empty,
+.ff-product .woocommerce-Tabs-panel--description h2:empty,
+.ff-product .woocommerce-Tabs-panel--description h3:empty,
+.ff-product .woocommerce-Tabs-panel--description h4:empty,
+.ff-product #tab-description p:has(> br:only-child),
+.ff-product .woocommerce-Tabs-panel--description p:has(> br:only-child) {
+	display: none !important;
+}
+
+.ff-product #tab-description > h2:first-child + *,
+.ff-product .woocommerce-Tabs-panel--description > h2:first-child + * {
+	margin-top: 0 !important;
+}
+
+.ff-product #tab-description table,
+.ff-product .woocommerce-Tabs-panel--description table {
+	width: 100%;
+	margin: 0.85em 0 1em !important;
+	border: 1px solid var(--ff-product-line) !important;
+	border-collapse: separate !important;
+	border-spacing: 0 !important;
+	overflow: hidden;
+}
+
+.ff-product #tab-description table th,
+.ff-product #tab-description table td,
+.ff-product .woocommerce-Tabs-panel--description table th,
+.ff-product .woocommerce-Tabs-panel--description table td {
+	padding: 10px 12px !important;
+	border: 0 !important;
+	border-bottom: 1px solid var(--ff-product-line) !important;
 }
 
 .ff-product #tab-description .col-inner,
@@ -4827,17 +4876,35 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 	text-align: left !important;
 }
 
-.ff-product #tab-description h3 {
-	margin: 0 0 8px;
+.ff-product #tab-description h2,
+.ff-product #tab-description h3,
+.ff-product #tab-description h4,
+.ff-product .woocommerce-Tabs-panel--description h2,
+.ff-product .woocommerce-Tabs-panel--description h3,
+.ff-product .woocommerce-Tabs-panel--description h4 {
+	margin: 1.15em 0 0.4em;
 	font-family: var(--wp--preset--font-family--heading);
-	font-size: 1.1rem;
 	font-weight: 400;
 	letter-spacing: -0.02em;
+	line-height: 1.3;
 	color: var(--wp--preset--color--contrast, #0e1114);
 }
 
-.ff-product #tab-description p {
-	margin: 0 0 0.75em;
+.ff-product #tab-description h2,
+.ff-product .woocommerce-Tabs-panel--description h2 {
+	font-size: clamp(1.35rem, 2vw, 1.75rem);
+}
+
+.ff-product #tab-description h3,
+.ff-product #tab-description h4,
+.ff-product .woocommerce-Tabs-panel--description h3,
+.ff-product .woocommerce-Tabs-panel--description h4 {
+	font-size: 1.1rem;
+}
+
+.ff-product #tab-description p,
+.ff-product .woocommerce-Tabs-panel--description p {
+	margin: 0 0 0.85em;
 	color: var(--wp--preset--color--muted, #66707a);
 }
 
@@ -4973,7 +5040,7 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 
 	.ff-product #tab-description,
 	.ff-product .woocommerce-Tabs-panel--description {
-		grid-template-columns: 1fr;
+		padding: 20px !important;
 	}
 }
 

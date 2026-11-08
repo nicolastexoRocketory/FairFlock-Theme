@@ -53,7 +53,8 @@
 			return attrs
 				.map(function (attr, index) {
 					var labelId = "ffSizeLabel" + index;
-					var buttons = attr.terms
+					var selectId = "ffSizeSelect" + index;
+					var options = attr.terms
 						.map(function (term) {
 							var label = term.name || term.slug || "";
 							var value = term.slug || label;
@@ -63,34 +64,40 @@
 							}
 							var on = selectedOptions[attr.name] === value;
 							return (
-								'<button type="button" class="ff-product-modal__size' +
-								(on ? " is-selected" : "") +
-								'" data-ff-size-attr="' +
-								escapeHtml(attr.name) +
-								'" data-ff-size-value="' +
+								'<option value="' +
 								escapeHtml(value) +
-								'" aria-pressed="' +
-								(on ? "true" : "false") +
-								'">' +
+								'"' +
+								(on ? " selected" : "") +
+								">" +
 								escapeHtml(label) +
-								"</button>"
+								"</option>"
 							);
 						})
 						.filter(Boolean)
 						.join("");
-					if (!buttons) return "";
+					if (!options) return "";
+					var placeholder = selectedOptions[attr.name]
+						? ""
+						: '<option value="">Bitte wählen</option>';
 					return (
 						'<div class="ff-product-modal__sizes">' +
-						'<p class="ff-product-modal__sizes-label" id="' +
+						'<label class="ff-product-modal__sizes-label" id="' +
 						labelId +
+						'" for="' +
+						selectId +
 						'">' +
 						escapeHtml(attr.name) +
-						"</p>" +
-						'<div class="ff-product-modal__sizes-options" role="group" aria-labelledby="' +
+						"</label>" +
+						'<select class="ff-product-modal__size-select" id="' +
+						selectId +
+						'" data-ff-size-attr="' +
+						escapeHtml(attr.name) +
+						'" aria-labelledby="' +
 						labelId +
 						'">' +
-						buttons +
-						"</div></div>"
+						placeholder +
+						options +
+						"</select></div>"
 					);
 				})
 				.filter(Boolean)
@@ -656,9 +663,9 @@
 					  "</button>"
 					: "") +
 				headHtml +
+				sizePicker +
 				'<div class="ff-product-modal__config">' +
 				'<div class="ff-product-modal__config-clip">' +
-				sizePicker +
 				(personalizationHtml
 					? '<div class="ff-product-modal__personalization">' + personalizationHtml + "</div>"
 					: "") +
@@ -945,6 +952,16 @@
 				});
 		}
 
+		document.addEventListener("change", function (e) {
+			var sizeSelect = e.target.closest && e.target.closest("select[data-ff-size-attr]");
+			if (!sizeSelect || !layer.contains(sizeSelect)) return;
+			var attrName = sizeSelect.getAttribute("data-ff-size-attr");
+			if (!attrName) return;
+			if (sizeSelect.value) selectedOptions[attrName] = sizeSelect.value;
+			else delete selectedOptions[attrName];
+			setStatus("");
+		});
+
 		document.addEventListener(
 			"click",
 			function (e) {
@@ -983,24 +1000,6 @@
 						closePanel.classList.add("is-collapsed");
 						collapseBtn.setAttribute("aria-expanded", "false");
 					}
-					return;
-				}
-
-				var sizeBtn = e.target.closest && e.target.closest("[data-ff-size-value]");
-				if (sizeBtn && layer.contains(sizeBtn)) {
-					e.preventDefault();
-					var attrName = sizeBtn.getAttribute("data-ff-size-attr");
-					var attrValue = sizeBtn.getAttribute("data-ff-size-value");
-					if (attrName) selectedOptions[attrName] = attrValue;
-					var group = sizeBtn.parentElement;
-					if (group) {
-						group.querySelectorAll(".ff-product-modal__size").forEach(function (button) {
-							var on = button === sizeBtn;
-							button.classList.toggle("is-selected", on);
-							button.setAttribute("aria-pressed", on ? "true" : "false");
-						});
-					}
-					setStatus("");
 					return;
 				}
 

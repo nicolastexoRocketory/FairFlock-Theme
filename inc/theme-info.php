@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.296',
+			'items'   => array(
+				__( 'Produkt-Popup: Größen stehen in einem Dropdown und bleiben sichtbar, auch wenn die Personalisierung eingeklappt ist.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.295',
 			'items'   => array(
 				__( 'FairFlock → Lieferzeiten: globale Lieferklassen, optional mit Info-Icon. Am Produkt unter Versand als Lieferdauerklasse wählbar.', 'fairflock' ),

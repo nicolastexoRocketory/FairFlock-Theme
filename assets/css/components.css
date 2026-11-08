@@ -3510,7 +3510,7 @@ body.is-ff-product-open {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
-	margin: 0;
+	margin: 14px 0 0;
 }
 
 .ff-product-modal__sizes-label {
@@ -3520,19 +3520,21 @@ body.is-ff-product-open {
 	color: var(--wp--preset--color--contrast, #0e1114);
 }
 
-.ff-product-modal__sizes-options {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-}
-
-.ff-product-modal__size {
+.ff-product-modal__size-select {
+	-webkit-appearance: none;
+	appearance: none;
+	box-sizing: border-box;
+	width: 100%;
 	min-height: 44px;
-	min-width: 44px;
-	padding: 8px 14px;
+	margin: 0;
+	padding: 0 44px 0 16px;
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent);
-	background: var(--ff-surface, #fff);
+	background-color: var(--ff-surface, #fff);
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2366707a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 14px center;
+	background-size: 16px;
 	color: var(--wp--preset--color--contrast, #0e1114);
 	font: inherit;
 	font-size: 0.9375rem;
@@ -3541,16 +3543,10 @@ body.is-ff-product-open {
 	cursor: pointer;
 }
 
-.ff-product-modal__size:hover,
-.ff-product-modal__size:focus {
+.ff-product-modal__size-select:hover,
+.ff-product-modal__size-select:focus {
 	border-color: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 55%, transparent);
 	outline: none;
-}
-
-.ff-product-modal__size.is-selected {
-	background: var(--wp--preset--color--brand, #377530);
-	border-color: var(--wp--preset--color--brand, #377530);
-	color: #fff;
 }
 
 .ff-product-modal__actions {

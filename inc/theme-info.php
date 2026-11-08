@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.297',
+			'items'   => array(
+				__( 'Produkt-Popup: Das Größen-Dropdown zeigt nur Größen, die als Variante angelegt sind, und übergibt die Auswahl an den Warenkorb.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.296',
 			'items'   => array(
 				__( 'Produkt-Popup: Größen stehen in einem Dropdown und bleiben sichtbar, auch wenn die Personalisierung eingeklappt ist.', 'fairflock' ),

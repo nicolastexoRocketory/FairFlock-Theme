@@ -46,6 +46,24 @@
 			});
 		}
 
+		function sameOption(a, b) {
+			return String(a).toLowerCase() === String(b).toLowerCase();
+		}
+
+		function variationValue(variation, attrName) {
+			var row = (variation.attributes || []).find(function (item) {
+				return item && item.name === attrName;
+			});
+			return row && row.value != null ? String(row.value) : "";
+		}
+
+		function termIsOffered(p, attr, term) {
+			return (p.variations || []).some(function (variation) {
+				var value = variationValue(variation, attr.name);
+				return !value || sameOption(value, term.slug || "") || sameOption(value, term.name || "");
+			});
+		}
+
 		function renderSizePicker(p) {
 			var attrs = variationAttrs(p);
 			if (!attrs.length || !Array.isArray(p.variations) || !p.variations.length) return "";
@@ -54,12 +72,15 @@
 				.map(function (attr, index) {
 					var labelId = "ffSizeLabel" + index;
 					var selectId = "ffSizeSelect" + index;
-					var options = attr.terms
+					var terms = attr.terms.filter(function (term) {
+						return termIsOffered(p, attr, term);
+					});
+					var options = terms
 						.map(function (term) {
 							var label = term.name || term.slug || "";
 							var value = term.slug || label;
 							if (!label) return "";
-							if (term.default || attr.terms.length === 1) {
+							if (term.default || terms.length === 1) {
 								selectedOptions[attr.name] = value;
 							}
 							var on = selectedOptions[attr.name] === value;
@@ -113,15 +134,21 @@
 			if (missing) return 0;
 			var found = (p.variations || []).find(function (variation) {
 				return attrs.every(function (attr) {
-					var chosen = selectedOptions[attr.name];
-					var row = (variation.attributes || []).find(function (item) {
-						return item && item.name === attr.name;
-					});
-					if (!row || row.value == null || row.value === "") return true;
-					return String(row.value) === String(chosen);
+					var value = variationValue(variation, attr.name);
+					return !value || sameOption(value, selectedOptions[attr.name]);
 				});
 			});
 			return found ? Number(found.id) : 0;
+		}
+
+		function selectedVariationData(p) {
+			return variationAttrs(p)
+				.filter(function (attr) {
+					return !!selectedOptions[attr.name];
+				})
+				.map(function (attr) {
+					return { attribute: attr.name, value: selectedOptions[attr.name] };
+				});
 		}
 
 		function escapeHtml(s) {
@@ -896,8 +923,10 @@
 		function addToCart(productId, btn) {
 			setStatus("");
 			var cartId = Number(productId);
+			var variationData = [];
 			if (currentProduct && variationAttrs(currentProduct).length) {
 				cartId = selectedVariationId(currentProduct);
+				variationData = selectedVariationData(currentProduct);
 				if (!cartId) {
 					setStatus(missingSizeMessage(currentProduct), true);
 					return;
@@ -927,7 +956,11 @@
 						method: "POST",
 						credentials: "same-origin",
 						headers: headers,
-						body: JSON.stringify({ id: cartId, quantity: 1 })
+						body: JSON.stringify(
+							variationData.length
+								? { id: cartId, quantity: 1, variation: variationData }
+								: { id: cartId, quantity: 1 }
+						)
 					});
 				})
 				.then(function (res) {

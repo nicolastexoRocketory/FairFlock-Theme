@@ -3128,7 +3128,7 @@ body.is-ff-product-open {
 	max-height: 100%;
 	height: 100%;
 	align-self: stretch;
-	background: #e8eceb;
+	background: var(--wp--preset--color--base, #f3f5f4);
 	overflow-x: hidden;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
@@ -3137,7 +3137,7 @@ body.is-ff-product-open {
 }
 
 .ff-product-modal__media--empty {
-	background: linear-gradient(145deg, #e8eceb, #d5dbd8);
+	background: var(--wp--preset--color--base, #f3f5f4);
 }
 
 .ff-product-modal__stage {
@@ -4163,7 +4163,7 @@ span.onsale,
 	gap: 14px;
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
 	border-radius: var(--wp--custom--radius--md, 16px);
-	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 70%, #fff);
+	background: var(--ff-surface, var(--wp--custom--surface, #fff));
 }
 
 .ff-personalization__hint,
@@ -4228,7 +4228,7 @@ span.onsale,
 .ff-personalization__switch-option.is-active,
 .ff-personalization__switch-option:has(input:checked) {
 	border-color: var(--wp--preset--color--brand, #377530);
-	background: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 10%, #fff);
+	background: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 10%, var(--ff-surface, #fff));
 	color: var(--wp--preset--color--brand, #377530);
 }
 
@@ -5527,6 +5527,16 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
+.ff-product-table__panel {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	min-height: 0;
+	width: 100%;
+	height: 100%;
+	background: var(--ff-surface, #fff);
+}
+
 .ff-product-table__bar {
 	display: flex;
 	align-items: center;
@@ -5827,19 +5837,40 @@ body.is-ff-ptable-open {
 @media (min-width: 782px) {
 	.ff-product-table__dialog {
 		align-items: center;
-		background: rgba(14, 17, 20, 0.38);
+		justify-content: center;
+		padding: 2rem;
+		background: rgba(14, 17, 20, 0.45);
+	}
+
+	.ff-product-table__panel {
+		flex: 0 1 auto;
+		width: max-content;
+		max-width: min(100%, calc(100vw - 4rem));
+		height: auto;
+		max-height: min(90vh, calc(100vh - 4rem));
+		overflow: hidden;
+		border-radius: var(--wp--custom--radius--md, 16px);
+		box-shadow: 0 24px 64px rgba(14, 17, 20, 0.28);
+	}
+
+	.ff-product-table__gallery {
+		display: none !important;
 	}
 
 	.ff-product-table__bar,
-	.ff-product-table__gallery,
 	.ff-product-table__sheet {
 		box-sizing: border-box;
-		width: min(1350px, calc(100% - 2 * var(--ff-gutter)));
+		width: 100%;
+		background: var(--ff-surface, #fff);
 	}
 
-	.ff-product-table__bar,
 	.ff-product-table__sheet {
-		background: var(--ff-surface, #fff);
+		flex: 0 1 auto;
+		padding: 12px 20px 20px;
+	}
+
+	.ff-product-table__dialog .ff-product-table__wrap {
+		max-height: min(70vh, 32rem);
 	}
 }
 

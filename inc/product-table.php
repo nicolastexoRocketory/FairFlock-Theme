@@ -229,9 +229,10 @@ function fairflock_product_table_markup( $product ) {
 	$html    = '<section class="ff-product-table" data-cols="' . esc_attr( (string) count( $columns ) ) . '">';
 	$html   .= '<button type="button" class="ff-product-table__open" data-ff-ptable-open>';
 	$html   .= '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16M9 4v16M15 4v16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>';
-	$html   .= esc_html__( 'Tabelle öffnen', 'fairflock' );
+	$html   .= esc_html__( 'Größentabelle öffnen', 'fairflock' );
 	$html   .= '</button>';
 	$html   .= '<div class="ff-product-table__dialog" hidden role="dialog" aria-modal="true" aria-labelledby="' . esc_attr( $uid ) . '">';
+	$html   .= '<div class="ff-product-table__panel">';
 	$html   .= '<div class="ff-product-table__bar">';
 	$html   .= '<h3 class="ff-product-table__title" id="' . esc_attr( $uid ) . '">' . esc_html( $label ) . '</h3>';
 	$html   .= '<button type="button" class="ff-product-table__close" data-ff-ptable-close>';
@@ -277,7 +278,7 @@ function fairflock_product_table_markup( $product ) {
 	$html .= '</tbody></table></div>';
 	$html .= '<button type="button" class="ff-product-table__arrow is-next" data-ff-ptable-scroll="1" aria-label="' . esc_attr__( 'Nach rechts', 'fairflock' ) . '" hidden>';
 	$html .= '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9.5 6 15.5 12l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-	$html .= '</button></div></div></section>';
+	$html .= '</button></div></div></div></section>';
 	return $html;
 }
 

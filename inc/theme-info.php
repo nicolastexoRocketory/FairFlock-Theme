@@ -20,6 +20,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.299',
+			'items'   => array(
+				__( 'Produkttabelle: Button „Größentabelle öffnen“. Auf Desktop ein kompaktes Popup um die Tabelle herum.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.298',
+			'items'   => array(
+				__( 'Produktseite: Die Personalisierungs-Card nutzt die eingestellte Surface-Farbe statt einer festen Weiß-Mischung.', 'fairflock' ),
+				__( 'Produkt-Popup: Der Bildbereich ohne Bild nutzt die eingestellte Base-Farbe statt festem Grau.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.297',
 			'items'   => array(
 				__( 'Produkt-Popup: Das Größen-Dropdown zeigt nur Größen, die als Variante angelegt sind, und übergibt die Auswahl an den Warenkorb.', 'fairflock' ),

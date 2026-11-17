@@ -7,40 +7,29 @@
 
 	<!-- wp:columns {"align":"wide","className":"ff-product__hero","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|40"}}}} -->
 	<div class="wp-block-columns alignwide ff-product__hero">
-		<!-- wp:column {"width":"50%"} -->
-		<div class="wp-block-column" style="flex-basis:50%">
+		<!-- wp:column {"width":"40%","className":"ff-product__gallery"} -->
+		<div class="wp-block-column ff-product__gallery" style="flex-basis:40%">
 			<!-- wp:woocommerce/product-image-gallery /-->
 		</div>
 		<!-- /wp:column -->
 
-		<!-- wp:column {"width":"50%","className":"ff-product__summary"} -->
-		<div class="wp-block-column ff-product__summary" style="flex-basis:50%">
+		<!-- wp:column {"width":"35%","className":"ff-product__info"} -->
+		<div class="wp-block-column ff-product__info" style="flex-basis:35%">
 			<!-- wp:post-title {"level":1,"__woocommerceNamespace":"woocommerce/product-query/product-title"} /-->
+		</div>
+		<!-- /wp:column -->
 
-			<!-- wp:woocommerce/product-rating {"isDescendentOfSingleProductTemplate":true} /-->
-
+		<!-- wp:column {"width":"25%","className":"ff-product__buy ff-product__summary"} -->
+		<div class="wp-block-column ff-product__buy ff-product__summary" style="flex-basis:25%">
 			<!-- wp:woocommerce/product-price {"isDescendentOfSingleProductTemplate":true,"fontSize":"large"} /-->
 
 			<!-- wp:woocommerce/add-to-cart-form /-->
-
-			<!-- wp:woocommerce/product-meta -->
-			<div class="wp-block-woocommerce-product-meta">
-				<!-- wp:group {"layout":{"type":"flex","flexWrap":"wrap"}} -->
-				<div class="wp-block-group">
-					<!-- wp:woocommerce/product-sku /-->
-					<!-- wp:post-terms {"term":"product_cat","prefix":"Kategorie: "} /-->
-				</div>
-				<!-- /wp:group -->
-			</div>
-			<!-- /wp:woocommerce/product-meta -->
 		</div>
 		<!-- /wp:column -->
 	</div>
 	<!-- /wp:columns -->
 
-	<!-- wp:woocommerce/product-details {"align":"wide","className":"is-style-minimal ff-product__details"} /-->
-
-	<!-- wp:pattern {"slug":"woocommerce-blocks/related-products"} /-->
+	<!-- wp:pattern {"slug":"fairflock/related-products"} /-->
 </main>
 <!-- /wp:group -->
 

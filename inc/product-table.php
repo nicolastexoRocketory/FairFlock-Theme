@@ -228,7 +228,7 @@ function fairflock_product_table_markup( $product ) {
 	$label   = '' !== $title ? $title : __( 'Tabelle', 'fairflock' );
 	$html    = '<section class="ff-product-table" data-cols="' . esc_attr( (string) count( $columns ) ) . '">';
 	$html   .= '<button type="button" class="ff-product-table__open" data-ff-ptable-open>';
-	$html   .= '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16M9 4v16M15 4v16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>';
+	$html   .= '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16M9 4v16M15 4v16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>';
 	$html   .= esc_html__( 'Größentabelle öffnen', 'fairflock' );
 	$html   .= '</button>';
 	$html   .= '<div class="ff-product-table__dialog" hidden role="dialog" aria-modal="true" aria-labelledby="' . esc_attr( $uid ) . '">';
@@ -572,15 +572,8 @@ function fairflock_product_table_append_content( $content ) {
 	if ( ! is_singular( 'product' ) || ! in_the_loop() || ! is_main_query() ) {
 		return $content;
 	}
-	if ( str_contains( $content, 'ff-product-table' ) ) {
-		return $content;
-	}
-
-	$markup = fairflock_product_table_markup( get_the_ID() );
-	if ( '' === $markup ) {
-		return $content;
-	}
-	return $content . $markup;
+	// From 0.9.305 the table lives in the buy column (see product-layout.php).
+	return $content;
 }
 add_filter( 'the_content', 'fairflock_product_table_append_content', 20 );
 

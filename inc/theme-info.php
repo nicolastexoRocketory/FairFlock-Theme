@@ -20,6 +20,192 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.335',
+			'items'   => array(
+				__( 'Produkt-Popup mobil: Galerie zeigt Hauptbild und Thumbnails vollständig (kein Abschneiden).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.334',
+			'items'   => array(
+				__( 'Suche: engere Abstände über den Treffern und zum Link „Alle Ergebnisse anzeigen“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.333',
+			'items'   => array(
+				__( 'Verwandte Produkte: Titel „Mehr von dieser Art“, 1-Spalten-Slideshow mit Pfeilen.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.332',
+			'items'   => array(
+				__( 'Akkordeon-Titel: „Weitere Informationen“ statt „Kurzbeschreibung“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.331',
+			'items'   => array(
+				__( 'Mobil: Produkttitel steht über dem Bildbereich.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.330',
+			'items'   => array(
+				__( 'Mobil: Abstand über „Konfigurieren“ entfernt (eingeklappte Config nimmt keinen Platz mehr).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.329',
+			'items'   => array(
+				__( 'Lieferzeit-Tooltip in der Kauf-Sidebar bleibt im Rand (unter der Zeile, volle Breite).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.328',
+			'items'   => array(
+				__( 'Fix: „Konfigurieren“-Button wieder sichtbar (außerhalb des Woo-Varianten-Warenkorb-Blocks).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.327',
+			'items'   => array(
+				__( 'Konfigurieren: Größe klappt erst mit Design/Warenkorb aus (Popup und Produktseite).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.326',
+			'items'   => array(
+				__( 'Kurzbeschreibung-Akkordeon: größerer Innenabstand und Ausklapp-Animation.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.325',
+			'items'   => array(
+				__( 'Produktseite mobil: gesamter Bestellbereich inkl. Preis unten fixiert; Konfigurieren wie im Produkt-Popup.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.324',
+			'items'   => array(
+				__( 'Produktkurzbeschreibung: immer als Akkordeon, standardmäßig eingeklappt (Popup und Produktseite).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.323',
+			'items'   => array(
+				__( 'Produktseite mobil: bei Personalisierung „Konfigurieren“; Größenauswahl immer über dem Hinzufügen-/Warenkorb-Button.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.322',
+			'items'   => array(
+				__( 'Kauf-Sidebar: Mengensteuerung und Warenkorb-Button kompakter, Button-Text in einer Zeile.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.321',
+			'items'   => array(
+				__( 'Dein Design: nur noch eine konfigurierbare Info-Zeile; doppeltes Feldlabel entfernt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.320',
+			'items'   => array(
+				__( 'Kauf-Sidebar: „Größe“ und „Dein Design“ jeweils als eigene innere Card.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.319',
+			'items'   => array(
+				__( 'Mobil: „Hinzufügen“/„Konfigurieren“ im Popup und Warenkorb-CTA auf der Produktseite unten fixiert.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.318',
+			'items'   => array(
+				__( 'Upload: erlaubte Dateiformate (PNG/JPG/PDF) pro Produkt im Backend wählbar; Menge modern mit −/+ links neben „In den Warenkorb“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.317',
+			'items'   => array(
+				__( 'Kauf-Sidebar: engere Abstände über Größe und Dein Design.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.316',
+			'items'   => array(
+				__( 'Kauf-Sidebar: Abschnitte Preis/Lager, Größe, Design und Warenkorb mit Trennlinien.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.315',
+			'items'   => array(
+				__( 'Produktseite: Kurzbeschreibung als eigene Card unter der Produktsektion.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.314',
+			'items'   => array(
+				__( 'Produktseite: Amazon-ähnliches Layout mit sticky Kauf-Sidebar rechts (Preis + Konfiguration), Infos in der Mitte.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.313',
+			'items'   => array(
+				__( 'Produktkarten überall wie Startseite: Lieferzeile linksbündig in einer Reihe, ohne Warenkorb-Button in Related.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.312',
+			'items'   => array(
+				__( 'Produktseite: Überschrift unter dem Produkt „Produkte aus dieser Kategorie“ statt „Ähnliche Produkte“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.311',
+			'items'   => array(
+				__( 'Produktseite: Größe, Design und Warenkorb als eine zusammenhängende Card wie im Popup.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.310',
+			'items'   => array(
+				__( 'Größentabelle-Button: schmaler, linksbündig und kleiner.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.309',
+			'items'   => array(
+				__( 'Produktseite/Popup: etwas mehr Abstand zwischen Preis/Lieferzeile und Beschreibung.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.308',
+			'items'   => array(
+				__( 'Produktseite/Popup: engere Abstände zwischen Titel, Preis, Lagerzeile und Beschreibung.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.307',
+			'items'   => array(
+				__( 'Produktseite: Galerie wieder als normales Hauptbild mit Thumbnails (Base-Farbe), ohne kaputtes Stapeln.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.306',
+			'items'   => array(
+				__( 'Produkt-Popup: Größe und „Konfigurieren“ wieder im unteren Bereich; neues Inhalts-Layout darüber bleibt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.305',
+			'items'   => array(
+				__( 'Produkt-Popup und Produktseite: gemeinsames Kauf-Layout (Titel, Preis+MwSt, Lager/Lieferzeit, Beschreibung, Kurzbeschreibung, Größentabelle, Produktinfos, Aktionen).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.304',
 			'items'   => array(
 				__( 'Produktseite: Slideshow-/Thumbnail-Hintergrund nutzt die eingestellte Base-Farbe statt festem Weiß.', 'fairflock' ),

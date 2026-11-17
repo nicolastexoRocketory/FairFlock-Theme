@@ -453,33 +453,43 @@
 			return renderMetaRow("Schlagwörter", html);
 		}
 
+		function renderTaxNote() {
+			return '<p class="ff-product-buy__tax">zzgl. Versandkosten | inkl. MwSt</p>';
+		}
+
 		function renderPriceBlock(p) {
 			var prices = p.prices || {};
 			var current = formatPrice(prices, "price");
+			var priceInner = "";
 			if (!current && p.price_html) {
-				return '<div class="ff-product-modal__price">' + p.price_html + "</div>";
+				priceInner = '<div class="ff-product-modal__price">' + p.price_html + "</div>";
+			} else if (current) {
+				var regular = formatPrice(prices, "regular_price");
+				var onSale =
+					p.on_sale ||
+					(regular &&
+						prices.regular_price &&
+						prices.price &&
+						prices.regular_price !== prices.price);
+
+				if (onSale && regular && regular !== current) {
+					priceInner =
+						'<p class="ff-product-modal__price">' +
+						'<span class="ff-product-modal__price-sale">' +
+						escapeHtml(current) +
+						"</span> " +
+						'<s class="ff-product-modal__price-regular">' +
+						escapeHtml(regular) +
+						"</s>" +
+						"</p>";
+				} else {
+					priceInner = '<p class="ff-product-modal__price">' + escapeHtml(current) + "</p>";
+				}
 			}
-			if (!current) return "";
-
-			var regular = formatPrice(prices, "regular_price");
-			var onSale =
-				p.on_sale ||
-				(regular && prices.regular_price && prices.price && prices.regular_price !== prices.price);
-
-			if (onSale && regular && regular !== current) {
-				return (
-					'<p class="ff-product-modal__price">' +
-					'<span class="ff-product-modal__price-sale">' +
-					escapeHtml(current) +
-					"</span> " +
-					'<s class="ff-product-modal__price-regular">' +
-					escapeHtml(regular) +
-					"</s>" +
-					"</p>"
-				);
-			}
-
-			return '<p class="ff-product-modal__price">' + escapeHtml(current) + "</p>";
+			if (!priceInner) return "";
+			return (
+				'<div class="ff-product-buy__price-row">' + priceInner + renderTaxNote() + "</div>"
+			);
 		}
 
 		function renderStock(p) {
@@ -500,7 +510,7 @@
 					? " is-backorder"
 					: " is-in";
 			return (
-				'<span class="ff-product-modal__fact' +
+				'<span class="ff-product-buy__fact ff-product-modal__fact' +
 				cls +
 				'">' +
 				'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3.5 8 12 4l8.5 4v8L12 20l-8.5-4V8z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M12 12.2 20.5 8M12 12.2V20M12 12.2 3.5 8" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></svg>' +
@@ -560,15 +570,15 @@
 			if (!stock && !delivery) return "";
 			var ship = delivery
 				? (stock
-						? '<span class="ff-product-modal__fact-rule" aria-hidden="true"></span>'
+						? '<span class="ff-product-buy__fact-rule ff-product-modal__fact-rule" aria-hidden="true"></span>'
 						: "") +
-				  '<span class="ff-product-modal__fact">' +
+				  '<span class="ff-product-buy__fact ff-product-modal__fact">' +
 				  '<svg viewBox="0 0 24 24" width="18" height="16" aria-hidden="true"><path d="M2.5 7.5h11v7.5h-11z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M13.5 10.5h4.2L21 14v1.5h-7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><circle cx="6.5" cy="17.2" r="1.5" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="17" cy="17.2" r="1.5" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>' +
 				  escapeHtml(delivery.label) +
 				  deliveryInfo(delivery.tooltip) +
 				  "</span>"
 				: "";
-			return '<p class="ff-product-modal__facts">' + stock + ship + "</p>";
+			return '<p class="ff-product-buy__facts ff-product-modal__facts">' + stock + ship + "</p>";
 		}
 
 		function renderProductInfos(p) {
@@ -625,9 +635,11 @@
 			var images = collectImages(p);
 			var shortDesc = p.short_description || "";
 			var longDesc = p.description || "";
-			var showLong =
-				longDesc &&
-				longDesc.replace(/\s+/g, "") !== String(shortDesc).replace(/\s+/g, "");
+			var longPlain = plainText(longDesc);
+			var shortPlain = plainText(shortDesc);
+			var shortIsDistinct =
+				!!shortPlain &&
+				(!longPlain || shortPlain.replace(/\s+/g, "") !== longPlain.replace(/\s+/g, ""));
 			var purchasable = p.is_purchasable !== false && p.is_in_stock !== false;
 			var sizePicker = renderSizePicker(p);
 			var hasOptions = !!p.has_options || (Array.isArray(p.variations) && p.variations.length > 0);
@@ -644,31 +656,38 @@
 					? '<p class="ff-product-modal__note">Varianten und Optionen wählst du auf der Produktseite.</p>'
 					: "";
 
-			var descriptionBody = showLong ? longDesc : shortDesc;
-			var descriptionHtml =
-				descriptionBody || personalization.tableHtml
-					? '<div class="ff-product-modal__description">' +
-					  (descriptionBody || "") +
-					  personalization.tableHtml +
-					  "</div>"
-					: "";
+			var descriptionHtml = "";
+			if (longPlain) {
+				descriptionHtml =
+					'<div class="ff-product-modal__description ff-product-buy__description">' +
+					longDesc +
+					"</div>";
+			}
 
-			var productInfosHtml = renderProductInfos(p);
-
-			var detailsInner =
-				(showLong && shortDesc ? '<div class="ff-product-modal__excerpt">' + shortDesc + "</div>" : "") +
-				renderAttributes(p.attributes) +
-				optionsNote;
-			var details = detailsInner
-				? '<div class="ff-product-modal__details">' + detailsInner + "</div>"
+			/* Kurzbeschreibung immer als Akkordeon, standardmäßig eingeklappt */
+			var excerptHtml = shortIsDistinct
+				? '<details class="ff-product-excerpt-acc ff-product-modal__excerpt ff-product-buy__excerpt">' +
+				  '<summary class="ff-product-excerpt-acc__summary">' +
+				  '<span class="ff-product-excerpt-acc__title">Weitere Informationen</span>' +
+				  '<span class="ff-product-excerpt-acc__icon" aria-hidden="true"></span>' +
+				  "</summary>" +
+				  '<div class="ff-product-excerpt-acc__clip">' +
+				  '<div class="ff-product-excerpt-acc__clip-inner">' +
+				  '<div class="ff-product-excerpt-acc__body">' +
+				  shortDesc +
+				  "</div></div></div>" +
+				  "</details>"
 				: "";
+
+			var tableHtml = personalization.tableHtml || "";
+			var productInfosHtml = renderProductInfos(p);
+			var attrsHtml = renderAttributes(p.attributes);
 
 			var headHtml =
 				'<div class="ff-product-modal__head">' +
 				'<h2 id="ffProductTitle" class="ff-product-modal__title">' +
 				safeText(p.name || "") +
 				"</h2>" +
-				renderRating(p) +
 				renderPriceBlock(p) +
 				renderFacts(p) +
 				"</div>";
@@ -677,13 +696,14 @@
 				'<div class="ff-product-modal__grid">' +
 				renderGallery(images) +
 				'<div class="ff-product-modal__copy">' +
-				'<div class="ff-product-modal__read">' +
 				'<div class="ff-product-modal__scroll">' +
+				headHtml +
 				descriptionHtml +
+				excerptHtml +
+				attrsHtml +
+				optionsNote +
+				tableHtml +
 				productInfosHtml +
-				details +
-				"</div>" +
-				'<div class="ff-product-modal__dim" aria-hidden="true"></div>' +
 				"</div>" +
 				'<div class="ff-product-modal__actions' +
 				(startsCollapsed ? " is-collapsed" : "") +
@@ -693,10 +713,9 @@
 					  '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
 					  "</button>"
 					: "") +
-				headHtml +
-				sizePicker +
 				'<div class="ff-product-modal__config">' +
 				'<div class="ff-product-modal__config-clip">' +
+				sizePicker +
 				(personalizationHtml
 					? '<div class="ff-product-modal__personalization">' +
 					  '<p class="ff-product-modal__sizes-label">Dein Design</p>' +

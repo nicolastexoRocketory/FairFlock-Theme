@@ -233,8 +233,11 @@ function fairflock_enqueue_frontend_assets() {
 	}
 
 	$needs_products_slider = is_front_page()
+		|| ( function_exists( 'is_product' ) && is_product() )
 		|| fairflock_content_contains_marker( 'ff-products' )
-		|| fairflock_content_contains_marker( 'ff-products-slider' );
+		|| fairflock_content_contains_marker( 'ff-products-slider' )
+		|| fairflock_content_contains_marker( 'ff-related-slider' )
+		|| fairflock_content_contains_marker( 'ff-prod-slider' );
 	if ( $needs_products_slider ) {
 		wp_enqueue_script(
 			'fairflock-products-slider',

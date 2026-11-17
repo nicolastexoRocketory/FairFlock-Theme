@@ -20,6 +20,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.304',
+			'items'   => array(
+				__( 'Produktseite: Slideshow-/Thumbnail-Hintergrund nutzt die eingestellte Base-Farbe statt festem Weiß.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.303',
+			'items'   => array(
+				__( 'Produkt-Popup: Produktinfos unter der Beschreibung, „Dein Design“ über Personalisierung, Datei-Link in Textfarbe, flachere Aktions-Buttons.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.302',
+			'items'   => array(
+				__( 'Kasse: Vorteile und „Jetzt kaufen“ in positivem Grün; Button und AGB-Text auf Deutsch.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.301',
+			'items'   => array(
+				__( 'Produkt-Popup: Art.-Nr., Tags und Kategorie unter „Produktinfos (i)“ als Hover. „Auf Lager“ fest grün, größerer Titel.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.300',
+			'items'   => array(
+				__( 'Produkt-Popup: Lieferzeit-Tooltip nutzt Kontrast/Base, bleibt in der Spalte und wird nicht links abgeschnitten.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.299',
 			'items'   => array(
 				__( 'Produkttabelle: Button „Größentabelle öffnen“. Auf Desktop ein kompaktes Popup um die Tabelle herum.', 'fairflock' ),

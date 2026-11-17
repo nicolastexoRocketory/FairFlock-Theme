@@ -75,8 +75,9 @@
 	width: 8px;
 	height: 8px;
 	border-radius: 50%;
-	background: var(--wp--preset--color--brand, #377530);
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp--preset--color--brand, #377530) 18%, transparent);
+	/* Positives Grün — unabhängig von der Shop-Brand-Farbe. */
+	background: #2f9e44;
+	box-shadow: 0 0 0 3px color-mix(in srgb, #2f9e44 18%, transparent);
 	flex-shrink: 0;
 }
 
@@ -520,13 +521,13 @@
 	padding: 14px 24px !important;
 	border: 0 !important;
 	border-radius: var(--wp--custom--radius--sm, 8px) !important;
-	background: var(--wp--preset--color--brand, #377530) !important;
+	background: #2f9e44 !important;
 	color: #fff !important;
 	font-family: var(--wp--preset--font-family--body) !important;
 	font-size: 1.0625rem !important;
 	font-weight: 700 !important;
 	letter-spacing: 0.01em;
-	box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--wp--preset--color--brand, #377530) 70%, transparent);
+	box-shadow: 0 10px 24px -12px color-mix(in srgb, #2f9e44 70%, transparent);
 	transition:
 		background 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
 		transform 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
@@ -535,9 +536,9 @@
 
 .ff-checkout-page .wc-block-components-checkout-place-order-button:hover,
 .ff-checkout-page .wc-block-components-checkout-place-order-button:focus-visible {
-	background: var(--wp--preset--color--brand-deep, #2a5c25) !important;
+	background: #248a38 !important;
 	transform: translateY(-1px);
-	box-shadow: 0 14px 28px -12px color-mix(in srgb, var(--wp--preset--color--brand, #377530) 75%, transparent);
+	box-shadow: 0 14px 28px -12px color-mix(in srgb, #2f9e44 75%, transparent);
 }
 
 .ff-checkout-page .wc-block-components-checkout-place-order-button:active {
@@ -552,7 +553,7 @@
 }
 
 .ff-checkout-page .wc-block-checkout__terms a {
-	color: var(--wp--preset--color--brand, #377530);
+	color: #2f9e44;
 	font-weight: 700;
 	text-decoration: underline;
 	text-underline-offset: 2px;
@@ -587,12 +588,12 @@
 .ff-checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__input[type="checkbox"] {
 	border-radius: 4px !important;
 	border-color: var(--ff-checkout-line-strong) !important;
-	accent-color: var(--wp--preset--color--brand, #377530);
+	accent-color: #2f9e44;
 }
 
 .ff-checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__input[type="checkbox"]:checked {
-	background: var(--wp--preset--color--brand, #377530) !important;
-	border-color: var(--wp--preset--color--brand, #377530) !important;
+	background: #2f9e44 !important;
+	border-color: #2f9e44 !important;
 }
 
 /* —— Mobile —— */

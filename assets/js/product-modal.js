@@ -571,6 +571,27 @@
 			return '<p class="ff-product-modal__facts">' + stock + ship + "</p>";
 		}
 
+		function renderProductInfos(p) {
+			var rows =
+				(p.sku ? renderMetaRow("Art.-Nr.", escapeHtml(p.sku)) : "") +
+				renderTags(p.tags) +
+				renderCategories(p.categories) +
+				(p.formatted_weight ? renderMetaRow("Gewicht", escapeHtml(p.formatted_weight)) : "") +
+				(p.formatted_dimensions
+					? renderMetaRow("Maße", escapeHtml(p.formatted_dimensions))
+					: "");
+			if (!rows) return "";
+			return (
+				'<div class="ff-product-infos">' +
+				'<span class="ff-product-infos__label">Produktinfos</span>' +
+				'<button type="button" class="ff-product-infos__btn" aria-label="Produktinformationen anzeigen"><span aria-hidden="true">i</span></button>' +
+				'<span class="ff-product-infos__tip" role="tooltip">' +
+				'<dl class="ff-product-infos__meta">' +
+				rows +
+				"</dl></span></div>"
+			);
+		}
+
 		function renderRating(p) {
 			var rating = Number(p.average_rating);
 			var count = Number(p.review_count) || 0;
@@ -618,24 +639,6 @@
 					: "";
 			var startsCollapsed = personalization.enabled && !!personalizationHtml;
 
-			var factsRows =
-				renderCategories(p.categories) +
-				(p.formatted_weight ? renderMetaRow("Gewicht", escapeHtml(p.formatted_weight)) : "") +
-				(p.formatted_dimensions
-					? renderMetaRow("Maße", escapeHtml(p.formatted_dimensions))
-					: "");
-			var facts = factsRows
-				? '<dl class="ff-product-modal__meta">' + factsRows + "</dl>"
-				: "";
-
-			var topMetaRows =
-				(p.sku ? renderMetaRow("Art.-Nr.", escapeHtml(p.sku)) : "") + renderTags(p.tags);
-			var topMeta = topMetaRows
-				? '<dl class="ff-product-modal__meta ff-product-modal__meta--top">' +
-				  topMetaRows +
-				  "</dl>"
-				: "";
-
 			var optionsNote =
 				hasOptions && !canChooseHere
 					? '<p class="ff-product-modal__note">Varianten und Optionen wählst du auf der Produktseite.</p>'
@@ -650,11 +653,11 @@
 					  "</div>"
 					: "";
 
+			var productInfosHtml = renderProductInfos(p);
+
 			var detailsInner =
-				topMeta +
 				(showLong && shortDesc ? '<div class="ff-product-modal__excerpt">' + shortDesc + "</div>" : "") +
 				renderAttributes(p.attributes) +
-				facts +
 				optionsNote;
 			var details = detailsInner
 				? '<div class="ff-product-modal__details">' + detailsInner + "</div>"
@@ -677,6 +680,7 @@
 				'<div class="ff-product-modal__read">' +
 				'<div class="ff-product-modal__scroll">' +
 				descriptionHtml +
+				productInfosHtml +
 				details +
 				"</div>" +
 				'<div class="ff-product-modal__dim" aria-hidden="true"></div>' +
@@ -694,7 +698,10 @@
 				'<div class="ff-product-modal__config">' +
 				'<div class="ff-product-modal__config-clip">' +
 				(personalizationHtml
-					? '<div class="ff-product-modal__personalization">' + personalizationHtml + "</div>"
+					? '<div class="ff-product-modal__personalization">' +
+					  '<p class="ff-product-modal__sizes-label">Dein Design</p>' +
+					  personalizationHtml +
+					  "</div>"
 					: "") +
 				(!purchasable && !hasOptions
 					? '<p class="ff-product-modal__stock">Derzeit nicht verfügbar</p>'

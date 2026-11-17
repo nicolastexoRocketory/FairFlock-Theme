@@ -3294,11 +3294,19 @@ body.is-ff-product-open {
 	margin: 0;
 	/* UI-Titel, kein Display-Heading: Body-Font aus Global Styles */
 	font-family: var(--wp--preset--font-family--body, inherit) !important;
-	font-size: 1.25rem !important;
+	font-size: 1.65rem !important;
 	font-weight: 700;
 	letter-spacing: normal;
-	line-height: 1.3;
+	line-height: 1.25;
 	text-transform: none;
+}
+
+@media (min-width: 782px) {
+	.ff-product-modal__title,
+	.ff-product-modal h2.ff-product-modal__title,
+	.ff-product-modal .ff-product-modal__title.wp-block-heading {
+		font-size: 1.9rem !important;
+	}
 }
 
 .ff-product-modal__head {
@@ -3312,11 +3320,13 @@ body.is-ff-product-open {
 }
 
 .ff-product-modal__facts {
+	position: relative;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 0;
 	margin: 2px 0 0;
+	overflow: visible;
 	font-size: 0.875rem;
 	font-weight: 600;
 	line-height: 1.3;
@@ -3336,7 +3346,8 @@ body.is-ff-product-open {
 }
 
 .ff-product-modal__fact.is-in {
-	color: var(--wp--preset--color--brand, #377530);
+	/* Festes Lager-Grün, unabhängig von der Shop-Brand-Farbe. */
+	color: #2f9e44;
 }
 
 .ff-product-modal__fact.is-backorder {
@@ -3405,7 +3416,7 @@ body.is-ff-product-open {
 }
 
 .ff-product-modal__availability.is-in {
-	color: var(--wp--preset--color--brand, #377530);
+	color: #2f9e44;
 }
 
 .ff-product-modal__availability.is-backorder {
@@ -3683,6 +3694,12 @@ body.is-ff-product-open {
 	margin: 0 0 4px;
 }
 
+.ff-product-modal__personalization {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
 .ff-product-modal__personalization .ff-personalization {
 	margin: 0;
 }
@@ -3700,8 +3717,8 @@ body.is-ff-product-open {
 	justify-content: center;
 	gap: 8px;
 	flex: 1 1 auto;
-	min-height: 48px;
-	padding: 12px 16px;
+	min-height: 40px;
+	padding: 8px 16px;
 	border: 0;
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	background: var(--wp--preset--color--brand, #377530);
@@ -3737,8 +3754,8 @@ body.is-ff-product-open {
 	align-items: center;
 	justify-content: center;
 	flex: 0 0 auto;
-	min-height: 48px;
-	padding: 12px 18px;
+	min-height: 40px;
+	padding: 8px 18px;
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent);
 	background: var(--ff-surface, #fff);
@@ -3870,8 +3887,8 @@ body.is-ff-product-open {
 /* —— Single product page (CI wie Product-Modal) —— */
 .ff-product {
 	--ff-product-line: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
-	--ff-product-soft: #e8eceb;
-	--ff-product-fog: #f3f5f4;
+	--ff-product-soft: var(--wp--preset--color--base, #f3f5f4);
+	--ff-product-fog: var(--wp--preset--color--base, #f3f5f4);
 	/* Produktseite immer 1350px, auch bei „Volle Breite“ */
 	--ff-product-shell: min(1350px, calc(100% - 2 * var(--ff-gutter)));
 	width: var(--ff-product-shell) !important;
@@ -3990,8 +4007,14 @@ body.is-ff-product-open {
 	list-style: none !important;
 	overflow-x: auto;
 	scrollbar-width: thin;
-	background: var(--ff-product-fog);
+	background: var(--wp--preset--color--base, var(--ff-product-fog, #f3f5f4));
 	border-top: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 8%, transparent);
+}
+
+.ff-product__hero .wc-block-product-gallery-thumbnails,
+.ff-product__hero .wc-block-product-gallery-pager,
+.ff-product__hero .wp-block-woocommerce-product-gallery-thumbnails {
+	background: var(--wp--preset--color--base, var(--ff-product-fog, #f3f5f4));
 }
 
 .ff-product__hero .flex-control-thumbs li {
@@ -4311,7 +4334,7 @@ span.onsale,
 	border: 0;
 	border-radius: 6px;
 	background: transparent;
-	color: var(--wp--preset--color--brand, #377530);
+	color: var(--wp--preset--color--contrast, #0e1114);
 	font: inherit;
 	font-size: 0.875rem;
 	font-weight: 700;
@@ -4323,8 +4346,8 @@ span.onsale,
 
 .ff-personalization__file-change:hover,
 .ff-personalization__file-change:focus {
-	color: var(--wp--preset--color--contrast, #0e1114);
-	outline: 2px solid color-mix(in srgb, var(--wp--preset--color--brand, #377530) 45%, transparent);
+	color: var(--wp--preset--color--muted, #66707a);
+	outline: 2px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 28%, transparent);
 	outline-offset: 1px;
 }
 
@@ -9326,7 +9349,7 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	outline: none;
 	background: var(--wp--preset--color--contrast, #0e1114);
 	border-color: var(--wp--preset--color--contrast, #0e1114);
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--base, #f3f5f4);
 }
 
 .ff-delivery-info__tip {
@@ -9335,11 +9358,11 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	bottom: calc(100% + 8px);
 	z-index: 8;
 	width: max-content;
-	max-width: 240px;
+	max-width: min(240px, 70vw);
 	padding: 8px 10px;
 	border-radius: 8px;
 	background: var(--wp--preset--color--contrast, #0e1114);
-	color: var(--wp--preset--color--white, #fff);
+	color: var(--wp--preset--color--base, #f3f5f4);
 	font-size: 0.75rem;
 	font-weight: 500;
 	font-style: normal;
@@ -9349,12 +9372,118 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	box-shadow: 0 10px 24px -12px rgba(14, 17, 20, 0.6);
 	opacity: 0;
 	visibility: hidden;
+	pointer-events: none;
 }
 
 .ff-delivery-info:hover .ff-delivery-info__tip,
 .ff-delivery-info:focus-within .ff-delivery-info__tip {
 	opacity: 1;
 	visibility: visible;
+}
+
+/* Produkt-Popup: Tooltip unter der Zeile, innerhalb der Spalte — kein Abschneiden. */
+.ff-product-modal .ff-delivery-info {
+	position: static;
+}
+
+.ff-product-modal .ff-delivery-info__tip {
+	left: 0;
+	right: 0;
+	top: calc(100% + 6px);
+	bottom: auto;
+	width: auto;
+	max-width: none;
+	z-index: 12;
+}
+
+.ff-product-infos {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin: 14px 0 0;
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.35;
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+.ff-product-modal__scroll > .ff-product-infos {
+	display: flex;
+	width: fit-content;
+	max-width: 100%;
+}
+
+.ff-product-infos__label {
+	font-weight: 400;
+	color: inherit;
+}
+
+.ff-product-infos__btn {
+	display: inline-grid;
+	place-items: center;
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	padding: 0;
+	border: 1.5px solid currentColor;
+	border-radius: 50%;
+	background: transparent;
+	color: inherit;
+	font: italic 700 12px/1 Georgia, "Times New Roman", serif;
+	cursor: help;
+}
+
+.ff-product-infos__btn:hover,
+.ff-product-infos__btn:focus {
+	outline: none;
+	background: var(--wp--preset--color--contrast, #0e1114);
+	border-color: var(--wp--preset--color--contrast, #0e1114);
+	color: var(--wp--preset--color--base, #f3f5f4);
+}
+
+.ff-product-infos__tip {
+	position: absolute;
+	left: 0;
+	top: calc(100% + 8px);
+	z-index: 12;
+	width: max-content;
+	min-width: 16rem;
+	max-width: min(22rem, calc(100vw - 4rem));
+	padding: 12px 14px;
+	border-radius: 10px;
+	background: var(--wp--preset--color--contrast, #0e1114);
+	color: var(--wp--preset--color--base, #f3f5f4);
+	box-shadow: 0 12px 28px -14px rgba(14, 17, 20, 0.65);
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.ff-product-infos:hover .ff-product-infos__tip,
+.ff-product-infos:focus-within .ff-product-infos__tip {
+	opacity: 1;
+	visibility: visible;
+}
+
+.ff-product-infos__meta {
+	display: grid;
+	gap: 8px;
+	margin: 0;
+}
+
+.ff-product-infos__meta .ff-product-modal__meta-row {
+	grid-template-columns: minmax(6.5rem, 7.5rem) minmax(0, 1fr);
+	gap: 4px 10px;
+}
+
+.ff-product-infos__meta .ff-product-modal__meta-row dt {
+	color: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 68%, transparent);
+}
+
+.ff-product-infos__meta .ff-product-modal__meta-row dd,
+.ff-product-infos__meta .ff-product-modal__meta-row a {
+	color: var(--wp--preset--color--base, #f3f5f4);
 }
 
 /* Kurzbeschreibung gehört nicht auf Produktkarten (Shop/Slider/Editor). */

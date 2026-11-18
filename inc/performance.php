@@ -321,7 +321,8 @@ function fairflock_enqueue_frontend_assets() {
 		'fairflock-cart-drawer',
 		'window.fairflockCartApi=' . wp_json_encode( $cart_api ) . ';'
 		. 'window.fairflockCartUrl=' . wp_json_encode( $cart ) . ';'
-		. 'window.fairflockCheckoutUrl=' . wp_json_encode( $checkout ) . ';',
+		. 'window.fairflockCheckoutUrl=' . wp_json_encode( $checkout ) . ';'
+		. 'window.fairflockHomeUrl=' . wp_json_encode( home_url( '/' ) ) . ';',
 		'before'
 	);
 

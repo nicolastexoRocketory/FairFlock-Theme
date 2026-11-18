@@ -6,7 +6,7 @@
 
 	var MQ = "(max-width: 960px)";
 	var chevron =
-		'<svg class="ff-gal-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M8.2 2.1 17.8 12 8.2 21.9 5.6 19.4 12.8 12 5.6 4.6z"/></svg>';
+		'<svg class="ff-gal-chevron" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8.2 2.1 17.8 12 8.2 21.9 5.6 19.4 12.8 12 5.6 4.6z"/></svg>';
 
 	function ready(fn) {
 		if (document.readyState === "loading") {
@@ -85,11 +85,12 @@
 		gallery.classList.add("ff-product-peek");
 
 		var index = 0;
+		var peek = images.length > 1 ? 1.5 : 1;
 		var root = document.createElement("div");
 		root.className = "ff-product-peek__root";
 		root.setAttribute("data-ff-peek-root", "");
 		root.style.setProperty("--ff-gal-n", String(images.length));
-		root.style.setProperty("--ff-gal-peek", images.length > 1 ? "1.5" : "1");
+		root.style.setProperty("--ff-gal-peek", String(peek));
 
 		var track = document.createElement("div");
 		track.className = "ff-product-peek__track";
@@ -125,11 +126,18 @@
 
 		gallery.insertBefore(root, gallery.firstChild);
 
+		/**
+		 * Slide by index, but clamp so the last image’s right edge
+		 * stays flush with the viewport (no empty peek after the end).
+		 */
 		function setIndex(next) {
 			var total = images.length;
 			if (!total) return;
 			index = ((next % total) + total) % total;
-			track.style.transform = "translate3d(" + -index * (100 / total) + "%,0,0)";
+			var step = 100 / total;
+			var maxShift = Math.max(0, (1 - peek / total) * 100);
+			var shift = Math.min(index * step, maxShift);
+			track.style.transform = "translate3d(" + -shift + "%,0,0)";
 			root.querySelectorAll(".ff-product-peek__slide").forEach(function (slide) {
 				slide.classList.toggle(
 					"is-active",

@@ -429,14 +429,15 @@ function fairflock_product_layout_after_price( $content, $block ) {
 add_filter( 'render_block', 'fairflock_product_layout_after_price', 14, 2 );
 
 /**
- * After product title (info column): long description + product infos.
+ * After product title (info column): description, infos, accordion stack.
  *
- * Größentabelle sits with „Weitere Informationen“ under the hero.
+ * Größentabelle + „Weitere Informationen“ live in the middle Amazon column.
  *
  * @since 0.9.305
  * @since 0.9.314 Moved from before add-to-cart into the middle info column.
  * @since 0.9.315 Short description moves to a card under the hero.
- * @since 0.9.342 Size table moves under the hero above the excerpt accordion.
+ * @since 0.9.342 Size table above the excerpt accordion.
+ * @since 0.9.354 Accordion stack in the middle info column (not under the hero).
  *
  * @param string $content Rendered HTML.
  * @param array  $block   Block.
@@ -471,6 +472,7 @@ function fairflock_product_layout_after_title( $content, $block ) {
 	$after .= fairflock_product_description_markup( $product );
 	$after .= fairflock_product_infos_markup( $product );
 	$after .= '</div>';
+	$after .= fairflock_product_acc_stack_markup( $product );
 
 	return $content . $after;
 }
@@ -798,10 +800,12 @@ function fairflock_product_layout_enforce_amazon_hero( $content, $block ) {
 add_filter( 'render_block', 'fairflock_product_layout_enforce_amazon_hero', 18, 2 );
 
 /**
- * After the product hero: Größentabelle + „Weitere Informationen“ stack.
+ * Fallback: if the info-column title hook did not run, append the accordion
+ * stack after the product hero so customized templates still get it.
  *
  * @since 0.9.315
  * @since 0.9.342 Size table above excerpt, shared accordion look.
+ * @since 0.9.354 Prefer middle column via after_title; this is fallback only.
  *
  * @param string $content Rendered HTML.
  * @param array  $block   Block.
@@ -893,6 +897,30 @@ function fairflock_product_layout_hide_inline_excerpt( $content, $block ) {
 add_filter( 'render_block', 'fairflock_product_layout_hide_inline_excerpt', 16, 2 );
 
 /**
+ * Resolve the current single-product ID for related heading/section.
+ *
+ * @since 0.9.355
+ *
+ * @return int
+ */
+function fairflock_related_products_product_id() {
+	$product_id = 0;
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		$product_id = (int) get_queried_object_id();
+	}
+	if ( $product_id <= 0 ) {
+		$product_id = (int) get_the_ID();
+	}
+	if ( $product_id <= 0 ) {
+		global $product;
+		if ( is_object( $product ) && is_a( $product, 'WC_Product' ) ) {
+			$product_id = (int) $product->get_id();
+		}
+	}
+	return $product_id > 0 ? $product_id : 0;
+}
+
+/**
  * Related-products section heading on single product.
  * Uses the (primary / deepest) product category name when available.
  *
@@ -901,18 +929,8 @@ add_filter( 'render_block', 'fairflock_product_layout_hide_inline_excerpt', 16, 
  * @return string
  */
 function fairflock_related_products_heading() {
-	$fallback = __( 'Mehr von dieser Art', 'fairflock' );
-
-	$product_id = 0;
-	if ( function_exists( 'is_product' ) && is_product() ) {
-		$product_id = (int) get_queried_object_id();
-	}
-	if ( $product_id <= 0 ) {
-		global $product;
-		if ( is_object( $product ) && is_a( $product, 'WC_Product' ) ) {
-			$product_id = (int) $product->get_id();
-		}
-	}
+	$fallback   = __( 'Mehr von dieser Art', 'fairflock' );
+	$product_id = fairflock_related_products_product_id();
 	if ( $product_id <= 0 ) {
 		return $fallback;
 	}
@@ -933,6 +951,21 @@ function fairflock_related_products_heading() {
 	}
 
 	$terms = get_the_terms( $product_id, 'product_cat' );
+	if ( ( empty( $terms ) || is_wp_error( $terms ) ) && function_exists( 'wc_get_product' ) ) {
+		$product = wc_get_product( $product_id );
+		if ( $product instanceof WC_Product ) {
+			$ids = $product->get_category_ids();
+			if ( ! empty( $ids ) ) {
+				$terms = array();
+				foreach ( $ids as $tid ) {
+					$term = get_term( (int) $tid, 'product_cat' );
+					if ( $term && ! is_wp_error( $term ) ) {
+						$terms[] = $term;
+					}
+				}
+			}
+		}
+	}
 	if ( empty( $terms ) || is_wp_error( $terms ) ) {
 		return $fallback;
 	}
@@ -1027,3 +1060,108 @@ function fairflock_related_products_heading_render( $content, $block ) {
 	);
 }
 add_filter( 'render_block', 'fairflock_related_products_heading_render', 20, 2 );
+
+/**
+ * Force category title on the related-products section head (any saved heading).
+ *
+ * @since 0.9.355
+ *
+ * @param string $content Rendered HTML.
+ * @param array  $block   Block.
+ * @return string
+ */
+function fairflock_related_slider_force_heading( $content, $block ) {
+	if ( ( $block['blockName'] ?? '' ) !== 'core/group' || '' === $content ) {
+		return $content;
+	}
+	if ( ! is_singular( 'product' ) ) {
+		return $content;
+	}
+
+	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	$class = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
+	if ( false === strpos( $class, 'ff-related-slider' ) || false !== strpos( $class, 'ff-related-slider__head' ) ) {
+		return $content;
+	}
+
+	$label = esc_html( fairflock_related_products_heading() );
+	$updated = preg_replace(
+		'/(<h[1-6]\b[^>]*>)(.*?)(<\/h[1-6]>)/us',
+		'$1' . $label . '$3',
+		$content,
+		1
+	);
+	return is_string( $updated ) ? $updated : $content;
+}
+add_filter( 'render_block', 'fairflock_related_slider_force_heading', 25, 2 );
+
+/**
+ * Build related-products section HTML (pattern).
+ *
+ * @since 0.9.355
+ *
+ * @return string
+ */
+function fairflock_related_products_section_html() {
+	if ( function_exists( 'do_blocks' ) ) {
+		$html = do_blocks( '<!-- wp:pattern {"slug":"fairflock/related-products"} /-->' );
+		if ( is_string( $html ) && '' !== trim( $html ) ) {
+			return $html;
+		}
+	}
+
+	$label = esc_html( fairflock_related_products_heading() );
+	return '<div class="wp-block-group alignwide ff-related-slider ff-pattern-products--woo">'
+		. '<div class="wp-block-group ff-pattern-section-head ff-related-slider__head">'
+		. '<h2 class="wp-block-heading">' . $label . '</h2>'
+		. '</div></div>';
+}
+
+/**
+ * Ensure the related/category products section exists on the product main.
+ * Customized Site Editor templates often drop the pattern.
+ *
+ * @since 0.9.355
+ *
+ * @param string $content Rendered HTML.
+ * @param array  $block   Block.
+ * @return string
+ */
+function fairflock_product_layout_ensure_related( $content, $block ) {
+	if ( ( $block['blockName'] ?? '' ) !== 'core/group' || '' === $content ) {
+		return $content;
+	}
+	if ( ! is_singular( 'product' ) ) {
+		return $content;
+	}
+
+	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	$class = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
+	$tag   = isset( $attrs['tagName'] ) ? (string) $attrs['tagName'] : 'div';
+
+	$is_product_main = ( 'main' === $tag && false !== strpos( $class, 'ff-product' ) )
+		|| ( 'ff-product' === trim( $class ) )
+		|| (bool) preg_match( '/\bff-product\b/', $class );
+	if ( ! $is_product_main ) {
+		return $content;
+	}
+	/* Only the outer product shell — avoid nested groups. */
+	if ( false === strpos( $content, 'ff-product__hero' ) && false === strpos( $content, 'ff-product__gallery' ) ) {
+		return $content;
+	}
+	if ( str_contains( $content, 'ff-related-slider' ) || str_contains( $content, 'related-products' ) ) {
+		return $content;
+	}
+
+	$related = fairflock_related_products_section_html();
+	if ( '' === trim( $related ) ) {
+		return $content;
+	}
+
+	if ( preg_match( '/<\/main>\s*$/i', $content ) ) {
+		return (string) preg_replace( '/<\/main>\s*$/i', $related . '</main>', $content, 1 );
+	}
+
+	return $content . $related;
+}
+add_filter( 'render_block', 'fairflock_product_layout_ensure_related', 30, 2 );

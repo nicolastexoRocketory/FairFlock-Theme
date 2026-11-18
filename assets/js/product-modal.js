@@ -223,7 +223,16 @@
 
 		function isProductLink(a) {
 			if (!a || !a.getAttribute) return false;
-			if (a.closest(".ff-product-layer, .ff-cart-layer, .ff-search-layer .ff-search-close")) {
+			/* Warenkorb-/Such-UI: echte Navigation, kein Modal */
+			if (
+				a.closest(".ff-product-layer") ||
+				a.closest(".ff-cart-layer") ||
+				a.closest(".ff-cart-drawer") ||
+				a.closest(".ff-search-layer") ||
+				a.classList.contains("ff-cart-line__title") ||
+				a.classList.contains("ff-cart-line__thumb") ||
+				a.hasAttribute("data-ff-cart-product")
+			) {
 				return false;
 			}
 			if (a.hasAttribute("download") || a.getAttribute("target") === "_blank") return false;

@@ -70,6 +70,16 @@
 			return t.value;
 		}
 
+		function itemPermalink(item) {
+			if (!item) return "";
+			var href = String(item.permalink || item.product_permalink || "").trim();
+			if (href && href !== "#" && href.toLowerCase() !== "null") return href;
+			var id = item.id || item.product_id || 0;
+			if (!id) return "";
+			var home = String(window.fairflockHomeUrl || window.fairflockSearchHome || "/").replace(/\/?$/, "/");
+			return home + "?p=" + encodeURIComponent(String(id));
+		}
+
 		function captureAuth(res) {
 			if (!res || !res.headers) return;
 			var n = res.headers.get("Nonce") || res.headers.get("nonce");
@@ -136,7 +146,7 @@
 					var maxQty = typeof limits.maximum === "number" ? limits.maximum : 99;
 					var editable = limits.editable !== false;
 					var name = decodeEntities(item.name || "");
-					var permalink = item.permalink || "";
+					var permalink = itemPermalink(item);
 					var img =
 						item.images && item.images[0]
 							? item.images[0].thumbnail || item.images[0].src || ""
@@ -147,12 +157,16 @@
 					var thumb = permalink
 						? '<a class="ff-cart-line__thumb" href="' +
 						  escapeHtml(permalink) +
+						  '" data-ff-cart-product="' +
+						  escapeHtml(permalink) +
 						  '"' +
 						  thumbInner +
 						  ' aria-hidden="true" tabindex="-1"></a>'
 						: '<div class="ff-cart-line__thumb"' + thumbInner + "></div>";
 					var title = permalink
 						? '<a class="ff-cart-line__title" href="' +
+						  escapeHtml(permalink) +
+						  '" data-ff-cart-product="' +
 						  escapeHtml(permalink) +
 						  '">' +
 						  escapeHtml(name) +
@@ -377,6 +391,24 @@
 
 		if (linesEl) {
 			linesEl.addEventListener("click", function (e) {
+				var productLink =
+					e.target.closest &&
+					e.target.closest("a.ff-cart-line__title, a.ff-cart-line__thumb, [data-ff-cart-product]");
+				if (productLink && linesEl.contains(productLink)) {
+					var href =
+						productLink.getAttribute("data-ff-cart-product") ||
+						productLink.getAttribute("href") ||
+						"";
+					if (!href || href === "#") return;
+					e.preventDefault();
+					e.stopPropagation();
+					closeCart();
+					window.setTimeout(function () {
+						window.location.assign(href);
+					}, 10);
+					return;
+				}
+
 				var removeBtn = e.target.closest && e.target.closest("[data-ff-cart-remove]");
 				if (removeBtn && linesEl.contains(removeBtn)) {
 					e.preventDefault();

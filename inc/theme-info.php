@@ -20,6 +20,54 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.358',
+			'items'   => array(
+				__( 'Mobile Produktgalerie: kleinere Pfeile; letztes Bild bündig am rechten Screenrand (kein Leerraum danach).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.357',
+			'items'   => array(
+				__( 'Größentabelle-Popup mobil wie Desktop (kompaktes Overlay); Tabelle horizontal scrollbar.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.356',
+			'items'   => array(
+				__( 'Mobile Produktseite: kein Abstand Navbar–Bild; Text/Titel mit 1em Randabstand.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.355',
+			'items'   => array(
+				__( 'Produktseite: Related-/Kategorie-Bereich unten wieder erzwingen; Titel immer = Produktkategorie.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.354',
+			'items'   => array(
+				__( 'Produktseite: Größentabelle und „Weitere Informationen“ in der mittleren Amazon-Spalte.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.353',
+			'items'   => array(
+				__( 'Shop Spalten-Dropdown: gewählte Spalte mit lesbarem Kontrast (Brand-Hintergrund, weiße Schrift).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.352',
+			'items'   => array(
+				__( 'Shop-Filter: Kategorie-Chips eckig bei Design „Eckig“, Schrift weniger fett; mehr Abstand über „+ X mehr“; Akkordeons mit leichter Umrandung.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.351',
+			'items'   => array(
+				__( 'Warenkorb-Drawer: Klick auf Produktname/Bild führt zuverlässig zur Produktseite.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.350',
 			'items'   => array(
 				__( 'Mobile Produktseite: Titel ohne linken Einschub.', 'fairflock' ),

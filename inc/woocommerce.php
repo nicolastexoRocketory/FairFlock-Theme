@@ -996,3 +996,82 @@ function fairflock_render_product_card_delivery( $content, $block, $instance = n
 	return $content . fairflock_product_delivery_markup( $view['label'], $view['tooltip'] );
 }
 add_filter( 'render_block', 'fairflock_render_product_card_delivery', 12, 3 );
+
+/**
+ * Injects the first gallery image as a hover swap on product cards.
+ *
+ * Featured image stays default; on hover the second attached image shows.
+ *
+ * @since 0.9.336
+ *
+ * @param string        $content  Rendered block.
+ * @param array         $block    Block data.
+ * @param WP_Block|null $instance Block instance.
+ * @return string
+ */
+function fairflock_render_product_card_hover_image( $content, $block, $instance = null ) {
+	if ( ( $block['blockName'] ?? '' ) !== 'woocommerce/product-image' ) {
+		return $content;
+	}
+	if ( ! function_exists( 'wc_get_product' ) || false !== strpos( $content, 'ff-prod-card__hover-img' ) ) {
+		return $content;
+	}
+
+	$attrs   = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	$class   = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
+	$is_card = ! empty( $attrs['isDescendentOfQueryLoop'] ) || false !== strpos( $class, 'ff-prod-card__media' );
+	if ( ! $is_card ) {
+		return $content;
+	}
+
+	$product = null;
+	if ( $instance instanceof WP_Block ) {
+		$post_id = isset( $instance->context['postId'] ) ? (int) $instance->context['postId'] : 0;
+		if ( $post_id > 0 ) {
+			$product = wc_get_product( $post_id );
+		}
+	}
+	if ( ! $product instanceof WC_Product ) {
+		$product = wc_get_product();
+	}
+	if ( ! $product instanceof WC_Product ) {
+		return $content;
+	}
+
+	$gallery = $product->get_gallery_image_ids();
+	if ( empty( $gallery ) ) {
+		return $content;
+	}
+
+	$second_id = (int) $gallery[0];
+	if ( $second_id <= 0 ) {
+		return $content;
+	}
+
+	$size  = ( ! empty( $attrs['imageSizing'] ) && 'full-product' === $attrs['imageSizing'] )
+		? 'woocommerce_single'
+		: 'woocommerce_thumbnail';
+	$hover = wp_get_attachment_image(
+		$second_id,
+		$size,
+		false,
+		array(
+			'class'       => 'ff-prod-card__hover-img',
+			'alt'         => '',
+			'loading'     => 'lazy',
+			'decoding'    => 'async',
+			'aria-hidden' => 'true',
+		)
+	);
+	if ( ! is_string( $hover ) || '' === $hover ) {
+		return $content;
+	}
+
+	if ( preg_match( '/<img\b[^>]*>/i', $content, $match, PREG_OFFSET_CAPTURE ) ) {
+		$pos = $match[0][1] + strlen( $match[0][0] );
+		return substr( $content, 0, $pos ) . $hover . substr( $content, $pos );
+	}
+
+	return $content;
+}
+add_filter( 'render_block', 'fairflock_render_product_card_hover_image', 12, 3 );

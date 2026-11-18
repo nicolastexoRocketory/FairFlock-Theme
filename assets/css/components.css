@@ -10180,7 +10180,7 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	pointer-events: none;
 	transition: opacity 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
 		translate 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
-	z-index: 1;
+	z-index: 2;
 }
 
 .ff-shop__collection .wc-block-product:hover .wc-block-components-product-image::after,
@@ -10224,6 +10224,39 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	margin: 0;
 	font-weight: 700;
 	text-align: left !important;
+}
+
+/* Zweites Galeriebild beim Hover auf Produktkarten */
+.wc-block-components-product-image:has(.ff-prod-card__hover-img) a,
+.ff-prod-card__media:has(.ff-prod-card__hover-img) a {
+	position: relative;
+	display: block;
+}
+
+.ff-prod-card__hover-img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: 0;
+	pointer-events: none;
+	z-index: 1;
+	transition: opacity 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.wc-block-product:hover .ff-prod-card__hover-img,
+	li.wc-block-product:hover .ff-prod-card__hover-img,
+	.wc-block-components-product-image:hover .ff-prod-card__hover-img {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ff-prod-card__hover-img {
+		transition: none;
+	}
 }
 
 /* Lieferzeile überall gleich: LKW + Text + i in einer Zeile (Text darf umbrechen) */
@@ -10806,6 +10839,7 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	color: var(--ff-prod-view-fg);
 	pointer-events: none;
 	transition: opacity 0.35s var(--ff-ease), translate 0.35s var(--ff-ease);
+	z-index: 2;
 }
 
 .ff-pattern-products--woo .wc-block-product:hover .wc-block-components-product-image::after,

@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.336',
+			'items'   => array(
+				__( 'Produktkarten: Hover wechselt zum zweiten Galeriebild.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.335',
 			'items'   => array(
 				__( 'Produkt-Popup mobil: Galerie zeigt Hauptbild und Thumbnails vollständig (kein Abschneiden).', 'fairflock' ),

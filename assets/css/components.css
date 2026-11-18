@@ -3917,6 +3917,21 @@ body.is-ff-product-open {
 .ff-product > .alignwide,
 .ff-product > .alignfull,
 .ff-product > .ff-product__hero,
+/* Kurzbeschreibung nur im Akkordeon — Inline-Kopien in Hero/Info ausblenden */
+.ff-product__hero .wp-block-post-excerpt,
+.ff-product__hero .wp-block-woocommerce-product-summary,
+.ff-product__hero .woocommerce-product-details__short-description,
+.ff-product__info .wp-block-post-excerpt,
+.ff-product__info .wp-block-woocommerce-product-summary,
+.ff-product__info .woocommerce-product-details__short-description,
+.ff-product__buy .wp-block-post-excerpt,
+.ff-product__buy .wp-block-woocommerce-product-summary,
+.ff-product__buy .woocommerce-product-details__short-description,
+.ff-product__summary .wp-block-post-excerpt,
+.ff-product__summary .woocommerce-product-details__short-description {
+	display: none !important;
+}
+
 .ff-product > .ff-product__excerpt-card,
 .ff-product > .wp-block-woocommerce-product-details,
 .ff-product > .wp-block-group,

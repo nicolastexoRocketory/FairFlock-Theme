@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.339',
+			'items'   => array(
+				__( 'Produktseite: Kurzbeschreibung nur noch im Akkordeon „Weitere Informationen“, keine Doppelung in der Info-Spalte.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.338',
 			'items'   => array(
 				__( 'Produktmedien 2:3; Shop standardmäßig 4 Spalten; moderne Pagination; Filter als eingeklappte Akkordeons.', 'fairflock' ),

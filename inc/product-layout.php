@@ -191,11 +191,99 @@ function fairflock_product_description_markup( $product ) {
 	if ( ! $product instanceof WC_Product ) {
 		return '';
 	}
-	$html = $product->get_description();
-	if ( '' === trim( wp_strip_all_tags( (string) $html ) ) ) {
+	$html = (string) $product->get_description();
+	if ( '' === trim( wp_strip_all_tags( $html ) ) ) {
 		return '';
 	}
+
+	// Avoid duplicating the Kurzbeschreibung when it was pasted into the long text.
+	$short = (string) $product->get_short_description();
+	if ( '' !== trim( wp_strip_all_tags( $short ) ) ) {
+		$norm_long  = preg_replace( '/\s+/u', '', wp_strip_all_tags( $html ) );
+		$norm_short = preg_replace( '/\s+/u', '', wp_strip_all_tags( $short ) );
+		if ( is_string( $norm_long ) && is_string( $norm_short ) && '' !== $norm_short
+			&& strlen( $norm_long ) > strlen( $norm_short )
+			&& str_ends_with( $norm_long, $norm_short ) ) {
+			$html = fairflock_product_description_without_short( $html, $short );
+			if ( '' === trim( wp_strip_all_tags( (string) $html ) ) ) {
+				return '';
+			}
+		}
+	}
+
 	return '<div class="ff-product-buy__description">' . wc_format_content( $html ) . '</div>';
+}
+
+/**
+ * Remove a trailing short-description copy from long description HTML.
+ *
+ * @since 0.9.339
+ *
+ * @param string $long  Long description HTML.
+ * @param string $short Short description HTML.
+ * @return string
+ */
+function fairflock_product_description_without_short( $long, $short ) {
+	$long  = (string) $long;
+	$short = trim( (string) $short );
+	if ( '' === $short || '' === trim( wp_strip_all_tags( $long ) ) ) {
+		return $long;
+	}
+
+	$short_plain = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $short ) ) );
+	if ( ! is_string( $short_plain ) || '' === $short_plain ) {
+		return $long;
+	}
+
+	// Exact HTML suffix.
+	$long_trim  = rtrim( $long );
+	$short_trim = rtrim( $short );
+	if ( str_ends_with( $long_trim, $short_trim ) ) {
+		return rtrim( substr( $long_trim, 0, -strlen( $short_trim ) ) );
+	}
+
+	// Plain-text suffix: cut the last N characters of plain text from the HTML by
+	// removing trailing elements until the plain suffix is gone.
+	$plain_long = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $long ) ) );
+	if ( ! is_string( $plain_long ) || ! str_ends_with( $plain_long, $short_plain ) ) {
+		return $long;
+	}
+
+	if ( class_exists( 'DOMDocument' ) ) {
+		$document = new DOMDocument();
+		$previous = libxml_use_internal_errors( true );
+		$wrapped  = '<div id="ff-desc-root">' . $long . '</div>';
+		$loaded   = $document->loadHTML( '<?xml encoding="utf-8">' . $wrapped, LIBXML_HTML_NODEFDTD );
+		libxml_clear_errors();
+		libxml_use_internal_errors( $previous );
+		if ( $loaded ) {
+			$root = $document->getElementById( 'ff-desc-root' );
+			if ( $root instanceof DOMElement ) {
+				$guard = 0;
+				while ( $guard < 40 && $root->lastChild ) {
+					$guard++;
+					$plain_now = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $document->saveHTML( $root ) ) ) );
+					if ( ! is_string( $plain_now ) || ! str_ends_with( $plain_now, $short_plain ) ) {
+						break;
+					}
+					$root->removeChild( $root->lastChild );
+					$plain_after = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $document->saveHTML( $root ) ) ) );
+					if ( is_string( $plain_after ) && ! str_ends_with( $plain_after, $short_plain ) ) {
+						$inner = '';
+						foreach ( $root->childNodes as $child ) {
+							$chunk = $document->saveHTML( $child );
+							if ( is_string( $chunk ) ) {
+								$inner .= $chunk;
+							}
+						}
+						return $inner;
+					}
+				}
+			}
+		}
+	}
+
+	return $long;
 }
 
 /**
@@ -736,6 +824,43 @@ function fairflock_product_layout_hide_summary_meta( $content, $block ) {
 	return '';
 }
 add_filter( 'render_block', 'fairflock_product_layout_hide_summary_meta', 16, 2 );
+
+/**
+ * Hide raw short-description blocks on the product page.
+ *
+ * Kurzbeschreibung belongs only in the „Weitere Informationen“ accordion.
+ * Customized Site Editor templates often still render post-excerpt / product-summary
+ * in the info column, which duplicates the accordion content.
+ *
+ * @since 0.9.339
+ *
+ * @param string $content Rendered HTML.
+ * @param array  $block   Block.
+ * @return string
+ */
+function fairflock_product_layout_hide_inline_excerpt( $content, $block ) {
+	$name = $block['blockName'] ?? '';
+	if ( 'core/post-excerpt' !== $name && 'woocommerce/product-summary' !== $name ) {
+		return $content;
+	}
+	if ( ! is_singular( 'product' ) ) {
+		return $content;
+	}
+
+	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	if ( ! empty( $attrs['isDescendentOfQueryLoop'] ) ) {
+		return $content;
+	}
+
+	// Keep collection / card summaries; only strip single-product template copies.
+	$ns = isset( $attrs['__woocommerceNamespace'] ) ? (string) $attrs['__woocommerceNamespace'] : '';
+	if ( $ns && false !== strpos( $ns, 'product-collection' ) ) {
+		return $content;
+	}
+
+	return '';
+}
+add_filter( 'render_block', 'fairflock_product_layout_hide_inline_excerpt', 16, 2 );
 
 /**
  * Related-products section heading on single product.

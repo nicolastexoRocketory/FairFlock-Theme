@@ -52,6 +52,30 @@ add_action( 'after_setup_theme', 'fairflock_disable_product_gallery_lightbox', 1
 add_filter( 'woocommerce_single_product_photoswipe_enabled', '__return_false' );
 
 /**
+ * Product image sizes: portrait 2:3 (width × height).
+ *
+ * @since 0.9.338
+ *
+ * @param array<string, mixed> $size Size definition.
+ * @return array<string, mixed>
+ */
+function fairflock_product_image_size_2x3( $size ) {
+	if ( ! is_array( $size ) ) {
+		$size = array();
+	}
+	$size['width']  = isset( $size['width'] ) ? (int) $size['width'] : 600;
+	if ( $size['width'] < 1 ) {
+		$size['width'] = 600;
+	}
+	$size['height'] = (int) round( $size['width'] * 1.5 );
+	$size['crop']   = 1;
+	return $size;
+}
+add_filter( 'woocommerce_get_image_size_thumbnail', 'fairflock_product_image_size_2x3' );
+add_filter( 'woocommerce_get_image_size_single', 'fairflock_product_image_size_2x3' );
+add_filter( 'woocommerce_get_image_size_gallery_thumbnail', 'fairflock_product_image_size_2x3' );
+
+/**
  * Ensure body.front-page is present on the static front page.
  * Some runtimes omit it; homepage hero clearance depends on this class.
  *

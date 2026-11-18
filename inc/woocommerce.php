@@ -750,7 +750,7 @@ add_action( 'wp_enqueue_scripts', 'fairflock_expose_just_added_flag', 25 );
  * @return int
  */
 function fairflock_shop_columns_count() {
-	$n = 3;
+	$n = 4;
 	if ( isset( $_COOKIE['ff_shop_cols'] ) ) {
 		$raw = absint( wp_unslash( $_COOKIE['ff_shop_cols'] ) );
 		if ( $raw >= 2 && $raw <= 5 ) {
@@ -907,11 +907,133 @@ function fairflock_shop_columns_script() {
 		});
 
 		var saved = document.cookie.match(/(?:^|; )ff_shop_cols=([2-5])/);
-		if (saved) apply(saved[1]);
+		apply(saved ? saved[1] : "4");
 	})();
 	</script>
 	<?php
 }
+
+/**
+ * Shop filter blocks that become accordion sections.
+ *
+ * @since 0.9.338
+ *
+ * @return array<int, string>
+ */
+function fairflock_shop_filter_accordion_blocks() {
+	return array(
+		'woocommerce/product-filter-taxonomy',
+		'woocommerce/product-filter-price',
+		'woocommerce/product-filter-status',
+		'woocommerce/product-filter-attribute',
+		'woocommerce/product-filter-rating',
+	);
+}
+
+/**
+ * Collapse each shop filter group into a closed <details> accordion.
+ *
+ * Works for customized Site Editor templates via render_block.
+ *
+ * @since 0.9.338
+ *
+ * @param string $content Rendered HTML.
+ * @param array  $block   Block data.
+ * @return string
+ */
+function fairflock_shop_filter_accordion( $content, $block ) {
+	$name = $block['blockName'] ?? '';
+	if ( ! in_array( $name, fairflock_shop_filter_accordion_blocks(), true ) ) {
+		return $content;
+	}
+	if ( ! is_string( $content ) || '' === $content || str_contains( $content, 'ff-shop__filter-acc' ) ) {
+		return $content;
+	}
+	if ( ! preg_match( '/<h[2-4][^>]*>(.*?)<\/h[2-4]>/is', $content, $match, PREG_OFFSET_CAPTURE ) ) {
+		return $content;
+	}
+
+	$title_html = $match[0][0];
+	$title_pos  = (int) $match[0][1];
+	$title_len  = strlen( $title_html );
+	$plain      = trim( wp_strip_all_tags( $match[1][0] ) );
+	if ( '' === $plain ) {
+		return $content;
+	}
+
+	$before = substr( $content, 0, $title_pos );
+	$after  = substr( $content, $title_pos + $title_len );
+
+	// Move the last closing tag of the outer wrapper after the accordion body.
+	$close_pos = strrpos( $after, '</div>' );
+	if ( false === $close_pos ) {
+		return $content;
+	}
+	$body  = substr( $after, 0, $close_pos );
+	$close = substr( $after, $close_pos );
+
+	$summary = '<summary class="ff-shop__filter-acc__summary">'
+		. '<span class="ff-shop__filter-acc__title">' . esc_html( $plain ) . '</span>'
+		. '<span class="ff-shop__filter-acc__icon" aria-hidden="true"></span>'
+		. '</summary>';
+
+	$acc = '<details class="ff-shop__filter-acc">'
+		. $summary
+		. '<div class="ff-shop__filter-acc__body">' . $body . '</div>'
+		. '</details>';
+
+	// Ensure outer class keeps filter-group for existing CSS.
+	if ( false === strpos( $before, 'ff-shop__filter-group' ) && preg_match( '/class="([^"]*)"/', $before, $cls ) ) {
+		$before = preg_replace(
+			'/class="([^"]*)"/',
+			'class="' . trim( $cls[1] . ' ff-shop__filter-group' ) . '"',
+			$before,
+			1
+		);
+	}
+
+	return $before . $acc . $close;
+}
+add_filter( 'render_block', 'fairflock_shop_filter_accordion', 16, 2 );
+
+/**
+ * Force modern German labels on shop pagination controls.
+ *
+ * @since 0.9.338
+ *
+ * @param string $content Rendered HTML.
+ * @param array  $block   Block data.
+ * @return string
+ */
+function fairflock_shop_pagination_labels( $content, $block ) {
+	$name = $block['blockName'] ?? '';
+	if ( 'core/query-pagination-next' === $name ) {
+		$label = __( 'Nächste Seite', 'fairflock' );
+		if ( ! str_contains( $content, $label ) ) {
+			$content = preg_replace(
+				'/>([^<]*)<\/a>/',
+				'>' . esc_html( $label ) . '</a>',
+				$content,
+				1
+			);
+		}
+		return is_string( $content ) ? $content : '';
+	}
+	if ( 'core/query-pagination-previous' === $name ) {
+		$label = __( 'Vorherige Seite', 'fairflock' );
+		if ( ! str_contains( $content, $label ) ) {
+			$content = preg_replace(
+				'/>([^<]*)<\/a>/',
+				'>' . esc_html( $label ) . '</a>',
+				$content,
+				1
+			);
+		}
+		return is_string( $content ) ? $content : '';
+	}
+	return $content;
+}
+add_filter( 'render_block', 'fairflock_shop_pagination_labels', 16, 2 );
 
 /**
  * Delivery sentence for a product card.

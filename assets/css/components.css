@@ -4,6 +4,8 @@
 
 :root {
 	--ff-ease: cubic-bezier(0.16, 1, 0.3, 1);
+	/* Produktmedien: Portrait 2:3 */
+	--ff-product-aspect: 2 / 3;
 	--ff-header-top: 16px;
 	--ff-header-height: 72px;
 	/*
@@ -2751,7 +2753,7 @@ ul.ff-search-menu-nav {
 .ff-search-hit-thumb {
 	display: block;
 	width: 100%;
-	aspect-ratio: 1 / 1;
+	aspect-ratio: var(--ff-product-aspect, 2 / 3);
 	flex: 0 0 auto;
 	height: auto;
 	border-radius: var(--wp--custom--radius--sm, 8px);
@@ -2970,8 +2972,9 @@ body.is-ff-product-open {
 }
 
 .ff-cart-line__thumb {
-	width: 72px;
-	height: 72px;
+	width: 56px;
+	height: auto;
+	aspect-ratio: var(--ff-product-aspect, 2 / 3);
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	background: #e8eceb center / cover no-repeat;
 }
@@ -3194,13 +3197,16 @@ body.is-ff-product-open {
 	margin: 0;
 	opacity: 1;
 	visibility: visible;
+	aspect-ratio: var(--ff-product-aspect, 2 / 3);
+	overflow: hidden;
+	background: var(--wp--preset--color--base, #f3f5f4);
 }
 
 .ff-product-modal__slide img {
 	display: block;
 	width: 100%;
-	height: auto;
-	object-fit: contain;
+	height: 100%;
+	object-fit: cover;
 	object-position: center;
 }
 
@@ -3255,9 +3261,10 @@ body.is-ff-product-open {
 }
 
 .ff-product-modal__thumb {
-	flex: 0 0 56px;
-	width: 56px;
-	height: 56px;
+	flex: 0 0 48px;
+	width: 48px;
+	height: auto;
+	aspect-ratio: var(--ff-product-aspect, 2 / 3);
 	padding: 0;
 	border: 2px solid transparent;
 	border-radius: var(--wp--custom--radius--sm, 8px);
@@ -3809,11 +3816,11 @@ body.is-ff-product-open {
 		position: relative;
 		flex: 1 1 auto;
 		align-self: center;
-		width: min(100%, calc(min(52vh, 520px) - 80px));
+		width: min(100%, calc(min(48vh, 420px) - 80px));
 		max-width: 100%;
-		aspect-ratio: 1 / 1;
-		min-height: 140px;
-		max-height: calc(min(52vh, 520px) - 80px);
+		aspect-ratio: var(--ff-product-aspect, 2 / 3);
+		min-height: 160px;
+		max-height: calc(min(58vh, 620px) - 80px);
 		overflow: hidden;
 		background: var(--wp--preset--color--base, #f3f5f4);
 	}
@@ -4056,14 +4063,19 @@ body.is-ff-product-open {
 	background: transparent;
 }
 
+.ff-product__hero .woocommerce-product-gallery__image,
+.ff-product__hero .wc-block-woocommerce-product-gallery__image {
+	aspect-ratio: var(--ff-product-aspect, 2 / 3);
+}
+
 .ff-product__hero .woocommerce-product-gallery__image img,
 .ff-product__hero .woocommerce-product-gallery__image a,
 .ff-product__hero .wc-block-woocommerce-product-gallery__image img,
 .ff-product__hero .wp-block-woocommerce-product-image-gallery img {
 	display: block;
 	width: 100% !important;
-	height: auto;
-	max-height: min(640px, 70vh);
+	height: 100% !important;
+	max-height: none;
 	object-fit: cover;
 	border: 0 !important;
 	box-shadow: none !important;
@@ -4093,9 +4105,10 @@ body.is-ff-product-open {
 }
 
 .ff-product__hero .flex-control-thumbs li {
-	flex: 0 0 56px;
-	width: 56px;
-	height: 56px;
+	flex: 0 0 48px;
+	width: 48px;
+	height: auto;
+	aspect-ratio: var(--ff-product-aspect, 2 / 3);
 	margin: 0 !important;
 	padding: 0 !important;
 	list-style: none !important;
@@ -4108,8 +4121,8 @@ body.is-ff-product-open {
 .ff-product__hero .flex-control-nav img,
 .ff-product__hero ol.flex-control-thumbs img {
 	display: block;
-	width: 56px !important;
-	height: 56px !important;
+	width: 100% !important;
+	height: 100% !important;
 	object-fit: cover;
 	border: 2px solid transparent !important;
 	border-radius: var(--wp--custom--radius--sm, 8px) !important;
@@ -6707,10 +6720,12 @@ body.is-ff-ptable-open {
 }
 
 .ff-product ul.products li.product img,
+.ff-product .wc-block-product-template .wc-block-components-product-image,
+.ff-product .wc-block-product-template .wc-block-components-product-image a,
 .ff-product .wc-block-product-template .wc-block-components-product-image img {
 	display: block;
 	width: 100%;
-	aspect-ratio: 1;
+	aspect-ratio: var(--ff-product-aspect, 2 / 3);
 	object-fit: cover;
 	background: var(--ff-product-soft);
 }
@@ -6938,7 +6953,7 @@ body.is-ff-ptable-open {
 
 	.ff-product__hero .woocommerce-product-gallery__image img,
 	.ff-product__hero .wp-block-woocommerce-product-image-gallery img {
-		max-height: min(420px, 55vh);
+		max-height: none;
 	}
 
 	.ff-product ul.products,
@@ -9836,6 +9851,90 @@ a.ff-bento-card,
 	font-weight: 400;
 }
 
+/* Filter-Akkordeon: standardmäßig eingeklappt */
+.ff-shop__filters .ff-shop__filter-acc {
+	margin: 0;
+	border: 0;
+	padding: 0;
+}
+
+.ff-shop__filters .ff-shop__filter-acc__summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin: 0;
+	padding: 2px 0;
+	list-style: none;
+	cursor: pointer;
+	user-select: none;
+	font-family: var(--wp--preset--font-family--heading);
+	font-size: 1rem;
+	font-weight: 400;
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+.ff-shop__filters .ff-shop__filter-acc__summary::-webkit-details-marker {
+	display: none;
+}
+
+.ff-shop__filters .ff-shop__filter-acc__summary::marker {
+	content: "";
+}
+
+.ff-shop__filters .ff-shop__filter-acc__title {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.ff-shop__filters .ff-shop__filter-acc__icon {
+	flex: 0 0 auto;
+	width: 14px;
+	height: 14px;
+	position: relative;
+}
+
+.ff-shop__filters .ff-shop__filter-acc__icon::before,
+.ff-shop__filters .ff-shop__filter-acc__icon::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	background: currentColor;
+	transform: translate(-50%, -50%);
+}
+
+.ff-shop__filters .ff-shop__filter-acc__icon::before {
+	width: 12px;
+	height: 1.5px;
+}
+
+.ff-shop__filters .ff-shop__filter-acc__icon::after {
+	width: 1.5px;
+	height: 12px;
+	transition: transform 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		opacity 0.2s;
+}
+
+.ff-shop__filters .ff-shop__filter-acc[open] > .ff-shop__filter-acc__summary .ff-shop__filter-acc__icon::after {
+	transform: translate(-50%, -50%) rotate(90deg);
+	opacity: 0;
+}
+
+.ff-shop__filters .ff-shop__filter-acc__body {
+	padding: 12px 0 2px;
+}
+
+.ff-shop__filters .ff-shop__filter-acc__body .wp-block-heading,
+.ff-shop__filters .ff-shop__filter-acc__body h3 {
+	display: none;
+}
+
+.ff-shop__filters .ff-shop__filter-group:has(> .ff-shop__filter-acc) > .wp-block-heading,
+.ff-shop__filters .ff-shop__filter-group:has(> .ff-shop__filter-acc) > h3 {
+	display: none;
+}
+
 /* „Filter zurücksetzen“: Textlink, linksbündig — kein Button */
 .ff-shop__filters .wp-block-woocommerce-product-filter-clear-button,
 .ff-shop__filters .wp-block-buttons:has(.wc-block-product-filter-clear-button) {
@@ -10186,7 +10285,7 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 .ff-shop__collection .wc-block-components-product-image img {
 	display: block;
 	width: 100%;
-	aspect-ratio: 1;
+	aspect-ratio: var(--ff-product-aspect, 2 / 3);
 	object-fit: cover;
 	background: #e8eceb;
 	margin: 0;
@@ -10550,7 +10649,7 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	display: none !important;
 }
 
-/* Shop / Suche: Seitennavigation */
+/* Shop / Suche: Seitennavigation — modern, minimal */
 .ff-shop .wp-block-query-pagination,
 .ff-shop__pagination,
 .wp-block-query-pagination.ff-shop__pagination {
@@ -10558,39 +10657,11 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
+	gap: 10px;
 	width: 100%;
 	margin: var(--wp--preset--spacing--40, 2rem) 0 0;
 	padding: 0;
 	font-family: var(--wp--preset--font-family--body, inherit);
-}
-
-.ff-shop .wp-block-query-pagination-previous,
-.ff-shop .wp-block-query-pagination-next,
-.ff-shop .wp-block-query-pagination .page-numbers,
-.ff-shop__pagination .wp-block-query-pagination-previous,
-.ff-shop__pagination .wp-block-query-pagination-next,
-.ff-shop__pagination .page-numbers {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-height: 40px;
-	min-width: 40px;
-	margin: 0;
-	padding: 8px 14px;
-	border-radius: var(--wp--custom--radius--sm, 8px);
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 14%, transparent);
-	background: var(--ff-surface, #fff);
-	color: var(--wp--preset--color--contrast, #0e1114) !important;
-	font-size: 0.9375rem;
-	font-weight: 700;
-	line-height: 1.2;
-	text-decoration: none !important;
-	box-shadow: none;
-	transition: background 0.25s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
-		border-color 0.25s,
-		color 0.25s,
-		transform 0.25s;
 }
 
 .ff-shop .wp-block-query-pagination-numbers,
@@ -10599,17 +10670,75 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
+	gap: 10px;
+}
+
+.ff-shop .wp-block-query-pagination .page-numbers,
+.ff-shop__pagination .page-numbers {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: 44px;
+	height: 44px;
+	min-width: 44px;
+	min-height: 44px;
+	margin: 0;
+	padding: 0;
+	border-radius: 4px;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 22%, transparent);
+	background: color-mix(in srgb, var(--ff-surface, #fff) 88%, var(--wp--preset--color--contrast, #0e1114));
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	font-size: 0.9375rem;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: 0;
+	text-decoration: none !important;
+	box-shadow: none;
+	transition: background 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		border-color 0.2s,
+		color 0.2s;
+}
+
+.ff-shop .wp-block-query-pagination-previous,
+.ff-shop .wp-block-query-pagination-next,
+.ff-shop__pagination .wp-block-query-pagination-previous,
+.ff-shop__pagination .wp-block-query-pagination-next {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: auto;
+	height: 44px;
+	min-width: 0;
+	min-height: 44px;
+	margin: 0;
+	padding: 0 18px;
+	border-radius: 4px;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 22%, transparent);
+	background: color-mix(in srgb, var(--ff-surface, #fff) 88%, var(--wp--preset--color--contrast, #0e1114));
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	font-size: 0.9375rem;
+	font-weight: 700;
+	line-height: 1;
+	text-decoration: none !important;
+	box-shadow: none;
+	white-space: nowrap;
+	transition: background 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		border-color 0.2s,
+		color 0.2s;
 }
 
 .ff-shop .wp-block-query-pagination .page-numbers.dots,
 .ff-shop__pagination .page-numbers.dots {
-	min-width: auto;
-	padding-inline: 6px;
+	width: auto;
+	min-width: 28px;
+	padding: 0 4px;
 	border: 0;
 	background: transparent;
-	color: var(--wp--preset--color--muted, #66707a) !important;
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
 	font-weight: 700;
+	letter-spacing: 0.08em;
 	pointer-events: none;
 }
 
@@ -10625,10 +10754,9 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 .ff-shop__pagination .wp-block-query-pagination-previous:focus-visible,
 .ff-shop__pagination .wp-block-query-pagination-next:hover,
 .ff-shop__pagination .wp-block-query-pagination-next:focus-visible {
-	border-color: var(--wp--preset--color--contrast, #0e1114);
-	background: var(--wp--preset--color--base, #f3f5f4);
+	border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 40%, transparent);
+	background: color-mix(in srgb, var(--ff-surface, #fff) 72%, var(--wp--preset--color--contrast, #0e1114));
 	color: var(--wp--preset--color--contrast, #0e1114) !important;
-	transform: translateY(-1px);
 }
 
 .ff-shop .wp-block-query-pagination .page-numbers.current,
@@ -10640,13 +10768,27 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 }
 
 @media (max-width: 600px) {
+	.ff-shop .wp-block-query-pagination,
+	.ff-shop__pagination {
+		gap: 8px;
+	}
+
+	.ff-shop .wp-block-query-pagination .page-numbers,
+	.ff-shop__pagination .page-numbers {
+		width: 40px;
+		height: 40px;
+		min-width: 40px;
+		min-height: 40px;
+	}
+
 	.ff-shop .wp-block-query-pagination-previous,
 	.ff-shop .wp-block-query-pagination-next,
 	.ff-shop__pagination .wp-block-query-pagination-previous,
 	.ff-shop__pagination .wp-block-query-pagination-next {
-		flex: 1 1 auto;
-		min-width: 0;
-		justify-content: center;
+		height: 40px;
+		min-height: 40px;
+		padding: 0 14px;
+		font-size: 0.875rem;
 	}
 }
 
@@ -10845,7 +10987,7 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	max-width: 100% !important;
 	min-width: 0 !important;
 	height: auto;
-	aspect-ratio: 1;
+	aspect-ratio: var(--ff-product-aspect, 2 / 3);
 	object-fit: cover;
 	background: #e8eceb;
 	margin: 0;

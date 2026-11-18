@@ -14,11 +14,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Tax / shipping note under the price.
  *
  * @since 0.9.305
+ * @since 0.9.341 Optional CSS class for product cards vs buy sidebar.
  *
+ * @param string $class CSS class on the paragraph.
  * @return string
  */
-function fairflock_product_tax_note_markup() {
-	return '<p class="ff-product-buy__tax">' . esc_html__( 'zzgl. Versandkosten | inkl. MwSt', 'fairflock' ) . '</p>';
+function fairflock_product_tax_note_markup( $class = 'ff-product-buy__tax' ) {
+	$class = preg_replace( '/[^a-zA-Z0-9_\-\s]/', '', (string) $class );
+	$class = trim( preg_replace( '/\s+/', ' ', (string) $class ) );
+	if ( '' === $class ) {
+		$class = 'ff-product-buy__tax';
+	}
+	return '<p class="' . esc_attr( $class ) . '">' . esc_html__( 'zzgl. Versandkosten | inkl. MwSt', 'fairflock' ) . '</p>';
 }
 
 /**
@@ -422,11 +429,14 @@ function fairflock_product_layout_after_price( $content, $block ) {
 add_filter( 'render_block', 'fairflock_product_layout_after_price', 14, 2 );
 
 /**
- * After product title (info column): long description, table, product infos.
+ * After product title (info column): long description + product infos.
+ *
+ * Größentabelle sits with „Weitere Informationen“ under the hero.
  *
  * @since 0.9.305
  * @since 0.9.314 Moved from before add-to-cart into the middle info column.
  * @since 0.9.315 Short description moves to a card under the hero.
+ * @since 0.9.342 Size table moves under the hero above the excerpt accordion.
  *
  * @param string $content Rendered HTML.
  * @param array  $block   Block.
@@ -459,15 +469,29 @@ function fairflock_product_layout_after_title( $content, $block ) {
 
 	$after  = '<div class="ff-product-buy__copy">';
 	$after .= fairflock_product_description_markup( $product );
-	if ( function_exists( 'fairflock_product_table_markup' ) ) {
-		$after .= fairflock_product_table_markup( $product );
-	}
 	$after .= fairflock_product_infos_markup( $product );
 	$after .= '</div>';
 
 	return $content . $after;
 }
 add_filter( 'render_block', 'fairflock_product_layout_after_title', 12, 2 );
+
+/**
+ * Accordion stack: Größentabelle above „Weitere Informationen“, 4px gap.
+ *
+ * @since 0.9.342
+ *
+ * @param WC_Product $product Product.
+ * @return string
+ */
+function fairflock_product_acc_stack_markup( $product ) {
+	$table = function_exists( 'fairflock_product_table_markup' ) ? fairflock_product_table_markup( $product ) : '';
+	$excerpt = fairflock_product_excerpt_card_markup( $product );
+	if ( '' === $table && '' === $excerpt ) {
+		return '';
+	}
+	return '<div class="ff-product-acc-stack">' . $table . $excerpt . '</div>';
+}
 
 /**
  * Whether rendered columns look like the single-product hero.
@@ -774,9 +798,10 @@ function fairflock_product_layout_enforce_amazon_hero( $content, $block ) {
 add_filter( 'render_block', 'fairflock_product_layout_enforce_amazon_hero', 18, 2 );
 
 /**
- * After the product hero: short description in its own card.
+ * After the product hero: Größentabelle + „Weitere Informationen“ stack.
  *
  * @since 0.9.315
+ * @since 0.9.342 Size table above excerpt, shared accordion look.
  *
  * @param string $content Rendered HTML.
  * @param array  $block   Block.
@@ -792,7 +817,7 @@ function fairflock_product_layout_after_hero( $content, $block ) {
 	if ( ! fairflock_is_product_hero_columns_html( $content, $block ) ) {
 		return $content;
 	}
-	if ( str_contains( $content, 'ff-product__excerpt-card' ) || str_contains( $content, 'ff-product-excerpt-acc' ) ) {
+	if ( str_contains( $content, 'ff-product-acc-stack' ) ) {
 		return $content;
 	}
 
@@ -801,7 +826,12 @@ function fairflock_product_layout_after_hero( $content, $block ) {
 		return $content;
 	}
 
-	return $content . fairflock_product_excerpt_card_markup( $product );
+	$stack = fairflock_product_acc_stack_markup( $product );
+	if ( '' === $stack ) {
+		return $content;
+	}
+
+	return $content . $stack;
 }
 add_filter( 'render_block', 'fairflock_product_layout_after_hero', 20, 2 );
 
@@ -864,13 +894,67 @@ add_filter( 'render_block', 'fairflock_product_layout_hide_inline_excerpt', 16, 
 
 /**
  * Related-products section heading on single product.
+ * Uses the (primary / deepest) product category name when available.
  *
  * @since 0.9.312
  *
  * @return string
  */
 function fairflock_related_products_heading() {
-	return __( 'Mehr von dieser Art', 'fairflock' );
+	$fallback = __( 'Mehr von dieser Art', 'fairflock' );
+
+	$product_id = 0;
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		$product_id = (int) get_queried_object_id();
+	}
+	if ( $product_id <= 0 ) {
+		global $product;
+		if ( is_object( $product ) && is_a( $product, 'WC_Product' ) ) {
+			$product_id = (int) $product->get_id();
+		}
+	}
+	if ( $product_id <= 0 ) {
+		return $fallback;
+	}
+
+	$primary_id = 0;
+	if ( class_exists( 'WPSEO_Primary_Term' ) ) {
+		$primary    = new WPSEO_Primary_Term( 'product_cat', $product_id );
+		$primary_id = (int) $primary->get_primary_term();
+	} elseif ( function_exists( 'rank_math_get_primary_term_id' ) ) {
+		$primary_id = (int) rank_math_get_primary_term_id( 'product_cat', $product_id );
+	}
+
+	if ( $primary_id > 0 ) {
+		$primary_term = get_term( $primary_id, 'product_cat' );
+		if ( $primary_term && ! is_wp_error( $primary_term ) && $primary_term->name ) {
+			return (string) $primary_term->name;
+		}
+	}
+
+	$terms = get_the_terms( $product_id, 'product_cat' );
+	if ( empty( $terms ) || is_wp_error( $terms ) ) {
+		return $fallback;
+	}
+
+	$default_cat = (int) get_option( 'default_product_cat' );
+	$best        = null;
+	$best_depth  = -1;
+	foreach ( $terms as $term ) {
+		if ( $default_cat && (int) $term->term_id === $default_cat && count( $terms ) > 1 ) {
+			continue;
+		}
+		$depth = count( get_ancestors( (int) $term->term_id, 'product_cat' ) );
+		if ( $depth > $best_depth ) {
+			$best_depth = $depth;
+			$best       = $term;
+		}
+	}
+	if ( ! $best ) {
+		$best = $terms[0];
+	}
+
+	return $best->name ? (string) $best->name : $fallback;
 }
 
 /**
@@ -928,6 +1012,7 @@ function fairflock_related_products_heading_render( $content, $block ) {
 		'Ähnliche Produkte',
 		'Ähnliche produkte',
 		'Produkte aus dieser Kategorie',
+		'Mehr von dieser Art',
 	);
 	if ( ! in_array( $plain, $known, true ) ) {
 		return $content;

@@ -4,7 +4,7 @@
  * Slug: fairflock/related-products
  * Categories: fairflock, fairflock-shop
  * Inserter: false
- * Description: Produktvorschläge unter dem Produkt als 1-Spalten-Slideshow.
+ * Description: Produktvorschläge unter dem Produkt; Titel = Kategorie, Desktop 5 / Tablet 4 / Mobile 1,5 Spalten.
  */
 ?>
 <!-- wp:group {"align":"wide","className":"ff-related-slider ff-pattern-products--woo","layout":{"type":"default"}} -->
@@ -12,7 +12,7 @@
 	<!-- wp:group {"className":"ff-pattern-section-head ff-related-slider__head","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
 	<div class="wp-block-group ff-pattern-section-head ff-related-slider__head">
 		<!-- wp:heading -->
-		<h2 class="wp-block-heading"><?php echo esc_html__( 'Mehr von dieser Art', 'fairflock' ); ?></h2>
+		<h2 class="wp-block-heading"><?php echo esc_html( function_exists( 'fairflock_related_products_heading' ) ? fairflock_related_products_heading() : __( 'Mehr von dieser Art', 'fairflock' ) ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:buttons {"className":"ff-prod-slider__nav","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
@@ -31,7 +31,7 @@
 
 	<!-- wp:group {"className":"ff-prod-slider","layout":{"type":"default"}} -->
 	<div class="wp-block-group ff-prod-slider">
-		<!-- wp:woocommerce/product-collection {"queryId":0,"query":{"perPage":8,"pages":1,"offset":0,"postType":"product","order":"asc","orderBy":"title","search":"","exclude":[],"inherit":false,"taxQuery":{},"isProductCollectionBlock":true,"featured":false,"woocommerceOnSale":false,"woocommerceStockStatus":["instock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[],"filterable":false,"relatedBy":{"categories":true,"tags":false}},"tagName":"div","displayLayout":{"type":"flex","columns":1,"shrinkColumns":false},"dimensions":{"widthType":"fill"},"collection":"woocommerce/product-collection/related","hideControls":["inherit"],"queryContextIncludes":["collection"],"className":"ff-shop__collection ff-prod-slider__track"} -->
+		<!-- wp:woocommerce/product-collection {"queryId":0,"query":{"perPage":10,"pages":1,"offset":0,"postType":"product","order":"asc","orderBy":"title","search":"","exclude":[],"inherit":false,"taxQuery":{},"isProductCollectionBlock":true,"featured":false,"woocommerceOnSale":false,"woocommerceStockStatus":["instock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[],"filterable":false,"relatedBy":{"categories":true,"tags":false}},"tagName":"div","displayLayout":{"type":"flex","columns":5,"shrinkColumns":false},"dimensions":{"widthType":"fill"},"collection":"woocommerce/product-collection/related","hideControls":["inherit"],"queryContextIncludes":["collection"],"className":"ff-shop__collection ff-prod-slider__track"} -->
 		<div class="wp-block-woocommerce-product-collection ff-shop__collection ff-prod-slider__track">
 			<!-- wp:woocommerce/product-template -->
 				<!-- wp:woocommerce/product-image {"showSaleBadge":false,"imageSizing":"thumbnail","isDescendentOfQueryLoop":true,"className":"ff-prod-card__media"} /-->

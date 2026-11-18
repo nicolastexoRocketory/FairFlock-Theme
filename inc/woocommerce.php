@@ -1068,16 +1068,52 @@ function fairflock_product_delivery_markup( $label, $tooltip = '' ) {
 }
 
 /**
- * Shows „Lieferung in X Tagen“ under the price on product cards.
+ * Strip Woo / Germanized / German Market tax & shipping footnotes from card prices.
+ *
+ * @since 0.9.341
+ *
+ * @param string $html Price block HTML.
+ * @return string
+ */
+function fairflock_strip_product_card_price_legal( $html ) {
+	if ( ! is_string( $html ) || '' === $html ) {
+		return '';
+	}
+
+	$patterns = array(
+		'/<small[^>]*class="[^"]*woocommerce-price-suffix[^"]*"[^>]*>.*?<\/small>/is',
+		'/<span[^>]*class="[^"]*woocommerce-price-suffix[^"]*"[^>]*>.*?<\/span>/is',
+		'/<p[^>]*class="[^"]*wc-gzd-additional-info[^"]*"[^>]*>.*?<\/p>/is',
+		'/<div[^>]*class="[^"]*wc-gzd-additional-info[^"]*"[^>]*>.*?<\/div>/is',
+		'/<span[^>]*class="[^"]*wc-gzd-additional-info[^"]*"[^>]*>.*?<\/span>/is',
+		'/<p[^>]*class="[^"]*woocommerce-de_price_taxrate[^"]*"[^>]*>.*?<\/p>/is',
+		'/<span[^>]*class="[^"]*woocommerce-de_price_taxrate[^"]*"[^>]*>.*?<\/span>/is',
+		'/<p[^>]*class="[^"]*woocommerce_de_versandkosten[^"]*"[^>]*>.*?<\/p>/is',
+		'/<span[^>]*class="[^"]*woocommerce_de_versandkosten[^"]*"[^>]*>.*?<\/span>/is',
+		'/<a[^>]*class="[^"]*woocommerce_de_versandkosten[^"]*"[^>]*>.*?<\/a>/is',
+		'/<p[^>]*class="[^"]*wc-gzd-shipping-costs-info[^"]*"[^>]*>.*?<\/p>/is',
+		'/<span[^>]*class="[^"]*tax_label[^"]*"[^>]*>.*?<\/span>/is',
+	);
+	foreach ( $patterns as $pattern ) {
+		$html = preg_replace( $pattern, '', $html );
+	}
+
+	return is_string( $html ) ? $html : '';
+}
+
+/**
+ * Shows tax note + „Lieferung in X Tagen“ under the price on product cards.
  *
  * Injected on render so a customized collection in the Site Editor still
- * gets the line. The single-product price stays unchanged.
+ * gets the lines. Replaces plugin footnotes like „inkl. 0 % MwSt.“ /
+ * „plus Shipping Costs“. The single-product price stays unchanged.
  *
  * @since 0.9.292
+ * @since 0.9.341 Unified „zzgl. Versandkosten | inkl. MwSt“ under card prices.
  *
- * @param string   $content  Rendered block.
- * @param array    $block    Block data.
- * @param WP_Block $instance Block instance, when WordPress passes it.
+ * @param string        $content  Rendered block.
+ * @param array         $block    Block data.
+ * @param WP_Block|null $instance Block instance, when WordPress passes it.
  * @return string
  */
 function fairflock_render_product_card_delivery( $content, $block, $instance = null ) {
@@ -1096,6 +1132,13 @@ function fairflock_render_product_card_delivery( $content, $block, $instance = n
 		return $content;
 	}
 
+	$content = fairflock_strip_product_card_price_legal( $content );
+	if ( ! str_contains( $content, 'ff-prod-card__tax' )
+		&& ! str_contains( $content, 'ff-product-buy__tax' )
+		&& function_exists( 'fairflock_product_tax_note_markup' ) ) {
+		$content .= fairflock_product_tax_note_markup( 'ff-prod-card__tax' );
+	}
+
 	$product = null;
 	if ( $instance instanceof WP_Block ) {
 		$post_id = isset( $instance->context['postId'] ) ? (int) $instance->context['postId'] : 0;
@@ -1110,6 +1153,10 @@ function fairflock_render_product_card_delivery( $content, $block, $instance = n
 		return $content;
 	}
 
+	if ( str_contains( $content, 'ff-prod-card__delivery' ) ) {
+		return $content;
+	}
+
 	$view = function_exists( 'fairflock_product_delivery_view' ) ? fairflock_product_delivery_view( $product ) : null;
 	if ( ! is_array( $view ) || '' === $view['label'] ) {
 		return $content;
@@ -1118,6 +1165,32 @@ function fairflock_render_product_card_delivery( $content, $block, $instance = n
 	return $content . fairflock_product_delivery_markup( $view['label'], $view['tooltip'] );
 }
 add_filter( 'render_block', 'fairflock_render_product_card_delivery', 12, 3 );
+
+/**
+ * Hide leftover Germanized / German Market footnotes after the price block.
+ *
+ * Runs late so plugin output appended after our card notes is still removed.
+ *
+ * @since 0.9.341
+ *
+ * @param string $content Rendered HTML.
+ * @param array  $block   Block data.
+ * @return string
+ */
+function fairflock_hide_product_card_legal_siblings( $content, $block ) {
+	$name = $block['blockName'] ?? '';
+	if ( 'woocommerce/product-price' !== $name ) {
+		return $content;
+	}
+	$attrs   = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	$class   = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
+	$is_card = ! empty( $attrs['isDescendentOfQueryLoop'] ) || false !== strpos( $class, 'ff-prod-card__price' );
+	if ( ! $is_card || ! empty( $attrs['isDescendentOfSingleProductTemplate'] ) ) {
+		return $content;
+	}
+	return fairflock_strip_product_card_price_legal( $content );
+}
+add_filter( 'render_block', 'fairflock_hide_product_card_legal_siblings', 99, 2 );
 
 /**
  * Injects the first gallery image as a hover swap on product cards.

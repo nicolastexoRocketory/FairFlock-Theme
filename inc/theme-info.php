@@ -20,6 +20,72 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.350',
+			'items'   => array(
+				__( 'Mobile Produktseite: Titel ohne linken Einschub.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.349',
+			'items'   => array(
+				__( 'Mobile Produktgalerie: randlos an Navbar/Screen; doppelte Slideshow behoben; Original-Woo ausgeblendet.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.348',
+			'items'   => array(
+				__( 'Dein Design: Upload auf ein Feld reduziert — Dokument-Icon + „{Begriff} wählen“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.347',
+			'items'   => array(
+				__( '„Mehr von dieser Art“: Titel = Produktkategorie; Desktop 5 / Tablet 4 / Mobile 1,5 Spalten.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.346',
+			'items'   => array(
+				__( 'Warenkorb-Drawer: Menge per −/+ ändern, Produkt per Mülleimer entfernen, Produktname verlinkt; „Menge X“ entfernt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.345',
+			'items'   => array(
+				__( 'Amazon-Buy-Sidebar: Größe-/Design-Cards heben sich deutlich weniger vom Hintergrund ab.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.344',
+			'items'   => array(
+				__( 'Akkordeon-Chevron (Größentabelle / Weitere Informationen): Abstand oben, unten und rechts einheitlich; optisch zentriertes Icon.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.343',
+			'items'   => array(
+				__( 'Mobile Pop-Up/Produktseite: Galerie zeigt 1,5 Bilder randlos (ohne Thumbnails), moderne Chevron-Pfeile; Produktseite-Galerie bündig an Navbar und Screenränder.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.342',
+			'items'   => array(
+				__( 'Pop-Up/Produktseite: Größentabelle und „Weitere Informationen“ als gleiche Akkordeon-Zeilen (4px Abstand); Größentabelle oben; Mobile-Buy wie Pop-Up.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.341',
+			'items'   => array(
+				__( 'Produktkarten: statt Plugin-MwSt-/Versand-Fußnoten einheitlich „zzgl. Versandkosten | inkl. MwSt“ unter dem Preis.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.340',
+			'items'   => array(
+				__( 'Produktkarten: Erstbild füllt den 2:3-Rahmen per object-fit cover (wie Hover-Bild).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.339',
 			'items'   => array(
 				__( 'Produktseite: Kurzbeschreibung nur noch im Akkordeon „Weitere Informationen“, keine Doppelung in der Info-Spalte.', 'fairflock' ),

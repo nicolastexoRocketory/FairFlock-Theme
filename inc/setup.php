@@ -47,6 +47,7 @@ add_action( 'after_setup_theme', 'fairflock_setup' );
  */
 function fairflock_disable_product_gallery_lightbox() {
 	remove_theme_support( 'wc-product-gallery-lightbox' );
+	remove_theme_support( 'wc-product-gallery-slider' );
 }
 add_action( 'after_setup_theme', 'fairflock_disable_product_gallery_lightbox', 100 );
 add_filter( 'woocommerce_single_product_photoswipe_enabled', '__return_false' );

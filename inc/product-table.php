@@ -227,9 +227,9 @@ function fairflock_product_table_markup( $product ) {
 	$uid     = 'ff-ptable-title-' . fairflock_product_table_product_id( $product ) . '-' . wp_unique_id();
 	$label   = '' !== $title ? $title : __( 'Tabelle', 'fairflock' );
 	$html    = '<section class="ff-product-table" data-cols="' . esc_attr( (string) count( $columns ) ) . '">';
-	$html   .= '<button type="button" class="ff-product-table__open" data-ff-ptable-open>';
-	$html   .= '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M4 5.5h16M4 12h16M4 18.5h16M9 4v16M15 4v16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>';
-	$html   .= esc_html__( 'Größentabelle öffnen', 'fairflock' );
+	$html   .= '<button type="button" class="ff-product-table__open ff-product-acc-row" data-ff-ptable-open>';
+	$html   .= '<span class="ff-product-acc-row__title">' . esc_html__( 'Größentabelle öffnen', 'fairflock' ) . '</span>';
+	$html   .= '<span class="ff-product-acc-row__icon" aria-hidden="true"></span>';
 	$html   .= '</button>';
 	$html   .= '<div class="ff-product-table__dialog" hidden role="dialog" aria-modal="true" aria-labelledby="' . esc_attr( $uid ) . '">';
 	$html   .= '<div class="ff-product-table__panel">';

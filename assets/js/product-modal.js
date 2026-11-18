@@ -273,6 +273,9 @@
 			return out;
 		}
 
+		var galleryChevron =
+			'<svg class="ff-gal-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M8.2 2.1 17.8 12 8.2 21.9 5.6 19.4 12.8 12 5.6 4.6z"/></svg>';
+
 		function renderGallery(images) {
 			galleryImages = images;
 			galleryIndex = 0;
@@ -304,45 +307,27 @@
 			var nav =
 				images.length > 1
 					? '<div class="ff-product-modal__gallery-nav">' +
-					  '<button type="button" class="ff-product-modal__gallery-btn" data-ff-gallery="prev" aria-label="Vorheriges Bild">←</button>' +
-					  '<button type="button" class="ff-product-modal__gallery-btn" data-ff-gallery="next" aria-label="Nächstes Bild">→</button>' +
-					  "</div>"
-					: "";
-
-			var thumbs =
-				images.length > 1
-					? '<div class="ff-product-modal__thumbs" role="tablist" aria-label="Alle Produktbilder">' +
-					  images
-							.map(function (img, i) {
-								return (
-									'<button type="button" class="ff-product-modal__thumb' +
-									(i === 0 ? " is-active" : "") +
-									'" data-ff-thumb="' +
-									i +
-									'" role="tab" aria-selected="' +
-									(i === 0 ? "true" : "false") +
-									'" aria-label="Bild ' +
-									(i + 1) +
-									'">' +
-									'<img src="' +
-									escapeHtml(img.src) +
-									'" alt="" loading="lazy" />' +
-									"</button>"
-								);
-							})
-							.join("") +
+					  '<button type="button" class="ff-product-modal__gallery-btn is-prev" data-ff-gallery="prev" aria-label="Vorheriges Bild">' +
+					  galleryChevron +
+					  "</button>" +
+					  '<button type="button" class="ff-product-modal__gallery-btn is-next" data-ff-gallery="next" aria-label="Nächstes Bild">' +
+					  galleryChevron +
+					  "</button>" +
 					  "</div>"
 					: "";
 
 			return (
-				'<div class="ff-product-modal__media" data-ff-gallery-root>' +
+				'<div class="ff-product-modal__media" data-ff-gallery-root style="--ff-gal-n:' +
+				images.length +
+				";--ff-gal-peek:" +
+				(images.length > 1 ? "1.5" : "1") +
+				'">' +
 				'<div class="ff-product-modal__stage">' +
-				'<div class="ff-product-modal__slides">' +
+				'<div class="ff-product-modal__slides" data-ff-gallery-track>' +
 				slides +
 				"</div>" +
 				nav +
 				"</div>" +
-				thumbs +
 				"</div>"
 			);
 		}
@@ -356,18 +341,40 @@
 				var i = Number(slide.getAttribute("data-ff-slide"));
 				slide.classList.toggle("is-active", i === galleryIndex);
 			});
-			bodyEl.querySelectorAll(".ff-product-modal__thumb").forEach(function (thumb) {
-				var i = Number(thumb.getAttribute("data-ff-thumb"));
-				var on = i === galleryIndex;
-				thumb.classList.toggle("is-active", on);
-				thumb.setAttribute("aria-selected", on ? "true" : "false");
-				if (on && thumb.scrollIntoView) {
-					thumb.scrollIntoView({
-						block: "nearest",
-						inline: "nearest",
-						behavior: "smooth"
-					});
-				}
+
+			var track = bodyEl.querySelector("[data-ff-gallery-track]");
+			if (track) {
+				track.style.transform = "translate3d(" + -galleryIndex * (100 / total) + "%,0,0)";
+			}
+		}
+
+		function bindGallerySwipe() {
+			var track = bodyEl.querySelector("[data-ff-gallery-track]");
+			if (!track || track.dataset.ffSwipeBound === "1") return;
+			track.dataset.ffSwipeBound = "1";
+			var startX = 0;
+			var deltaX = 0;
+			track.addEventListener(
+				"touchstart",
+				function (e) {
+					if (!e.touches || !e.touches.length) return;
+					startX = e.touches[0].clientX;
+					deltaX = 0;
+				},
+				{ passive: true }
+			);
+			track.addEventListener(
+				"touchmove",
+				function (e) {
+					if (!e.touches || !e.touches.length) return;
+					deltaX = e.touches[0].clientX - startX;
+				},
+				{ passive: true }
+			);
+			track.addEventListener("touchend", function () {
+				if (Math.abs(deltaX) < 40) return;
+				setGalleryIndex(galleryIndex + (deltaX < 0 ? 1 : -1));
+				deltaX = 0;
 			});
 		}
 
@@ -680,6 +687,10 @@
 				: "";
 
 			var tableHtml = personalization.tableHtml || "";
+			var accStack =
+				tableHtml || excerptHtml
+					? '<div class="ff-product-acc-stack">' + tableHtml + excerptHtml + "</div>"
+					: "";
 			var productInfosHtml = renderProductInfos(p);
 			var attrsHtml = renderAttributes(p.attributes);
 
@@ -699,10 +710,9 @@
 				'<div class="ff-product-modal__scroll">' +
 				headHtml +
 				descriptionHtml +
-				excerptHtml +
+				accStack +
 				attrsHtml +
 				optionsNote +
-				tableHtml +
 				productInfosHtml +
 				"</div>" +
 				'<div class="ff-product-modal__actions' +
@@ -744,6 +754,9 @@
 					: "") +
 				"</div>" +
 				"</div></div>";
+
+			setGalleryIndex(0);
+			bindGallerySwipe();
 
 			var persRoot = bodyEl.querySelector("[data-ff-personalization]");
 			if (persRoot && typeof window.fairflockInitPersonalization === "function") {
@@ -1029,13 +1042,6 @@
 					e.preventDefault();
 					var dir = galleryBtn.getAttribute("data-ff-gallery");
 					setGalleryIndex(galleryIndex + (dir === "next" ? 1 : -1));
-					return;
-				}
-
-				var thumb = e.target.closest && e.target.closest("[data-ff-thumb]");
-				if (thumb && layer.contains(thumb)) {
-					e.preventDefault();
-					setGalleryIndex(Number(thumb.getAttribute("data-ff-thumb")));
 					return;
 				}
 

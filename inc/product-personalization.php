@@ -492,29 +492,29 @@ function fairflock_get_personalization_markup( $product, $id_suffix = '' ) {
 		echo '</label>';
 		echo '</div>';
 		echo '</fieldset>';
-	} elseif ( $enable_upload ) {
-		/* Eine Info-Zeile unter „Dein Design“ = konfigurierter Upload-Titel. */
-		echo '<p class="ff-personalization__hint">' . esc_html( $labels['upload_label'] ) . '</p>';
-	} else {
+	} elseif ( $enable_text ) {
 		echo '<p class="ff-personalization__hint">' . esc_html( $labels['text_label'] ) . '</p>';
 	}
 
 	if ( $enable_upload ) {
-		$accept = fairflock_personalization_accept_attr( $product );
-		$note   = fairflock_personalization_formats_label( $product );
+		$accept     = fairflock_personalization_accept_attr( $product );
+		$pick_label = sprintf(
+			/* translators: %s: configured upload field title, e.g. Druckmotiv */
+			__( '%s wählen', 'fairflock' ),
+			$labels['upload_label']
+		);
+		$doc_icon = '<svg class="ff-personalization__file-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 17h6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>';
 		echo '<div class="ff-personalization__panel ff-personalization__panel--upload"' . ( $both ? ' data-ff-panel="upload"' : '' ) . '>';
 		echo '<p class="ff-personalization__field ff-personalization__field--upload">';
-		/* Einzelmodus: sichtbare Info nur unter „Dein Design“; Label nur a11y. */
-		$upload_label_class = $both ? '' : ' class="screen-reader-text"';
-		echo '<label' . $upload_label_class . ' for="' . esc_attr( $uid_file ) . '">' . esc_html( $labels['upload_label'] ) . '</label>';
+		echo '<label class="screen-reader-text" for="' . esc_attr( $uid_file ) . '">' . esc_html( $labels['upload_label'] ) . '</label>';
 		echo '<span class="ff-personalization__file">';
 		echo '<input type="file" class="ff-personalization__file-input" id="' . esc_attr( $uid_file ) . '" name="fairflock_logo_upload" accept="' . esc_attr( $accept ) . '" />';
-		echo '<span class="ff-personalization__file-name" data-ff-file-name data-empty="' . esc_attr__( 'Keine Datei ausgewählt', 'fairflock' ) . '">' . esc_html__( 'Keine Datei ausgewählt', 'fairflock' ) . '</span>';
-		echo '<button type="button" class="ff-personalization__file-change" data-ff-file-pick>' . esc_html__( 'Datei auswählen', 'fairflock' ) . '</button>';
+		echo '<button type="button" class="ff-personalization__file-pick" data-ff-file-pick>';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static SVG markup.
+		echo $doc_icon;
+		echo '<span class="ff-personalization__file-name" data-ff-file-name data-empty="' . esc_attr( $pick_label ) . '">' . esc_html( $pick_label ) . '</span>';
+		echo '</button>';
 		echo '</span>';
-		if ( '' !== $note ) {
-			echo '<span class="ff-personalization__note">' . esc_html( $note ) . '</span>';
-		}
 		echo '</p>';
 		echo '</div>';
 	}
@@ -603,7 +603,6 @@ window.fairflockInitPersonalization=function(root){
     var empty=fileName?fileName.getAttribute("data-empty"):"";
     fileWrap.classList.toggle("is-chosen",chosen);
     if(fileName){fileName.textContent=chosen?file.name:empty;}
-    if(fileBtn){fileBtn.textContent=chosen?"ändern":"Datei auswählen";}
   }
   if(fileInput&&fileBtn&&!fileInput.getAttribute("data-ff-file-bound")){
     fileInput.setAttribute("data-ff-file-bound","1");

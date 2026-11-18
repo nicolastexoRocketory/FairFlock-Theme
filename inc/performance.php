@@ -289,6 +289,19 @@ function fairflock_enqueue_frontend_assets() {
 		);
 	}
 
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		wp_enqueue_script(
+			'fairflock-product-gallery-mobile',
+			FAIRFLOCK_URI . '/assets/js/product-gallery-mobile.js',
+			array(),
+			FAIRFLOCK_VERSION,
+			array(
+				'strategy'  => 'defer',
+				'in_footer' => true,
+			)
+		);
+	}
+
 	$shop     = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' );
 	$cart     = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'cart' ) : home_url( '/cart/' );
 	$checkout = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'checkout' ) : home_url( '/checkout/' );

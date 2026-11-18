@@ -20,6 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.361',
+			'items'   => array(
+				__( 'Shop-Filter: Abstände zwischen Akkordeon-Items verringert.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.360',
+			'items'   => array(
+				__( 'Produktbilder: „KI-Bild“ im Backend pro Bild aktivierbar; minimalistischer Tag auf dem Bild im Shop/Popup.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.359',
+			'items'   => array(
+				__( 'Warenkorb: Mengen-Zahl editierbar (kein Verdoppeln mehr beim Klick); +/- weiterhin verfügbar.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.358',
 			'items'   => array(
 				__( 'Mobile Produktgalerie: kleinere Pfeile; letztes Bild bündig am rechten Screenrand (kein Leerraum danach).', 'fairflock' ),

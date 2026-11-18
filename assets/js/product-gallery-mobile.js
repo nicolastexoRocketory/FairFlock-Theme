@@ -68,7 +68,10 @@
 				seen[src] = true;
 				out.push({
 					src: src,
-					alt: img.getAttribute("alt") || ""
+					alt: img.getAttribute("alt") || "",
+					ki:
+						img.getAttribute("data-ff-ki-bild") === "1" ||
+						(img.classList && img.classList.contains("ff-ki-bild-img"))
 				});
 			});
 		return out;
@@ -98,13 +101,30 @@
 
 		images.forEach(function (img, i) {
 			var fig = document.createElement("figure");
-			fig.className = "ff-product-peek__slide" + (i === 0 ? " is-active" : "");
+			fig.className =
+				"ff-product-peek__slide" +
+				(i === 0 ? " is-active" : "") +
+				(img.ki ? " ff-has-ki-bild" : "");
 			fig.setAttribute("data-ff-peek-slide", String(i));
+			if (img.ki) {
+				if (typeof window.fairflockEnsureKiBildTag === "function") {
+					window.fairflockEnsureKiBildTag(fig);
+				} else {
+					fig.insertAdjacentHTML(
+						"afterbegin",
+						'<span class="ff-ki-bild-tag">KI-Bild</span>'
+					);
+				}
+			}
 			var el = document.createElement("img");
 			el.src = img.src;
 			el.alt = img.alt;
 			el.loading = i === 0 ? "eager" : "lazy";
 			el.decoding = "async";
+			if (img.ki) {
+				el.setAttribute("data-ff-ki-bild", "1");
+				el.className = "ff-ki-bild-img";
+			}
 			fig.appendChild(el);
 			track.appendChild(fig);
 		});

@@ -270,13 +270,22 @@
 
 		function collectImages(p) {
 			var list = Array.isArray(p.images) ? p.images : [];
+			var kiIds = {};
+			var ext = p && p.extensions && (p.extensions.fairflockKi || p.extensions["fairflockKi"]);
+			if (ext && Array.isArray(ext.image_ids)) {
+				ext.image_ids.forEach(function (id) {
+					kiIds[String(id)] = true;
+				});
+			}
 			var out = [];
 			list.forEach(function (img) {
 				var src = (img && (img.src || img.thumbnail)) || "";
 				if (!src) return;
+				var id = img && img.id != null ? String(img.id) : "";
 				out.push({
 					src: src,
-					alt: (img && (img.alt || img.name)) || p.name || ""
+					alt: (img && (img.alt || img.name)) || p.name || "",
+					ki: !!(id && kiIds[id])
 				});
 			});
 			return out;
@@ -298,14 +307,22 @@
 					return (
 						'<figure class="ff-product-modal__slide' +
 						(i === 0 ? " is-active" : "") +
+						(img.ki ? " ff-has-ki-bild" : "") +
 						'" data-ff-slide="' +
 						i +
 						'">' +
+						(img.ki
+							? typeof window.fairflockKiBildTagHtml === "function"
+								? window.fairflockKiBildTagHtml()
+								: '<span class="ff-ki-bild-tag">KI-Bild</span>'
+							: "") +
 						'<img src="' +
 						escapeHtml(img.src) +
 						'" alt="' +
 						escapeHtml(img.alt) +
-						'" loading="' +
+						'"' +
+						(img.ki ? ' data-ff-ki-bild="1" class="ff-ki-bild-img"' : "") +
+						' loading="' +
 						(i === 0 ? "eager" : "lazy") +
 						'" />' +
 						"</figure>"

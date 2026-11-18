@@ -3070,17 +3070,41 @@ a.ff-cart-line__title:hover {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-width: 1.75rem;
+	box-sizing: border-box;
+	width: 2.25rem;
+	min-width: 2.25rem;
 	min-height: 32px;
+	margin: 0;
 	padding: 0 2px;
+	border: 0;
 	border-left: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
 	border-right: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
+	border-radius: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
 	font-weight: 700;
 	font-variant-numeric: tabular-nums;
+	text-align: center;
+	appearance: textfield;
+	-moz-appearance: textfield;
+}
+
+.ff-cart-line__qty-val::-webkit-outer-spin-button,
+.ff-cart-line__qty-val::-webkit-inner-spin-button {
+	margin: 0;
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.ff-cart-line__qty-val:focus {
+	outline: none;
+	background: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 8%, transparent);
 }
 
 .ff-cart-line__qty.is-static .ff-cart-line__qty-val {
 	border: 0;
+	width: auto;
 	min-width: 0;
 	padding: 0;
 	font-weight: 600;
@@ -4215,6 +4239,41 @@ a.ff-cart-line__title:hover {
 .ff-product__hero .woocommerce-product-gallery__image,
 .ff-product__hero .wc-block-woocommerce-product-gallery__image {
 	aspect-ratio: var(--ff-product-aspect, 2 / 3);
+	position: relative;
+}
+
+/* Minimalistischer KI-Bild-Hinweis */
+.ff-ki-bild-tag {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	z-index: 3;
+	display: inline-flex;
+	align-items: center;
+	margin: 0;
+	padding: 3px 7px;
+	border: 0;
+	border-radius: 4px;
+	background: color-mix(in srgb, var(--ff-ink, #0e1114) 52%, transparent);
+	color: #fff;
+	font-family: var(--wp--preset--font-family--body, inherit);
+	font-size: 0.625rem;
+	font-weight: 500;
+	letter-spacing: 0.06em;
+	line-height: 1.2;
+	text-transform: uppercase;
+	pointer-events: none;
+	user-select: none;
+}
+
+.ff-has-ki-bild,
+.ff-product-peek__slide.ff-has-ki-bild,
+.ff-product-modal__slide.ff-has-ki-bild,
+.woocommerce-product-gallery__image.ff-has-ki-bild,
+.wc-block-woocommerce-product-gallery__image.ff-has-ki-bild,
+.wp-block-woocommerce-product-image.ff-has-ki-bild,
+.wc-block-components-product-image.ff-has-ki-bild {
+	position: relative;
 }
 
 .ff-product__hero .woocommerce-product-gallery__image img,
@@ -10292,7 +10351,7 @@ a.ff-bento-card,
 	border-radius: var(--wp--custom--radius--md, 16px);
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: 6px;
 	box-sizing: border-box;
 	width: 100%;
 	max-width: 100%;
@@ -10303,11 +10362,22 @@ a.ff-bento-card,
 .ff-shop__filters .ff-shop__filter-group,
 .ff-shop__filters .wp-block-woocommerce-product-filter-price,
 .ff-shop__filters .wp-block-woocommerce-product-filter-taxonomy,
-.ff-shop__filters .wp-block-woocommerce-product-filter-status {
+.ff-shop__filters .wp-block-woocommerce-product-filter-status,
+.ff-shop__filters .wp-block-woocommerce-product-filter-attribute,
+.ff-shop__filters .wp-block-woocommerce-product-filter-rating {
 	min-width: 0;
 	max-width: 100%;
 	width: 100%;
+	margin: 0 !important;
+	margin-block: 0 !important;
 	overflow: hidden;
+}
+
+/* Akkordeon-Items eng hintereinander */
+.ff-shop__filters .ff-shop__filter-group + .ff-shop__filter-group,
+.ff-shop__filters .ff-shop__filter-acc + .ff-shop__filter-acc,
+.ff-shop__filters [class*="wp-block-woocommerce-product-filter-"] + [class*="wp-block-woocommerce-product-filter-"] {
+	margin-top: 0 !important;
 }
 
 .ff-shop__filters .ff-shop__filter-group h3,
@@ -10326,10 +10396,6 @@ a.ff-bento-card,
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	background: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 2.5%, var(--ff-surface, #fff));
 	overflow: clip;
-}
-
-.ff-shop__filters .ff-shop__filter-acc + .ff-shop__filter-acc {
-	margin-top: 0;
 }
 
 .ff-shop__filters .ff-shop__filter-acc__summary {

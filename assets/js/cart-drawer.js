@@ -179,15 +179,21 @@
 					});
 					var qtyCtrl = editable
 						? '<div class="ff-cart-line__qty" role="group" aria-label="Menge">' +
-						  '<button type="button" class="ff-cart-line__qty-btn" data-ff-cart-qty="-1" data-ff-cart-key="' +
+						  '<button type="button" class="ff-cart-line__qty-btn" data-ff-cart-qty-delta="-1" data-ff-cart-key="' +
 						  escapeHtml(key) +
 						  '" aria-label="Menge verringern"' +
 						  (qty <= minQty ? " disabled" : "") +
 						  ">−</button>" +
-						  '<span class="ff-cart-line__qty-val" aria-live="polite">' +
+						  '<input class="ff-cart-line__qty-val" type="number" inputmode="numeric" pattern="[0-9]*" min="' +
+						  escapeHtml(String(minQty)) +
+						  '" max="' +
+						  escapeHtml(String(maxQty)) +
+						  '" step="1" value="' +
 						  escapeHtml(String(qty)) +
-						  "</span>" +
-						  '<button type="button" class="ff-cart-line__qty-btn" data-ff-cart-qty="1" data-ff-cart-key="' +
+						  '" aria-label="Menge" data-ff-cart-qty-input data-ff-cart-key="' +
+						  escapeHtml(key) +
+						  '" />' +
+						  '<button type="button" class="ff-cart-line__qty-btn" data-ff-cart-qty-delta="1" data-ff-cart-key="' +
 						  escapeHtml(key) +
 						  '" aria-label="Menge erhöhen"' +
 						  (qty >= maxQty ? " disabled" : "") +
@@ -202,7 +208,7 @@
 						(busyKey === key ? " is-busy" : "") +
 						'" data-ff-cart-key="' +
 						escapeHtml(key) +
-						'" data-ff-cart-qty="' +
+						'" data-ff-cart-quantity="' +
 						escapeHtml(String(qty)) +
 						'" data-ff-cart-min="' +
 						escapeHtml(String(minQty)) +
@@ -417,15 +423,63 @@
 					return;
 				}
 
-				var qtyBtn = e.target.closest && e.target.closest("[data-ff-cart-qty]");
+				var qtyBtn = e.target.closest && e.target.closest("[data-ff-cart-qty-delta]");
 				if (qtyBtn && linesEl.contains(qtyBtn)) {
 					e.preventDefault();
 					if (busyKey || qtyBtn.disabled) return;
 					var line = qtyBtn.closest(".ff-cart-line");
 					var key = qtyBtn.getAttribute("data-ff-cart-key") || (line && line.getAttribute("data-ff-cart-key"));
-					var current = Number(line && line.getAttribute("data-ff-cart-qty")) || 1;
-					var delta = Number(qtyBtn.getAttribute("data-ff-cart-qty")) || 0;
+					var current = Number(line && line.getAttribute("data-ff-cart-quantity")) || 1;
+					var delta = Number(qtyBtn.getAttribute("data-ff-cart-qty-delta")) || 0;
 					updateItemQty(key, current + delta);
+				}
+			});
+
+			function commitQtyInput(input) {
+				if (!input || busyKey) return;
+				var line = input.closest(".ff-cart-line");
+				var key = input.getAttribute("data-ff-cart-key") || (line && line.getAttribute("data-ff-cart-key"));
+				if (!key) return;
+				var minQty = Number(line && line.getAttribute("data-ff-cart-min")) || 1;
+				var maxQty = Number(line && line.getAttribute("data-ff-cart-max")) || 99;
+				var current = Number(line && line.getAttribute("data-ff-cart-quantity")) || 1;
+				var next = parseInt(String(input.value || "").trim(), 10);
+				if (!Number.isFinite(next)) {
+					input.value = String(current);
+					return;
+				}
+				if (next < minQty) next = minQty;
+				if (next > maxQty) next = maxQty;
+				input.value = String(next);
+				if (next === current) return;
+				updateItemQty(key, next);
+			}
+
+			linesEl.addEventListener("change", function (e) {
+				var input = e.target.closest && e.target.closest("[data-ff-cart-qty-input]");
+				if (input && linesEl.contains(input)) commitQtyInput(input);
+			});
+
+			linesEl.addEventListener("keydown", function (e) {
+				var input = e.target.closest && e.target.closest("[data-ff-cart-qty-input]");
+				if (!input || !linesEl.contains(input)) return;
+				if (e.key === "Enter") {
+					e.preventDefault();
+					input.blur();
+					commitQtyInput(input);
+				}
+			});
+
+			linesEl.addEventListener("focusin", function (e) {
+				var input = e.target.closest && e.target.closest("[data-ff-cart-qty-input]");
+				if (input && linesEl.contains(input)) {
+					window.setTimeout(function () {
+						try {
+							input.select();
+						} catch (_err) {
+							/* ignore */
+						}
+					}, 0);
 				}
 			});
 		}

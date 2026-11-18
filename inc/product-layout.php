@@ -382,6 +382,310 @@ function fairflock_product_layout_after_title( $content, $block ) {
 add_filter( 'render_block', 'fairflock_product_layout_after_title', 12, 2 );
 
 /**
+ * Whether rendered columns look like the single-product hero.
+ *
+ * Matches ff-product__hero or a product-page gallery + buy pair, so customized
+ * Site Editor templates still get the Amazon layout.
+ *
+ * @since 0.9.337
+ *
+ * @param string $content Rendered HTML.
+ * @param array  $block   Block data.
+ * @return bool
+ */
+function fairflock_is_product_hero_columns_html( $content, $block ) {
+	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	$class = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
+	if ( false !== strpos( $class, 'ff-product__hero' ) ) {
+		return true;
+	}
+	if ( ! is_string( $content ) || '' === $content ) {
+		return false;
+	}
+	$has_gallery = str_contains( $content, 'woocommerce-product-gallery' )
+		|| str_contains( $content, 'product-image-gallery' )
+		|| str_contains( $content, 'wc-block-woocommerce-product-gallery' );
+	if ( ! $has_gallery ) {
+		return false;
+	}
+	return str_contains( $content, 'add-to-cart' )
+		|| str_contains( $content, 'product-price' )
+		|| str_contains( $content, 'ff-product-buy__price-row' );
+}
+
+/**
+ * Class token helpers for column role classes.
+ *
+ * @since 0.9.337
+ *
+ * @param DOMElement $el    Element.
+ * @param string     $token Class to ensure.
+ * @return void
+ */
+function fairflock_dom_ensure_class( $el, $token ) {
+	if ( ! $el instanceof DOMElement ) {
+		return;
+	}
+	$current = preg_split( '/\s+/', trim( (string) $el->getAttribute( 'class' ) ) );
+	$current = is_array( $current ) ? array_filter( $current ) : array();
+	if ( ! in_array( $token, $current, true ) ) {
+		$current[] = $token;
+		$el->setAttribute( 'class', implode( ' ', $current ) );
+	}
+}
+
+/**
+ * Direct child column elements of a columns root.
+ *
+ * @since 0.9.337
+ *
+ * @param DOMElement $columns Columns root.
+ * @return array<int, DOMElement>
+ */
+function fairflock_dom_column_children( $columns ) {
+	$out = array();
+	if ( ! $columns instanceof DOMElement ) {
+		return $out;
+	}
+	foreach ( $columns->childNodes as $child ) {
+		if ( ! $child instanceof DOMElement ) {
+			continue;
+		}
+		$class = ' ' . (string) $child->getAttribute( 'class' ) . ' ';
+		if ( false !== strpos( $class, ' wp-block-column ' ) || 'wp-block-column' === trim( $class ) ) {
+			$out[] = $child;
+		}
+	}
+	return $out;
+}
+
+/**
+ * Whether a node (or its HTML) matches a buy-sidebar piece.
+ *
+ * @since 0.9.337
+ *
+ * @param DOMElement $el Element.
+ * @return bool
+ */
+function fairflock_dom_is_buy_piece( $el ) {
+	if ( ! $el instanceof DOMElement ) {
+		return false;
+	}
+	$class = ' ' . (string) $el->getAttribute( 'class' ) . ' ';
+	$needles = array(
+		' ff-product-buy__price-row ',
+		' ff-product-buy__facts ',
+		' wp-block-woocommerce-product-price ',
+		' wc-block-components-product-price ',
+		' wp-block-add-to-cart-form ',
+		' wp-block-woocommerce-add-to-cart-form ',
+	);
+	foreach ( $needles as $needle ) {
+		if ( false !== strpos( $class, $needle ) ) {
+			return true;
+		}
+	}
+	$tag = strtolower( $el->tagName );
+	if ( 'form' === $tag ) {
+		$form_class = ' ' . (string) $el->getAttribute( 'class' ) . ' ';
+		if ( false !== strpos( $form_class, ' cart ' ) || 'cart' === trim( $form_class ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Enforce Amazon 3-column hero: Galerie | Info | Kauf-Sidebar.
+ *
+ * Customized DB templates often keep the old 2-column layout. Restructure at
+ * render time so theme file updates still apply without wiping Site Editor edits.
+ *
+ * @since 0.9.337
+ *
+ * @param string $content Rendered HTML.
+ * @param array  $block   Block data.
+ * @return string
+ */
+function fairflock_product_layout_enforce_amazon_hero( $content, $block ) {
+	if ( ( $block['blockName'] ?? '' ) !== 'core/columns' ) {
+		return $content;
+	}
+	if ( ! is_singular( 'product' ) || ! is_string( $content ) || '' === $content ) {
+		return $content;
+	}
+	if ( ! fairflock_is_product_hero_columns_html( $content, $block ) ) {
+		return $content;
+	}
+	if ( ! class_exists( 'DOMDocument' ) ) {
+		return $content;
+	}
+
+	$document = new DOMDocument();
+	$previous = libxml_use_internal_errors( true );
+	$wrapped  = '<div id="ff-amazon-root">' . $content . '</div>';
+	$loaded   = $document->loadHTML( '<?xml encoding="utf-8">' . $wrapped, LIBXML_HTML_NODEFDTD );
+	libxml_clear_errors();
+	libxml_use_internal_errors( $previous );
+	if ( ! $loaded ) {
+		return $content;
+	}
+
+	$root = $document->getElementById( 'ff-amazon-root' );
+	if ( ! $root instanceof DOMElement ) {
+		return $content;
+	}
+
+	$columns = null;
+	foreach ( $root->childNodes as $child ) {
+		if ( ! $child instanceof DOMElement ) {
+			continue;
+		}
+		$class = ' ' . (string) $child->getAttribute( 'class' ) . ' ';
+		if ( false !== strpos( $class, ' wp-block-columns ' ) || 'wp-block-columns' === trim( $class ) ) {
+			$columns = $child;
+			break;
+		}
+	}
+	if ( ! $columns instanceof DOMElement ) {
+		// Content may be the columns element itself without an outer wrapper match.
+		foreach ( $root->childNodes as $child ) {
+			if ( $child instanceof DOMElement ) {
+				$columns = $child;
+				break;
+			}
+		}
+	}
+	if ( ! $columns instanceof DOMElement ) {
+		return $content;
+	}
+
+	fairflock_dom_ensure_class( $columns, 'ff-product__hero' );
+	fairflock_dom_ensure_class( $columns, 'alignwide' );
+
+	$cols = fairflock_dom_column_children( $columns );
+	if ( count( $cols ) < 2 ) {
+		return $content;
+	}
+
+	$gallery = null;
+	$info    = null;
+	$buy     = null;
+	foreach ( $cols as $col ) {
+		$class = ' ' . (string) $col->getAttribute( 'class' ) . ' ';
+		$html  = $document->saveHTML( $col );
+		$html  = is_string( $html ) ? $html : '';
+		if ( ! $gallery && ( false !== strpos( $class, ' ff-product__gallery ' ) || str_contains( $html, 'woocommerce-product-gallery' ) || str_contains( $html, 'product-image-gallery' ) ) ) {
+			$gallery = $col;
+			continue;
+		}
+		if ( ! $buy && ( false !== strpos( $class, ' ff-product__buy ' ) || false !== strpos( $class, ' ff-product__summary ' ) ) ) {
+			$buy = $col;
+			continue;
+		}
+		if ( ! $info && ( false !== strpos( $class, ' ff-product__info ' ) || str_contains( $html, 'wp-block-post-title' ) ) ) {
+			$info = $col;
+			continue;
+		}
+	}
+
+	if ( ! $gallery ) {
+		$gallery = $cols[0];
+	}
+	if ( ! $info ) {
+		foreach ( $cols as $col ) {
+			if ( $col !== $gallery && $col !== $buy ) {
+				$info = $col;
+				break;
+			}
+		}
+	}
+	// Old 2-column templates: one summary column holds title + buy — split it.
+	if ( ! $info && $buy && $buy !== $gallery ) {
+		$info = $buy;
+		$buy  = null;
+	}
+	if ( ! $info ) {
+		return $content;
+	}
+
+	fairflock_dom_ensure_class( $gallery, 'ff-product__gallery' );
+	fairflock_dom_ensure_class( $info, 'ff-product__info' );
+
+	// Info must not keep buy-card classes after a 2-column split.
+	$info_class = preg_split( '/\s+/', trim( (string) $info->getAttribute( 'class' ) ) );
+	$info_class = is_array( $info_class ) ? array_values( array_filter( $info_class ) ) : array();
+	$info_class = array_values(
+		array_diff(
+			$info_class,
+			array( 'ff-product__buy', 'ff-product__summary' )
+		)
+	);
+	if ( ! in_array( 'ff-product__info', $info_class, true ) ) {
+		$info_class[] = 'ff-product__info';
+	}
+	$info->setAttribute( 'class', implode( ' ', $info_class ) );
+
+	$move = array();
+	foreach ( iterator_to_array( $info->childNodes ) as $child ) {
+		if ( $child instanceof DOMElement && fairflock_dom_is_buy_piece( $child ) ) {
+			$move[] = $child;
+		}
+	}
+	if ( empty( $move ) ) {
+		foreach ( iterator_to_array( $info->childNodes ) as $child ) {
+			if ( ! $child instanceof DOMElement ) {
+				continue;
+			}
+			foreach ( iterator_to_array( $child->childNodes ) as $grand ) {
+				if ( $grand instanceof DOMElement && fairflock_dom_is_buy_piece( $grand ) ) {
+					$move[] = $grand;
+				}
+			}
+		}
+	}
+
+	$buy_ok = $buy && $buy !== $info && $buy !== $gallery;
+	if ( ! $buy_ok && ! empty( $move ) ) {
+		$buy = $document->createElement( 'div' );
+		$buy->setAttribute( 'class', 'wp-block-column ff-product__buy ff-product__summary' );
+		$columns->appendChild( $buy );
+		$buy_ok = true;
+	}
+
+	if ( $buy_ok && $buy instanceof DOMElement ) {
+		fairflock_dom_ensure_class( $buy, 'ff-product__buy' );
+		fairflock_dom_ensure_class( $buy, 'ff-product__summary' );
+		foreach ( $move as $node ) {
+			$buy->appendChild( $node );
+		}
+		$buy->setAttribute( 'style', 'flex-basis:25%' );
+	}
+
+	$gallery->setAttribute( 'style', 'flex-basis:40%' );
+	$info->setAttribute( 'style', 'flex-basis:35%' );
+
+	// Re-order: gallery, info, buy.
+	$order = array( $gallery, $info );
+	if ( $buy_ok && $buy instanceof DOMElement ) {
+		$order[] = $buy;
+	}
+	foreach ( $order as $ordered ) {
+		$columns->appendChild( $ordered );
+	}
+
+	$inner = '';
+	foreach ( $root->childNodes as $child ) {
+		$chunk = $document->saveHTML( $child );
+		if ( is_string( $chunk ) ) {
+			$inner .= $chunk;
+		}
+	}
+	return '' !== $inner ? $inner : $content;
+}
+add_filter( 'render_block', 'fairflock_product_layout_enforce_amazon_hero', 18, 2 );
+
+/**
  * After the product hero: short description in its own card.
  *
  * @since 0.9.315
@@ -397,10 +701,7 @@ function fairflock_product_layout_after_hero( $content, $block ) {
 	if ( ! is_singular( 'product' ) || ! function_exists( 'wc_get_product' ) ) {
 		return $content;
 	}
-
-	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
-	$class = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
-	if ( false === strpos( $class, 'ff-product__hero' ) ) {
+	if ( ! fairflock_is_product_hero_columns_html( $content, $block ) ) {
 		return $content;
 	}
 	if ( str_contains( $content, 'ff-product__excerpt-card' ) || str_contains( $content, 'ff-product-excerpt-acc' ) ) {

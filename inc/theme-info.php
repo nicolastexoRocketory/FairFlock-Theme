@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.337',
+			'items'   => array(
+				__( 'Produktseite: Amazon-Kauf-Sidebar auch bei angepassten 2-Spalten-Templates (render_block + Desktop-Grid).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.336',
 			'items'   => array(
 				__( 'Produktkarten: Hover wechselt zum zweiten Galeriebild.', 'fairflock' ),

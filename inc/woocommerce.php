@@ -288,6 +288,8 @@ function fairflock_get_product_slider_pattern_markup( array $args ) {
 	$section_class = trim( 'ff-pattern-products ff-pattern-products--woo ' . $extra_class );
 	$prev_label    = esc_attr__( 'Zurück', 'fairflock' );
 	$next_label    = esc_attr__( 'Weiter', 'fairflock' );
+	$chev_prev     = fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 16 ) );
+	$chev_next     = fairflock_chevron_svg( array( 'dir' => 'right', 'size' => 16 ) );
 	$name_attr     = esc_attr( $name );
 	$heading_html  = esc_html( $heading );
 	$lead_html     = esc_html( $lead );
@@ -335,38 +337,14 @@ function fairflock_get_product_slider_pattern_markup( array $args ) {
 <div class="wp-block-group alignfull {$section_class}" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--70);padding-right:0;padding-bottom:var(--wp--preset--spacing--70);padding-left:0">
 	<!-- wp:group {"className":"ff-pattern-products__shell","style":{"spacing":{"padding":{"left":"0","right":"0"},"blockGap":"var:preset|spacing|40"}},"layout":{"type":"default"}} -->
 	<div class="wp-block-group ff-pattern-products__shell">
-		<!-- wp:group {"className":"ff-pattern-section-head ff-pattern-products__head","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"bottom"}} -->
+		<!-- wp:group {"className":"ff-pattern-section-head ff-pattern-products__head","layout":{"type":"constrained","contentSize":"34rem"}} -->
 		<div class="wp-block-group ff-pattern-section-head ff-pattern-products__head">
-			<!-- wp:group {"style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"constrained","contentSize":"34rem"}} -->
-			<div class="wp-block-group">
-				<!-- wp:heading -->
-				<h2 class="wp-block-heading">{$heading_html}</h2>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"textColor":"muted"} -->
-				<p class="has-muted-color has-text-color">{$lead_html}</p>
-				<!-- /wp:paragraph -->
-			</div>
-			<!-- /wp:group -->
-
-			<!-- wp:group {"className":"ff-prod-slider__actions","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right","verticalAlignment":"center"}} -->
-			<div class="wp-block-group ff-prod-slider__actions">
-				<!-- wp:buttons {"metadata":{"name":"Slider-Pfeile"},"className":"ff-prod-slider__nav","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
-				<div class="wp-block-buttons ff-prod-slider__nav">
-					<!-- wp:button {"metadata":{"name":"Zurück"},"className":"ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"} -->
-					<div class="wp-block-button ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-prod-prev" aria-label="{$prev_label}">←</a></div>
-					<!-- /wp:button -->
-
-					<!-- wp:button {"metadata":{"name":"Weiter"},"className":"ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--next is-style-outline"} -->
-					<div class="wp-block-button ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--next is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-prod-next" aria-label="{$next_label}">→</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
-
-				<!-- wp:paragraph {"className":"ff-pattern-link-more","style":{"typography":{"fontStyle":"normal","fontWeight":"700"}}} -->
-				<p class="ff-pattern-link-more" style="font-style:normal;font-weight:700"><a href="{$more_url_attr}">{$more_label_esc}</a></p>
-				<!-- /wp:paragraph -->
-			</div>
-			<!-- /wp:group -->
+			<!-- wp:heading -->
+			<h2 class="wp-block-heading">{$heading_html}</h2>
+			<!-- /wp:heading -->
+			<!-- wp:paragraph {"textColor":"muted"} -->
+			<p class="has-muted-color has-text-color">{$lead_html}</p>
+			<!-- /wp:paragraph -->
 		</div>
 		<!-- /wp:group -->
 
@@ -385,6 +363,26 @@ function fairflock_get_product_slider_pattern_markup( array $args ) {
 				<!-- /wp:woocommerce/product-template -->
 			</div>
 			<!-- /wp:woocommerce/product-collection -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"className":"ff-prod-slider__actions","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
+		<div class="wp-block-group ff-prod-slider__actions">
+			<!-- wp:paragraph {"className":"ff-pattern-link-more","style":{"typography":{"fontStyle":"normal","fontWeight":"700"}}} -->
+			<p class="ff-pattern-link-more" style="font-style:normal;font-weight:700"><a href="{$more_url_attr}">{$more_label_esc}</a></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:buttons {"metadata":{"name":"Slider-Pfeile"},"className":"ff-prod-slider__nav","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+			<div class="wp-block-buttons ff-prod-slider__nav">
+				<!-- wp:button {"metadata":{"name":"Zurück"},"className":"ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"} -->
+				<div class="wp-block-button ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-prod-prev" aria-label="{$prev_label}">{$chev_prev}</a></div>
+				<!-- /wp:button -->
+
+				<!-- wp:button {"metadata":{"name":"Weiter"},"className":"ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--next is-style-outline"} -->
+				<div class="wp-block-button ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--next is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-prod-next" aria-label="{$next_label}">{$chev_next}</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
 		</div>
 		<!-- /wp:group -->
 	</div>
@@ -750,7 +748,7 @@ add_action( 'wp_enqueue_scripts', 'fairflock_expose_just_added_flag', 25 );
  * @return int
  */
 function fairflock_shop_columns_count() {
-	$n = 4;
+	$n = 2;
 	if ( isset( $_COOKIE['ff_shop_cols'] ) ) {
 		$raw = absint( wp_unslash( $_COOKIE['ff_shop_cols'] ) );
 		if ( $raw >= 2 && $raw <= 5 ) {
@@ -843,6 +841,35 @@ function fairflock_shop_columns_script() {
 	?>
 	<script>
 	(function () {
+		/* Move toolbar into filter sidebar (covers customized templates). */
+		document.querySelectorAll(".ff-shop__layout").forEach(function (layout) {
+			var filters = layout.querySelector(".ff-shop__filters");
+			var toolbar = layout.querySelector(".ff-shop__toolbar");
+			if (!filters || !toolbar || filters.contains(toolbar)) return;
+			filters.insertBefore(toolbar, filters.firstChild);
+		});
+
+		/* „Schließen“-Textbutton über „Anwenden“ im Filter-Drawer */
+		function enhanceFilterClose() {
+			document.querySelectorAll(".wc-block-product-filters").forEach(function (root) {
+				var footer = root.querySelector(".wc-block-product-filters__overlay-footer");
+				if (!footer || footer.querySelector(".ff-shop-filter-close")) return;
+				var nativeClose = root.querySelector(".wc-block-product-filters__close-overlay");
+				var closeBtn = document.createElement("button");
+				closeBtn.type = "button";
+				closeBtn.className = "ff-shop-filter-close";
+				closeBtn.textContent = <?php echo wp_json_encode( __( 'Schließen', 'fairflock' ) ); ?>;
+				closeBtn.addEventListener("click", function () {
+					if (nativeClose) nativeClose.click();
+				});
+				footer.insertBefore(closeBtn, footer.firstChild);
+			});
+		}
+		enhanceFilterClose();
+		document.querySelectorAll(".wc-block-product-filters").forEach(function (root) {
+			new MutationObserver(enhanceFilterClose).observe(root, { childList: true, subtree: true });
+		});
+
 		var roots = document.querySelectorAll(".ff-shop-cols");
 		if (!roots.length) return;
 		var classes = ["is-cols-2", "is-cols-3", "is-cols-4", "is-cols-5"];
@@ -907,7 +934,8 @@ function fairflock_shop_columns_script() {
 		});
 
 		var saved = document.cookie.match(/(?:^|; )ff_shop_cols=([2-5])/);
-		apply(saved ? saved[1] : "4");
+		var mobile = window.matchMedia("(max-width: 900px)").matches;
+		apply(saved ? saved[1] : (mobile ? "2" : "4"));
 	})();
 	</script>
 	<?php

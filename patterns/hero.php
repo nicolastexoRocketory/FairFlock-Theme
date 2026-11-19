@@ -125,9 +125,9 @@
 
 		<!-- wp:html -->
 		<div class="fs-nav" aria-hidden="false">
-			<button type="button" class="slider-btn" data-fs-prev aria-label="Vorheriger Slide">←</button>
+			<button type="button" class="slider-btn" data-fs-prev aria-label="Vorheriger Slide"><?php echo fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 16 ) ); ?></button>
 			<div class="fs-dots" data-fs-dots role="tablist" aria-label="Slides"></div>
-			<button type="button" class="slider-btn" data-fs-next aria-label="Nächster Slide">→</button>
+			<button type="button" class="slider-btn" data-fs-next aria-label="Nächster Slide"><?php echo fairflock_chevron_svg( array( 'dir' => 'right', 'size' => 16 ) ); ?></button>
 		</div>
 		<!-- /wp:html -->
 

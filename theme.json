@@ -379,6 +379,11 @@
 			"area": "uncategorized"
 		},
 		{
+			"name": "menu-overlay",
+			"title": "Mobile Menü",
+			"area": "uncategorized"
+		},
+		{
 			"name": "cart-drawer",
 			"title": "Warenkorb-Panel",
 			"area": "uncategorized"

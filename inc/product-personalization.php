@@ -1516,7 +1516,7 @@ function fairflock_product_buy_actions_open() {
 
 	if ( $needs ) {
 		echo '<button type="button" class="ff-product-modal__collapse" data-ff-collapse aria-expanded="false" aria-label="' . esc_attr__( 'Konfiguration einklappen', 'fairflock' ) . '">';
-		echo '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+		echo fairflock_chevron_svg( array( 'dir' => 'up', 'size' => 16 ) );
 		echo '</button>';
 	}
 }

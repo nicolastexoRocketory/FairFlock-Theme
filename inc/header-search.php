@@ -255,3 +255,62 @@ function fairflock_get_product_search_url( $query = '' ) {
 
 	return add_query_arg( $args, home_url( '/' ) );
 }
+
+/**
+ * Markup snippet for the mobile menu overlay template-part.
+ *
+ * @since 0.9.393
+ *
+ * @return string
+ */
+function fairflock_get_menu_overlay_template_part_snippet() {
+	return '<!-- wp:template-part {"slug":"menu-overlay","theme":"fairflock","area":"uncategorized","tagName":"div","className":"ff-menu-overlay-slot"} /-->';
+}
+
+/**
+ * Ensures customized Header parts render the mobile menu overlay.
+ *
+ * Additive only: if a DB-customized header still lacks the slot, append it
+ * after the search overlay (or at the end). Theme-file headers already include it.
+ *
+ * @since 0.9.393
+ *
+ * @param string               $block_content Rendered HTML.
+ * @param array<string, mixed> $block         Parsed block.
+ * @return string
+ */
+function fairflock_ensure_menu_overlay_in_header( $block_content, $block ) {
+	if ( ! is_string( $block_content ) || empty( $block['attrs']['slug'] ) ) {
+		return $block_content;
+	}
+	if ( 'header' !== (string) $block['attrs']['slug'] ) {
+		return $block_content;
+	}
+	if (
+		str_contains( $block_content, 'ff-menu-layer' )
+		|| str_contains( $block_content, 'ff-menu-overlay-slot' )
+		|| str_contains( $block_content, 'id="ffMenuLayer"' )
+	) {
+		return $block_content;
+	}
+
+	$menu = do_blocks( fairflock_get_menu_overlay_template_part_snippet() );
+	if ( ! is_string( $menu ) || $menu === '' ) {
+		return $block_content;
+	}
+
+	if ( str_contains( $block_content, 'ff-search-overlay-slot' ) || str_contains( $block_content, 'id="ffSearchLayer"' ) ) {
+		$replaced = preg_replace(
+			'/(<div[^>]*\bff-search-overlay-slot\b[^>]*>[\s\S]*?<\/div>\s*)|(<div[^>]*\bid="ffSearchLayer"[^>]*>[\s\S]*?<\/div>\s*)/i',
+			'$0' . $menu,
+			$block_content,
+			1
+		);
+		if ( is_string( $replaced ) && $replaced !== $block_content ) {
+			return $replaced;
+		}
+	}
+
+	return $block_content . $menu;
+}
+add_filter( 'render_block_core/template-part', 'fairflock_ensure_menu_overlay_in_header', 20, 2 );

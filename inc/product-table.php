@@ -242,7 +242,7 @@ function fairflock_product_table_markup( $product ) {
 	$html   .= '<div class="ff-product-table__gallery" data-ff-ptable-gallery hidden></div>';
 	$html   .= '<div class="ff-product-table__sheet">';
 	$html   .= '<button type="button" class="ff-product-table__arrow is-prev" data-ff-ptable-scroll="-1" aria-label="' . esc_attr__( 'Nach links', 'fairflock' ) . '" hidden>';
-	$html   .= '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M14.5 6 8.5 12l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+	$html   .= fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 18 ) );
 	$html   .= '</button>';
 	$html   .= '<div class="ff-product-table__wrap"><table>';
 	$html .= '<thead><tr>';
@@ -277,7 +277,7 @@ function fairflock_product_table_markup( $product ) {
 
 	$html .= '</tbody></table></div>';
 	$html .= '<button type="button" class="ff-product-table__arrow is-next" data-ff-ptable-scroll="1" aria-label="' . esc_attr__( 'Nach rechts', 'fairflock' ) . '" hidden>';
-	$html .= '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9.5 6 15.5 12l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+	$html .= fairflock_chevron_svg( array( 'dir' => 'right', 'size' => 18 ) );
 	$html .= '</button></div></div></div></section>';
 	return $html;
 }

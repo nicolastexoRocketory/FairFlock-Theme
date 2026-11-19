@@ -4,11 +4,21 @@
  */
 
 .ff-checkout-page {
-	--ff-checkout-line: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 10%, transparent);
-	--ff-checkout-line-strong: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent);
-	--ff-checkout-field-bg: var(--wp--custom--surface, #fff);
-	--ff-checkout-panel: var(--wp--custom--surface, #fff);
-	--ff-checkout-soft: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 8%, var(--wp--preset--color--base, #f3f5f4));
+	/* Fixed trust palette — independent of theme brand colors */
+	--ff-trust-ink: #0e1114;
+	--ff-trust-muted: #66707a;
+	--ff-trust-base: #f3f5f4;
+	--ff-trust-surface: #ffffff;
+	--ff-trust-soft: #eceeef;
+	--ff-trust-ok: #2f9e44;
+	--ff-trust-ok-deep: #248a38;
+	--ff-trust-bad: #c0392b;
+	--ff-trust-bad-deep: #7a1c14;
+	--ff-checkout-line: color-mix(in srgb, var(--ff-trust-ink) 10%, transparent);
+	--ff-checkout-line-strong: color-mix(in srgb, var(--ff-trust-ink) 16%, transparent);
+	--ff-checkout-field-bg: var(--ff-trust-surface);
+	--ff-checkout-panel: var(--ff-trust-surface);
+	--ff-checkout-soft: var(--ff-trust-soft);
 	position: relative;
 	isolation: isolate;
 	/* Gutter steckt in --ff-shell — kein doppeltes has-global-padding */
@@ -27,9 +37,8 @@
 	z-index: -1;
 	pointer-events: none;
 	background:
-		radial-gradient(ellipse 80% 70% at 12% 0%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 10%, transparent), transparent 70%),
-		radial-gradient(ellipse 60% 50% at 88% 8%, color-mix(in srgb, var(--wp--preset--color--brand-soft, #4a8f42) 8%, transparent), transparent 65%),
-		linear-gradient(180deg, var(--wp--preset--color--base, #f3f5f4) 0%, transparent 100%);
+		radial-gradient(ellipse 80% 70% at 12% 0%, color-mix(in srgb, var(--ff-trust-ink) 5%, transparent), transparent 70%),
+		linear-gradient(180deg, var(--ff-trust-base) 0%, transparent 100%);
 }
 
 /* —— Intro / trust —— */
@@ -50,7 +59,7 @@
 	font-weight: 400;
 	letter-spacing: -0.03em;
 	line-height: 1.1;
-	color: var(--wp--preset--color--contrast, #0e1114);
+	color: var(--ff-trust-ink);
 }
 
 .ff-checkout-page__trust {
@@ -61,7 +70,7 @@
 	gap: 8px 16px;
 	font-size: 0.9375rem;
 	line-height: 1.4;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 }
 
 .ff-checkout-page__trust-item {
@@ -76,8 +85,8 @@
 	height: 8px;
 	border-radius: 50%;
 	/* Positives Grün — unabhängig von der Shop-Brand-Farbe. */
-	background: #2f9e44;
-	box-shadow: 0 0 0 3px color-mix(in srgb, #2f9e44 18%, transparent);
+	background: var(--ff-trust-ok);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-trust-ok) 18%, transparent);
 	flex-shrink: 0;
 }
 
@@ -132,12 +141,12 @@
 	background: var(--ff-checkout-panel);
 	border: 1px solid var(--ff-checkout-line);
 	border-radius: var(--wp--custom--radius--md, 16px);
-	box-shadow: 0 1px 0 color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 3%, transparent);
+	box-shadow: 0 1px 0 color-mix(in srgb, var(--ff-trust-ink) 3%, transparent);
 	transition: border-color 0.25s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .ff-checkout-page .wc-block-components-form .wc-block-components-checkout-step:focus-within {
-	border-color: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 35%, transparent);
+	border-color: color-mix(in srgb, var(--ff-trust-ink) 35%, transparent);
 }
 
 .ff-checkout-page .wc-block-components-checkout-step__title,
@@ -148,13 +157,13 @@
 	font-weight: 400 !important;
 	letter-spacing: -0.02em;
 	line-height: 1.2 !important;
-	color: var(--wp--preset--color--contrast, #0e1114);
+	color: var(--ff-trust-ink);
 }
 
 .ff-checkout-page .wc-block-components-checkout-step__description {
 	margin: 0 0 18px;
 	font-size: 0.9375rem;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 }
 
 .ff-checkout-page .wc-block-components-checkout-step__content > * {
@@ -182,7 +191,7 @@
 	border-radius: var(--wp--custom--radius--sm, 8px) !important;
 	background-color: var(--ff-checkout-field-bg) !important;
 	box-shadow: none !important;
-	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	color: var(--ff-trust-ink) !important;
 	font-family: var(--wp--preset--font-family--body) !important;
 	font-size: 1rem !important;
 	line-height: 1.35 !important;
@@ -204,7 +213,7 @@
 
 .ff-checkout-page .wc-block-components-text-input label,
 .ff-checkout-page .wc-block-components-combobox label {
-	color: var(--wp--preset--color--muted, #66707a) !important;
+	color: var(--ff-trust-muted) !important;
 	font-size: 0.8125rem !important;
 	font-weight: 600 !important;
 	letter-spacing: 0.01em;
@@ -215,8 +224,8 @@
 .ff-checkout-page .wc-block-components-textarea textarea:focus,
 .ff-checkout-page .wc-block-components-combobox .wc-block-components-combobox-control input:focus,
 .ff-checkout-page select:focus {
-	border-color: var(--wp--preset--color--brand, #377530) !important;
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp--preset--color--brand, #377530) 18%, transparent) !important;
+	border-color: var(--ff-trust-ink) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-trust-ink) 18%, transparent) !important;
 	outline: none !important;
 	background-color: var(--ff-checkout-field-bg) !important;
 }
@@ -227,20 +236,20 @@
 .ff-checkout-page input:-webkit-autofill:focus,
 .ff-checkout-page textarea:-webkit-autofill,
 .ff-checkout-page select:-webkit-autofill {
-	-webkit-text-fill-color: var(--wp--preset--color--contrast, #0e1114) !important;
-	caret-color: var(--wp--preset--color--contrast, #0e1114);
+	-webkit-text-fill-color: var(--ff-trust-ink) !important;
+	caret-color: var(--ff-trust-ink);
 	box-shadow: 0 0 0 1000px var(--ff-checkout-field-bg) inset !important;
 	transition: background-color 99999s ease-out;
 }
 
 .ff-checkout-page .wc-block-components-text-input:hover input:not(:focus):not(:disabled),
 .ff-checkout-page .wc-block-components-combobox:hover input:not(:focus):not(:disabled) {
-	border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 28%, transparent) !important;
+	border-color: color-mix(in srgb, var(--ff-trust-ink) 28%, transparent) !important;
 }
 
 .ff-checkout-page a.wc-block-components-address-form__address_2-toggle,
 .ff-checkout-page .wc-block-components-address-form__address_2-toggle {
-	color: var(--wp--preset--color--brand, #377530) !important;
+	color: var(--ff-trust-ink) !important;
 	font-weight: 700;
 	text-decoration: none;
 }
@@ -255,7 +264,7 @@
 	padding: 14px 16px 14px 48px !important;
 	border: 1px solid var(--ff-checkout-line) !important;
 	border-radius: var(--wp--custom--radius--sm, 8px) !important;
-	background: var(--wp--custom--surface, #fff) !important;
+	background: var(--ff-trust-surface) !important;
 	transition:
 		border-color 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
 		background 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
@@ -263,23 +272,23 @@
 }
 
 .ff-checkout-page .wc-block-components-radio-control__option:hover {
-	border-color: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 35%, transparent) !important;
+	border-color: color-mix(in srgb, var(--ff-trust-ink) 35%, transparent) !important;
 }
 
 .ff-checkout-page .wc-block-components-radio-control__option-checked,
 .ff-checkout-page .wc-block-components-radio-control__option--checked-option-highlighted {
-	border-color: var(--wp--preset--color--brand, #377530) !important;
+	border-color: var(--ff-trust-ink) !important;
 	background: var(--ff-checkout-soft) !important;
-	box-shadow: 0 0 0 1px color-mix(in srgb, var(--wp--preset--color--brand, #377530) 25%, transparent);
+	box-shadow: 0 0 0 1px color-mix(in srgb, var(--ff-trust-ink) 25%, transparent);
 }
 
 .ff-checkout-page .wc-block-components-radio-control__input {
-	accent-color: var(--wp--preset--color--brand, #377530);
+	accent-color: var(--ff-trust-ink);
 }
 
 .ff-checkout-page .wc-block-components-radio-control__input:checked {
-	border-color: var(--wp--preset--color--brand, #377530) !important;
-	background: var(--wp--preset--color--brand, #377530) !important;
+	border-color: var(--ff-trust-ink) !important;
+	background: var(--ff-trust-ink) !important;
 }
 
 .ff-checkout-page .wc-block-components-notice-banner,
@@ -287,10 +296,17 @@
 	border-radius: var(--wp--custom--radius--sm, 8px) !important;
 }
 
-.ff-checkout-page .wc-block-components-notice-banner.is-error {
-	background: color-mix(in srgb, #b42318 8%, #fff) !important;
-	border-color: color-mix(in srgb, #b42318 28%, transparent) !important;
-	color: #7a1c14 !important;
+.ff-checkout-page .wc-block-components-notice-banner.is-error,
+.ff-checkout-page .wc-block-components-validation-error {
+	background: color-mix(in srgb, var(--ff-trust-bad) 8%, #fff) !important;
+	border-color: color-mix(in srgb, var(--ff-trust-bad) 28%, transparent) !important;
+	color: var(--ff-trust-bad-deep) !important;
+}
+
+.ff-checkout-page .wc-block-components-notice-banner.is-success {
+	background: color-mix(in srgb, var(--ff-trust-ok) 10%, #fff) !important;
+	border-color: color-mix(in srgb, var(--ff-trust-ok) 30%, transparent) !important;
+	color: var(--ff-trust-ok-deep) !important;
 }
 
 /* —— Order summary —— */
@@ -302,8 +318,8 @@
 	border-radius: var(--wp--custom--radius--md, 16px) !important;
 	padding: 22px 22px 18px !important;
 	box-shadow:
-		0 1px 0 color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 3%, transparent),
-		0 18px 40px -28px color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 28%, transparent);
+		0 1px 0 color-mix(in srgb, var(--ff-trust-ink) 3%, transparent),
+		0 18px 40px -28px color-mix(in srgb, var(--ff-trust-ink) 28%, transparent);
 	overflow: hidden;
 }
 
@@ -318,7 +334,7 @@
 	font-size: 1.25rem !important;
 	font-weight: 400 !important;
 	letter-spacing: -0.02em;
-	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	color: var(--ff-trust-ink) !important;
 	text-transform: none !important;
 }
 
@@ -351,14 +367,15 @@
 .ff-checkout-page .wc-block-components-order-summary-item__image {
 	position: relative !important;
 	width: 52px !important;
-	height: 52px !important;
+	height: auto !important;
 	min-width: 52px !important;
-	min-height: 52px !important;
+	min-height: 0 !important;
+	aspect-ratio: 2 / 3 !important;
 	margin: 0 !important;
 	padding: 0 !important;
 	border-radius: var(--wp--custom--radius--sm, 8px) !important;
 	overflow: hidden !important;
-	background: var(--wp--preset--color--base, #f3f5f4) !important;
+	background: var(--ff-trust-base) !important;
 	flex-shrink: 0;
 	align-self: flex-start;
 }
@@ -379,7 +396,7 @@
 }
 
 .ff-checkout-page .wc-block-components-order-summary-item__quantity {
-	background: var(--wp--preset--color--contrast, #0e1114) !important;
+	background: var(--ff-trust-ink) !important;
 	border: 2px solid #fff !important;
 	font-weight: 700 !important;
 }
@@ -388,13 +405,13 @@
 	font-family: var(--wp--preset--font-family--body, inherit);
 	font-weight: 600 !important;
 	letter-spacing: normal;
-	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	color: var(--ff-trust-ink) !important;
 	text-decoration: none !important;
 }
 
 .ff-checkout-page .wc-block-components-product-metadata,
 .ff-checkout-page .wc-block-components-product-details {
-	color: var(--wp--preset--color--muted, #66707a) !important;
+	color: var(--ff-trust-muted) !important;
 	font-size: 0.8125rem !important;
 }
 
@@ -410,7 +427,7 @@
 .ff-checkout-page .wc-block-components-panel__button {
 	padding: 18px 0 !important;
 	font-weight: 700 !important;
-	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	color: var(--ff-trust-ink) !important;
 	border: 0 !important;
 	box-shadow: none !important;
 }
@@ -441,7 +458,7 @@
 	padding: 14px 0 !important;
 	margin: 0 !important;
 	border: 0 !important;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 }
 
 .ff-checkout-page .wp-block-woocommerce-checkout-order-summary-totals-block,
@@ -492,7 +509,7 @@
 	margin-top: 8px !important;
 	border: 0 !important;
 	border-top: 1px solid var(--ff-checkout-line) !important;
-	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	color: var(--ff-trust-ink) !important;
 	font-size: 1.125rem !important;
 	font-weight: 700 !important;
 }
@@ -503,7 +520,7 @@
 	font-weight: 400 !important;
 	letter-spacing: -0.02em;
 	font-size: 1.35rem !important;
-	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	color: var(--ff-trust-ink) !important;
 }
 
 /* —— Actions / place order —— */
@@ -521,13 +538,13 @@
 	padding: 14px 24px !important;
 	border: 0 !important;
 	border-radius: var(--wp--custom--radius--sm, 8px) !important;
-	background: #2f9e44 !important;
+	background: var(--ff-trust-ok) !important;
 	color: #fff !important;
 	font-family: var(--wp--preset--font-family--body) !important;
 	font-size: 1.0625rem !important;
 	font-weight: 700 !important;
 	letter-spacing: 0.01em;
-	box-shadow: 0 10px 24px -12px color-mix(in srgb, #2f9e44 70%, transparent);
+	box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--ff-trust-ok) 70%, transparent);
 	transition:
 		background 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
 		transform 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
@@ -536,9 +553,9 @@
 
 .ff-checkout-page .wc-block-components-checkout-place-order-button:hover,
 .ff-checkout-page .wc-block-components-checkout-place-order-button:focus-visible {
-	background: #248a38 !important;
+	background: var(--ff-trust-ok-deep) !important;
 	transform: translateY(-1px);
-	box-shadow: 0 14px 28px -12px color-mix(in srgb, #2f9e44 75%, transparent);
+	box-shadow: 0 14px 28px -12px color-mix(in srgb, var(--ff-trust-ok) 75%, transparent);
 }
 
 .ff-checkout-page .wc-block-components-checkout-place-order-button:active {
@@ -549,11 +566,11 @@
 .ff-checkout-page .wp-block-woocommerce-checkout-terms-block {
 	font-size: 0.875rem;
 	line-height: 1.45;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 }
 
 .ff-checkout-page .wc-block-checkout__terms a {
-	color: #2f9e44;
+	color: var(--ff-trust-ok);
 	font-weight: 700;
 	text-decoration: underline;
 	text-underline-offset: 2px;
@@ -568,7 +585,7 @@
 	text-align: center;
 	font-size: 0.8125rem;
 	line-height: 1.4;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 }
 
 /* Express pay / separators */
@@ -582,18 +599,18 @@
 }
 
 .ff-checkout-page .wc-block-components-express-payment-continue-rule {
-	color: var(--wp--preset--color--muted, #66707a) !important;
+	color: var(--ff-trust-muted) !important;
 }
 
 .ff-checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__input[type="checkbox"] {
 	border-radius: 4px !important;
 	border-color: var(--ff-checkout-line-strong) !important;
-	accent-color: #2f9e44;
+	accent-color: var(--ff-trust-ok);
 }
 
 .ff-checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__input[type="checkbox"]:checked {
-	background: #2f9e44 !important;
-	border-color: #2f9e44 !important;
+	background: var(--ff-trust-ok) !important;
+	border-color: var(--ff-trust-ok) !important;
 }
 
 /* —— Mobile —— */

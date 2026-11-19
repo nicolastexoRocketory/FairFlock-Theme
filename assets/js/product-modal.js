@@ -258,7 +258,13 @@
 		}
 
 		function renderLoading() {
-			bodyEl.innerHTML = '<p class="ff-product-modal__loading">Produkt wird geladen…</p>';
+			bodyEl.innerHTML =
+				typeof window.fairflockLoading !== "undefined" && window.fairflockLoading.markup
+					? window.fairflockLoading.markup(40)
+					: '<div class="ff-loading-inline ff-product-modal__loading" role="status" aria-live="polite" aria-busy="true">' +
+					  '<span class="ff-spinner" style="--ff-spinner-size:40px" aria-hidden="true"></span>' +
+					  '<span class="ff-visually-hidden">Produkt wird geladen…</span>' +
+					  "</div>";
 		}
 
 		function renderError(msg) {
@@ -291,8 +297,10 @@
 			return out;
 		}
 
-		var galleryChevron =
-			'<svg class="ff-gal-chevron" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M8.2 2.1 17.8 12 8.2 21.9 5.6 19.4 12.8 12 5.6 4.6z"/></svg>';
+		var galleryChevronLeft =
+			'<svg class="ff-chevron ff-chevron--left ff-gal-chevron" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+		var galleryChevronRight =
+			'<svg class="ff-chevron ff-chevron--right ff-gal-chevron" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 		function renderGallery(images) {
 			galleryImages = images;
@@ -334,10 +342,10 @@
 				images.length > 1
 					? '<div class="ff-product-modal__gallery-nav">' +
 					  '<button type="button" class="ff-product-modal__gallery-btn is-prev" data-ff-gallery="prev" aria-label="Vorheriges Bild">' +
-					  galleryChevron +
+					  galleryChevronLeft +
 					  "</button>" +
 					  '<button type="button" class="ff-product-modal__gallery-btn is-next" data-ff-gallery="next" aria-label="Nächstes Bild">' +
-					  galleryChevron +
+					  galleryChevronRight +
 					  "</button>" +
 					  "</div>"
 					: "";
@@ -746,7 +754,7 @@
 				'">' +
 				(startsCollapsed
 					? '<button type="button" class="ff-product-modal__collapse" data-ff-collapse aria-expanded="false" aria-label="Konfiguration einklappen">' +
-					  '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+					  '<svg class="ff-chevron ff-chevron--up" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
 					  "</button>"
 					: "") +
 				'<div class="ff-product-modal__config">' +

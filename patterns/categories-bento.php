@@ -41,39 +41,15 @@ $cards = array(
 <div class="wp-block-group alignfull ff-pattern-bento" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--70);padding-right:0;padding-bottom:var(--wp--preset--spacing--70);padding-left:0">
 	<!-- wp:group {"className":"ff-pattern-bento__shell","style":{"spacing":{"padding":{"left":"0","right":"0"},"blockGap":"var:preset|spacing|40"}},"layout":{"type":"default"}} -->
 	<div class="wp-block-group ff-pattern-bento__shell">
-		<!-- wp:group {"className":"ff-pattern-section-head","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"bottom"}} -->
+		<!-- wp:group {"className":"ff-pattern-section-head","layout":{"type":"constrained","contentSize":"34rem"}} -->
 		<div class="wp-block-group ff-pattern-section-head">
-			<!-- wp:group {"style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"constrained","contentSize":"34rem"}} -->
-			<div class="wp-block-group">
-				<!-- wp:heading -->
-				<h2 class="wp-block-heading">Entdecke die Kategorien</h2>
-				<!-- /wp:heading -->
+			<!-- wp:heading -->
+			<h2 class="wp-block-heading">Entdecke die Kategorien</h2>
+			<!-- /wp:heading -->
 
-				<!-- wp:paragraph {"textColor":"muted"} -->
-				<p class="has-muted-color has-text-color">Vom Einstieg bis zum Detail — klar sortiert für schnelle Orientierung.</p>
-				<!-- /wp:paragraph -->
-			</div>
-			<!-- /wp:group -->
-
-			<!-- wp:group {"className":"ff-card-slider__actions","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right","verticalAlignment":"center"}} -->
-			<div class="wp-block-group ff-card-slider__actions">
-				<!-- wp:buttons {"metadata":{"name":"Slider-Pfeile"},"className":"ff-card-slider__nav","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
-				<div class="wp-block-buttons ff-card-slider__nav">
-					<!-- wp:button {"metadata":{"name":"Zurück"},"className":"ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"} -->
-					<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-cards-prev">←</a></div>
-					<!-- /wp:button -->
-
-					<!-- wp:button {"metadata":{"name":"Weiter"},"className":"ff-card-slider__btn ff-card-slider__btn--next is-style-outline"} -->
-					<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--next is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-cards-next">→</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
-
-				<!-- wp:paragraph {"className":"ff-pattern-link-more","style":{"typography":{"fontStyle":"normal","fontWeight":"700"}}} -->
-				<p class="ff-pattern-link-more" style="font-style:normal;font-weight:700"><a href="<?php echo $shop; ?>">Alle Produkte →</a></p>
-				<!-- /wp:paragraph -->
-			</div>
-			<!-- /wp:group -->
+			<!-- wp:paragraph {"textColor":"muted"} -->
+			<p class="has-muted-color has-text-color">Vom Einstieg bis zum Detail — klar sortiert für schnelle Orientierung.</p>
+			<!-- /wp:paragraph -->
 		</div>
 		<!-- /wp:group -->
 
@@ -97,6 +73,26 @@ $cards = array(
 			<!-- /wp:group -->
 
 <?php endforeach; ?>
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"className":"ff-card-slider__actions","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
+		<div class="wp-block-group ff-card-slider__actions">
+			<!-- wp:paragraph {"className":"ff-pattern-link-more","style":{"typography":{"fontStyle":"normal","fontWeight":"700"}}} -->
+			<p class="ff-pattern-link-more" style="font-style:normal;font-weight:700"><a href="<?php echo $shop; ?>">Alle Produkte →</a></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:buttons {"metadata":{"name":"Slider-Pfeile"},"className":"ff-card-slider__nav","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+			<div class="wp-block-buttons ff-card-slider__nav">
+				<!-- wp:button {"metadata":{"name":"Zurück"},"className":"ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"} -->
+				<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-cards-prev"><?php echo fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 16 ) ); ?></a></div>
+				<!-- /wp:button -->
+
+				<!-- wp:button {"metadata":{"name":"Weiter"},"className":"ff-card-slider__btn ff-card-slider__btn--next is-style-outline"} -->
+				<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--next is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-cards-next"><?php echo fairflock_chevron_svg( array( 'dir' => 'right', 'size' => 16 ) ); ?></a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
 		</div>
 		<!-- /wp:group -->
 	</div>

@@ -248,6 +248,9 @@
 					el.classList.toggle("is-busy", el.getAttribute("data-ff-cart-key") === busyKey);
 				});
 			}
+			if (window.fairflockLoading) {
+				window.fairflockLoading.show({ label: "Warenkorb wird aktualisiert…", maxMs: 8000 });
+			}
 			return fetch(cartApi.replace(/\/?$/, "/") + path, {
 				method: "POST",
 				credentials: "same-origin",
@@ -261,12 +264,14 @@
 				})
 				.then(function (cart) {
 					busyKey = "";
+					if (window.fairflockLoading) window.fairflockLoading.hide();
 					renderCart(cart);
 					notifyCartChange();
 					return cart;
 				})
 				.catch(function () {
 					busyKey = "";
+					if (window.fairflockLoading) window.fairflockLoading.hide();
 					fetchCart();
 				});
 		}
@@ -360,6 +365,12 @@
 			if (e) {
 				e.preventDefault();
 				e.stopPropagation();
+			}
+			if (typeof window.fairflockCloseMenu === "function") {
+				window.fairflockCloseMenu();
+			}
+			if (typeof window.fairflockCloseSearch === "function") {
+				window.fairflockCloseSearch();
 			}
 			layer.classList.add("is-open");
 			layer.setAttribute("aria-hidden", "false");

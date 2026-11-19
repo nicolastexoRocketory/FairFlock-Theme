@@ -57,6 +57,16 @@
 				search.setAttribute("aria-hidden", "true");
 				document.body.classList.remove("is-ff-search-open");
 			}
+			if (typeof window.fairflockCloseMenu === "function") {
+				window.fairflockCloseMenu();
+			} else {
+				var menu = document.getElementById("ffMenuLayer");
+				if (menu && menu.classList.contains("is-open")) {
+					menu.classList.remove("is-open");
+					menu.setAttribute("aria-hidden", "true");
+					document.body.classList.remove("is-ff-menu-open");
+				}
+			}
 			var cart = document.getElementById("ffCartLayer");
 			if (cart && cart.classList.contains("is-open")) {
 				cart.classList.remove("is-open");

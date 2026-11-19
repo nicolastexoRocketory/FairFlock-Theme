@@ -99,17 +99,33 @@ function fairflock_collections_parse_exclude_ids( $class_name ) {
 }
 
 /**
+ * Whether the collections section is in titles-only (no images) mode.
+ *
+ * Token: ff-collections-titles
+ *
+ * @since 0.9.383
+ *
+ * @param string $class_name Block className.
+ * @return bool
+ */
+function fairflock_collections_is_titles_only( $class_name ) {
+	return (bool) preg_match( '/(?:^|\s)ff-collections-titles(?:\s|$)/', (string) $class_name );
+}
+
+/**
  * Block markup for one category card.
  *
  * @since 0.9.99
  * @since 0.9.133 Optional CTA label for collections vs categories.
+ * @since 0.9.383 Optional titles-only mode (h2, no image/desc).
  *
- * @param WP_Term $term       Category.
- * @param int     $index      Zero-based index (first card is brand).
- * @param string  $cta_label  Link label (default: Zur Kategorie).
+ * @param WP_Term $term        Category.
+ * @param int     $index       Zero-based index (first card is brand).
+ * @param string  $cta_label   Link label (default: Zur Kategorie).
+ * @param bool    $titles_only No images; centered h2 title only.
  * @return string
  */
-function fairflock_get_category_overview_card_markup( WP_Term $term, $index, $cta_label = '' ) {
+function fairflock_get_category_overview_card_markup( WP_Term $term, $index, $cta_label = '', $titles_only = false ) {
 	$link = get_term_link( $term );
 	if ( is_wp_error( $link ) ) {
 		$link = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
@@ -117,16 +133,6 @@ function fairflock_get_category_overview_card_markup( WP_Term $term, $index, $ct
 
 	$title = esc_html( $term->name );
 	$href  = esc_url( (string) $link );
-	$desc  = trim( wp_strip_all_tags( (string) $term->description ) );
-	if ( $desc === '' ) {
-		$count = (int) $term->count;
-		$desc  = sprintf(
-			/* translators: %s: product count */
-			_n( '%s Artikel', '%s Artikel', $count, 'fairflock' ),
-			number_format_i18n( $count )
-		);
-	}
-	$desc = esc_html( $desc );
 
 	if ( $cta_label === '' ) {
 		$cta_label = __( 'Zur Kategorie →', 'fairflock' );
@@ -135,22 +141,55 @@ function fairflock_get_category_overview_card_markup( WP_Term $term, $index, $ct
 
 	$classes = array( 'ff-collection-card' );
 	$bg_html = '';
+	$desc_html = '';
 
-	$thumb_id = (int) get_term_meta( $term->term_id, 'thumbnail_id', true );
-	$image    = $thumb_id ? wp_get_attachment_image_url( $thumb_id, 'large' ) : '';
-	if ( is_string( $image ) && $image !== '' ) {
-		$classes[] = 'has-cat-image';
-		$img_url   = esc_url( $image );
-		// Background via wp:html — custom style on core/group breaks block validation in the editor.
-		$bg_html   = <<<HTML
+	if ( $titles_only ) {
+		$classes[] = 'ff-collection-card--titles';
+		$heading   = <<<HTML
+				<!-- wp:heading {"level":2,"textAlign":"center"} -->
+				<h2 class="wp-block-heading has-text-align-center">{$title}</h2>
+				<!-- /wp:heading -->
+HTML;
+	} else {
+		$desc = trim( wp_strip_all_tags( (string) $term->description ) );
+		if ( $desc === '' ) {
+			$count = (int) $term->count;
+			$desc  = sprintf(
+				/* translators: %s: product count */
+				_n( '%s Artikel', '%s Artikel', $count, 'fairflock' ),
+				number_format_i18n( $count )
+			);
+		}
+		$desc      = esc_html( $desc );
+		$desc_html = <<<HTML
+
+				<!-- wp:paragraph -->
+				<p>{$desc}</p>
+				<!-- /wp:paragraph -->
+HTML;
+
+		$thumb_id = (int) get_term_meta( $term->term_id, 'thumbnail_id', true );
+		$image    = $thumb_id ? wp_get_attachment_image_url( $thumb_id, 'large' ) : '';
+		if ( is_string( $image ) && $image !== '' ) {
+			$classes[] = 'has-cat-image';
+			$img_url   = esc_url( $image );
+			// Background via wp:html — custom style on core/group breaks block validation in the editor.
+			$bg_html   = <<<HTML
 				<!-- wp:html -->
 				<div class="ff-collection-card__bg" style="background-image:url({$img_url})" aria-hidden="true"></div>
 				<!-- /wp:html -->
 HTML;
-	} elseif ( 0 === (int) $index ) {
-		$classes[] = 'is-brand';
-	} else {
-		$classes[] = 'ff-collection-card--' . ( ( (int) $index % 8 ) + 1 );
+		} elseif ( 0 === (int) $index ) {
+			$classes[] = 'is-brand';
+		} else {
+			$classes[] = 'ff-collection-card--' . ( ( (int) $index % 8 ) + 1 );
+		}
+
+		$heading = <<<HTML
+				<!-- wp:heading {"level":3} -->
+				<h3 class="wp-block-heading">{$title}</h3>
+				<!-- /wp:heading -->
+HTML;
 	}
 
 	$class_attr = esc_attr( implode( ' ', $classes ) );
@@ -165,14 +204,7 @@ HTML;
 	return <<<HTML
 			<!-- wp:group {"className":"{$class_attr}","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"default"}} -->
 			<div class="wp-block-group {$class_attr}">
-{$bg_html}				<!-- wp:heading {"level":3} -->
-				<h3 class="wp-block-heading">{$title}</h3>
-				<!-- /wp:heading -->
-
-				<!-- wp:paragraph -->
-				<p>{$desc}</p>
-				<!-- /wp:paragraph -->
-
+{$bg_html}{$heading}{$desc_html}
 				<!-- wp:paragraph {"className":"ff-collection-card__meta"} -->
 				<p class="ff-collection-card__meta"><a href="{$href}" aria-label="{$aria}">{$cta}</a></p>
 				<!-- /wp:paragraph -->
@@ -187,10 +219,11 @@ HTML;
  * @since 0.9.133
  * @since 0.9.250 Optional category IDs to exclude.
  *
- * @param array<int, int> $exclude Extra term IDs to exclude.
+ * @param array<int, int> $exclude     Extra term IDs to exclude.
+ * @param bool            $titles_only No images; centered h2 only.
  * @return string
  */
-function fairflock_get_collections_cards_markup( $exclude = array() ) {
+function fairflock_get_collections_cards_markup( $exclude = array(), $titles_only = false ) {
 	$shop  = esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' ) );
 	$terms = fairflock_get_category_overview_terms( $exclude );
 	$cta   = __( 'Zur Kollektion →', 'fairflock' );
@@ -198,7 +231,7 @@ function fairflock_get_collections_cards_markup( $exclude = array() ) {
 
 	if ( $terms ) {
 		foreach ( $terms as $i => $term ) {
-			$cards .= fairflock_get_category_overview_card_markup( $term, (int) $i, $cta ) . "\n";
+			$cards .= fairflock_get_category_overview_card_markup( $term, (int) $i, $cta, $titles_only ) . "\n";
 		}
 		return $cards;
 	}
@@ -209,7 +242,7 @@ function fairflock_get_collections_cards_markup( $exclude = array() ) {
 		array( 'Bestsellers', 'Die starken Dauerbrenner.', 'ff-collection-card--2' ),
 	);
 	foreach ( $placeholders as $item ) {
-		$mod   = esc_attr( $item[2] );
+		$mod   = $titles_only ? 'ff-collection-card--titles' : esc_attr( $item[2] );
 		$title = esc_html( $item[0] );
 		$text  = esc_html( $item[1] );
 		$label = esc_html( $cta );
@@ -220,7 +253,22 @@ function fairflock_get_collections_cards_markup( $exclude = array() ) {
 				$item[0]
 			)
 		);
-		$cards .= <<<HTML
+		if ( $titles_only ) {
+			$cards .= <<<HTML
+			<!-- wp:group {"className":"ff-collection-card {$mod}","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"default"}} -->
+			<div class="wp-block-group ff-collection-card {$mod}">
+				<!-- wp:heading {"level":2,"textAlign":"center"} -->
+				<h2 class="wp-block-heading has-text-align-center">{$title}</h2>
+				<!-- /wp:heading -->
+				<!-- wp:paragraph {"className":"ff-collection-card__meta"} -->
+				<p class="ff-collection-card__meta"><a href="{$shop}" aria-label="{$aria}">{$label}</a></p>
+				<!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+
+HTML;
+		} else {
+			$cards .= <<<HTML
 			<!-- wp:group {"className":"ff-collection-card {$mod}","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"default"}} -->
 			<div class="wp-block-group ff-collection-card {$mod}">
 				<!-- wp:heading {"level":3} -->
@@ -236,6 +284,7 @@ function fairflock_get_collections_cards_markup( $exclude = array() ) {
 			<!-- /wp:group -->
 
 HTML;
+		}
 	}
 
 	return $cards;
@@ -313,9 +362,10 @@ function fairflock_render_collections_section( $block_content, $block ) {
 		return $block_content;
 	}
 
-	$exclude = fairflock_collections_parse_exclude_ids( $class );
-	$markup  = fairflock_get_collections_cards_markup( $exclude );
-	$live    = do_blocks( $markup );
+	$exclude     = fairflock_collections_parse_exclude_ids( $class );
+	$titles_only = fairflock_collections_is_titles_only( $class );
+	$markup      = fairflock_get_collections_cards_markup( $exclude, $titles_only );
+	$live        = do_blocks( $markup );
 
 	if ( ! is_string( $live ) || $live === '' ) {
 		return $block_content;
@@ -350,11 +400,16 @@ function fairflock_get_collections_section_markup( array $args = array() ) {
 
 	$shop        = esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' ) );
 	$section_cls = trim( 'ff-pattern-collections ' . $extra );
-	$cards       = fairflock_get_collections_cards_markup( fairflock_collections_parse_exclude_ids( $section_cls ) );
+	$cards       = fairflock_get_collections_cards_markup(
+		fairflock_collections_parse_exclude_ids( $section_cls ),
+		fairflock_collections_is_titles_only( $section_cls )
+	);
 
 	$heading_esc = esc_html( $heading );
 	$lead_esc    = esc_html( $lead );
 	$anchor_esc  = esc_attr( $anchor );
+	$chev_prev   = fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 16 ) );
+	$chev_next   = fairflock_chevron_svg( array( 'dir' => 'right', 'size' => 16 ) );
 	$expand_more     = __( 'Mehr anzeigen', 'fairflock' );
 	$expand_less     = __( 'Weniger anzeigen', 'fairflock' );
 	$expand_more_esc = esc_html( $expand_more );
@@ -378,43 +433,38 @@ HTML;
 <div{$id_attr} class="wp-block-group alignfull {$section_cls}" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--70);padding-right:0;padding-bottom:var(--wp--preset--spacing--70);padding-left:0">
 	<!-- wp:group {"className":"ff-pattern-collections__shell","style":{"spacing":{"padding":{"left":"0","right":"0"},"blockGap":"var:preset|spacing|40"}},"layout":{"type":"default"}} -->
 	<div class="wp-block-group ff-pattern-collections__shell">
-		<!-- wp:group {"className":"ff-pattern-section-head","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"bottom"}} -->
+		<!-- wp:group {"className":"ff-pattern-section-head","layout":{"type":"constrained","contentSize":"34rem"}} -->
 		<div class="wp-block-group ff-pattern-section-head">
-			<!-- wp:group {"style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"constrained","contentSize":"34rem"}} -->
-			<div class="wp-block-group">
-				<!-- wp:heading -->
-				<h2 class="wp-block-heading">{$heading_esc}</h2>
-				<!-- /wp:heading -->
+			<!-- wp:heading -->
+			<h2 class="wp-block-heading">{$heading_esc}</h2>
+			<!-- /wp:heading -->
 
-				<!-- wp:paragraph {"textColor":"muted"} -->
-				<p class="has-muted-color has-text-color">{$lead_esc}</p>
-				<!-- /wp:paragraph -->
-			</div>
-			<!-- /wp:group -->
-
-			<!-- wp:group {"className":"ff-card-slider__actions","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right","verticalAlignment":"center"}} -->
-			<div class="wp-block-group ff-card-slider__actions">
-				<!-- wp:buttons {"metadata":{"name":"Slider-Pfeile"},"className":"ff-card-slider__nav","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
-				<div class="wp-block-buttons ff-card-slider__nav">
-					<!-- wp:button {"metadata":{"name":"Zurück"},"className":"ff-card-slider__btn ff-card-slider__btn\u002d\u002dprev is-style-outline"} -->
-					<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-cards-prev">←</a></div>
-					<!-- /wp:button -->
-
-					<!-- wp:button {"metadata":{"name":"Weiter"},"className":"ff-card-slider__btn ff-card-slider__btn\u002d\u002dnext is-style-outline"} -->
-					<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--next is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-cards-next">→</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
-
-{$more_html}
-			</div>
-			<!-- /wp:group -->
+			<!-- wp:paragraph {"textColor":"muted"} -->
+			<p class="has-muted-color has-text-color">{$lead_esc}</p>
+			<!-- /wp:paragraph -->
 		</div>
 		<!-- /wp:group -->
 
 		<!-- wp:group {"className":"ff-collections-grid","style":{"spacing":{"blockGap":"0"}},"layout":{"type":"default"}} -->
 		<div class="wp-block-group ff-collections-grid">
 {$cards}
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"className":"ff-card-slider__actions","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
+		<div class="wp-block-group ff-card-slider__actions">
+{$more_html}
+			<!-- wp:buttons {"metadata":{"name":"Slider-Pfeile"},"className":"ff-card-slider__nav","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
+			<div class="wp-block-buttons ff-card-slider__nav">
+				<!-- wp:button {"metadata":{"name":"Zurück"},"className":"ff-card-slider__btn ff-card-slider__btn\u002d\u002dprev is-style-outline"} -->
+				<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-cards-prev">{$chev_prev}</a></div>
+				<!-- /wp:button -->
+
+				<!-- wp:button {"metadata":{"name":"Weiter"},"className":"ff-card-slider__btn ff-card-slider__btn\u002d\u002dnext is-style-outline"} -->
+				<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--next is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-cards-next">{$chev_next}</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
 		</div>
 		<!-- /wp:group -->
 

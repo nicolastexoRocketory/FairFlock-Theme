@@ -20,6 +20,240 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.413',
+			'items'   => array(
+				__( 'Shop mobil: kein Horizontal-Overflow; Filter-Drawer ohne Overflow; „Schließen“ über „Anwenden“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.412',
+			'items'   => array(
+				__( 'Navbar: kein Schrumpfen beim Scrollen; immer deckend (kein Glas/Blur); Hinweis unter Darstellung.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.411',
+			'items'   => array(
+				__( 'Mobil-Menü: Chevron und „Zurück“ mit 1rem Abstand zum rechten Bildschirmrand.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.410',
+			'items'   => array(
+				__( 'Shop: Abstand Navbar→Breadcrumbs max. ~2em; „Produkte filtern“→Produkte 1em.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.409',
+			'items'   => array(
+				__( 'Mobil-Menü: Touch-Hitbox und Trenner vollbreit bis zum Bildschirmrand.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.408',
+			'items'   => array(
+				__( 'Shop mobil: Innenabstand wirklich 1em (kein doppeltes Root-/Shell-Padding; Filter-Drawer ebenfalls).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.407',
+			'items'   => array(
+				__( 'Mobil-Menü: Untermenü slide-in/out; Zurück-Pfeil links; Überpunkt und Menüpunkte größer.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.406',
+			'items'   => array(
+				__( 'Shop: Standard 2 Spalten; mobil Ansicht/Sortierung nur in „Produkte filtern“; Innenabstand 1em.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.405',
+			'items'   => array(
+				__( 'Mobil-Menü: kein Trennstrich über dem ersten Punkt; Menüpunkte größer (1.125rem).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.404',
+			'items'   => array(
+				__( 'Mobil-Untermenü: ohne Trennlinien, dichter, Schriftgewicht 600.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.403',
+			'items'   => array(
+				__( 'FAQ: Plus-Indicator optisch höher ausgerichtet.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.402',
+			'items'   => array(
+				__( 'Mobil-Menü: ohne Caps; Account/Warenkorb unten; Suche- und Burger-Icons größer.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.401',
+			'items'   => array(
+				__( 'Mobil-Menü: Überpunkt links, „Zurück“ rechts; Mega-Panel 1:1 auf der Unterseite.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.400',
+			'items'   => array(
+				__( 'Suche: mehr Abstand über „Vorgeschlagene Kategorie“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.399',
+			'items'   => array(
+				__( 'Slider: Navigation zuverlässig unter den Cards (DOM nach Track, CSS-Grid, Legacy-Relocate).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.398',
+			'items'   => array(
+				__( 'Mobil-Menü: Vollbreite unter dem Header; Burger wird zum Close; Suche bleibt; Untermenüs als Seite mit „Zurück“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.397',
+			'items'   => array(
+				__( 'Touch/Mobil: Slider-Navigation (Pfeile + „Alle Artikel“) unter die Produktkarten.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.396',
+			'items'   => array(
+				__( 'Mobil-Menü: Rocketory-Drawer mit Akkordeon-Untermenüs; Breakpoint und Mega-Navigation korrigiert.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.395',
+			'items'   => array(
+				__( 'Suche: Label „Vorschläge“ → „Vorgeschlagene Kategorie: T-Shirt\'s“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.394',
+			'items'   => array(
+				__( 'Mobil: Footer- und Hero-Inhalt mit 1em Abstand links/rechts (wie übrige Mobile-Ränder).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.393',
+			'items'   => array(
+				__( 'Mobil: Suche (Leiste + Vorschläge) vom Menü getrennt; Menü als Vollbild-Nav unter dem Header (Rocketory/Grün-Layout).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.392',
+			'items'   => array(
+				__( 'Footer: engere Abstände zwischen Link-Zeilen innerhalb der Spalten.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.391',
+			'items'   => array(
+				__( 'Produktseite mobil: Abstand zwischen Beschreibung/Akkordeon und Related-Sektion wiederhergestellt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.390',
+			'items'   => array(
+				__( 'Produktseite mobil: Galerie bündig unter dem Header (kein Clearance-/BlockGap-Luftpolster).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.389',
+			'items'   => array(
+				__( 'Produktseite mobil: Titel und Text denselben linken Rand (Pad in rem statt em).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.388',
+			'items'   => array(
+				__( 'Produkt-Popup mobil: Galeriehöhe begrenzt, damit Titel/Preis/Aktionen unter den Bildern sichtbar bleiben.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.387',
+			'items'   => array(
+				__( 'Produkt-Popup mobil: Galerie wieder horizontal (Peek-Slider statt gestapelter Bilder).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.386',
+			'items'   => array(
+				__( 'KI-Bild-Tag transparenter (Hintergrund von 32 % auf 16 %).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.385',
+			'items'   => array(
+				__( 'Produktseite: Galerie-/Produktbilder folgen Formen „Abgerundet“ (Radius-Token; bei Eckig 0).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.384',
+			'items'   => array(
+				__( 'Shop: Breadcrumbs immer Caps; Filter-Akkordeon 4px Abstand; Ergebnisanzahl/Ansicht/Sortierung in der linken Filter-Spalte.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.383',
+			'items'   => array(
+				__( 'Kollektionen-Widget: Option „Nur Titel (ohne Bilder)“ — zentrierte H2-Titel statt Kategoriebilder.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.382',
+			'items'   => array(
+				__( 'Text-Links siteweit wie Navbar-Menüpunkte: Caps, Schriftgewicht 500, animierter Underline (u. a. Alle Produkte, Suche, Account-Popup/-Seite, Footer).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.381',
+			'items'   => array(
+				__( 'Lade-Overlay: keine Endlosschleife mehr bei Shop-Ansicht/Spalten; Overlay nur bei echten Filter-/Seitenwechseln.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.380',
+			'items'   => array(
+				__( 'Chevron-SVG auch in gespeicherten Template-Parts/Startseite; Runtime-Upgrade für übrige ←/→-Pfeile.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.379',
+			'items'   => array(
+				__( 'Suche-, Account- und Checkout-UI monochrom (theme-unabhängig); Rot/Grün nur für Fehler/Erfolg; Checkout-Produktbilder 2:3.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.378',
+			'items'   => array(
+				__( 'Ladekreis bei Produkt-Popup, Shop-Seitenwechsel/Filtern, Suche und Warenkorb-Updates.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.377',
+			'items'   => array(
+				__( 'Such-Popup: Beliebt-/Fußlinks wie Navbar-Menüpunkte; mehr Abstand unter der Suchleiste.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.376',
+			'items'   => array(
+				__( 'Einheitlicher Stroke-Chevron (Größentabelle) für Galerie-, Hero-, Slider-, Filter- und Tabellen-Pfeile.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.375',
+			'items'   => array(
+				__( 'Darstellung: Trust-Banner-Verlauf mit Live-Vorschau und drei Farbfeldern bearbeitbar.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.374',
 			'items'   => array(
 				__( 'Trust-Banner: Layout und Brand-Verlauf wie Natürlich von Grün Marquee (Vollbreite, Glanz, ·-Trenner).', 'fairflock' ),

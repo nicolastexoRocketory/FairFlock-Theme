@@ -224,6 +224,156 @@ function fairflock_get_hero_height_vh() {
 }
 
 /**
+ * Default marquee gradient colors (Brand Deep / Brand / Brand Soft).
+ *
+ * @since 0.9.375
+ *
+ * @return array{deep:string,mid:string,soft:string}
+ */
+function fairflock_marquee_gradient_defaults() {
+	return array(
+		'deep' => '#2a5c25',
+		'mid'  => '#377530',
+		'soft' => '#4a8f42',
+	);
+}
+
+/**
+ * Sanitizes a hex color (#rgb / #rrggbb), empty if invalid.
+ *
+ * @since 0.9.375
+ *
+ * @param string $color Raw color.
+ * @return string
+ */
+function fairflock_sanitize_hex_color( $color ) {
+	$color = trim( (string) $color );
+	if ( '' === $color ) {
+		return '';
+	}
+	if ( function_exists( 'sanitize_hex_color' ) ) {
+		$clean = sanitize_hex_color( $color );
+		return is_string( $clean ) ? $clean : '';
+	}
+	if ( preg_match( '/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/', $color ) ) {
+		return $color;
+	}
+	return '';
+}
+
+/**
+ * Current marquee gradient colors.
+ *
+ * @since 0.9.375
+ *
+ * @return array{deep:string,mid:string,soft:string}
+ */
+function fairflock_get_marquee_gradient_colors() {
+	$defaults = fairflock_marquee_gradient_defaults();
+	$deep     = fairflock_sanitize_hex_color( (string) get_option( 'fairflock_marquee_color_deep', $defaults['deep'] ) );
+	$mid      = fairflock_sanitize_hex_color( (string) get_option( 'fairflock_marquee_color_mid', $defaults['mid'] ) );
+	$soft     = fairflock_sanitize_hex_color( (string) get_option( 'fairflock_marquee_color_soft', $defaults['soft'] ) );
+
+	return array(
+		'deep' => '' !== $deep ? $deep : $defaults['deep'],
+		'mid'  => '' !== $mid ? $mid : $defaults['mid'],
+		'soft' => '' !== $soft ? $soft : $defaults['soft'],
+	);
+}
+
+/**
+ * Prints CSS variables for the trust marquee gradient.
+ *
+ * @since 0.9.375
+ *
+ * @return void
+ */
+function fairflock_print_marquee_gradient_css() {
+	$c   = fairflock_get_marquee_gradient_colors();
+	$css = sprintf(
+		':root{--ff-strip-deep:%1$s;--ff-strip-brand:%2$s;--ff-strip-soft:%3$s;}',
+		$c['deep'],
+		$c['mid'],
+		$c['soft']
+	);
+
+	if ( wp_style_is( 'fairflock-hero-slider', 'enqueued' ) || wp_style_is( 'fairflock-hero-slider', 'registered' ) ) {
+		wp_add_inline_style( 'fairflock-hero-slider', $css );
+		return;
+	}
+
+	if ( wp_style_is( 'fairflock-components', 'enqueued' ) || wp_style_is( 'fairflock-components', 'registered' ) ) {
+		wp_add_inline_style( 'fairflock-components', $css );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'fairflock_print_marquee_gradient_css', 40 );
+add_action( 'enqueue_block_editor_assets', 'fairflock_print_marquee_gradient_css', 40 );
+
+/**
+ * Enqueues color picker on Darstellung admin screen.
+ *
+ * @since 0.9.375
+ *
+ * @param string $hook Current admin page hook.
+ * @return void
+ */
+function fairflock_header_style_admin_assets( $hook ) {
+	if ( false === strpos( (string) $hook, 'fairflock-header-style' ) ) {
+		return;
+	}
+	wp_enqueue_style( 'wp-color-picker' );
+	wp_enqueue_script( 'wp-color-picker' );
+	$defaults = fairflock_marquee_gradient_defaults();
+	$js       = <<<'JS'
+(function ($) {
+	function paintPreview() {
+		var deep = $("#fairflock_marquee_color_deep").val() || "#2a5c25";
+		var mid = $("#fairflock_marquee_color_mid").val() || "#377530";
+		var soft = $("#fairflock_marquee_color_soft").val() || "#4a8f42";
+		var bar = document.getElementById("ffMarqueePreview");
+		if (!bar) return;
+		bar.style.background =
+			"linear-gradient(105deg," +
+			deep + " 0%," +
+			mid + " 14%," +
+			soft + " 28%," +
+			deep + " 46%," +
+			mid + " 58%," +
+			soft + " 72%," +
+			deep + " 88%," +
+			mid + " 100%)";
+	}
+	$(function () {
+		$(".ff-marquee-color").wpColorPicker({
+			change: function () { setTimeout(paintPreview, 10); },
+			clear: function () { setTimeout(paintPreview, 10); }
+		});
+		paintPreview();
+		$("#ffMarqueeReset").on("click", function (e) {
+			e.preventDefault();
+			var d = window.fairflockMarqueeDefaults || {};
+			["deep", "mid", "soft"].forEach(function (key) {
+				var $input = $("#fairflock_marquee_color_" + key);
+				if (!$input.length) return;
+				$input.val(d[key] || "").trigger("change");
+				var picker = $input.closest(".wp-picker-container").find(".wp-color-result");
+				if (picker.length && d[key]) {
+					picker.css("background-color", d[key]);
+				}
+			});
+			paintPreview();
+		});
+	});
+})(jQuery);
+JS;
+	wp_add_inline_script(
+		'wp-color-picker',
+		'window.fairflockMarqueeDefaults=' . wp_json_encode( $defaults ) . ';' . $js
+	);
+}
+add_action( 'admin_enqueue_scripts', 'fairflock_header_style_admin_assets' );
+
+/**
  * Prints CSS variable for hero height.
  *
  * @since 0.9.216
@@ -485,6 +635,11 @@ function fairflock_header_style_handle_admin_save() {
 	$cols_ok  = array_keys( fairflock_collections_cols_choices() );
 	$cols     = in_array( $cols_raw, $cols_ok, true ) ? $cols_raw : 3;
 
+	$marquee_defaults = fairflock_marquee_gradient_defaults();
+	$marquee_deep     = isset( $_POST['fairflock_marquee_color_deep'] ) ? fairflock_sanitize_hex_color( wp_unslash( (string) $_POST['fairflock_marquee_color_deep'] ) ) : '';
+	$marquee_mid      = isset( $_POST['fairflock_marquee_color_mid'] ) ? fairflock_sanitize_hex_color( wp_unslash( (string) $_POST['fairflock_marquee_color_mid'] ) ) : '';
+	$marquee_soft     = isset( $_POST['fairflock_marquee_color_soft'] ) ? fairflock_sanitize_hex_color( wp_unslash( (string) $_POST['fairflock_marquee_color_soft'] ) ) : '';
+
 	update_option( 'fairflock_header_style', $header, false );
 	update_option( 'fairflock_nav_layout', $nav, false );
 	update_option( 'fairflock_content_width', $width, false );
@@ -493,6 +648,9 @@ function fairflock_header_style_handle_admin_save() {
 	update_option( 'fairflock_hero_nav_layout', $hero_nav, false );
 	update_option( 'fairflock_hero_height_vh', $hero_vh, false );
 	update_option( 'fairflock_collections_cols', $cols, false );
+	update_option( 'fairflock_marquee_color_deep', '' !== $marquee_deep ? $marquee_deep : $marquee_defaults['deep'], false );
+	update_option( 'fairflock_marquee_color_mid', '' !== $marquee_mid ? $marquee_mid : $marquee_defaults['mid'], false );
+	update_option( 'fairflock_marquee_color_soft', '' !== $marquee_soft ? $marquee_soft : $marquee_defaults['soft'], false );
 
 	wp_safe_redirect(
 		add_query_arg(
@@ -534,6 +692,8 @@ function fairflock_header_style_render_admin_page() {
 	$hero_vh        = fairflock_get_hero_height_vh();
 	$cols_current   = fairflock_get_collections_cols();
 	$cols_choices   = fairflock_collections_cols_choices();
+	$marquee_colors = fairflock_get_marquee_gradient_colors();
+	$marquee_defs   = fairflock_marquee_gradient_defaults();
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Darstellung', 'fairflock' ); ?></h1>
@@ -541,7 +701,7 @@ function fairflock_header_style_render_admin_page() {
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Einstellungen gespeichert.', 'fairflock' ); ?></p></div>
 		<?php endif; ?>
 
-		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite, Formen, Mega-Menü, Hero und Kollektionen — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
+		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite, Formen, Mega-Menü, Hero, Trust-Banner und Kollektionen — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
 
 		<form method="post" action="">
 			<?php wp_nonce_field( 'fairflock_header_style_settings' ); ?>
@@ -558,7 +718,7 @@ function fairflock_header_style_render_admin_page() {
 							<?php endforeach; ?>
 						</fieldset>
 						<p class="description">
-							<?php esc_html_e( 'Schwebend: abgerundete Leiste mit Abstand zum Rand (Standard). Randlos: volle Breite, oben bündig, ohne Rundungen.', 'fairflock' ); ?>
+							<?php esc_html_e( 'Schwebend: abgerundete, deckende Leiste mit Abstand zum Rand (Standard). Randlos: volle Breite, oben bündig, ohne Rundungen. Die Navbar ist immer undurchsichtig — kein Glas-/Blur-Effekt.', 'fairflock' ); ?>
 						</p>
 					</td>
 				</tr>
@@ -677,6 +837,61 @@ function fairflock_header_style_render_admin_page() {
 						</p>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Trust-Banner Verlauf', 'fairflock' ); ?></th>
+					<td>
+						<p class="description" style="margin-top:0;">
+							<?php esc_html_e( 'Hintergrund des laufenden Banners unter dem Hero. Drei Farben bilden den Verlauf — Vorschau aktualisiert sich sofort.', 'fairflock' ); ?>
+						</p>
+						<div
+							id="ffMarqueePreview"
+							aria-hidden="true"
+							style="height:44px;margin:12px 0 16px;border-radius:8px;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(21,32,22,.22);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;letter-spacing:.04em;text-transform:uppercase;font-weight:500;"
+						>
+							<?php esc_html_e( 'Vorschau · Trust-Banner', 'fairflock' ); ?>
+						</div>
+						<div style="display:flex;flex-wrap:wrap;gap:20px 28px;align-items:flex-start;">
+							<label style="display:flex;flex-direction:column;gap:6px;">
+								<span><strong><?php esc_html_e( 'Dunkler Ton', 'fairflock' ); ?></strong></span>
+								<input
+									type="text"
+									class="ff-marquee-color"
+									id="fairflock_marquee_color_deep"
+									name="fairflock_marquee_color_deep"
+									value="<?php echo esc_attr( $marquee_colors['deep'] ); ?>"
+									data-default-color="<?php echo esc_attr( $marquee_defs['deep'] ); ?>"
+								/>
+							</label>
+							<label style="display:flex;flex-direction:column;gap:6px;">
+								<span><strong><?php esc_html_e( 'Mittlerer Ton', 'fairflock' ); ?></strong></span>
+								<input
+									type="text"
+									class="ff-marquee-color"
+									id="fairflock_marquee_color_mid"
+									name="fairflock_marquee_color_mid"
+									value="<?php echo esc_attr( $marquee_colors['mid'] ); ?>"
+									data-default-color="<?php echo esc_attr( $marquee_defs['mid'] ); ?>"
+								/>
+							</label>
+							<label style="display:flex;flex-direction:column;gap:6px;">
+								<span><strong><?php esc_html_e( 'Heller Ton', 'fairflock' ); ?></strong></span>
+								<input
+									type="text"
+									class="ff-marquee-color"
+									id="fairflock_marquee_color_soft"
+									name="fairflock_marquee_color_soft"
+									value="<?php echo esc_attr( $marquee_colors['soft'] ); ?>"
+									data-default-color="<?php echo esc_attr( $marquee_defs['soft'] ); ?>"
+								/>
+							</label>
+						</div>
+						<p style="margin:14px 0 0;">
+							<button type="button" class="button" id="ffMarqueeReset">
+								<?php esc_html_e( 'Auf Markenfarben zurücksetzen', 'fairflock' ); ?>
+							</button>
+						</p>
+					</td>
+				</tr>
 			</table>
 			<?php submit_button( __( 'Speichern', 'fairflock' ), 'primary', 'fairflock_header_style_save' ); ?>
 		</form>
@@ -759,7 +974,7 @@ function fairflock_inject_header_inline_search( $block_content, $block ) {
 add_filter( 'render_block_core/group', 'fairflock_inject_header_inline_search', 20, 2 );
 
 /**
- * Markup for the mobile nav burger (opens search/menu layer).
+ * Markup for the mobile nav burger (opens dedicated menu layer).
  *
  * @since 0.9.261
  *
@@ -769,7 +984,7 @@ function fairflock_get_header_nav_burger_markup() {
 	return '<div class="wp-block-button ff-nav-burger is-style-fill">'
 		. '<a class="wp-block-button__link wp-element-button" href="#ff-open-menu" aria-label="'
 		. esc_attr__( 'Menü', 'fairflock' )
-		. '" aria-controls="ffSearchLayer" aria-expanded="false">'
+		. '" aria-controls="ffMenuLayer" aria-expanded="false">'
 		. esc_html__( 'Menü', 'fairflock' )
 		. '</a></div>';
 }

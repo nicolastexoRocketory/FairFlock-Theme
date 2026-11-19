@@ -9,10 +9,20 @@
 
 body.woocommerce-account .ff-account-page,
 .ff-account-page {
-	--ff-account-line: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
-	--ff-account-panel: var(--wp--custom--surface, #fff);
-	--ff-account-field: var(--wp--preset--color--base, #f3f5f4);
-	--ff-account-soft: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 14%, var(--wp--custom--surface, #fff));
+	/* Monochrome trust UI — brand-independent */
+	--ff-trust-ink: #0e1114;
+	--ff-trust-muted: #66707a;
+	--ff-trust-base: #f3f5f4;
+	--ff-trust-surface: #ffffff;
+	--ff-trust-soft: #eceeef;
+	--ff-trust-ok: #2f9e44;
+	--ff-trust-ok-deep: #248a38;
+	--ff-trust-bad: #c0392b;
+	--ff-trust-bad-deep: #7a1c14;
+	--ff-account-line: color-mix(in srgb, var(--ff-trust-ink) 12%, transparent);
+	--ff-account-panel: var(--ff-trust-surface);
+	--ff-account-field: var(--ff-trust-base);
+	--ff-account-soft: var(--ff-trust-soft);
 	position: relative;
 	isolation: isolate;
 	width: 100% !important;
@@ -32,8 +42,8 @@ body.woocommerce-account .ff-account-page,
 	z-index: -1;
 	pointer-events: none;
 	background:
-		radial-gradient(ellipse 80% 70% at 88% 0%, color-mix(in srgb, var(--wp--preset--color--brand, #377530) 10%, transparent), transparent 70%),
-		linear-gradient(180deg, var(--wp--preset--color--base, #f3f5f4) 0%, transparent 100%);
+		radial-gradient(ellipse 80% 70% at 88% 0%, color-mix(in srgb, var(--ff-trust-ink) 5%, transparent), transparent 70%),
+		linear-gradient(180deg, var(--ff-trust-base) 0%, transparent 100%);
 }
 
 /* —— Outer shell only —— */
@@ -73,7 +83,7 @@ body.woocommerce-account main.ff-account-page > .woocommerce {
 	letter-spacing: -0.03em;
 	line-height: 1.1;
 	text-transform: none;
-	color: var(--wp--preset--color--contrast, #0e1114);
+	color: var(--ff-trust-ink);
 }
 
 .ff-account-page__lead {
@@ -81,7 +91,7 @@ body.woocommerce-account main.ff-account-page > .woocommerce {
 	max-width: 36rem;
 	font-size: 1.05rem;
 	line-height: 1.5;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 }
 
 /* Inner Woo wrapper fills the outer shell — do not re-apply --ff-shell */
@@ -168,28 +178,8 @@ body.woocommerce-account .woocommerce-MyAccount-navigation li,
 
 body.woocommerce-account .woocommerce-MyAccount-navigation a,
 .ff-account-page .woocommerce-MyAccount-navigation a {
-	display: block;
-	padding: 12px 14px;
-	border-radius: var(--wp--custom--radius--sm, 8px);
-	color: var(--wp--preset--color--contrast, #0e1114) !important;
-	text-decoration: none !important;
+	color: var(--ff-trust-ink) !important;
 	font-family: var(--wp--preset--font-family--body, inherit);
-	font-weight: 600;
-	font-size: 0.9375rem;
-	background: transparent;
-}
-
-body.woocommerce-account .woocommerce-MyAccount-navigation a:hover,
-.ff-account-page .woocommerce-MyAccount-navigation a:hover {
-	background: var(--ff-account-soft);
-	color: var(--wp--preset--color--brand, #377530) !important;
-}
-
-body.woocommerce-account .woocommerce-MyAccount-navigation li.is-active a,
-.ff-account-page .woocommerce-MyAccount-navigation li.is-active a {
-	background: var(--ff-account-soft);
-	color: var(--wp--preset--color--brand, #377530) !important;
-	text-decoration: none !important;
 }
 
 body.woocommerce-account .woocommerce-MyAccount-content,
@@ -204,7 +194,7 @@ body.woocommerce-account .woocommerce-MyAccount-content,
 	padding: 24px 26px;
 	box-sizing: border-box;
 	overflow-wrap: anywhere;
-	color: var(--wp--preset--color--contrast, #0e1114);
+	color: var(--ff-trust-ink);
 }
 
 body.woocommerce-account .woocommerce-MyAccount-content > p:first-child,
@@ -212,7 +202,7 @@ body.woocommerce-account .woocommerce-MyAccount-content > p:first-child,
 	margin-top: 0;
 	font-size: 1rem;
 	line-height: 1.55;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 }
 
 body.woocommerce-account .woocommerce-MyAccount-content > p:last-child,
@@ -234,7 +224,7 @@ body.woocommerce-account #customer_login h2,
 	letter-spacing: normal;
 	line-height: 1.3;
 	text-transform: none;
-	color: var(--wp--preset--color--contrast, #0e1114);
+	color: var(--ff-trust-ink);
 }
 
 /* Info / message banners */
@@ -256,6 +246,28 @@ body.woocommerce-account .woocommerce-error,
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	min-width: 0;
 }
+
+body.woocommerce-account .woocommerce-message,
+.ff-account-page .woocommerce-message {
+	background: color-mix(in srgb, var(--ff-trust-ok) 10%, #fff);
+	border: 1px solid color-mix(in srgb, var(--ff-trust-ok) 28%, transparent);
+	color: var(--ff-trust-ok-deep);
+}
+
+body.woocommerce-account .woocommerce-error,
+.ff-account-page .woocommerce-error {
+	background: color-mix(in srgb, var(--ff-trust-bad) 8%, #fff);
+	border: 1px solid color-mix(in srgb, var(--ff-trust-bad) 28%, transparent);
+	color: var(--ff-trust-bad-deep);
+}
+
+body.woocommerce-account .woocommerce-info,
+.ff-account-page .woocommerce-info {
+	background: var(--ff-trust-soft);
+	border: 1px solid var(--ff-account-line);
+	color: var(--ff-trust-ink);
+}
+
 
 body.woocommerce-account .woocommerce-info .button,
 body.woocommerce-account .woocommerce-message .button,
@@ -295,7 +307,7 @@ body.woocommerce-account table.shop_table td {
 body.woocommerce-account table.shop_table th {
 	font-family: var(--wp--preset--font-family--body, inherit);
 	font-weight: 700;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 	font-size: 0.8125rem;
 	text-transform: none;
 	letter-spacing: normal;
@@ -367,9 +379,9 @@ body.woocommerce-account .woocommerce-Address-title a,
 	min-height: 36px;
 	padding: 6px 12px;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--brand, #377530) 45%, transparent);
+	border: 1px solid color-mix(in srgb, var(--ff-trust-ink) 45%, transparent);
 	background: transparent;
-	color: var(--wp--preset--color--brand, #377530) !important;
+	color: var(--ff-trust-ink) !important;
 	font-family: var(--wp--preset--font-family--body, inherit);
 	font-size: 0.8125rem;
 	font-weight: 700;
@@ -388,15 +400,13 @@ body.woocommerce-account .woocommerce-Address address,
 	font-style: normal;
 	font-size: 0.9375rem;
 	line-height: 1.5;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 }
 
-body.woocommerce-account .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):not(.edit),
-.ff-account-page .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):not(.edit) {
-	color: var(--wp--preset--color--brand, #377530);
-	font-weight: 600;
-	text-decoration: underline;
-	text-underline-offset: 2px;
+body.woocommerce-account .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):not(.woocommerce-Button):not(.edit),
+.ff-account-page .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):not(.woocommerce-Button):not(.edit) {
+	color: var(--ff-trust-ink);
+	white-space: normal;
 }
 
 /* —— Forms —— */
@@ -474,8 +484,8 @@ body.woocommerce-account textarea {
 	border: 1px solid var(--ff-account-line);
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	background: var(--ff-account-field) !important;
-	color: var(--wp--preset--color--contrast, #0e1114) !important;
-	caret-color: var(--wp--preset--color--contrast, #0e1114);
+	color: var(--ff-trust-ink) !important;
+	caret-color: var(--ff-trust-ink);
 	font: inherit;
 	box-sizing: border-box;
 	box-shadow: none;
@@ -493,9 +503,9 @@ body.woocommerce-account input[type="email"]:focus,
 body.woocommerce-account input[type="password"]:focus,
 body.woocommerce-account select:focus,
 body.woocommerce-account textarea:focus {
-	outline: 2px solid color-mix(in srgb, var(--wp--preset--color--brand, #377530) 55%, transparent);
+	outline: 2px solid color-mix(in srgb, var(--ff-trust-ink) 55%, transparent);
 	outline-offset: 1px;
-	border-color: var(--wp--preset--color--brand, #377530);
+	border-color: var(--ff-trust-ink);
 }
 
 body.woocommerce-account input:-webkit-autofill,
@@ -504,8 +514,8 @@ body.woocommerce-account input:-webkit-autofill:focus,
 .ff-account-page input:-webkit-autofill,
 .ff-account-page input:-webkit-autofill:hover,
 .ff-account-page input:-webkit-autofill:focus {
-	-webkit-text-fill-color: var(--wp--preset--color--contrast, #0e1114);
-	caret-color: var(--wp--preset--color--contrast, #0e1114);
+	-webkit-text-fill-color: var(--ff-trust-ink);
+	caret-color: var(--ff-trust-ink);
 	box-shadow: 0 0 0 1000px var(--ff-account-field) inset;
 	transition: background-color 99999s ease-out;
 }
@@ -519,7 +529,7 @@ body.woocommerce-account .woocommerce-form-register label {
 	font-weight: 600;
 	margin-bottom: 6px;
 	display: inline-block;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 }
 
 body.woocommerce-account .woocommerce-MyAccount-content fieldset,
@@ -538,7 +548,7 @@ body.woocommerce-account .woocommerce-MyAccount-content fieldset legend,
 	font-family: var(--wp--preset--font-family--body, inherit);
 	font-size: 0.9375rem;
 	font-weight: 700;
-	color: var(--wp--preset--color--contrast, #0e1114);
+	color: var(--ff-trust-ink);
 }
 
 body.woocommerce-account .woocommerce-password-strength,
@@ -546,7 +556,7 @@ body.woocommerce-account .woocommerce-password-hint,
 .ff-account-page .woocommerce-password-strength,
 .ff-account-page .woocommerce-password-hint {
 	font-size: 0.8125rem;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 }
 
 .ff-account-page .button,
@@ -563,7 +573,7 @@ body.woocommerce-account .woocommerce-form-register .button {
 	padding: 10px 18px;
 	border: 0;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: var(--wp--preset--color--brand, #377530);
+	background: var(--ff-trust-ink);
 	color: #fff !important;
 	font-family: var(--wp--preset--font-family--body, inherit);
 	font-weight: 700;
@@ -575,7 +585,7 @@ body.woocommerce-account .woocommerce-form-register .button {
 .ff-account-page button.button:hover,
 body.woocommerce-account .woocommerce-MyAccount-content .button:hover,
 body.woocommerce-account .woocommerce-form-login .button:hover {
-	background: var(--wp--preset--color--brand-deep, #2a5c25);
+	background: #1a1e22;
 }
 
 /* —— Login / Register cards —— */
@@ -662,7 +672,7 @@ body.woocommerce-account .woocommerce-form-login .woocommerce-form-login__rememb
 	gap: 8px;
 	margin: 0;
 	font-size: 0.875rem;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: var(--ff-trust-muted);
 }
 
 @media (max-width: 960px) {
@@ -707,4 +717,16 @@ body.woocommerce-account .woocommerce-form-login .woocommerce-form-login__rememb
 		margin-left: 0 !important;
 		width: 100%;
 	}
+}
+
+/* Password strength — green/red only */
+body.woocommerce-account .woocommerce-password-strength.strong,
+.ff-account-page .woocommerce-password-strength.strong {
+	color: var(--ff-trust-ok-deep) !important;
+}
+body.woocommerce-account .woocommerce-password-strength.bad,
+body.woocommerce-account .woocommerce-password-strength.short,
+.ff-account-page .woocommerce-password-strength.bad,
+.ff-account-page .woocommerce-password-strength.short {
+	color: var(--ff-trust-bad) !important;
 }

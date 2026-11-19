@@ -18,11 +18,11 @@
 		<!-- wp:buttons {"className":"ff-prod-slider__nav","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"flex","flexWrap":"nowrap"}} -->
 		<div class="wp-block-buttons ff-prod-slider__nav">
 			<!-- wp:button {"className":"ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"} -->
-			<div class="wp-block-button ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-prod-prev" aria-label="<?php echo esc_attr__( 'Zurück', 'fairflock' ); ?>">←</a></div>
+			<div class="wp-block-button ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-prod-prev" aria-label="<?php echo esc_attr__( 'Zurück', 'fairflock' ); ?>"><?php echo fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 16 ) ); ?></a></div>
 			<!-- /wp:button -->
 
 			<!-- wp:button {"className":"ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--next is-style-outline"} -->
-			<div class="wp-block-button ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--next is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-prod-next" aria-label="<?php echo esc_attr__( 'Weiter', 'fairflock' ); ?>">→</a></div>
+			<div class="wp-block-button ff-prod-slider__btn ff-card-slider__btn ff-card-slider__btn--next is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-prod-next" aria-label="<?php echo esc_attr__( 'Weiter', 'fairflock' ); ?>"><?php echo fairflock_chevron_svg( array( 'dir' => 'right', 'size' => 16 ) ); ?></a></div>
 			<!-- /wp:button -->
 		</div>
 		<!-- /wp:buttons -->

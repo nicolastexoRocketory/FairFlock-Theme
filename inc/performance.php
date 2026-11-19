@@ -163,11 +163,35 @@ function fairflock_enqueue_frontend_assets() {
 		);
 	}
 
+	// Shared loading spinner (shop pagination, filters, overlays).
+	wp_enqueue_script(
+		'fairflock-loading',
+		FAIRFLOCK_URI . '/assets/js/loading.js',
+		array(),
+		FAIRFLOCK_VERSION,
+		array(
+			'strategy'  => 'defer',
+			'in_footer' => true,
+		)
+	);
+
+	// Upgrade leftover ←/→ in customized templates to canonical chevron SVG.
+	wp_enqueue_script(
+		'fairflock-chevrons',
+		FAIRFLOCK_URI . '/assets/js/chevrons.js',
+		array(),
+		FAIRFLOCK_VERSION,
+		array(
+			'strategy'  => 'defer',
+			'in_footer' => true,
+		)
+	);
+
 	// Shell: search, scroll, mega, cart, account — almost every storefront page.
 	wp_enqueue_script(
 		'fairflock-header-search',
 		FAIRFLOCK_URI . '/assets/js/header-search.js',
-		array(),
+		array( 'fairflock-loading' ),
 		FAIRFLOCK_VERSION,
 		array(
 			'strategy'  => 'defer',
@@ -200,7 +224,7 @@ function fairflock_enqueue_frontend_assets() {
 	wp_enqueue_script(
 		'fairflock-cart-drawer',
 		FAIRFLOCK_URI . '/assets/js/cart-drawer.js',
-		array(),
+		array( 'fairflock-loading' ),
 		FAIRFLOCK_VERSION,
 		array(
 			'strategy'  => 'defer',
@@ -270,7 +294,7 @@ function fairflock_enqueue_frontend_assets() {
 		wp_enqueue_script(
 			'fairflock-product-modal',
 			FAIRFLOCK_URI . '/assets/js/product-modal.js',
-			array( 'fairflock-personalization' ),
+			array( 'fairflock-personalization', 'fairflock-loading' ),
 			FAIRFLOCK_VERSION,
 			array(
 				'strategy'  => 'defer',

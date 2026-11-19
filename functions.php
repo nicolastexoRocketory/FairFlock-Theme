@@ -19,6 +19,7 @@ define( 'FAIRFLOCK_VERSION', (string) ( $_fairflock_theme->get( 'Version' ) ?: '
 unset( $_fairflock_theme );
 
 require_once FAIRFLOCK_DIR . '/inc/tenant-safety.php';
+require_once FAIRFLOCK_DIR . '/inc/icons.php';
 require_once FAIRFLOCK_DIR . '/inc/setup.php';
 require_once FAIRFLOCK_DIR . '/inc/legal-pages.php';
 require_once FAIRFLOCK_DIR . '/inc/defaults.php';

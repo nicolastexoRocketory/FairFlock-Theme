@@ -492,9 +492,11 @@
 	opacity: 0.8;
 }
 
-.fs-nav .slider-btn .ico {
+.fs-nav .slider-btn .ico,
+.fs-nav .slider-btn .ff-chevron {
 	width: 16px;
 	height: 16px;
+	display: block;
 }
 
 .fs-dots {
@@ -550,11 +552,18 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
  * Trust marquee — Layout/Hintergrund wie Natürlich von Grün Laufleiste:
  * vollbreite Brand-Verlauf-Leiste, vertikaler Glanz, ·-Trenner, weiße Typo.
  */
+/*
+ * Verlauf-Farben: :root --ff-strip-* (FairFlock → Darstellung).
+ * Fallback = Brand-Palette aus theme.json.
+ */
+:root {
+	--ff-strip-deep: var(--wp--preset--color--brand-deep, #2a5c25);
+	--ff-strip-brand: var(--wp--preset--color--brand, #377530);
+	--ff-strip-soft: var(--wp--preset--color--brand-soft, #4a8f42);
+}
+
 .ff-pattern-trust .strip,
 .strip {
-	--ff-strip-brand: var(--wp--preset--color--brand, #377530);
-	--ff-strip-deep: var(--wp--preset--color--brand-deep, #2a5c25);
-	--ff-strip-soft: var(--wp--preset--color--brand-soft, #4a8f42);
 	position: relative;
 	isolation: isolate;
 	overflow: hidden;
@@ -802,13 +811,22 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 	}
 
 	.fs-slide-inner,
-	.wp-block-group.fs-slide-inner {
-		width: calc(100% - 2em);
-		max-width: calc(100% - 2em);
-		padding-inline: 1em;
+	.wp-block-group.fs-slide-inner,
+	.fs-slider.is-style-ff-hero-center .fs-slide-inner,
+	.ff-hero-pattern.is-style-ff-hero-center .fs-slide-inner,
+	.fs-slide.is-style-ff-hero-center .fs-slide-inner,
+	.fs-slide-inner.is-style-ff-hero-center,
+	.wp-block-group.fs-slide-inner.is-style-ff-hero-center {
+		width: 100% !important;
+		max-width: none !important;
+		/* Genau 1em zum Screenrand — nicht shell + padding doppelt */
+		padding-left: 1em !important;
+		padding-right: 1em !important;
+		padding-inline: 1em !important;
 		/* Platz für absolute Nav (Pfeile/Punkte) unter dem CTA */
-		padding-bottom: calc(1.25em + 40px + 1.25em);
-		padding-top: 0.5em;
+		padding-bottom: calc(1.25em + 40px + 1.25em) !important;
+		padding-top: 0.5em !important;
+		box-sizing: border-box;
 	}
 
 	/* Inhalt mittig: in der gewachsenen Fläche zentrieren, nicht abschneiden */

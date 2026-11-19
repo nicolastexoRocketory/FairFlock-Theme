@@ -147,7 +147,97 @@
 		);
 	}
 
+	/**
+	 * Customized DB content may still nest actions inside the section head.
+	 * Move them after the track so CSS grid areas (and touch under-cards) work.
+	 */
+	function relocateShellActions(shell) {
+		if (!shell || shell.getAttribute("data-ff-actions-moved") === "1") {
+			return;
+		}
+
+		var directActions = null;
+		var head = null;
+		var track = null;
+		var i;
+		var child;
+
+		for (i = 0; i < shell.children.length; i++) {
+			child = shell.children[i];
+			if (
+				child.classList.contains("ff-prod-slider__actions") ||
+				child.classList.contains("ff-card-slider__actions")
+			) {
+				directActions = child;
+			}
+			if (
+				child.classList.contains("ff-pattern-products__head") ||
+				child.classList.contains("ff-pattern-section-head")
+			) {
+				head = child;
+			}
+			if (
+				child.classList.contains("ff-prod-slider") ||
+				child.classList.contains("ff-collections-grid") ||
+				child.classList.contains("ff-bento")
+			) {
+				track = child;
+			}
+		}
+
+		if (directActions) {
+			shell.setAttribute("data-ff-actions-moved", "1");
+			return;
+		}
+
+		if (!head) {
+			return;
+		}
+
+		var actions = head.querySelector(".ff-prod-slider__actions, .ff-card-slider__actions");
+		if (!actions) {
+			return;
+		}
+
+		if (track) {
+			if (track.nextSibling) {
+				shell.insertBefore(actions, track.nextSibling);
+			} else {
+				shell.appendChild(actions);
+			}
+		} else {
+			shell.appendChild(actions);
+		}
+
+		shell.setAttribute("data-ff-actions-moved", "1");
+	}
+
+	function relocateSectionShells(section) {
+		if (!section) {
+			return;
+		}
+		var shells = section.querySelectorAll(
+			".ff-pattern-products__shell, .ff-pattern-collections__shell, .ff-pattern-bento__shell"
+		);
+		if (!shells.length) {
+			var own =
+				section.classList.contains("ff-pattern-products__shell") ||
+				section.classList.contains("ff-pattern-collections__shell") ||
+				section.classList.contains("ff-pattern-bento__shell")
+					? section
+					: section.querySelector(
+							".ff-pattern-products__shell, .ff-pattern-collections__shell, .ff-pattern-bento__shell"
+					  );
+			if (own) {
+				relocateShellActions(own);
+			}
+			return;
+		}
+		shells.forEach(relocateShellActions);
+	}
+
 	function initProducts(section) {
+		relocateSectionShells(section);
 		bindTrack(
 			productTrack(section),
 			navControl(section, ".ff-card-slider__btn--prev, .ff-prod-slider__btn--prev, [data-ff-prod-prev]"),
@@ -166,6 +256,7 @@
 	}
 
 	function initCardSection(section, trackSelector) {
+		relocateSectionShells(section);
 		bindTrack(
 			section.querySelector(trackSelector),
 			navControl(section, ".ff-card-slider__btn--prev, [data-ff-cards-prev]"),

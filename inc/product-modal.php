@@ -39,7 +39,10 @@ function fairflock_print_product_modal() {
 				<svg viewBox="0 0 24 24" aria-hidden="true" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
 			</button>
 			<div class="ff-product-modal__body" id="ffProductBody">
-				<p class="ff-product-modal__loading" id="ffProductLoading">Produkt wird geladen…</p>
+				<div class="ff-loading-inline ff-product-modal__loading" id="ffProductLoading" role="status" aria-live="polite" aria-busy="true">
+					<span class="ff-spinner" style="--ff-spinner-size:40px" aria-hidden="true"></span>
+					<span class="ff-visually-hidden">Produkt wird geladen…</span>
+				</div>
 			</div>
 		</div>
 	</div>

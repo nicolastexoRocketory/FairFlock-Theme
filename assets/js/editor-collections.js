@@ -1,6 +1,6 @@
 /**
- * Collections section: exclude product categories via className tokens.
- * Token: ff-collections-exclude-{id}-{id}-…
+ * Collections section: exclude categories + titles-only mode via className tokens.
+ * Tokens: ff-collections-exclude-{id}-{id}-… · ff-collections-titles
  */
 (function (wp, config) {
 	if (
@@ -22,6 +22,7 @@
 	var InspectorControls = wp.blockEditor.InspectorControls;
 	var PanelBody = wp.components.PanelBody;
 	var FormTokenField = wp.components.FormTokenField;
+	var ToggleControl = wp.components.ToggleControl;
 	var Notice = wp.components.Notice;
 	var createHigherOrderComponent = wp.compose.createHigherOrderComponent;
 	var apiFetch = wp.apiFetch;
@@ -65,8 +66,19 @@
 			.trim();
 	}
 
-	function buildClassName(className, excludeIds) {
-		var base = stripExcludeToken(className);
+	function stripTitlesToken(className) {
+		return String(className || "")
+			.replace(/(?:^|\s)ff-collections-titles(?=\s|$)/g, " ")
+			.replace(/\s+/g, " ")
+			.trim();
+	}
+
+	function hasTitlesOnly(className) {
+		return hasClass(className, "ff-collections-titles");
+	}
+
+	function buildClassName(className, excludeIds, titlesOnly) {
+		var base = stripTitlesToken(stripExcludeToken(className));
 		var ids = (excludeIds || [])
 			.map(function (id) {
 				return parseInt(id, 10);
@@ -77,10 +89,13 @@
 		ids = Array.from(new Set(ids)).sort(function (a, b) {
 			return a - b;
 		});
-		if (!ids.length) {
-			return base;
+		if (ids.length) {
+			base = (base + " ff-collections-exclude-" + ids.join("-")).trim();
 		}
-		return (base + " ff-collections-exclude-" + ids.join("-")).trim();
+		if (titlesOnly) {
+			base = (base + " ff-collections-titles").trim();
+		}
+		return base;
 	}
 
 	function tokenLabel(term) {
@@ -186,6 +201,7 @@
 
 			var className = props.attributes.className || "";
 			var excludeIds = parseExcludeIds(className);
+			var titlesOnly = hasTitlesOnly(className);
 
 			return el(
 				Fragment,
@@ -200,11 +216,23 @@
 							title: i18n.panel || "Kollektionen",
 							initialOpen: true,
 						},
+						el(ToggleControl, {
+							label: i18n.titlesOnly || "Nur Titel (ohne Bilder)",
+							help:
+								i18n.titlesHelp ||
+								"Karten zeigen nur den Kategorie-Titel als H2, zentriert — ohne Bild und Beschreibung.",
+							checked: titlesOnly,
+							onChange: function (next) {
+								props.setAttributes({
+									className: buildClassName(className, excludeIds, !!next),
+								});
+							},
+						}),
 						el(CategoriesExclude, {
 							excludeIds: excludeIds,
 							onChange: function (ids) {
 								props.setAttributes({
-									className: buildClassName(className, ids),
+									className: buildClassName(className, ids, titlesOnly),
 								});
 							},
 						}),

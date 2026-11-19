@@ -104,11 +104,11 @@
 			<!-- wp:buttons {"metadata":{"name":"Slider-Pfeile"},"className":"ff-reviews-nav ff-card-slider__nav","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
 			<div class="wp-block-buttons ff-reviews-nav ff-card-slider__nav">
 				<!-- wp:button {"metadata":{"name":"Zurück"},"className":"ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"} -->
-				<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-reviews-prev">←</a></div>
+				<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--prev is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-reviews-prev"><?php echo fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 16 ) ); ?></a></div>
 				<!-- /wp:button -->
 
 				<!-- wp:button {"metadata":{"name":"Weiter"},"className":"ff-card-slider__btn ff-card-slider__btn--next is-style-outline"} -->
-				<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--next is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-reviews-next">→</a></div>
+				<div class="wp-block-button ff-card-slider__btn ff-card-slider__btn--next is-style-outline"><a class="wp-block-button__link wp-element-button" href="#ff-reviews-next"><?php echo fairflock_chevron_svg( array( 'dir' => 'right', 'size' => 16 ) ); ?></a></div>
 				<!-- /wp:button -->
 			</div>
 			<!-- /wp:buttons -->

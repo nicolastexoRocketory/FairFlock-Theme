@@ -5,8 +5,10 @@
 	"use strict";
 
 	var MQ = "(max-width: 960px)";
-	var chevron =
-		'<svg class="ff-gal-chevron" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8.2 2.1 17.8 12 8.2 21.9 5.6 19.4 12.8 12 5.6 4.6z"/></svg>';
+	var chevronLeft =
+		'<svg class="ff-chevron ff-chevron--left ff-gal-chevron" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+	var chevronRight =
+		'<svg class="ff-chevron ff-chevron--right ff-gal-chevron" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 	function ready(fn) {
 		if (document.readyState === "loading") {
@@ -136,10 +138,10 @@
 			nav.className = "ff-product-peek__nav";
 			nav.innerHTML =
 				'<button type="button" class="ff-product-peek__btn is-prev" data-ff-peek="prev" aria-label="Vorheriges Bild">' +
-				chevron +
+				chevronLeft +
 				"</button>" +
 				'<button type="button" class="ff-product-peek__btn is-next" data-ff-peek="next" aria-label="Nächstes Bild">' +
-				chevron +
+				chevronRight +
 				"</button>";
 			root.appendChild(nav);
 		}

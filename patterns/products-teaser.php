@@ -24,8 +24,8 @@
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:paragraph {"style":{"typography":{"fontStyle":"normal","fontWeight":"700"}},"textColor":"brand"} -->
-		<p class="has-brand-color has-text-color" style="font-style:normal;font-weight:700"><a href="#">Alle Produkte →</a></p>
+		<!-- wp:paragraph {"className":"ff-pattern-link-more","style":{"typography":{"fontStyle":"normal","fontWeight":"700"}}} -->
+		<p class="ff-pattern-link-more" style="font-style:normal;font-weight:700"><a href="#">Alle Produkte →</a></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->

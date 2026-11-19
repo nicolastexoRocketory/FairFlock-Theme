@@ -200,37 +200,21 @@ body:not(.block-editor-iframe__body) .ff-header.ff-header--edge {
  * :where() hält die Spezifität niedrig — Block-Editor-Padding
  * (inkl. @mobile / @tablet) gewinnt klar darüber.
  */
+/*
+ * Randlos (edge): Navbar-Leiste immer eckig — auch bei Formen „Rundungen“.
+ * Icons folgen weiterhin Formen (Rundungen/Eckig), nicht dem Header-Stil.
+ */
+body.ff-header-style-edge .ff-header__bar,
+.ff-header.ff-header--edge .ff-header__bar {
+	border-radius: 0 !important;
+	box-shadow: 0 1px 0 rgba(14, 17, 20, 0.08);
+}
+
 :where(body.ff-header-style-edge) :where(.ff-header__bar),
 :where(.ff-header.ff-header--edge) :where(.ff-header__bar) {
-	border-radius: 0;
-	box-shadow: 0 1px 0 rgba(14, 17, 20, 0.08);
 	padding-left: var(--ff-gutter, 1em);
 	padding-right: var(--ff-gutter, 1em);
 	box-sizing: border-box;
-}
-
-body.ff-header-style-edge .ff-header__icons,
-body.ff-header-style-edge .ff-header__actions,
-.ff-header.ff-header--edge .ff-header__icons,
-.ff-header.ff-header--edge .ff-header__actions {
-	--ff-icon-radius: 0;
-	border-radius: 0 !important;
-}
-
-body.ff-header-style-edge .ff-header__icons .wp-block-button__link,
-body.ff-header-style-edge .ff-header__actions .wp-block-button__link,
-body.ff-header-style-edge .ff-header__icons .ff-account,
-body.ff-header-style-edge .ff-header__actions .ff-account,
-body.ff-header-style-edge .ff-header__icons .wp-block-woocommerce-customer-account,
-body.ff-header-style-edge .ff-header__actions .wp-block-woocommerce-customer-account,
-body.ff-header-style-edge .ff-header__icons .wc-block-customer-account__account-icon,
-.ff-header.ff-header--edge .ff-header__icons .wp-block-button__link,
-.ff-header.ff-header--edge .ff-header__actions .wp-block-button__link,
-.ff-header.ff-header--edge .ff-header__icons .ff-account,
-.ff-header.ff-header--edge .ff-header__actions .ff-account,
-.ff-header.ff-header--edge .ff-header__icons .wp-block-woocommerce-customer-account,
-.ff-header.ff-header--edge .ff-header__actions .wp-block-woocommerce-customer-account {
-	border-radius: 0 !important;
 }
 
 body.ff-header-style-edge .ff-nav-sub,
@@ -243,6 +227,13 @@ body.ff-header-style-edge .ff-header__nav .wp-block-navigation__submenu-containe
 body.ff-header-style-edge .ff-nav-sub .ff-nav-sub__item,
 .ff-header.ff-header--edge .ff-nav-sub .ff-nav-sub__item {
 	border-radius: 0;
+}
+
+/* Floating/Abstand zum Rand + Rundungen → Leiste rund */
+body:not(.ff-header-style-edge):not(.ff-shape-sharp) .ff-header__bar,
+body:not(.ff-header-style-edge):not(.ff-shape-sharp) .ff-header--floating .ff-header__bar,
+.ff-header.ff-header--floating:not(.ff-header--edge) .ff-header__bar {
+	border-radius: 16px;
 }
 
 /* WooCommerce wrappt Single-Product oft in .woocommerce — Clearance dort ebenfalls */
@@ -313,20 +304,33 @@ html.is-ff-header-compact .ff-header__brand {
 
 html.is-ff-header-compact .ff-header__brand,
 html.is-ff-header-compact .ff-header__icons .wp-block-button__link,
-html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
+html.is-ff-header-compact .ff-header__actions .wp-block-button__link,
+html.is-ff-header-compact .ff-header__icons .ff-account,
+html.is-ff-header-compact .ff-header__actions .ff-account,
+html.is-ff-header-compact .ff-header__icons .wp-block-woocommerce-customer-account,
+html.is-ff-header-compact .ff-header__actions .wp-block-woocommerce-customer-account {
 	transition: transform 0.3s var(--ff-ease);
 }
 
 html.is-ff-header-compact .ff-header__icons .wp-block-button__link,
-html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
+html.is-ff-header-compact .ff-header__actions .wp-block-button__link,
+html.is-ff-header-compact .ff-header__icons .ff-account,
+html.is-ff-header-compact .ff-header__actions .ff-account,
+html.is-ff-header-compact .ff-header__icons .wp-block-woocommerce-customer-account,
+html.is-ff-header-compact .ff-header__actions .wp-block-woocommerce-customer-account {
 	transform: scale(0.92);
+	transform-origin: center center;
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.ff-header__bar,
 	html.is-ff-header-compact .ff-header__brand,
 	html.is-ff-header-compact .ff-header__icons .wp-block-button__link,
-	html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
+	html.is-ff-header-compact .ff-header__actions .wp-block-button__link,
+	html.is-ff-header-compact .ff-header__icons .ff-account,
+	html.is-ff-header-compact .ff-header__actions .ff-account,
+	html.is-ff-header-compact .ff-header__icons .wp-block-woocommerce-customer-account,
+	html.is-ff-header-compact .ff-header__actions .wp-block-woocommerce-customer-account {
 		transition: none;
 	}
 }
@@ -1670,12 +1674,18 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	--ff-icon-bg: color-mix(in srgb, var(--ff-icon-fg) 6%, transparent);
 	--ff-icon-line: color-mix(in srgb, var(--ff-icon-fg) 18%, transparent);
 	--ff-icon-line-w: 1px;
-	--ff-icon-radius: 8px;
+	/* Formen „Rundungen“ → Icon-Radius; „Eckig“ setzt --ff-icon-radius: 0 */
+	--ff-icon-radius: var(--wp--custom--radius--sm, 8px);
 	padding: 0 !important;
 	border-style: solid !important;
 	border-width: 0 !important;
 	background: transparent !important;
 	box-shadow: none !important;
+}
+
+body.ff-shape-rounded .ff-header__icons,
+body.ff-shape-rounded .ff-header__actions {
+	--ff-icon-radius: var(--wp--custom--radius--sm, 8px);
 }
 
 /*

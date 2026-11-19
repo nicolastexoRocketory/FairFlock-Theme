@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.374',
+			'items'   => array(
+				__( 'Trust-Banner: Layout und Brand-Verlauf wie Natürlich von Grün Marquee (Vollbreite, Glanz, ·-Trenner).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.373',
+			'items'   => array(
+				__( 'Nav: Icon-Radien folgen Formen; Navbar nur bei Abstand zum Rand rund; Account-Icon skaliert beim Scrollen mit.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.372',
 			'items'   => array(
 				__( 'Desktop-Nav: aktiver Menüpunkt ohne Underline, nur 60% Opacity.', 'fairflock' ),

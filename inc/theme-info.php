@@ -20,6 +20,42 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.419',
+			'items'   => array(
+				__( 'Mobile-Menü immer bündig unter der Nav (gemessene Unterkante, kein Überlappen dahinter).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.418',
+			'items'   => array(
+				__( 'Fullbleed-Sektionen: „Hintergrund fixiert“ greift wieder im Frontend (overflow + Cover-Parallax).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.417',
+			'items'   => array(
+				__( 'Produkt-Slider mobil: Navigation 1em unter den Cards; „Alle …“ links, Pfeile rechts.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.416',
+			'items'   => array(
+				__( 'Hero-Slideshow mobil/Tablet: eingestellte Bilder korrekt als Cover (kein background-attachment:fixed).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.415',
+			'items'   => array(
+				__( 'Produktkarten: Hover-Lift schneidet die obere Rundung nicht mehr ab.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.414',
+			'items'   => array(
+				__( 'Suche-, Account- und Checkout-UI folgen Theme-Base/Contrast (kein festes Weiß mehr).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.413',
 			'items'   => array(
 				__( 'Shop mobil: kein Horizontal-Overflow; Filter-Drawer ohne Overflow; „Schließen“ über „Anwenden“.', 'fairflock' ),

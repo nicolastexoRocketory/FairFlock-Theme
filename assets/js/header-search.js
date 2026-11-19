@@ -531,6 +531,10 @@
       if (!menuLayer) return;
       closeSearch();
       syncMenuNav();
+      /* Nav-Unterkante frisch messen → Menü bündig darunter, nicht hinter der Bar */
+      if (typeof window.fairflockSyncHeaderClearance === "function") {
+        window.fairflockSyncHeaderClearance();
+      }
       menuLayer.classList.add("is-open");
       menuLayer.setAttribute("aria-hidden", "false");
       document.body.classList.add("is-ff-menu-open");

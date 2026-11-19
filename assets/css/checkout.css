@@ -4,21 +4,14 @@
  */
 
 .ff-checkout-page {
-	/* Fixed trust palette — independent of theme brand colors */
-	--ff-trust-ink: #0e1114;
-	--ff-trust-muted: #66707a;
-	--ff-trust-base: #f3f5f4;
-	--ff-trust-surface: #ffffff;
-	--ff-trust-soft: #eceeef;
-	--ff-trust-ok: #2f9e44;
-	--ff-trust-ok-deep: #248a38;
-	--ff-trust-bad: #c0392b;
-	--ff-trust-bad-deep: #7a1c14;
+	/* Trust-Tokens kommen von :root (Theme Base/Contrast) */
 	--ff-checkout-line: color-mix(in srgb, var(--ff-trust-ink) 10%, transparent);
 	--ff-checkout-line-strong: color-mix(in srgb, var(--ff-trust-ink) 16%, transparent);
 	--ff-checkout-field-bg: var(--ff-trust-surface);
 	--ff-checkout-panel: var(--ff-trust-surface);
 	--ff-checkout-soft: var(--ff-trust-soft);
+	color: var(--ff-trust-ink);
+	background: var(--ff-trust-base);
 	position: relative;
 	isolation: isolate;
 	/* Gutter steckt in --ff-shell — kein doppeltes has-global-padding */

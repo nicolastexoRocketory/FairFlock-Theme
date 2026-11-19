@@ -266,7 +266,13 @@
 		);
 }
 
-/* Editor-set images: keep cover crop reliable (esp. iOS) */
+/*
+ * Editor-set images (on .fs-slide-media OR directly on .fs-slide):
+ * keep cover crop reliable. Never use background-attachment:fixed —
+ * iOS/Android ignore or break it (blank / wrong crop / no paint).
+ */
+.fs-slide[style*="background-image"],
+.fs-slide.has-background,
 .fs-slide-media[style*="background-image"],
 .fs-slide-media.has-background {
 	background-size: cover !important;
@@ -747,6 +753,7 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 /*
  * iPhone / touch: Ken Burns + transform breaks background-size:cover paint.
  * Keep a static, fully filled media layer instead.
+ * Also kill fixed attachment on slides (Site Editor often sets it).
  */
 @media (max-width: 960px), (hover: none) and (pointer: coarse) {
 	.fs-slide-media,
@@ -754,6 +761,19 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 		-webkit-transform: none !important;
 		transform: none !important;
 		transition: none !important;
+	}
+
+	.fs-slide,
+	.fs-slide.is-active,
+	.fs-slide[style*="background-image"],
+	.fs-slide.has-background,
+	.fs-slide-media,
+	.fs-slide-media[style*="background-image"],
+	.fs-slide-media.has-background {
+		background-attachment: scroll !important;
+		-webkit-background-size: cover !important;
+		background-size: cover !important;
+		background-repeat: no-repeat !important;
 	}
 }
 
@@ -808,6 +828,18 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 		width: 100%;
 		height: 100%;
 		min-height: 100%;
+	}
+
+	/*
+	 * Bilder direkt am Slide (ohne .fs-slide-media): Box muss die
+	 * relative Aktiv-Höhe ausfüllen, sonst clippt/fehlt Cover.
+	 */
+	.fs-slide.is-active[style*="background-image"],
+	.fs-slide.is-active.has-background {
+		background-size: cover !important;
+		background-position: center center !important;
+		background-attachment: scroll !important;
+		isolation: isolate;
 	}
 
 	.fs-slide-inner,

@@ -43,7 +43,7 @@
 			]
 		},
 		"custom": {
-			"surface": "#1a1f26"
+			"surface": "var(--wp--preset--color--base)"
 		}
 	},
 	"styles": {

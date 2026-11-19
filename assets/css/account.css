@@ -9,20 +9,13 @@
 
 body.woocommerce-account .ff-account-page,
 .ff-account-page {
-	/* Monochrome trust UI — brand-independent */
-	--ff-trust-ink: #0e1114;
-	--ff-trust-muted: #66707a;
-	--ff-trust-base: #f3f5f4;
-	--ff-trust-surface: #ffffff;
-	--ff-trust-soft: #eceeef;
-	--ff-trust-ok: #2f9e44;
-	--ff-trust-ok-deep: #248a38;
-	--ff-trust-bad: #c0392b;
-	--ff-trust-bad-deep: #7a1c14;
+	/* Trust-Tokens von :root (Theme Base/Contrast) */
 	--ff-account-line: color-mix(in srgb, var(--ff-trust-ink) 12%, transparent);
 	--ff-account-panel: var(--ff-trust-surface);
-	--ff-account-field: var(--ff-trust-base);
+	--ff-account-field: var(--ff-trust-soft);
 	--ff-account-soft: var(--ff-trust-soft);
+	color: var(--ff-trust-ink);
+	background: var(--ff-trust-base);
 	position: relative;
 	isolation: isolate;
 	width: 100% !important;

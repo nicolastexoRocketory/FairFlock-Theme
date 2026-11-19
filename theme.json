@@ -176,7 +176,7 @@
 				"sm": "8px",
 				"md": "16px"
 			},
-			"surface": "#ffffff"
+			"surface": "var(--wp--preset--color--base)"
 		}
 	},
 	"styles": {

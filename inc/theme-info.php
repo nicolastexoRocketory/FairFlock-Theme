@@ -20,6 +20,72 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.372',
+			'items'   => array(
+				__( 'Desktop-Nav: aktiver Menüpunkt ohne Underline, nur 60% Opacity.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.371',
+			'items'   => array(
+				__( 'Desktop-Nav: Menüpunkte etwas kleiner (0.8125rem).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.370',
+			'items'   => array(
+				__( 'Desktop-Nav: Trennstriche zu Punkten; mehr Abstand zwischen Menüpunkten.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.369',
+			'items'   => array(
+				__( 'Desktop-Nav: animierter Hover (Underline scaleX + Brand-Farbe).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.368',
+			'items'   => array(
+				__( 'Desktop-Nav: Menüpunkte in der Leiste in Großbuchstaben (Untermenüs unverändert).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.367',
+			'items'   => array(
+				__( 'Shop-Filter: Hover-Effekt auf Akkordeon-Items (Rahmen, Hintergrund, Brand-Text).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.366',
+			'items'   => array(
+				__( 'Desktop-Nav: Menüpunkte ein Gewicht dicker (font-weight 500).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.365',
+			'items'   => array(
+				__( 'Desktop-Nav: Menüpunkte leichter (font-weight 400); Trennstriche kürzer, enger und dezenter.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.364',
+			'items'   => array(
+				__( 'KI-Bild-Tag etwas transparenter.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.363',
+			'items'   => array(
+				__( 'Shop: engere Filter-Akkordeons; schlankere Navbar; Sticky-Filter bleibt unter der Nav (kein Überdecken).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.362',
+			'items'   => array(
+				__( 'Produkt-Popup: Close-Icon in der Ecke; Titel läuft nicht mehr darunter.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.361',
 			'items'   => array(
 				__( 'Shop-Filter: Abstände zwischen Akkordeon-Items verringert.', 'fairflock' ),

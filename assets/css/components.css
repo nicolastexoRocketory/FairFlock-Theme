@@ -7,7 +7,9 @@
 	/* Produktmedien: Portrait 2:3 */
 	--ff-product-aspect: 2 / 3;
 	--ff-header-top: 16px;
-	--ff-header-height: 72px;
+	--ff-header-height: 56px;
+	/* Sticky-Offset unter der fixed Nav (JS kann überschreiben) */
+	--ff-header-sticky-top: calc(var(--ff-header-top) + var(--ff-header-height) + 8px);
 	/*
 	 * Full-width / shell gutter (Styles → Layout → Innenabstand equivalent).
 	 * Desktop 4em · Tablet 2em · Mobile 1em — alignfull content insets via --ff-shell.
@@ -282,7 +284,7 @@ body:not(.block-editor-iframe__body) .ff-header {
 	gap: 16px;
 	width: 100%;
 	min-height: var(--ff-header-height);
-	padding: 8px 16px;
+	padding: 6px 16px;
 	border-radius: 16px;
 	border: 1px solid rgba(255, 255, 255, 0.28);
 	/* Glass default ONLY when the Site Editor has no background set
@@ -783,7 +785,7 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
  * Am Nav-Block: Rahmen → Farbe wählen (Rahmenbreite bleibt optisch 0).
  */
 .ff-header__nav {
-	--ff-nav-sep: color-mix(in srgb, currentColor 35%, transparent);
+	--ff-nav-sep: color-mix(in srgb, currentColor 18%, transparent);
 	border-style: solid;
 	border-width: 0 !important;
 	border-color: var(--ff-nav-sep);
@@ -809,24 +811,28 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
 	content: "";
 	display: block;
 	align-self: center;
-	width: 0;
-	height: 22px;
+	width: 3px;
+	height: 3px;
 	margin-inline: 14px;
-	border-left: 1px solid;
-	border-left-color: inherit;
-	background: none;
+	border: 0;
+	border-radius: 50%;
+	background: var(--ff-nav-sep, color-mix(in srgb, currentColor 18%, transparent));
+	opacity: 1;
 	flex-shrink: 0;
 }
 
-/* Preset-Rahmenfarbe: Trennstrich nutzt --ff-nav-sep direkt */
+/* Preset-Rahmenfarbe: Trennpunkt nutzt --ff-nav-sep direkt */
 .ff-header__nav[class*="-border-color"] .wp-block-navigation-item + .wp-block-navigation-item::before {
-	border-left-color: var(--ff-nav-sep);
+	background: var(--ff-nav-sep);
 }
 
 .ff-header__nav .wp-block-navigation-item__content {
 	position: relative;
 	padding: 6px 2px;
-	/* Typografie kommt aus Global Styles / Navigation-Block — hier nur Layout. */
+	font-size: 0.8125rem;
+	font-weight: 500 !important;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
 	white-space: nowrap;
 	text-decoration: none !important;
 	border-radius: 0;
@@ -836,15 +842,30 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
 		opacity 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
+.ff-header__nav .wp-block-navigation-item,
+.ff-header__nav .wp-block-navigation-submenu__toggle {
+	font-size: 0.8125rem;
+	font-weight: 500 !important;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+/* Top-Level Caps; Untermenüs normal belassen */
+.ff-header__nav .wp-block-navigation__submenu-container .wp-block-navigation-item,
+.ff-header__nav .wp-block-navigation__submenu-container .wp-block-navigation-item__content,
+.ff-header__nav .wp-block-navigation__submenu-container .wp-block-navigation-submenu__toggle {
+	text-transform: none;
+	letter-spacing: normal;
+}
+
 /*
- * Top-Level Hover — schlicht & einheitlich (Label + Indicator als eine Einheit):
- * nur Farbwechsel (Brand), kein Pill-Hintergrund, kein Underline
- * (vermeidet Doppelstrich am Header-Rand und Dock an Trennstrichen).
+ * Top-Level Hover — Brand-Farbe + animierter Underline (scaleX).
  */
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu {
 	--ff-nav-item-fg: inherit;
 	color: var(--ff-nav-item-fg);
+	transition: color 0.28s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content,
@@ -858,21 +879,73 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
 	box-shadow: none !important;
 }
 
-/* Kein Legacy-Underline-Pseudo */
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu > .wp-block-navigation-item__content,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu > .wp-block-navigation-submenu__toggle {
+	position: relative;
+}
+
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::after,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu > .wp-block-navigation-item__content::after,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu > .wp-block-navigation-submenu__toggle::after {
-	content: none !important;
-	display: none !important;
+	content: "" !important;
+	display: block !important;
+	position: absolute;
+	left: 2px;
+	right: 2px;
+	bottom: 1px;
+	height: 1.5px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 1px;
+	background: currentColor;
+	transform: scaleX(0);
+	transform-origin: left center;
+	transition: transform 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+	pointer-events: none;
+}
+
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item:hover > .wp-block-navigation-item__content::after,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item:focus-within > .wp-block-navigation-item__content::after,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:hover > .wp-block-navigation-item__content::after,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within > .wp-block-navigation-item__content::after,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:hover > .wp-block-navigation-submenu__toggle::after,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within > .wp-block-navigation-submenu__toggle::after {
+	transform: scaleX(1);
+}
+
+/* Aktiver Menüpunkt: kein Underline, nur 60% Opacity */
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item > .wp-block-navigation-item__content::after,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item > .wp-block-navigation-submenu__toggle::after,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu.current-menu-item > .wp-block-navigation-item__content::after,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu.current-menu-item > .wp-block-navigation-submenu__toggle::after,
+.ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-item__content::after,
+.ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active > .wp-block-navigation-submenu__toggle::after {
+	transform: scaleX(0) !important;
+}
+
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu.current-menu-item,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item[aria-current="page"],
+.ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active {
+	opacity: 0.6;
 }
 
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item:hover,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item:focus-within,
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:hover,
-.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within,
-.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item,
-.ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active {
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within {
 	--ff-nav-item-fg: var(--wp--preset--color--brand, #377530);
+}
+
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item:hover,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item:focus-within,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu.current-menu-item:hover,
+.ff-header__nav .wp-block-navigation__container > .wp-block-navigation-submenu.current-menu-item:focus-within,
+.ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active:hover,
+.ff-header__nav .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active:focus-within {
+	opacity: 0.6;
 }
 
 .ff-header__nav .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible,
@@ -897,14 +970,10 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
 .ff-header__nav.has-text-color .wp-block-navigation__container > .wp-block-navigation-item:focus-within,
 .ff-header__nav.has-text-color .wp-block-navigation__container > .wp-block-navigation-submenu:hover,
 .ff-header__nav.has-text-color .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within,
-.ff-header__nav.has-text-color .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item,
-.ff-header__nav.has-text-color .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active,
 .ff-header__nav .wp-block-navigation__container.has-text-color > .wp-block-navigation-item:hover,
 .ff-header__nav .wp-block-navigation__container.has-text-color > .wp-block-navigation-item:focus-within,
 .ff-header__nav .wp-block-navigation__container.has-text-color > .wp-block-navigation-submenu:hover,
-.ff-header__nav .wp-block-navigation__container.has-text-color > .wp-block-navigation-submenu:focus-within,
-.ff-header__nav .wp-block-navigation__container.has-text-color > .wp-block-navigation-item.current-menu-item,
-.ff-header__nav .wp-block-navigation__container.has-text-color > .is-style-ff-mega.is-ff-mega-active {
+.ff-header__nav .wp-block-navigation__container.has-text-color > .wp-block-navigation-submenu:focus-within {
 	--ff-nav-item-fg: var(--wp--preset--color--brand, #377530);
 }
 
@@ -917,9 +986,7 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
 .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:hover,
 .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:focus-within,
 .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:hover,
-.ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within,
-.ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item,
-.ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active {
+.ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within {
 	--ff-nav-item-fg: #fff;
 }
 
@@ -937,20 +1004,14 @@ html.is-ff-header-compact .ff-header__actions .wp-block-button__link {
 .ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:focus-within,
 .ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:hover,
 .ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within,
-.ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item,
-.ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active,
 .ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:hover,
 .ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:focus-within,
 .ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:hover,
 .ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within,
-.ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item,
-.ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active,
 .ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:hover,
 .ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:focus-within,
 .ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:hover,
-.ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within,
-.ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item,
-.ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .is-style-ff-mega.is-ff-mega-active {
+.ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within {
 	--ff-nav-item-fg: var(--wp--preset--color--brand, #377530);
 }
 
@@ -3243,19 +3304,20 @@ a.ff-cart-line__title:hover {
 
 .ff-product-modal__close {
 	position: absolute;
-	top: 12px;
-	right: 12px;
-	z-index: 3;
+	top: 6px;
+	right: 6px;
+	z-index: 5;
 	display: grid;
 	place-items: center;
-	width: 40px;
-	height: 40px;
+	width: 36px;
+	height: 36px;
 	padding: 0;
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
 	background: var(--ff-surface, #fff);
 	color: var(--wp--preset--color--contrast, #0e1114);
 	cursor: pointer;
+	box-shadow: 0 4px 12px rgba(14, 17, 20, 0.12);
 }
 
 .ff-product-modal__close svg {
@@ -3453,7 +3515,8 @@ a.ff-cart-line__title:hover {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	padding: 28px 28px 16px;
+	/* Rechts Platz für Close in der Modal-Ecke */
+	padding: 28px 52px 16px 28px;
 	overflow-x: hidden;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
@@ -3464,6 +3527,7 @@ a.ff-cart-line__title:hover {
 .ff-product-modal h2.ff-product-modal__title,
 .ff-product-modal .ff-product-modal__title.wp-block-heading {
 	margin: 0;
+	padding-right: 4px;
 	/* UI-Titel, kein Display-Heading: Body-Font aus Global Styles */
 	font-family: var(--wp--preset--font-family--body, inherit) !important;
 	font-size: 1.65rem !important;
@@ -4035,6 +4099,11 @@ a.ff-cart-line__title:hover {
 		padding: 0;
 	}
 
+	.ff-product-modal__close {
+		top: 8px;
+		right: 8px;
+	}
+
 	.ff-product-modal__scroll {
 		flex: 1 1 auto;
 		min-height: 0;
@@ -4254,7 +4323,9 @@ a.ff-cart-line__title:hover {
 	padding: 3px 7px;
 	border: 0;
 	border-radius: 4px;
-	background: color-mix(in srgb, var(--ff-ink, #0e1114) 52%, transparent);
+	background: color-mix(in srgb, var(--ff-ink, #0e1114) 32%, transparent);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
 	color: #fff;
 	font-family: var(--wp--preset--font-family--body, inherit);
 	font-size: 0.625rem;
@@ -10342,21 +10413,26 @@ a.ff-bento-card,
 }
 
 .ff-shop__filters,
-.wp-block-woocommerce-product-filters.ff-shop__filters {
+.wp-block-woocommerce-product-filters.ff-shop__filters,
+.ff-shop__filters.is-layout-flex,
+.wp-block-woocommerce-product-filters.ff-shop__filters.is-layout-flex {
+	--wp--style--block-gap: 2px;
 	position: sticky;
-	top: 88px;
-	padding: 20px;
+	top: var(--ff-header-sticky-top);
+	z-index: 40;
+	padding: 16px;
 	background: var(--ff-surface, #fff);
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
 	border-radius: var(--wp--custom--radius--md, 16px);
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
+	gap: 2px !important;
+	row-gap: 2px !important;
 	box-sizing: border-box;
 	width: 100%;
 	max-width: 100%;
 	min-width: 0;
-	overflow: hidden;
+	overflow: visible;
 }
 
 .ff-shop__filters .ff-shop__filter-group,
@@ -10364,12 +10440,14 @@ a.ff-bento-card,
 .ff-shop__filters .wp-block-woocommerce-product-filter-taxonomy,
 .ff-shop__filters .wp-block-woocommerce-product-filter-status,
 .ff-shop__filters .wp-block-woocommerce-product-filter-attribute,
-.ff-shop__filters .wp-block-woocommerce-product-filter-rating {
+.ff-shop__filters .wp-block-woocommerce-product-filter-rating,
+.ff-shop__filters > [class*="wp-block-woocommerce-product-filter-"] {
 	min-width: 0;
 	max-width: 100%;
 	width: 100%;
 	margin: 0 !important;
 	margin-block: 0 !important;
+	padding-block: 0 !important;
 	overflow: hidden;
 }
 
@@ -10378,6 +10456,7 @@ a.ff-bento-card,
 .ff-shop__filters .ff-shop__filter-acc + .ff-shop__filter-acc,
 .ff-shop__filters [class*="wp-block-woocommerce-product-filter-"] + [class*="wp-block-woocommerce-product-filter-"] {
 	margin-top: 0 !important;
+	margin-block-start: 0 !important;
 }
 
 .ff-shop__filters .ff-shop__filter-group h3,
@@ -10396,6 +10475,18 @@ a.ff-bento-card,
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	background: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 2.5%, var(--ff-surface, #fff));
 	overflow: clip;
+	transition:
+		border-color 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		background-color 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ff-shop__filters .ff-shop__filter-acc:hover {
+	border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 28%, transparent);
+	background: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 6%, var(--ff-surface, #fff));
+}
+
+.ff-shop__filters .ff-shop__filter-acc:hover > .ff-shop__filter-acc__summary {
+	color: var(--wp--preset--color--brand, #377530);
 }
 
 .ff-shop__filters .ff-shop__filter-acc__summary {
@@ -10404,7 +10495,7 @@ a.ff-bento-card,
 	justify-content: space-between;
 	gap: 12px;
 	margin: 0;
-	padding: 12px 14px;
+	padding: 10px 12px;
 	list-style: none;
 	cursor: pointer;
 	user-select: none;
@@ -10412,6 +10503,7 @@ a.ff-bento-card,
 	font-size: 1rem;
 	font-weight: 400;
 	color: var(--wp--preset--color--contrast, #0e1114);
+	transition: color 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .ff-shop__filters .ff-shop__filter-acc__summary::-webkit-details-marker {

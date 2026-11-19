@@ -33,8 +33,10 @@
 
 		var top = parseFloat(window.getComputedStyle(header).top) || 0;
 		var height = header.offsetHeight;
-		var clearance = Math.max(96, Math.ceil(top + height + AIR));
+		var clearance = Math.max(80, Math.ceil(top + height + AIR));
+		var stickyTop = Math.max(48, Math.ceil(top + height + 8));
 		root.style.setProperty("--ff-header-clearance", clearance + "px");
+		root.style.setProperty("--ff-header-sticky-top", stickyTop + "px");
 
 		if (wasCompact) {
 			root.classList.add("is-ff-header-compact");

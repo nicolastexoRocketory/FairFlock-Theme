@@ -5,11 +5,16 @@
 
 .ff-checkout-page {
 	/* Trust-Tokens kommen von :root (Theme Base/Contrast) */
+	--ff-checkout-brand: var(--wp--preset--color--brand, #377530);
 	--ff-checkout-line: color-mix(in srgb, var(--ff-trust-ink) 10%, transparent);
-	--ff-checkout-line-strong: color-mix(in srgb, var(--ff-trust-ink) 16%, transparent);
+	--ff-checkout-line-strong: color-mix(in srgb, var(--ff-checkout-brand) 28%, transparent);
+	--ff-checkout-line-filled: color-mix(in srgb, var(--ff-checkout-brand) 42%, transparent);
 	--ff-checkout-field-bg: var(--ff-trust-surface);
 	--ff-checkout-panel: var(--ff-trust-surface);
-	--ff-checkout-soft: var(--ff-trust-soft);
+	--ff-checkout-soft: color-mix(in srgb, var(--ff-checkout-brand) 8%, var(--ff-trust-surface));
+	/* Constrained-Layout = gleiche Shell wie Header / Checkout-Grid */
+	--wp--style--global--content-size: var(--ff-shell);
+	--wp--style--global--wide-size: var(--ff-shell);
 	color: var(--ff-trust-ink);
 	background: var(--ff-trust-base);
 	position: relative;
@@ -34,24 +39,52 @@
 		linear-gradient(180deg, var(--ff-trust-base) 0%, transparent 100%);
 }
 
-/* —— Intro / trust —— */
+/* —— Intro + Checkout: identische Inhaltsbreite (--ff-shell) —— */
+.ff-checkout-page.is-layout-constrained > .ff-checkout-page__intro,
+.ff-checkout-page.is-layout-constrained > .wp-block-post-content,
+.ff-checkout-page.is-layout-constrained > .wp-block-woocommerce-store-notices,
+.ff-checkout-page.is-layout-constrained > .wc-block-store-notices,
+.ff-checkout-page__intro,
+.ff-checkout-page .wp-block-post-content,
+.ff-checkout-page .wp-block-woocommerce-checkout,
+.ff-checkout-page .wc-block-checkout,
+.ff-checkout-page .wc-block-store-notices,
+.ff-checkout-page .wp-block-woocommerce-store-notices {
+	width: var(--ff-shell) !important;
+	max-width: var(--ff-shell) !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	box-sizing: border-box !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
 .ff-checkout-page__intro {
-	width: var(--ff-shell);
-	max-width: var(--ff-shell);
-	margin: 0 auto var(--wp--preset--spacing--40, 32px);
-	display: grid;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
 	gap: 10px;
-	padding: 0 !important;
+	margin-top: 0;
+	margin-bottom: var(--wp--preset--spacing--40, 32px) !important;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+}
+
+.ff-checkout-page__title,
+.ff-checkout-page__intro .wp-block-heading,
+.ff-checkout-page__trust {
+	width: 100%;
+	max-width: 100%;
 }
 
 .ff-checkout-page__title,
 .ff-checkout-page__intro .wp-block-heading {
 	margin: 0;
 	font-family: var(--wp--preset--font-family--heading);
-	font-size: clamp(2rem, 4vw, 2.75rem);
+	font-size: clamp(1.75rem, 3.4vw, 2.5rem);
 	font-weight: 400;
 	letter-spacing: -0.03em;
-	line-height: 1.1;
+	line-height: 1.15;
 	color: var(--ff-trust-ink);
 }
 
@@ -83,20 +116,9 @@
 	flex-shrink: 0;
 }
 
-/* —— Layout: volle Inhaltsbreite (--ff-shell) —— */
-.ff-checkout-page .wp-block-post-content,
+/* Innen: Formular + Summary füllen die gemeinsame Shell */
 .ff-checkout-page .wp-block-woocommerce-checkout,
 .ff-checkout-page .wc-block-checkout,
-.ff-checkout-page .wc-block-store-notices,
-.ff-checkout-page .wp-block-woocommerce-store-notices {
-	width: var(--ff-shell) !important;
-	max-width: var(--ff-shell) !important;
-	margin-inline: auto !important;
-	box-sizing: border-box;
-	padding-left: 0 !important;
-	padding-right: 0 !important;
-}
-
 .ff-checkout-page .wc-block-components-sidebar-layout,
 .ff-checkout-page .wp-block-woocommerce-checkout-fields-block,
 .ff-checkout-page .wp-block-woocommerce-checkout-totals-block,
@@ -134,12 +156,18 @@
 	background: var(--ff-checkout-panel);
 	border: 1px solid var(--ff-checkout-line);
 	border-radius: var(--wp--custom--radius--md, 16px);
-	box-shadow: 0 1px 0 color-mix(in srgb, var(--ff-trust-ink) 3%, transparent);
+	box-shadow: none !important;
 	transition: border-color 0.25s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .ff-checkout-page .wc-block-components-form .wc-block-components-checkout-step:focus-within {
-	border-color: color-mix(in srgb, var(--ff-trust-ink) 35%, transparent);
+	border-color: color-mix(in srgb, var(--ff-checkout-brand) 40%, transparent);
+}
+
+/* Englische Step-Infos ausblenden (Fallback, falls Attr nicht geleert) */
+.ff-checkout-page .wc-block-components-checkout-step__description:lang(en),
+.ff-checkout-page .wc-block-components-checkout-step__description[data-ff-hide-en="1"] {
+	display: none !important;
 }
 
 .ff-checkout-page .wc-block-components-checkout-step__title,
@@ -212,15 +240,56 @@
 	letter-spacing: 0.01em;
 }
 
+/* Ausgefüllt / aktiv: dezentes Grün statt harter dunkler Kontur */
 .ff-checkout-page .wc-block-components-text-input.is-active input,
+.ff-checkout-page .wc-block-components-text-input.has-value input,
+.ff-checkout-page .wc-block-components-combobox.is-active input,
+.ff-checkout-page .wc-block-components-textarea.is-active textarea {
+	border-color: var(--ff-checkout-line-filled) !important;
+	box-shadow: none !important;
+	outline: none !important;
+	background-color: var(--ff-checkout-field-bg) !important;
+}
+
 .ff-checkout-page .wc-block-components-text-input input:focus,
 .ff-checkout-page .wc-block-components-textarea textarea:focus,
 .ff-checkout-page .wc-block-components-combobox .wc-block-components-combobox-control input:focus,
 .ff-checkout-page select:focus {
-	border-color: var(--ff-trust-ink) !important;
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-trust-ink) 18%, transparent) !important;
+	border-color: var(--ff-checkout-brand) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-checkout-brand) 18%, transparent) !important;
 	outline: none !important;
 	background-color: var(--ff-checkout-field-bg) !important;
+}
+
+/* Hinweis / Bestellnotiz: Theme-Brand */
+.ff-checkout-page .wc-block-checkout__add-note,
+.ff-checkout-page .wc-block-components-textarea,
+.ff-checkout-page .wp-block-woocommerce-checkout-order-note-block,
+.ff-checkout-page .wc-block-checkout__order-notes {
+	color: var(--ff-trust-ink);
+}
+
+.ff-checkout-page .wc-block-components-textarea textarea,
+.ff-checkout-page .wc-block-checkout__order-notes textarea,
+.ff-checkout-page .wp-block-woocommerce-checkout-order-note-block textarea {
+	border-color: var(--ff-checkout-line-strong) !important;
+	border-radius: var(--wp--custom--radius--sm, 8px) !important;
+	background-color: var(--ff-checkout-field-bg) !important;
+	color: var(--ff-trust-ink) !important;
+	caret-color: var(--ff-checkout-brand);
+}
+
+.ff-checkout-page .wc-block-components-textarea label,
+.ff-checkout-page .wc-block-checkout__order-notes label,
+.ff-checkout-page .wp-block-woocommerce-checkout-order-note-block label,
+.ff-checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__label {
+	color: var(--ff-trust-ink) !important;
+}
+
+.ff-checkout-page .wc-block-components-textarea.is-active textarea,
+.ff-checkout-page .wc-block-components-textarea textarea:focus {
+	border-color: var(--ff-checkout-brand) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-checkout-brand) 18%, transparent) !important;
 }
 
 /* Browser-Autofill darf Felder nicht weiß erzwingen */
@@ -237,7 +306,7 @@
 
 .ff-checkout-page .wc-block-components-text-input:hover input:not(:focus):not(:disabled),
 .ff-checkout-page .wc-block-components-combobox:hover input:not(:focus):not(:disabled) {
-	border-color: color-mix(in srgb, var(--ff-trust-ink) 28%, transparent) !important;
+	border-color: color-mix(in srgb, var(--ff-checkout-brand) 34%, transparent) !important;
 }
 
 .ff-checkout-page a.wc-block-components-address-form__address_2-toggle,
@@ -251,37 +320,64 @@
 	text-decoration: underline;
 }
 
-/* —— Payment / radio options —— */
-.ff-checkout-page .wc-block-components-radio-control__option {
+/* —— Payment / shipping radio options —— */
+.ff-checkout-page .wc-block-components-radio-control__option,
+.ff-checkout-page .wc-block-components-radio-control-accordion-option {
 	margin: 0 0 10px !important;
 	padding: 14px 16px 14px 48px !important;
 	border: 1px solid var(--ff-checkout-line) !important;
 	border-radius: var(--wp--custom--radius--sm, 8px) !important;
 	background: var(--ff-trust-surface) !important;
+	color: var(--ff-trust-ink) !important;
+	box-shadow: none !important;
 	transition:
 		border-color 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
-		background 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
-		box-shadow 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+		background 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .ff-checkout-page .wc-block-components-radio-control__option:hover {
-	border-color: color-mix(in srgb, var(--ff-trust-ink) 35%, transparent) !important;
+	border-color: color-mix(in srgb, var(--ff-checkout-brand) 40%, transparent) !important;
 }
 
 .ff-checkout-page .wc-block-components-radio-control__option-checked,
-.ff-checkout-page .wc-block-components-radio-control__option--checked-option-highlighted {
-	border-color: var(--ff-trust-ink) !important;
+.ff-checkout-page .wc-block-components-radio-control__option--checked-option-highlighted,
+.ff-checkout-page .wc-block-components-radio-control-accordion-option--checked-option-highlighted,
+.ff-checkout-page .wc-block-components-radio-control--highlight-checked label.wc-block-components-radio-control__option--checked-option-highlighted {
+	border-color: var(--ff-checkout-brand) !important;
 	background: var(--ff-checkout-soft) !important;
-	box-shadow: 0 0 0 1px color-mix(in srgb, var(--ff-trust-ink) 25%, transparent);
+	color: var(--ff-trust-ink) !important;
+	box-shadow: 0 0 0 1px color-mix(in srgb, var(--ff-checkout-brand) 35%, transparent) !important;
+}
+
+.ff-checkout-page .wc-block-components-radio-control__label,
+.ff-checkout-page .wc-block-components-radio-control__secondary-label,
+.ff-checkout-page .wc-block-components-radio-control__description,
+.ff-checkout-page .wc-block-components-radio-control__secondary-description,
+.ff-checkout-page .wc-block-components-radio-control__option-checked .wc-block-components-radio-control__label,
+.ff-checkout-page .wc-block-components-radio-control__option--checked-option-highlighted .wc-block-components-radio-control__label,
+.ff-checkout-page .wc-block-components-radio-control__option-checked .wc-block-components-radio-control__secondary-label,
+.ff-checkout-page .wc-block-components-radio-control__option--checked-option-highlighted .wc-block-components-radio-control__secondary-label {
+	color: var(--ff-trust-ink) !important;
 }
 
 .ff-checkout-page .wc-block-components-radio-control__input {
-	accent-color: var(--ff-trust-ink);
+	accent-color: var(--ff-checkout-brand);
+	background: var(--ff-trust-surface) !important;
+	border-color: color-mix(in srgb, var(--ff-trust-ink) 35%, transparent) !important;
 }
 
 .ff-checkout-page .wc-block-components-radio-control__input:checked {
-	border-color: var(--ff-trust-ink) !important;
-	background: var(--ff-trust-ink) !important;
+	border-color: var(--ff-checkout-brand) !important;
+	background: var(--ff-trust-surface) !important;
+}
+
+.ff-checkout-page .wc-block-components-radio-control__input:checked::before {
+	background: var(--ff-checkout-brand) !important;
+}
+
+.ff-checkout-page .wc-block-components-radio-control--highlight-checked::after {
+	border-color: var(--ff-checkout-line) !important;
+	box-shadow: none !important;
 }
 
 .ff-checkout-page .wc-block-components-notice-banner,
@@ -310,9 +406,7 @@
 	border: 1px solid var(--ff-checkout-line) !important;
 	border-radius: var(--wp--custom--radius--md, 16px) !important;
 	padding: 22px 22px 18px !important;
-	box-shadow:
-		0 1px 0 color-mix(in srgb, var(--ff-trust-ink) 3%, transparent),
-		0 18px 40px -28px color-mix(in srgb, var(--ff-trust-ink) 28%, transparent);
+	box-shadow: none !important;
 	overflow: hidden;
 }
 
@@ -363,7 +457,7 @@
 	height: auto !important;
 	min-width: 52px !important;
 	min-height: 0 !important;
-	aspect-ratio: 2 / 3 !important;
+	aspect-ratio: 1 / 1 !important;
 	margin: 0 !important;
 	padding: 0 !important;
 	border-radius: var(--wp--custom--radius--sm, 8px) !important;
@@ -383,7 +477,7 @@
 	margin: 0 !important;
 	padding: 0 !important;
 	object-fit: cover !important;
-	object-position: center !important;
+	object-position: top center !important;
 	border-radius: inherit !important;
 	aspect-ratio: auto !important;
 }
@@ -537,18 +631,17 @@
 	font-size: 1.0625rem !important;
 	font-weight: 700 !important;
 	letter-spacing: 0.01em;
-	box-shadow: 0 10px 24px -12px color-mix(in srgb, var(--ff-trust-ok) 70%, transparent);
+	box-shadow: none !important;
 	transition:
 		background 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
-		transform 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
-		box-shadow 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+		transform 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .ff-checkout-page .wc-block-components-checkout-place-order-button:hover,
 .ff-checkout-page .wc-block-components-checkout-place-order-button:focus-visible {
 	background: var(--ff-trust-ok-deep) !important;
 	transform: translateY(-1px);
-	box-shadow: 0 14px 28px -12px color-mix(in srgb, var(--ff-trust-ok) 75%, transparent);
+	box-shadow: none !important;
 }
 
 .ff-checkout-page .wc-block-components-checkout-place-order-button:active {
@@ -589,21 +682,93 @@
 	background: var(--ff-checkout-panel);
 	border: 1px solid var(--ff-checkout-line);
 	border-radius: var(--wp--custom--radius--md, 16px);
+	box-shadow: none !important;
 }
 
 .ff-checkout-page .wc-block-components-express-payment-continue-rule {
 	color: var(--ff-trust-muted) !important;
 }
 
+/* AGB-Checkbox: sichtbar, Theme-Grün */
+.ff-checkout-page .wc-block-components-checkbox {
+	display: flex !important;
+	align-items: flex-start;
+	gap: 0;
+	color: var(--ff-trust-ink) !important;
+}
+
+.ff-checkout-page .wc-block-components-checkbox label {
+	display: inline-flex !important;
+	align-items: flex-start;
+	gap: 12px;
+	color: var(--ff-trust-ink) !important;
+}
+
 .ff-checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__input[type="checkbox"] {
+	appearance: none !important;
+	-webkit-appearance: none !important;
+	display: inline-block !important;
+	position: static !important;
+	width: 20px !important;
+	min-width: 20px !important;
+	height: 20px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 1.5px solid color-mix(in srgb, var(--ff-trust-ink) 35%, transparent) !important;
 	border-radius: 4px !important;
-	border-color: var(--ff-checkout-line-strong) !important;
-	accent-color: var(--ff-trust-ok);
+	background: var(--ff-trust-surface) !important;
+	opacity: 1 !important;
+	visibility: visible !important;
+	accent-color: var(--ff-checkout-brand);
+	box-shadow: none !important;
+	flex: 0 0 20px;
 }
 
 .ff-checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__input[type="checkbox"]:checked {
-	background: var(--ff-trust-ok) !important;
-	border-color: var(--ff-trust-ok) !important;
+	background: var(--ff-checkout-brand) !important;
+	border-color: var(--ff-checkout-brand) !important;
+}
+
+.ff-checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__mark {
+	fill: #fff !important;
+	color: #fff !important;
+}
+
+/* Lieferadresse: saubere Radien, kein eckiger Innenrahmen */
+.ff-checkout-page .wc-block-checkout__shipping-address,
+.ff-checkout-page .wp-block-woocommerce-checkout-shipping-address-block,
+.ff-checkout-page .wc-block-components-address-form,
+.ff-checkout-page .wc-block-components-address-card,
+.ff-checkout-page .wc-block-components-address-card address {
+	border-radius: var(--wp--custom--radius--sm, 8px) !important;
+	box-shadow: none !important;
+}
+
+.ff-checkout-page .wc-block-components-address-card {
+	border: 1px solid var(--ff-checkout-line) !important;
+	background: var(--ff-trust-surface) !important;
+	overflow: hidden;
+	color: var(--ff-trust-ink) !important;
+}
+
+.ff-checkout-page .wc-block-components-checkbox + .wc-block-components-address-form,
+.ff-checkout-page .wc-block-checkout__shipping-address .wc-block-components-checkbox {
+	border-radius: var(--wp--custom--radius--sm, 8px);
+}
+
+/* Keine weißen/hellen Schatten hinter Cards */
+.ff-checkout-page .wc-block-components-sidebar-layout,
+.ff-checkout-page .wc-block-checkout__main,
+.ff-checkout-page .wc-block-checkout__sidebar,
+.ff-checkout-page .wp-block-woocommerce-checkout-fields-block,
+.ff-checkout-page .wp-block-woocommerce-checkout-totals-block,
+.ff-checkout-page .wc-block-components-form,
+.ff-checkout-page .wc-block-components-totals-wrapper,
+.ff-checkout-page .wc-block-components-panel,
+.ff-checkout-page .wc-block-components-checkout-step,
+.ff-checkout-page .wc-block-components-order-summary,
+.ff-checkout-page .wp-block-woocommerce-checkout-order-summary-block {
+	box-shadow: none !important;
 }
 
 /* —— Mobile —— */
@@ -620,16 +785,8 @@
 		padding-right: 0 !important;
 	}
 
-	.ff-checkout-page__intro,
-	.ff-checkout-page .wp-block-post-content,
-	.ff-checkout-page .wp-block-woocommerce-checkout,
-	.ff-checkout-page .wc-block-checkout,
-	.ff-checkout-page .wc-block-store-notices,
-	.ff-checkout-page .wp-block-woocommerce-store-notices {
-		width: var(--ff-shell) !important;
-		max-width: var(--ff-shell) !important;
-		margin-inline: auto !important;
-		box-sizing: border-box;
+	.ff-checkout-page__intro {
+		gap: 10px;
 	}
 
 	.ff-checkout-page .wc-block-components-sidebar-layout {

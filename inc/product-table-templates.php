@@ -11,20 +11,51 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Max length for a template description.
+ *
+ * @since 0.9.435
+ */
+const FAIRFLOCK_PRODUCT_TABLE_DESC_LENGTH = 2000;
+
+/**
+ * Raw option payload (unfiltered). Used for safe writes so no template is dropped.
+ *
+ * @since 0.9.435
+ *
+ * @return array<int,mixed>
+ */
+function fairflock_product_table_templates_raw() {
+	$stored = get_option( FAIRFLOCK_PRODUCT_TABLE_TEMPLATES_OPTION, array() );
+	return is_array( $stored ) ? $stored : array();
+}
+
+/**
+ * Sanitize a template description (plain text, multiline).
+ *
+ * @since 0.9.435
+ *
+ * @param mixed $value Raw value.
+ * @return string
+ */
+function fairflock_product_table_template_description( $value ) {
+	$text = sanitize_textarea_field( is_string( $value ) ? $value : '' );
+	$text = fairflock_product_table_repair_text( $text );
+	if ( function_exists( 'mb_substr' ) ) {
+		return mb_substr( $text, 0, FAIRFLOCK_PRODUCT_TABLE_DESC_LENGTH );
+	}
+	return substr( $text, 0, FAIRFLOCK_PRODUCT_TABLE_DESC_LENGTH );
+}
+
+/**
  * All saved templates.
  *
  * @since 0.9.285
  *
- * @return array<int,array{id:string,name:string,title:string,columns:array<int,string>,rows:array<int,array<int,string>>}>
+ * @return array<int,array{id:string,name:string,title:string,description:string,columns:array<int,string>,rows:array<int,array<int,string>>}>
  */
 function fairflock_product_table_templates() {
-	$stored = get_option( FAIRFLOCK_PRODUCT_TABLE_TEMPLATES_OPTION, array() );
-	if ( ! is_array( $stored ) ) {
-		return array();
-	}
-
 	$templates = array();
-	foreach ( $stored as $item ) {
+	foreach ( fairflock_product_table_templates_raw() as $item ) {
 		if ( ! is_array( $item ) || empty( $item['id'] ) ) {
 			continue;
 		}
@@ -39,11 +70,12 @@ function fairflock_product_table_templates() {
 			$name = '' !== $data['title'] ? $data['title'] : __( 'Vorlage', 'fairflock' );
 		}
 		$templates[] = array(
-			'id'      => $id,
-			'name'    => $name,
-			'title'   => $data['title'],
-			'columns' => $data['columns'],
-			'rows'    => $data['rows'],
+			'id'          => $id,
+			'name'        => $name,
+			'title'       => $data['title'],
+			'description' => fairflock_product_table_template_description( isset( $item['description'] ) ? $item['description'] : '' ),
+			'columns'     => $data['columns'],
+			'rows'        => $data['rows'],
 		);
 	}
 
@@ -56,7 +88,7 @@ function fairflock_product_table_templates() {
  * @since 0.9.285
  *
  * @param string $id Template id.
- * @return array{id:string,name:string,title:string,columns:array<int,string>,rows:array<int,array<int,string>>}|null
+ * @return array{id:string,name:string,title:string,description:string,columns:array<int,string>,rows:array<int,array<int,string>>}|null
  */
 function fairflock_product_table_template_find( $id ) {
 	$id = sanitize_key( (string) $id );
@@ -71,13 +103,89 @@ function fairflock_product_table_template_find( $id ) {
 /**
  * Replace the stored template list.
  *
+ * Prefer upsert/delete helpers so a filtered list cannot wipe other templates.
+ *
  * @since 0.9.285
  *
  * @param array $templates Templates.
  * @return void
  */
 function fairflock_product_table_templates_update( $templates ) {
-	update_option( FAIRFLOCK_PRODUCT_TABLE_TEMPLATES_OPTION, array_values( $templates ), true );
+	update_option( FAIRFLOCK_PRODUCT_TABLE_TEMPLATES_OPTION, array_values( $templates ), false );
+}
+
+/**
+ * Insert or update one template without dropping any other stored entry.
+ *
+ * @since 0.9.435
+ *
+ * @param array{id:string,name:string,title:string,description?:string,columns:array,rows:array} $template Template.
+ * @return bool True when written.
+ */
+function fairflock_product_table_template_upsert( $template ) {
+	if ( ! is_array( $template ) || empty( $template['id'] ) ) {
+		return false;
+	}
+	$id = sanitize_key( (string) $template['id'] );
+	if ( ! preg_match( '/^ffpt_[a-z0-9]+$/', $id ) ) {
+		return false;
+	}
+
+	$payload = array(
+		'id'          => $id,
+		'name'        => isset( $template['name'] ) ? (string) $template['name'] : '',
+		'title'       => isset( $template['title'] ) ? (string) $template['title'] : '',
+		'description' => isset( $template['description'] ) ? (string) $template['description'] : '',
+		'columns'     => isset( $template['columns'] ) && is_array( $template['columns'] ) ? $template['columns'] : array(),
+		'rows'        => isset( $template['rows'] ) && is_array( $template['rows'] ) ? $template['rows'] : array(),
+	);
+
+	$raw   = fairflock_product_table_templates_raw();
+	$found = false;
+	foreach ( $raw as $index => $item ) {
+		if ( ! is_array( $item ) || empty( $item['id'] ) ) {
+			continue;
+		}
+		if ( sanitize_key( (string) $item['id'] ) !== $id ) {
+			continue;
+		}
+		// Merge so unknown legacy keys survive; known fields overwrite.
+		$raw[ $index ] = array_merge( $item, $payload );
+		$found         = true;
+		break;
+	}
+	if ( ! $found ) {
+		$raw[] = $payload;
+	}
+
+	update_option( FAIRFLOCK_PRODUCT_TABLE_TEMPLATES_OPTION, array_values( $raw ), false );
+	return true;
+}
+
+/**
+ * Delete one template by id; every other entry stays untouched.
+ *
+ * @since 0.9.435
+ *
+ * @param string $id Template id.
+ * @return bool True when an entry was removed.
+ */
+function fairflock_product_table_template_delete( $id ) {
+	$id  = sanitize_key( (string) $id );
+	$raw = fairflock_product_table_templates_raw();
+	$out = array();
+	$removed = false;
+	foreach ( $raw as $item ) {
+		if ( is_array( $item ) && ! empty( $item['id'] ) && sanitize_key( (string) $item['id'] ) === $id ) {
+			$removed = true;
+			continue;
+		}
+		$out[] = $item;
+	}
+	if ( $removed ) {
+		update_option( FAIRFLOCK_PRODUCT_TABLE_TEMPLATES_OPTION, array_values( $out ), false );
+	}
+	return $removed;
 }
 
 /**
@@ -100,8 +208,12 @@ function fairflock_product_table_template_new_id() {
  * @return void
  */
 function fairflock_product_table_template_preview( $template ) {
-	$columns = isset( $template['columns'] ) && is_array( $template['columns'] ) ? $template['columns'] : array();
-	$rows    = isset( $template['rows'] ) && is_array( $template['rows'] ) ? $template['rows'] : array();
+	$columns     = isset( $template['columns'] ) && is_array( $template['columns'] ) ? $template['columns'] : array();
+	$rows        = isset( $template['rows'] ) && is_array( $template['rows'] ) ? $template['rows'] : array();
+	$description = isset( $template['description'] ) ? (string) $template['description'] : '';
+	if ( '' !== $description ) {
+		echo '<p class="ff-ptable-admin__preview-desc">' . nl2br( esc_html( $description ) ) . '</p>';
+	}
 	if ( empty( $rows ) ) {
 		echo '<p class="ff-ptable-admin__empty">' . esc_html__( 'Diese Vorlage hat noch keine Zeilen.', 'fairflock' ) . '</p>';
 		return;
@@ -200,14 +312,8 @@ function fairflock_product_table_templates_handle() {
 	$action = isset( $_POST['ff_ptable_template_action'] ) ? sanitize_key( wp_unslash( $_POST['ff_ptable_template_action'] ) ) : '';
 	if ( 'delete' === $action ) {
 		check_admin_referer( 'fairflock_ptable_template_delete' );
-		$id        = isset( $_POST['ff_ptable_template_id'] ) ? sanitize_key( wp_unslash( $_POST['ff_ptable_template_id'] ) ) : '';
-		$templates = array();
-		foreach ( fairflock_product_table_templates() as $template ) {
-			if ( $template['id'] !== $id ) {
-				$templates[] = $template;
-			}
-		}
-		fairflock_product_table_templates_update( $templates );
+		$id = isset( $_POST['ff_ptable_template_id'] ) ? sanitize_key( wp_unslash( $_POST['ff_ptable_template_id'] ) ) : '';
+		fairflock_product_table_template_delete( $id );
 		wp_safe_redirect( admin_url( 'admin.php?page=fairflock-produkte&deleted=1' ) );
 		exit;
 	}
@@ -224,9 +330,10 @@ function fairflock_product_table_templates_handle() {
 	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Cells are sanitized in fairflock_product_table_normalize().
 	$columns = isset( $_POST['ff_ptable_columns'] ) && is_array( $_POST['ff_ptable_columns'] ) ? wp_unslash( $_POST['ff_ptable_columns'] ) : array();
 	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Cells are sanitized in fairflock_product_table_normalize().
-	$rows  = isset( $_POST['ff_ptable_rows'] ) && is_array( $_POST['ff_ptable_rows'] ) ? wp_unslash( $_POST['ff_ptable_rows'] ) : array();
-	$title = isset( $_POST['ff_ptable_title'] ) ? sanitize_text_field( wp_unslash( $_POST['ff_ptable_title'] ) ) : '';
-	$data  = fairflock_product_table_normalize(
+	$rows        = isset( $_POST['ff_ptable_rows'] ) && is_array( $_POST['ff_ptable_rows'] ) ? wp_unslash( $_POST['ff_ptable_rows'] ) : array();
+	$title       = isset( $_POST['ff_ptable_title'] ) ? sanitize_text_field( wp_unslash( $_POST['ff_ptable_title'] ) ) : '';
+	$description = isset( $_POST['ff_ptable_description'] ) ? fairflock_product_table_template_description( wp_unslash( $_POST['ff_ptable_description'] ) ) : '';
+	$data        = fairflock_product_table_normalize(
 		array(
 			'title'   => $title,
 			'columns' => $columns,
@@ -235,11 +342,12 @@ function fairflock_product_table_templates_handle() {
 	);
 
 	$draft = array(
-		'id'      => $id,
-		'name'    => $name,
-		'title'   => $data['title'],
-		'columns' => $data['columns'],
-		'rows'    => $data['rows'],
+		'id'          => $id,
+		'name'        => $name,
+		'title'       => $data['title'],
+		'description' => $description,
+		'columns'     => $data['columns'],
+		'rows'        => $data['rows'],
 	);
 
 	if ( '' === $name ) {
@@ -263,17 +371,16 @@ function fairflock_product_table_templates_handle() {
 		return;
 	}
 
-	$templates = fairflock_product_table_templates();
-	$found     = false;
 	if ( '' !== $id ) {
-		foreach ( $templates as $index => $template ) {
-			if ( $template['id'] === $id ) {
-				$templates[ $index ] = $draft;
-				$found               = true;
+		// Existiert die ID noch in der Roh-Option? Andere Vorlagen bleiben unberührt.
+		$exists = false;
+		foreach ( fairflock_product_table_templates_raw() as $item ) {
+			if ( is_array( $item ) && ! empty( $item['id'] ) && sanitize_key( (string) $item['id'] ) === $id ) {
+				$exists = true;
 				break;
 			}
 		}
-		if ( ! $found ) {
+		if ( ! $exists ) {
 			fairflock_product_table_template_draft( $draft );
 			fairflock_product_table_template_notice(
 				array(
@@ -284,7 +391,7 @@ function fairflock_product_table_templates_handle() {
 			return;
 		}
 	} else {
-		if ( count( $templates ) >= FAIRFLOCK_PRODUCT_TABLE_MAX_TEMPLATES ) {
+		if ( count( fairflock_product_table_templates() ) >= FAIRFLOCK_PRODUCT_TABLE_MAX_TEMPLATES ) {
 			fairflock_product_table_template_draft( $draft );
 			fairflock_product_table_template_notice(
 				array(
@@ -294,12 +401,11 @@ function fairflock_product_table_templates_handle() {
 			);
 			return;
 		}
-		$id           = fairflock_product_table_template_new_id();
-		$draft['id']  = $id;
-		$templates[]  = $draft;
+		$id          = fairflock_product_table_template_new_id();
+		$draft['id'] = $id;
 	}
 
-	fairflock_product_table_templates_update( $templates );
+	fairflock_product_table_template_upsert( $draft );
 	wp_safe_redirect( admin_url( 'admin.php?page=fairflock-produkte&action=edit&template=' . rawurlencode( $id ) . '&updated=1' ) );
 	exit;
 }
@@ -337,19 +443,28 @@ function fairflock_product_table_templates_page() {
 		return;
 	}
 
-	echo '<table class="widefat striped" style="max-width:920px;margin-top:12px">';
+	echo '<table class="widefat striped" style="max-width:960px;margin-top:12px">';
 	echo '<thead><tr>';
 	echo '<th>' . esc_html__( 'Name', 'fairflock' ) . '</th>';
 	echo '<th>' . esc_html__( 'Überschrift', 'fairflock' ) . '</th>';
+	echo '<th>' . esc_html__( 'Beschreibung', 'fairflock' ) . '</th>';
 	echo '<th>' . esc_html__( 'Spalten', 'fairflock' ) . '</th>';
 	echo '<th>' . esc_html__( 'Zeilen', 'fairflock' ) . '</th>';
 	echo '<th></th>';
 	echo '</tr></thead><tbody>';
 	foreach ( $templates as $template ) {
 		$edit = admin_url( 'admin.php?page=fairflock-produkte&action=edit&template=' . rawurlencode( $template['id'] ) );
+		$desc = isset( $template['description'] ) ? (string) $template['description'] : '';
+		if ( '' !== $desc ) {
+			$desc = function_exists( 'mb_substr' ) ? mb_substr( $desc, 0, 80 ) : substr( $desc, 0, 80 );
+			if ( strlen( (string) $template['description'] ) > 80 ) {
+				$desc .= '…';
+			}
+		}
 		echo '<tr>';
 		echo '<td><a href="' . esc_url( $edit ) . '"><strong>' . esc_html( $template['name'] ) . '</strong></a></td>';
 		echo '<td>' . esc_html( $template['title'] ) . '</td>';
+		echo '<td>' . ( '' !== $desc ? esc_html( $desc ) : '&mdash;' ) . '</td>';
 		echo '<td>' . esc_html( (string) count( $template['columns'] ) ) . '</td>';
 		echo '<td>' . esc_html( (string) count( $template['rows'] ) ) . '</td>';
 		echo '<td>';
@@ -386,12 +501,16 @@ function fairflock_product_table_template_edit_page( $action ) {
 		}
 	} else {
 		$template = array(
-			'id'      => '',
-			'name'    => '',
-			'title'   => '',
-			'columns' => array( '', '' ),
-			'rows'    => array(),
+			'id'          => '',
+			'name'        => '',
+			'title'       => '',
+			'description' => '',
+			'columns'     => array( '', '' ),
+			'rows'        => array(),
 		);
+	}
+	if ( ! isset( $template['description'] ) ) {
+		$template['description'] = '';
 	}
 
 	$list_url = admin_url( 'admin.php?page=fairflock-produkte' );
@@ -417,7 +536,16 @@ function fairflock_product_table_template_edit_page( $action ) {
 		esc_attr__( 'z. B. Hoodie Maße', 'fairflock' )
 	);
 	echo '</div>';
-	echo '<p class="ff-ptable-admin__lead">' . esc_html__( 'Der Name erscheint in der Auswahl am Produkt. Die Überschrift steht im Shop über der Tabelle.', 'fairflock' ) . '</p>';
+	echo '<div class="ff-ptable-admin__desc">';
+	echo '<label for="ff_ptable_description">' . esc_html__( 'Beschreibung', 'fairflock' ) . '</label>';
+	printf(
+		'<textarea id="ff_ptable_description" name="ff_ptable_description" rows="4" maxlength="%d" placeholder="%s">%s</textarea>',
+		(int) FAIRFLOCK_PRODUCT_TABLE_DESC_LENGTH,
+		esc_attr__( 'z. B. Maße in cm, flach liegend gemessen. Toleranz ±1–2 cm.', 'fairflock' ),
+		esc_textarea( (string) $template['description'] )
+	);
+	echo '</div>';
+	echo '<p class="ff-ptable-admin__lead">' . esc_html__( 'Der Name erscheint in der Auswahl am Produkt. Die Überschrift steht im Shop über der Tabelle. Die Beschreibung erscheint darunter im Größentabelle-Popup.', 'fairflock' ) . '</p>';
 	fairflock_product_table_admin_editor( $template );
 	echo '</div>';
 	submit_button( __( 'Speichern', 'fairflock' ) );

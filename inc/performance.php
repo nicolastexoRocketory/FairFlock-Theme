@@ -292,9 +292,19 @@ function fairflock_enqueue_frontend_assets() {
 
 	if ( ! $thin ) {
 		wp_enqueue_script(
+			'fairflock-product-image-zoom',
+			FAIRFLOCK_URI . '/assets/js/product-image-zoom.js',
+			array(),
+			FAIRFLOCK_VERSION,
+			array(
+				'strategy'  => 'defer',
+				'in_footer' => true,
+			)
+		);
+		wp_enqueue_script(
 			'fairflock-product-modal',
 			FAIRFLOCK_URI . '/assets/js/product-modal.js',
-			array( 'fairflock-personalization', 'fairflock-loading' ),
+			array( 'fairflock-personalization', 'fairflock-loading', 'fairflock-product-image-zoom' ),
 			FAIRFLOCK_VERSION,
 			array(
 				'strategy'  => 'defer',
@@ -317,7 +327,7 @@ function fairflock_enqueue_frontend_assets() {
 		wp_enqueue_script(
 			'fairflock-product-gallery-mobile',
 			FAIRFLOCK_URI . '/assets/js/product-gallery-mobile.js',
-			array(),
+			array( 'fairflock-product-image-zoom' ),
 			FAIRFLOCK_VERSION,
 			array(
 				'strategy'  => 'defer',

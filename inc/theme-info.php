@@ -20,6 +20,114 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.437',
+			'items'   => array(
+				__( 'Checkout: Titel und Formular/Summary teilen dieselbe Inhaltsbreite (--ff-shell).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.436',
+			'items'   => array(
+				__( 'Formen eckig: Produkt-Popup und mobile Preiscard ohne obere Rundung.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.435',
+			'items'   => array(
+				__( 'Größentabelle-Vorlagen: Beschreibungsfeld im Backend; Speichern löscht keine anderen Vorlagen.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.434',
+			'items'   => array(
+				__( '„Ansehen“: Typo wie Header-Nav (Caps, 0.8125rem/500, muted, Brand-Hover).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.433',
+			'items'   => array(
+				__( 'Produkt-Popup: „Zum Produkt“ statt „Zur Seite“; PDP-Galerie: gleiche Slide-Höhe (Cover, Hero-CSS-Konflikt behoben).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.432',
+			'items'   => array(
+				__( 'Mobiles Produkt-Popup: Close-Icon sitzt oben über dem Sheet (nicht auf dem Bild).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.431',
+			'items'   => array(
+				__( 'Produktkarten „Ansehen“: Design wie Nav-Menüpunkt (Typo, Trennlinie, Chevron, Hover).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.430',
+			'items'   => array(
+				__( 'Mobil-Galerie: Letztes Bild bleibt rechts angedockt (kein Leerraum rechts).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.429',
+			'items'   => array(
+				__( 'Produktkarten: „Ansehen“ vollbreit wie Menüpunkt, mit ausfadendem Card-Schatten über zzgl./Lieferung.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.428',
+			'items'   => array(
+				__( 'Mobil: Bei aktivem Bild-Zoom kein versehentliches Weiterwischen der Slideshow.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.427',
+			'items'   => array(
+				__( 'Mobil: Produkt-Slideshow mit einheitlicher Höhe — alle Bilder füllen den Slider (kein Graustreifen).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.426',
+			'items'   => array(
+				__( 'Checkout: Titel „Vollende deine Bestellung“, ausgerichtet auf Formularbreite.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.425',
+			'items'   => array(
+				__( 'Checkout: AGB-Checkbox, Liefermethode/Felder/Hinweis in Theme-Grün, englische Infos aus, keine Card-Schatten.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.424',
+			'items'   => array(
+				__( 'Mobil: Produktbilder im Pop-up und auf der Produktseite per Tippen zoomen; „Vergrößern“-Hinweis oben rechts.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.423',
+			'items'   => array(
+				__( 'Mobil: Produktbilder in Pop-up und auf der Produktseite in Originalhöhe (kein gestauchter Graukasten).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.422',
+			'items'   => array(
+				__( 'Produktkarten: „Ansehen“ erscheint bei Hover unten in der Card, nicht über dem Bild.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.421',
+			'items'   => array(
+				__( 'Produktbilder: Hover-Zoom folgt dem Mauszeiger (Karten, PDP, Modal) — Lupe-Effekt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.420',
+			'items'   => array(
+				__( 'Produktkarten standardmäßig 1:1 (oben mittig); geöffnete Produkte Originalformat; Widget-Option 2:3 pro Sammlung.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.419',
 			'items'   => array(
 				__( 'Mobile-Menü immer bündig unter der Nav (gemessene Unterkante, kein Überlappen dahinter).', 'fairflock' ),

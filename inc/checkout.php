@@ -46,6 +46,25 @@ function fairflock_checkout_is_english_terms( $text ) {
 }
 
 /**
+ * Whether a checkout step description looks English / default Woo wording.
+ *
+ * @since 0.9.425
+ *
+ * @param string $text Description text.
+ * @return bool
+ */
+function fairflock_checkout_is_english_step_description( $text ) {
+	$n = strtolower( wp_strip_all_tags( (string) $text ) );
+	if ( '' === trim( $n ) ) {
+		return false;
+	}
+	return (bool) preg_match(
+		'/\b(enter your|select a|choose a|add a note|shipping options|contact details|billing address|payment options|we\'ll use this|we will use this|for order updates)\b/',
+		$n
+	);
+}
+
+/**
  * German CTA label.
  *
  * @since 0.9.302
@@ -127,9 +146,28 @@ function fairflock_checkout_render_block_data( $parsed_block ) {
 	}
 
 	if ( 'woocommerce/checkout-terms-block' === $parsed_block['blockName'] ) {
+		// Woo default: checkbox=false → kein Kästchen. Immer verlangen.
+		$parsed_block['attrs']['checkbox'] = true;
 		$current = isset( $parsed_block['attrs']['text'] ) ? (string) $parsed_block['attrs']['text'] : '';
 		if ( fairflock_checkout_is_english_terms( $current ) ) {
 			$parsed_block['attrs']['text'] = fairflock_checkout_terms_text();
+		}
+	}
+
+	// Englische Step-Beschreibungen ausblenden (Block-Attr leeren).
+	$step_blocks = array(
+		'woocommerce/checkout-contact-information-block',
+		'woocommerce/checkout-shipping-address-block',
+		'woocommerce/checkout-billing-address-block',
+		'woocommerce/checkout-shipping-methods-block',
+		'woocommerce/checkout-payment-block',
+		'woocommerce/checkout-pickup-options-block',
+		'woocommerce/checkout-additional-information-block',
+	);
+	if ( in_array( $parsed_block['blockName'], $step_blocks, true ) ) {
+		$desc = isset( $parsed_block['attrs']['description'] ) ? (string) $parsed_block['attrs']['description'] : '';
+		if ( '' !== $desc && fairflock_checkout_is_english_step_description( $desc ) ) {
+			$parsed_block['attrs']['description'] = '';
 		}
 	}
 

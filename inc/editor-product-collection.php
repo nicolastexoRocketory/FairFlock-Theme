@@ -66,9 +66,14 @@ function fairflock_enqueue_product_collection_editor_assets() {
 			'fairflockProductsAnsehen',
 			array(
 				'i18n' => array(
-					'panel'      => __( 'Ansehen-Button', 'fairflock' ),
-					'background' => __( 'Hintergrund', 'fairflock' ),
-					'text'       => __( 'Text', 'fairflock' ),
+					'panel'        => __( 'Ansehen-Button', 'fairflock' ),
+					'background'   => __( 'Hintergrund', 'fairflock' ),
+					'text'         => __( 'Text', 'fairflock' ),
+					'aspectPanel'  => __( 'Produktbilder', 'fairflock' ),
+					'aspectLabel'  => __( 'Bildformat auf Karten', 'fairflock' ),
+					'aspectHelp'   => __( 'Standard 1:1. Portrait 2:3 nur für diese Sammlung/diesen Slider.', 'fairflock' ),
+					'aspect11'     => __( '1:1 (Standard)', 'fairflock' ),
+					'aspect23'     => __( '2:3 (Hochformat)', 'fairflock' ),
 				),
 			)
 		);
@@ -108,9 +113,10 @@ function fairflock_sanitize_prod_view_color( $color ) {
 }
 
 /**
- * Injects --ff-prod-view-bg / --ff-prod-view-fg from block metadata.
+ * Injects Ansehen colors + optional 2:3 card aspect from block metadata.
  *
  * @since 0.9.257
+ * @since 0.9.420 Aspect ratio (ffProdAspect / ff-prod-aspect--23).
  *
  * @param string               $block_content Rendered HTML.
  * @param array<string, mixed> $block         Parsed block.
@@ -131,6 +137,7 @@ function fairflock_render_products_ansehen_colors( $block_content, $block ) {
 		'ff-prod-slider',
 		'ff-prod-slider__track',
 		'ff-shop__collection',
+		'ff-pattern-products__shell',
 	);
 
 	$matched = false;
@@ -150,10 +157,11 @@ function fairflock_render_products_ansehen_colors( $block_content, $block ) {
 		? $block['attrs']['metadata']
 		: array();
 
-	$bg = isset( $meta['ffProdViewBg'] ) ? fairflock_sanitize_prod_view_color( $meta['ffProdViewBg'] ) : '';
-	$fg = isset( $meta['ffProdViewFg'] ) ? fairflock_sanitize_prod_view_color( $meta['ffProdViewFg'] ) : '';
+	$bg     = isset( $meta['ffProdViewBg'] ) ? fairflock_sanitize_prod_view_color( $meta['ffProdViewBg'] ) : '';
+	$fg     = isset( $meta['ffProdViewFg'] ) ? fairflock_sanitize_prod_view_color( $meta['ffProdViewFg'] ) : '';
+	$aspect = ( isset( $meta['ffProdAspect'] ) && '2-3' === (string) $meta['ffProdAspect'] ) ? '2-3' : '';
 
-	if ( '' === $bg && '' === $fg ) {
+	if ( '' === $bg && '' === $fg && '' === $aspect ) {
 		return $block_content;
 	}
 
@@ -164,23 +172,42 @@ function fairflock_render_products_ansehen_colors( $block_content, $block ) {
 	if ( '' !== $fg ) {
 		$vars .= '--ff-prod-view-fg:' . $fg . ';';
 	}
+	if ( '2-3' === $aspect ) {
+		$vars .= '--ff-product-aspect:2 / 3;';
+	}
 
 	return (string) preg_replace_callback(
 		'/^(\s*<[a-z0-9:-]+)([^>]*)>/i',
-		static function ( $matches ) use ( $vars ) {
+		static function ( $matches ) use ( $vars, $aspect ) {
 			$tag   = $matches[1];
 			$attrs = $matches[2];
 
-			if ( preg_match( '/\sstyle=(["\'])(.*?)\1/i', $attrs, $style_match ) ) {
-				$quote = $style_match[1];
-				$attrs = preg_replace(
-					'/\sstyle=(["\'])(.*?)\1/i',
-					' style=' . $quote . $vars . $style_match[2] . $quote,
-					$attrs,
-					1
-				);
-			} else {
-				$attrs .= ' style="' . esc_attr( $vars ) . '"';
+			if ( '2-3' === $aspect && ! preg_match( '/\bff-prod-aspect--23\b/', $attrs ) ) {
+				if ( preg_match( '/\sclass=(["\'])(.*?)\1/i', $attrs, $class_match ) ) {
+					$quote = $class_match[1];
+					$attrs = preg_replace(
+						'/\sclass=(["\'])(.*?)\1/i',
+						' class=' . $quote . $class_match[2] . ' ff-prod-aspect--23' . $quote,
+						$attrs,
+						1
+					);
+				} else {
+					$attrs .= ' class="ff-prod-aspect--23"';
+				}
+			}
+
+			if ( '' !== $vars ) {
+				if ( preg_match( '/\sstyle=(["\'])(.*?)\1/i', $attrs, $style_match ) ) {
+					$quote = $style_match[1];
+					$attrs = preg_replace(
+						'/\sstyle=(["\'])(.*?)\1/i',
+						' style=' . $quote . $vars . $style_match[2] . $quote,
+						$attrs,
+						1
+					);
+				} else {
+					$attrs .= ' style="' . esc_attr( $vars ) . '"';
+				}
 			}
 
 			return $tag . $attrs . '>';

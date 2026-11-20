@@ -55,13 +55,14 @@ function fairflock_product_table_product_id( $product ) {
  * @since 0.9.285
  *
  * @param int|WC_Product $product Product ID or object.
- * @return array{title:string,columns:array<int,string>,rows:array<int,array<int,string>>}
+ * @return array{title:string,description:string,columns:array<int,string>,rows:array<int,array<int,string>>}
  */
 function fairflock_product_table_stored( $product ) {
 	$empty = array(
-		'title'   => '',
-		'columns' => array(),
-		'rows'    => array(),
+		'title'       => '',
+		'description' => '',
+		'columns'     => array(),
+		'rows'        => array(),
 	);
 	$id    = fairflock_product_table_product_id( $product );
 	if ( ! $id ) {
@@ -87,7 +88,7 @@ function fairflock_product_table_stored( $product ) {
  * @since 0.9.278
  *
  * @param int|WC_Product $product Product ID or object.
- * @return array{title:string,columns:array<int,string>,rows:array<int,array<int,string>>}
+ * @return array{title:string,description:string,columns:array<int,string>,rows:array<int,array<int,string>>}
  */
 function fairflock_product_table_get( $product ) {
 	$id          = fairflock_product_table_product_id( $product );
@@ -96,9 +97,10 @@ function fairflock_product_table_get( $product ) {
 		$template = fairflock_product_table_template_find( $template_id );
 		if ( is_array( $template ) && ! empty( $template['rows'] ) ) {
 			return array(
-				'title'   => $template['title'],
-				'columns' => $template['columns'],
-				'rows'    => $template['rows'],
+				'title'       => $template['title'],
+				'description' => isset( $template['description'] ) ? (string) $template['description'] : '',
+				'columns'     => $template['columns'],
+				'rows'        => $template['rows'],
 			);
 		}
 	}
@@ -112,12 +114,18 @@ function fairflock_product_table_get( $product ) {
  * @since 0.9.278
  *
  * @param array $data Raw table.
- * @return array{title:string,columns:array<int,string>,rows:array<int,array<int,string>>}
+ * @return array{title:string,description:string,columns:array<int,string>,rows:array<int,array<int,string>>}
  */
 function fairflock_product_table_normalize( $data ) {
 	$title   = isset( $data['title'] ) ? sanitize_text_field( (string) $data['title'] ) : '';
 	$title   = fairflock_product_table_repair_text( $title );
 	$title   = function_exists( 'mb_substr' ) ? mb_substr( $title, 0, 80 ) : substr( $title, 0, 80 );
+	$description = '';
+	if ( isset( $data['description'] ) && function_exists( 'fairflock_product_table_template_description' ) ) {
+		$description = fairflock_product_table_template_description( $data['description'] );
+	} elseif ( isset( $data['description'] ) ) {
+		$description = sanitize_textarea_field( (string) $data['description'] );
+	}
 	$columns = array();
 
 	if ( isset( $data['columns'] ) && is_array( $data['columns'] ) ) {
@@ -157,9 +165,10 @@ function fairflock_product_table_normalize( $data ) {
 	}
 
 	return array(
-		'title'   => $title,
-		'columns' => $columns,
-		'rows'    => $rows,
+		'title'       => $title,
+		'description' => $description,
+		'columns'     => $columns,
+		'rows'        => $rows,
 	);
 }
 
@@ -222,24 +231,28 @@ function fairflock_product_table_markup( $product ) {
 		return '';
 	}
 
-	$columns = $data['columns'];
-	$title   = $data['title'];
-	$uid     = 'ff-ptable-title-' . fairflock_product_table_product_id( $product ) . '-' . wp_unique_id();
-	$label   = '' !== $title ? $title : __( 'Tabelle', 'fairflock' );
-	$html    = '<section class="ff-product-table" data-cols="' . esc_attr( (string) count( $columns ) ) . '">';
-	$html   .= '<button type="button" class="ff-product-table__open ff-product-acc-row" data-ff-ptable-open>';
-	$html   .= '<span class="ff-product-acc-row__title">' . esc_html__( 'Größentabelle öffnen', 'fairflock' ) . '</span>';
-	$html   .= '<span class="ff-product-acc-row__icon" aria-hidden="true"></span>';
-	$html   .= '</button>';
-	$html   .= '<div class="ff-product-table__dialog" hidden role="dialog" aria-modal="true" aria-labelledby="' . esc_attr( $uid ) . '">';
-	$html   .= '<div class="ff-product-table__panel">';
-	$html   .= '<div class="ff-product-table__bar">';
-	$html   .= '<h3 class="ff-product-table__title" id="' . esc_attr( $uid ) . '">' . esc_html( $label ) . '</h3>';
-	$html   .= '<button type="button" class="ff-product-table__close" data-ff-ptable-close>';
-	$html   .= '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-	$html   .= esc_html__( 'Schließen', 'fairflock' );
-	$html   .= '</button></div>';
-	$html   .= '<div class="ff-product-table__gallery" data-ff-ptable-gallery hidden></div>';
+	$columns     = $data['columns'];
+	$title       = $data['title'];
+	$description = isset( $data['description'] ) ? (string) $data['description'] : '';
+	$uid         = 'ff-ptable-title-' . fairflock_product_table_product_id( $product ) . '-' . wp_unique_id();
+	$label       = '' !== $title ? $title : __( 'Tabelle', 'fairflock' );
+	$html        = '<section class="ff-product-table" data-cols="' . esc_attr( (string) count( $columns ) ) . '">';
+	$html       .= '<button type="button" class="ff-product-table__open ff-product-acc-row" data-ff-ptable-open>';
+	$html       .= '<span class="ff-product-acc-row__title">' . esc_html__( 'Größentabelle öffnen', 'fairflock' ) . '</span>';
+	$html       .= '<span class="ff-product-acc-row__icon" aria-hidden="true"></span>';
+	$html       .= '</button>';
+	$html       .= '<div class="ff-product-table__dialog" hidden role="dialog" aria-modal="true" aria-labelledby="' . esc_attr( $uid ) . '">';
+	$html       .= '<div class="ff-product-table__panel">';
+	$html       .= '<div class="ff-product-table__bar">';
+	$html       .= '<h3 class="ff-product-table__title" id="' . esc_attr( $uid ) . '">' . esc_html( $label ) . '</h3>';
+	$html       .= '<button type="button" class="ff-product-table__close" data-ff-ptable-close>';
+	$html       .= '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+	$html       .= esc_html__( 'Schließen', 'fairflock' );
+	$html       .= '</button></div>';
+	if ( '' !== $description ) {
+		$html .= '<p class="ff-product-table__desc">' . nl2br( esc_html( $description ) ) . '</p>';
+	}
+	$html .= '<div class="ff-product-table__gallery" data-ff-ptable-gallery hidden></div>';
 	$html   .= '<div class="ff-product-table__sheet">';
 	$html   .= '<button type="button" class="ff-product-table__arrow is-prev" data-ff-ptable-scroll="-1" aria-label="' . esc_attr__( 'Nach links', 'fairflock' ) . '" hidden>';
 	$html   .= fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 18 ) );
@@ -711,6 +724,34 @@ function fairflock_product_table_admin_css() {
 	}
 	.ff-ptable-screen .ff-ptable-admin__name {
 		margin-bottom: 12px;
+	}
+	.ff-ptable-admin__desc {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 6px;
+		margin: 0 0 12px;
+		max-width: 560px;
+	}
+	.ff-ptable-admin__desc label {
+		font-weight: 600;
+		font-size: 12px;
+		color: #1d2327;
+	}
+	.ff-ptable-admin__desc textarea {
+		width: 100%;
+		min-height: 88px;
+		margin: 0;
+		padding: 8px 10px;
+		line-height: 1.45;
+		resize: vertical;
+	}
+	.ff-ptable-admin__preview-desc {
+		margin: 0 0 10px;
+		color: #646970;
+		font-size: 12px;
+		line-height: 1.45;
+		white-space: pre-wrap;
 	}
 	.ff-ptable-admin__lead {
 		color: #646970;

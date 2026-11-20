@@ -116,6 +116,17 @@
 	flex-shrink: 0;
 }
 
+.ff-checkout-page__trust-item--icon::before {
+	display: none;
+}
+
+.ff-checkout-page__trust-item--icon svg {
+	flex-shrink: 0;
+	width: 14px;
+	height: 14px;
+	color: var(--ff-trust-ok);
+}
+
 /* Innen: Formular + Summary füllen die gemeinsame Shell */
 .ff-checkout-page .wp-block-woocommerce-checkout,
 .ff-checkout-page .wc-block-checkout,

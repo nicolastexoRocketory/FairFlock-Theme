@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.439',
+			'items'   => array(
+				__( 'Checkout-Trust: Schloss-, Store- und Paket-Icons bei allen drei Punkten.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.438',
+			'items'   => array(
+				__( 'Checkout-Trust: „Versand per DHL“ mit Paket-Icon statt „Klarer Preis inkl. MwSt.“.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.437',
 			'items'   => array(
 				__( 'Checkout: Titel und Formular/Summary teilen dieselbe Inhaltsbreite (--ff-shell).', 'fairflock' ),

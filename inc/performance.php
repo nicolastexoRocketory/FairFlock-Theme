@@ -89,10 +89,15 @@ function fairflock_content_contains_marker( $needle ) {
 function fairflock_enqueue_frontend_assets() {
 	$thin = fairflock_is_thin_storefront_surface();
 
+	/* After global-styles so theme.json button fills cannot paint header icons green. */
+	$component_deps = array();
+	if ( wp_style_is( 'global-styles', 'registered' ) || wp_style_is( 'global-styles', 'enqueued' ) ) {
+		$component_deps[] = 'global-styles';
+	}
 	wp_enqueue_style(
 		'fairflock-components',
 		FAIRFLOCK_URI . '/assets/css/components.css',
-		array(),
+		$component_deps,
 		FAIRFLOCK_VERSION
 	);
 
@@ -189,9 +194,20 @@ function fairflock_enqueue_frontend_assets() {
 
 	// Shell: search, scroll, mega, cart, account — almost every storefront page.
 	wp_enqueue_script(
+		'fairflock-nav-mega',
+		FAIRFLOCK_URI . '/assets/js/nav-mega.js',
+		array(),
+		FAIRFLOCK_VERSION,
+		array(
+			'strategy'  => 'defer',
+			'in_footer' => true,
+		)
+	);
+
+	wp_enqueue_script(
 		'fairflock-header-search',
 		FAIRFLOCK_URI . '/assets/js/header-search.js',
-		array( 'fairflock-loading' ),
+		array( 'fairflock-loading', 'fairflock-nav-mega' ),
 		FAIRFLOCK_VERSION,
 		array(
 			'strategy'  => 'defer',
@@ -202,17 +218,6 @@ function fairflock_enqueue_frontend_assets() {
 	wp_enqueue_script(
 		'fairflock-header-scroll',
 		FAIRFLOCK_URI . '/assets/js/header-scroll.js',
-		array(),
-		FAIRFLOCK_VERSION,
-		array(
-			'strategy'  => 'defer',
-			'in_footer' => true,
-		)
-	);
-
-	wp_enqueue_script(
-		'fairflock-nav-mega',
-		FAIRFLOCK_URI . '/assets/js/nav-mega.js',
 		array(),
 		FAIRFLOCK_VERSION,
 		array(
@@ -377,7 +382,7 @@ function fairflock_enqueue_frontend_assets() {
 		);
 	}
 }
-add_action( 'wp_enqueue_scripts', 'fairflock_enqueue_frontend_assets', 20 );
+add_action( 'wp_enqueue_scripts', 'fairflock_enqueue_frontend_assets', 100 );
 
 /**
  * Removes Dashicons for logged-out visitors (admin bar does not need them).

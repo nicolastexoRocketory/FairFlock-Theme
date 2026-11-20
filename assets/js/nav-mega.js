@@ -1,10 +1,10 @@
 /**
  * Opt-in Mega menu: opens editable template-part panel under the header.
  *
- * Trigger: Navigation item with block style “Mega” (is-style-ff-mega).
+ * Desktop: Navigation item with block style “Mega” (is-style-ff-mega) on hover.
+ * Mobile/Tablet (≤960px): Burger opens the same panel as the menu (no drill menu).
  * Content: Template part “Mega-Menü” (.ff-mega-panel-slot) — moved to <body>
- * so fixed positioning is viewport-relative (header translate would otherwise
- * create a containing block and leave a gap).
+ * so fixed positioning is viewport-relative.
  * Motion: slide + fade open/close.
  */
 (function () {
@@ -14,6 +14,8 @@
 	var closeTimer = null;
 	var animTimer = null;
 	var openItem = null;
+	/** 'hover' = desktop nav trigger; 'panel' = burger / programmatic */
+	var openMode = null;
 
 	function ready(fn) {
 		if (document.readyState === "loading") {
@@ -71,6 +73,10 @@
 		});
 	}
 
+	function setPanelBodyClass(on) {
+		document.body.classList.toggle("is-ff-menu-open", !!on);
+	}
+
 	/**
 	 * Escape header transform containing-block (same pattern as cart drawer).
 	 */
@@ -84,7 +90,7 @@
 
 	function positionSlot(slot) {
 		var bar = headerBar();
-		if (!slot || !bar || !isDesktop()) {
+		if (!slot || !bar) {
 			return;
 		}
 
@@ -92,24 +98,59 @@
 		/* -1px overlap kills hairline gaps under the bar */
 		var top = Math.max(0, Math.round(rect.bottom) - 1);
 		slot.style.setProperty("top", top + "px", "important");
-		slot.style.removeProperty("left");
-		slot.style.removeProperty("right");
-		slot.style.removeProperty("width");
-		slot.style.removeProperty("max-width");
+
+		if (!isDesktop()) {
+			slot.style.setProperty("left", "0", "important");
+			slot.style.setProperty("right", "0", "important");
+			slot.style.setProperty("width", "100%", "important");
+			slot.style.setProperty("max-width", "none", "important");
+			slot.style.setProperty(
+				"max-height",
+				"calc(100dvh - " + top + "px)",
+				"important"
+			);
+		} else {
+			slot.style.removeProperty("left");
+			slot.style.removeProperty("right");
+			slot.style.removeProperty("width");
+			slot.style.removeProperty("max-width");
+			slot.style.removeProperty("max-height");
+		}
 		/* transform is owned by CSS animation — do not clear while open */
 	}
 
-	function openMega(item) {
+	function isMegaOpen() {
+		var slot = panelSlot();
+		return !!(
+			slot &&
+			(slot.classList.contains("is-open") || slot.classList.contains("is-closing"))
+		);
+	}
+
+	/**
+	 * @param {Element|null} item
+	 * @param {{ force?: boolean }} [opts] force=true opens on mobile (burger)
+	 */
+	function openMega(item, opts) {
+		opts = opts || {};
+		var force = opts.force === true;
 		clearCloseTimer();
 		clearAnimTimer();
 		var slot = ensureSlotOnBody(panelSlot());
-		if (!slot || !isDesktop()) {
+		if (!slot) {
+			return;
+		}
+		if (!force && !isDesktop()) {
 			return;
 		}
 
+		openMode = force ? "panel" : "hover";
 		openItem = item || openItem;
 		slot.classList.remove("is-closing");
 		document.documentElement.classList.add("is-ff-mega-open");
+		if (openMode === "panel") {
+			setPanelBodyClass(true);
+		}
 		positionSlot(slot);
 
 		/* Force reflow so re-open still animates after a fast close */
@@ -146,6 +187,8 @@
 		clearAnimTimer();
 		var slot = panelSlot();
 		document.documentElement.classList.remove("is-ff-mega-open");
+		setPanelBodyClass(false);
+		openMode = null;
 
 		megaItems().forEach(function (item) {
 			item.classList.remove("is-ff-mega-active");
@@ -167,7 +210,18 @@
 		}, ANIM_MS);
 	}
 
+	function toggleMega() {
+		if (isMegaOpen()) {
+			closeMega();
+		} else {
+			openMega(null, { force: true });
+		}
+	}
+
 	function scheduleClose() {
+		if (openMode === "panel") {
+			return;
+		}
 		clearCloseTimer();
 		closeTimer = window.setTimeout(function () {
 			var slot = panelSlot();
@@ -221,10 +275,16 @@
 		slot.dataset.ffMegaBound = "1";
 		slot.setAttribute("aria-hidden", "true");
 		slot.addEventListener("mouseenter", function () {
+			if (openMode === "panel") {
+				return;
+			}
 			clearCloseTimer();
 			openMega(openItem);
 		});
 		slot.addEventListener("focusin", function () {
+			if (openMode === "panel") {
+				return;
+			}
 			clearCloseTimer();
 			openMega(openItem);
 		});
@@ -235,22 +295,29 @@
 	function boot() {
 		var items = megaItems();
 		var slot = panelSlot();
-		if (!items.length || !slot) {
+		if (!slot) {
 			return;
 		}
 
 		ensureSlotOnBody(slot);
-		items.forEach(bindItem);
-		bindSlot(slot);
+		if (items.length) {
+			items.forEach(bindItem);
+			bindSlot(slot);
+		} else {
+			slot.setAttribute("aria-hidden", "true");
+		}
 
 		window.addEventListener(
 			"resize",
 			function () {
-				if (!isDesktop()) {
-					closeMega();
+				if (!slot) {
 					return;
 				}
 				if (slot.classList.contains("is-open") || slot.classList.contains("is-closing")) {
+					if (openMode === "hover" && !isDesktop()) {
+						closeMega();
+						return;
+					}
 					positionSlot(slot);
 				}
 			},
@@ -261,7 +328,7 @@
 			"scroll",
 			function () {
 				if (
-					isDesktop() &&
+					slot &&
 					(slot.classList.contains("is-open") || slot.classList.contains("is-closing"))
 				) {
 					positionSlot(slot);
@@ -273,12 +340,20 @@
 		document.addEventListener("keydown", function (event) {
 			if (
 				event.key === "Escape" &&
+				slot &&
 				(slot.classList.contains("is-open") || slot.classList.contains("is-closing"))
 			) {
 				closeMega();
 			}
 		});
 	}
+
+	window.fairflockOpenMega = function () {
+		openMega(null, { force: true });
+	};
+	window.fairflockCloseMega = closeMega;
+	window.fairflockToggleMega = toggleMega;
+	window.fairflockIsMegaOpen = isMegaOpen;
 
 	ready(boot);
 })();

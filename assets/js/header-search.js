@@ -13,6 +13,21 @@
   }
 
   ready(function () {
+    /* Burger immer links neben dem Logo — auch bei gespeichertem Site-Editor-Header. */
+    (function placeBurgerLeftOfLogo() {
+      var brand = document.querySelector(".ff-header__brand");
+      var burgerEl = document.querySelector(".ff-header .ff-nav-burger");
+      if (!brand || !burgerEl) return;
+      var moveNode =
+        burgerEl.closest(".ff-header__menu-btns") ||
+        burgerEl.closest(".wp-block-buttons") ||
+        burgerEl;
+      if (brand.contains(burgerEl) && brand.firstElementChild === moveNode) {
+        return;
+      }
+      brand.insertBefore(moveNode, brand.firstChild);
+    })();
+
     var layer = document.getElementById("ffSearchLayer") || document.querySelector(".ff-search-layer");
     var menuLayer = document.getElementById("ffMenuLayer") || document.querySelector(".ff-menu-layer");
     var toggle =
@@ -63,9 +78,61 @@
           layer.querySelector("input[type='search'], input[name='s'], .ff-search-field input"))) ||
       null;
     var shell = layer && layer.querySelector(".ff-search-shell");
+    var desktopSearchMq =
+      typeof window.matchMedia === "function"
+        ? window.matchMedia("(min-width: 961px)")
+        : { matches: true };
+    var SEARCH_DOCK_GAP = 8;
+
+    function isDesktopSearchDock() {
+      return !!(desktopSearchMq && desktopSearchMq.matches);
+    }
+
+    function clearSearchPosition() {
+      if (!shell) return;
+      ["top", "right", "left", "bottom", "max-height", "width", "translate"].forEach(
+        function (prop) {
+          shell.style.removeProperty(prop);
+        }
+      );
+    }
+
+    /**
+     * Desktop: shell unter der Lupe, rechtsbündig zum Icon (wie Account-Popup).
+     */
+    function positionSearchShell() {
+      if (!shell || !toggle) {
+        return;
+      }
+      if (!isDesktopSearchDock()) {
+        clearSearchPosition();
+        return;
+      }
+
+      var rect = toggle.getBoundingClientRect();
+      var vw = window.innerWidth || document.documentElement.clientWidth || 0;
+      var vh = window.innerHeight || document.documentElement.clientHeight || 0;
+      var top = Math.round(rect.bottom + SEARCH_DOCK_GAP);
+      var right = Math.max(8, Math.round(vw - rect.right));
+      var shellW = shell.offsetWidth || Math.min(440, vw - 16);
+      var maxRight = Math.max(8, vw - shellW - 8);
+      if (right > maxRight) {
+        right = maxRight;
+      }
+      var maxH = Math.max(180, vh - top - 12);
+
+      shell.style.setProperty("top", top + "px", "important");
+      shell.style.setProperty("right", right + "px", "important");
+      shell.style.setProperty("left", "auto", "important");
+      shell.style.setProperty("bottom", "auto", "important");
+      shell.style.setProperty("translate", "none", "important");
+      shell.style.setProperty("max-height", maxH + "px", "important");
+      shell.style.setProperty("width", Math.min(440, vw - 16) + "px", "important");
+    }
 
     var hasSearch = !!(layer && mega && hitsWrap && input);
-    var hasMenu = !!(menuLayer && menuNavList);
+    var hasMegaPanelSlot = !!document.querySelector(".ff-mega-panel-slot");
+    var hasMenu = !!(menuLayer && menuNavList) || hasMegaPanelSlot;
 
     if (!hasSearch && !hasMenu) {
       return;
@@ -91,7 +158,10 @@
       }
     }
     if (burger) {
-      burger.setAttribute("aria-controls", "ffMenuLayer");
+      burger.setAttribute(
+        "aria-controls",
+        hasMegaPanelSlot ? "ffMegaPanel" : "ffMenuLayer"
+      );
       burger.setAttribute("aria-expanded", "false");
       if (!burger.getAttribute("aria-label")) {
         burger.setAttribute("aria-label", "Menü öffnen");
@@ -514,24 +584,59 @@
       }
     }
 
+    function hasMegaPanel() {
+      return hasMegaPanelSlot;
+    }
+
+    function isMegaMenuOpen() {
+      return typeof window.fairflockIsMegaOpen === "function" && window.fairflockIsMegaOpen();
+    }
+
+    /* Burger-ARIA sync when mega closes via Escape / resize in nav-mega.js */
+    var megaSlotEl = document.querySelector(".ff-mega-panel-slot");
+    if (megaSlotEl && typeof MutationObserver !== "undefined") {
+      new MutationObserver(function () {
+        setBurgerExpanded(isMegaMenuOpen());
+      }).observe(megaSlotEl, { attributes: true, attributeFilter: ["class"] });
+    }
+
     function isMenuOpen() {
+      if (isMegaMenuOpen()) {
+        return true;
+      }
       return !!(menuLayer && menuLayer.classList.contains("is-open"));
     }
 
-    function closeMenu() {
+    function closeLegacyMenuLayer() {
       if (!menuLayer) return;
       closeMenuSub(true);
       menuLayer.classList.remove("is-open");
       menuLayer.setAttribute("aria-hidden", "true");
+    }
+
+    function closeMenu() {
+      if (typeof window.fairflockCloseMega === "function") {
+        window.fairflockCloseMega();
+      }
+      closeLegacyMenuLayer();
       document.body.classList.remove("is-ff-menu-open");
       setBurgerExpanded(false);
     }
 
     function openMenu() {
-      if (!menuLayer) return;
       closeSearch();
+      closeLegacyMenuLayer();
+      /* Mobile/Tablet: Mega-Panel ist das Menü — kein Drill-Down-Overlay */
+      if (hasMegaPanel() && typeof window.fairflockOpenMega === "function") {
+        if (typeof window.fairflockSyncHeaderClearance === "function") {
+          window.fairflockSyncHeaderClearance();
+        }
+        window.fairflockOpenMega();
+        setBurgerExpanded(true);
+        return;
+      }
+      if (!menuLayer) return;
       syncMenuNav();
-      /* Nav-Unterkante frisch messen → Menü bündig darunter, nicht hinter der Bar */
       if (typeof window.fairflockSyncHeaderClearance === "function") {
         window.fairflockSyncHeaderClearance();
       }
@@ -602,16 +707,21 @@
       if (!hasSearch) return;
       var focusInput = !opts || opts.focusInput !== false;
       closeMenu();
+      positionSearchShell();
       layer.classList.add("is-open");
       layer.setAttribute("aria-hidden", "false");
       document.body.classList.add("is-ff-search-open");
       setSearchExpanded(true);
       syncMega();
-      if (focusInput) {
-        window.setTimeout(function () {
+      window.requestAnimationFrame(function () {
+        positionSearchShell();
+      });
+      window.setTimeout(function () {
+        positionSearchShell();
+        if (focusInput && input) {
           input.focus({ preventScroll: true });
-        }, 40);
-      }
+        }
+      }, 40);
     }
 
     function closeSearch() {
@@ -620,6 +730,7 @@
       layer.setAttribute("aria-hidden", "true");
       document.body.classList.remove("is-ff-search-open");
       setSearchExpanded(false);
+      clearSearchPosition();
     }
 
     window.fairflockCloseMenu = closeMenu;
@@ -790,6 +901,34 @@
         }
       }
     });
+
+    window.addEventListener(
+      "resize",
+      function () {
+        if (layer && layer.classList.contains("is-open")) {
+          positionSearchShell();
+        }
+      },
+      { passive: true }
+    );
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (layer && layer.classList.contains("is-open")) {
+          positionSearchShell();
+        }
+      },
+      { passive: true }
+    );
+    if (desktopSearchMq && typeof desktopSearchMq.addEventListener === "function") {
+      desktopSearchMq.addEventListener("change", function () {
+        if (layer && layer.classList.contains("is-open")) {
+          positionSearchShell();
+        } else {
+          clearSearchPosition();
+        }
+      });
+    }
 
     if (hasMenu) {
       syncMenuNav();

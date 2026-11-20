@@ -371,3 +371,58 @@ function fairflock_render_mega_list_group( $block_content, $block ) {
 	return is_string( $replaced ) ? $replaced : $block_content;
 }
 add_filter( 'render_block_core/group', 'fairflock_render_mega_list_group', 20, 2 );
+
+/**
+ * Registers ffMegaLink on core/cover so the attribute persists in block markup.
+ *
+ * @since 0.9.459
+ *
+ * @param array<string, mixed> $args Block type args.
+ * @param string               $name Block name.
+ * @return array<string, mixed>
+ */
+function fairflock_register_cover_mega_link_attribute( $args, $name ) {
+	if ( $name !== 'core/cover' || ! is_array( $args ) ) {
+		return $args;
+	}
+	if ( ! isset( $args['attributes'] ) || ! is_array( $args['attributes'] ) ) {
+		$args['attributes'] = array();
+	}
+	$args['attributes']['ffMegaLink'] = array(
+		'type'    => 'string',
+		'default' => '',
+	);
+	return $args;
+}
+add_filter( 'register_block_type_args', 'fairflock_register_cover_mega_link_attribute', 10, 2 );
+
+/**
+ * Wraps Cover blocks that have ffMegaLink so they are clickable + zoom on hover.
+ *
+ * WP 7 Cover has no native toolbar link; the theme adds Link in the editor toolbar/sidebar.
+ *
+ * @since 0.9.458
+ *
+ * @param string               $block_content Rendered block HTML.
+ * @param array<string, mixed> $block         Parsed block.
+ * @return string
+ */
+function fairflock_render_cover_mega_link( $block_content, $block ) {
+	if ( ! is_string( $block_content ) || $block_content === '' ) {
+		return $block_content;
+	}
+
+	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	$link  = isset( $attrs['ffMegaLink'] ) ? trim( (string) $attrs['ffMegaLink'] ) : '';
+	if ( $link === '' ) {
+		return $block_content;
+	}
+
+	$url = esc_url( $link );
+	if ( $url === '' || $url === '#' ) {
+		return $block_content;
+	}
+
+	return '<a class="ff-mega-cover-link" href="' . $url . '">' . $block_content . '</a>';
+}
+add_filter( 'render_block_core/cover', 'fairflock_render_cover_mega_link', 20, 2 );

@@ -974,68 +974,82 @@ function fairflock_inject_header_inline_search( $block_content, $block ) {
 add_filter( 'render_block_core/group', 'fairflock_inject_header_inline_search', 20, 2 );
 
 /**
- * Markup for the mobile nav burger (opens dedicated menu layer).
+ * Markup for the mobile nav burger (opens mega / menu panel).
  *
  * @since 0.9.261
+ * @since 0.9.450 Left of logo; aria-controls mega panel.
  *
  * @return string
  */
 function fairflock_get_header_nav_burger_markup() {
-	return '<div class="wp-block-button ff-nav-burger is-style-fill">'
+	return '<div class="wp-block-buttons ff-header__action-btns ff-header__menu-btns">'
+		. '<div class="wp-block-button ff-nav-burger is-style-fill">'
 		. '<a class="wp-block-button__link wp-element-button" href="#ff-open-menu" aria-label="'
 		. esc_attr__( 'Menü', 'fairflock' )
-		. '" aria-controls="ffMenuLayer" aria-expanded="false">'
+		. '" aria-controls="ffMegaPanel" aria-expanded="false">'
 		. esc_html__( 'Menü', 'fairflock' )
-		. '</a></div>';
+		. '</a></div></div>';
 }
 
 /**
- * Injects the mobile burger after the search toggle when missing
- * (customized headers often still lack the block from theme updates).
+ * Ensures the burger sits left of the logo inside .ff-header__brand
+ * (customized Site-Editor headers often still keep it next to search).
  *
- * @since 0.9.261
+ * @since 0.9.450
  *
  * @param string               $block_content Rendered HTML.
  * @param array<string, mixed> $block         Parsed block.
  * @return string
  */
-function fairflock_inject_header_nav_burger( $block_content, $block ) {
-	if ( empty( $block['blockName'] ) || 'core/buttons' !== $block['blockName'] || ! is_string( $block_content ) ) {
+function fairflock_ensure_burger_left_of_logo( $block_content, $block ) {
+	if ( ! is_string( $block_content ) || '' === $block_content ) {
 		return $block_content;
 	}
 
 	$class = isset( $block['attrs']['className'] ) ? (string) $block['attrs']['className'] : '';
-	if ( ! preg_match( '/(^|\s)ff-header__action-btns(\s|$)/', $class ) ) {
-		return $block_content;
-	}
-	if ( preg_match( '/(^|\s)ff-header__cart-btns(\s|$)/', $class ) ) {
-		return $block_content;
-	}
-	if ( str_contains( $block_content, 'ff-nav-burger' ) ) {
-		return $block_content;
-	}
-	if ( ! str_contains( $block_content, 'ff-search-toggle' ) ) {
+	if ( ! preg_match( '/(^|\s)ff-header__bar(\s|$)/', $class ) ) {
 		return $block_content;
 	}
 
-	$burger  = fairflock_get_header_nav_burger_markup();
+	$burger_html = '';
+
+	/* Pull existing burger (+ optional buttons wrapper) out of the bar. */
+	if ( preg_match(
+		'/<div[^>]*class="[^"]*\bff-header__menu-btns\b[^"]*"[^>]*>[\s\S]*?\bff-nav-burger\b[\s\S]*?<\/div>\s*<\/div>/i',
+		$block_content,
+		$m
+	) ) {
+		$burger_html   = $m[0];
+		$block_content = str_replace( $m[0], '', $block_content );
+	} elseif ( preg_match(
+		'/<div[^>]*class="[^"]*\bff-nav-burger\b[^"]*"[^>]*>[\s\S]*?<\/div>/i',
+		$block_content,
+		$m
+	) ) {
+		$burger_html   = '<div class="wp-block-buttons ff-header__action-btns ff-header__menu-btns">' . $m[0] . '</div>';
+		$block_content = str_replace( $m[0], '', $block_content );
+	} else {
+		$burger_html = fairflock_get_header_nav_burger_markup();
+	}
+
+	/* Prefer brand group; fall back to start of the bar. */
+	if ( preg_match( '/(<div[^>]*\bff-header__brand\b[^>]*>)/i', $block_content ) ) {
+		$updated = preg_replace(
+			'/(<div[^>]*\bff-header__brand\b[^>]*>)/i',
+			'$1' . $burger_html,
+			$block_content,
+			1
+		);
+		return is_string( $updated ) ? $updated : $block_content;
+	}
+
 	$updated = preg_replace(
-		'/(<div[^>]*\bff-search-toggle\b[^>]*>[\s\S]*?<\/div>)/',
-		'$1' . $burger,
+		'/(<div[^>]*\bff-header__bar\b[^>]*>)/i',
+		'$1' . $burger_html,
 		$block_content,
 		1
 	);
 
-	if ( ! is_string( $updated ) || $updated === $block_content ) {
-		// Fallback: insert before closing buttons wrapper.
-		$updated = preg_replace(
-			'/(<\/div>\s*)$/',
-			$burger . '$1',
-			$block_content,
-			1
-		);
-	}
-
 	return is_string( $updated ) ? $updated : $block_content;
 }
-add_filter( 'render_block_core/buttons', 'fairflock_inject_header_nav_burger', 20, 2 );
+add_filter( 'render_block_core/group', 'fairflock_ensure_burger_left_of_logo', 30, 2 );

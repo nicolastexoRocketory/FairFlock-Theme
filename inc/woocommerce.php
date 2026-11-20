@@ -1298,3 +1298,54 @@ function fairflock_render_product_card_hover_image( $content, $block, $instance 
 	return $content;
 }
 add_filter( 'render_block', 'fairflock_render_product_card_hover_image', 12, 3 );
+
+/**
+ * Appends a real „Ansehen“ link after the product-card body (sibling inside the card).
+ * CSS ::after was not clickable (pointer-events: none).
+ *
+ * @since 0.9.462
+ *
+ * @param string               $content  Rendered block.
+ * @param array<string, mixed> $block    Block data.
+ * @param WP_Block|null        $instance Block instance.
+ * @return string
+ */
+function fairflock_render_product_card_ansehen_link( $content, $block, $instance = null ) {
+	if ( ( $block['blockName'] ?? '' ) !== 'core/group' ) {
+		return $content;
+	}
+	if ( ! is_string( $content ) || $content === '' ) {
+		return $content;
+	}
+	if ( false !== strpos( $content, 'ff-prod-card__ansehen' ) ) {
+		return $content;
+	}
+
+	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	$class = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
+	if ( false === strpos( $class, 'ff-prod-card__body' ) ) {
+		return $content;
+	}
+
+	$post_id = 0;
+	if ( $instance instanceof WP_Block && isset( $instance->context['postId'] ) ) {
+		$post_id = (int) $instance->context['postId'];
+	}
+	if ( $post_id <= 0 ) {
+		return $content;
+	}
+
+	$url = get_permalink( $post_id );
+	if ( ! is_string( $url ) || $url === '' ) {
+		return $content;
+	}
+
+	$link = sprintf(
+		'<a class="ff-prod-card__ansehen" href="%1$s">%2$s</a>',
+		esc_url( $url ),
+		esc_html__( 'Ansehen', 'fairflock' )
+	);
+
+	return $content . $link;
+}
+add_filter( 'render_block', 'fairflock_render_product_card_ansehen_link', 14, 3 );

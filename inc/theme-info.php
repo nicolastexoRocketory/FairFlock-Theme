@@ -20,6 +20,168 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.466',
+			'items'   => array(
+				__( 'Kollektionen: Schalter „Weichgezeichnetes Hintergrundbild“ immer sichtbar unter „Nur Titel“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.465',
+			'items'   => array(
+				__( 'Produktkarten: weniger Innenabstand unten unter der Lieferzeile.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.464',
+			'items'   => array(
+				__( 'Header: Abstand zwischen Suche und Warenkorb enger.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.463',
+			'items'   => array(
+				__( 'Kollektionen „Nur Titel“: ohne sichtbaren Link, Hover-Effekt, Option weichgezeichnetes Kategoriebild.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.462',
+			'items'   => array(
+				__( 'Produktkarten: „Ansehen“ ist klickbar; Hover-Lift (nach oben) entfernt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.461',
+			'items'   => array(
+				__( 'Suche Desktop: Panel dockt rechtsbündig unter der Lupe (wie Account-Popup).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.460',
+			'items'   => array(
+				__( 'Header: Abstand zwischen Lupe und Warenkorb verringert.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.459',
+			'items'   => array(
+				__( 'Cover verlinkbar per Toolbar-Link + Zoom-In-Hover (ffMegaLink).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.458',
+			'items'   => array(
+				__( 'Mega-Menü Cover: Link-Feld in der Block-Seitenleiste (WP 7 hat kein Cover-Link-Icon).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.457',
+			'items'   => array(
+				__( 'Mobile Header: Burger näher am linken Rand, mehr Abstand zwischen Burger und Logo.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.456',
+			'items'   => array(
+				__( 'Header-Icons: Abstand zwischen Suche, Warenkorb und Konto enger (4px) für einheitlicheres Bild.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.455',
+			'items'   => array(
+				__( 'Account-Popup: Trennstrich über „Konto-Seite öffnen“ greift zuverlässig (volle Breite, 1em Extra-Abstand).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.454',
+			'items'   => array(
+				__( 'Mega-Menü: Bilder/Cover verlinkbar; bei Link Zoom-In-Hover auf dem Bild.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.453',
+			'items'   => array(
+				__( 'Account-Popup: Trennstrich über „Konto-Seite öffnen“ inkl. 1em Extra-Abstand darüber.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.452',
+			'items'   => array(
+				__( 'Header-Icons: schwarze Quadrate behoben (mask-Shorthand hat mask-image überschrieben).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.451',
+			'items'   => array(
+				__( 'Warenkorb-Drawer mobil/Tablet: öffnet auf 90% der Bildschirmbreite.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.450',
+			'items'   => array(
+				__( 'Header: Burger wird links neben das Logo gesetzt (auch bei gespeichertem Site-Editor-Header).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.449',
+			'items'   => array(
+				__( 'Header-Icons: Theme-Button-Grün überschreibt Suche/Warenkorb/Konto nicht mehr; Glyphs wieder sichtbar.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.448',
+			'items'   => array(
+				__( 'Account-Popup: auf allen Geräten rechtsbündig unter dem Profil-Icon angedockt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.447',
+			'items'   => array(
+				__( 'Header: Profil-Icon als eigener Button (hellgrauer Kreis) ganz rechts — immer sichtbar.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.446',
+			'items'   => array(
+				__( 'Header mobil: Burger-Icon links neben dem Logo.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.445',
+			'items'   => array(
+				__( 'Header: Profil-Icon als hellgrauer Kreis ganz rechts; Warenkorb-Icon-Farbe mobil wie Suche/Burger.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.444',
+			'items'   => array(
+				__( 'FairFlock → Bestellnummern: Prefix + laufende Zahl (Schema AH001) für alle neuen Bestellungen.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.443',
+			'items'   => array(
+				__( 'Produkt-Popup: Close-Icon fest oben im Viewport (safe-area), rutscht nicht mehr aus dem Bildschirm.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.442',
+			'items'   => array(
+				__( 'Touch-Zoom: Pan-Richtung umgekehrt zur Fingerbewegung (wie Karten-Ziehen).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.441',
+			'items'   => array(
+				__( 'Mobil/Tablet: Burger öffnet das Mega-Menü (kein separates Menü-Overlay); Account- und Warenkorb-Icons in der Header-Leiste.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.440',
+			'items'   => array(
+				__( 'Produkt-Popup mobil: Galerie scrollt mit; Touch-Drag verschiebt die Slideshow frei (Snap beim Loslassen).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.439',
 			'items'   => array(
 				__( 'Checkout-Trust: Schloss-, Store- und Paket-Icons bei allen drei Punkten.', 'fairflock' ),

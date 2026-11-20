@@ -661,7 +661,50 @@ body:not(.block-editor-iframe__body) .ff-header {
 	flex-shrink: 1;
 	min-width: 0;
 	max-width: min(100%, 60vw);
+	gap: 12px;
 	transition: transform 0.3s var(--ff-ease);
+}
+
+/* Burger sitzt links neben dem Logo (nur mobil sichtbar) */
+.ff-header__brand > .ff-header__menu-btns,
+.ff-header__brand > .wp-block-buttons.ff-header__menu-btns {
+	display: contents;
+}
+
+.ff-header__brand .ff-nav-burger {
+	--ff-i-fg: var(--wp--preset--color--contrast, #0e1114);
+	--ff-i-bg: transparent;
+	--ff-i-line: transparent;
+	flex-shrink: 0;
+	margin: 0 !important;
+}
+
+.ff-header__brand .ff-nav-burger .wp-block-button__link,
+.ff-header__brand .ff-nav-burger.is-style-fill .wp-block-button__link {
+	position: relative;
+	display: grid !important;
+	place-items: center;
+	width: 40px !important;
+	min-width: 40px !important;
+	max-width: 40px !important;
+	height: 40px !important;
+	min-height: 40px !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
+	color: var(--ff-i-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
+	font-size: 0 !important;
+}
+
+.ff-header__brand .ff-nav-burger .wp-block-button__link::before {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	translate: -50% -50%;
+	background-color: currentColor !important;
 }
 
 /* Site Logo „Breite“ aus dem Site Editor (width-Attribut / Inline-Style) muss greifen. */
@@ -1629,11 +1672,11 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 	color: var(--wp--preset--color--brand, #377530) !important;
 }
 
-.ff-mega-panel a:where(:not(.wp-element-button)) {
+.ff-mega-panel a:where(:not(.wp-element-button):not(.wp-block-cover)) {
 	color: inherit;
 }
 
-.ff-mega-panel a:where(:not(.wp-element-button)):hover {
+.ff-mega-panel a:where(:not(.wp-element-button):not(.wp-block-cover)):hover {
 	color: var(--wp--preset--color--brand, #377530);
 }
 
@@ -1757,6 +1800,72 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 	text-wrap: balance;
 }
 
+/*
+ * Verlinkte Bilder / Cover: klickbar + Zoom-In beim Hover.
+ * Cover: Theme-Wrapper a.ff-mega-cover-link (Attribut ffMegaLink aus der Toolbar).
+ */
+.ff-mega-panel .wp-block-image a,
+.ff-mega-panel a.ff-mega-cover-link,
+.ff-menu-sub__mega a.ff-mega-cover-link,
+a.ff-mega-cover-link {
+	display: block;
+	overflow: hidden;
+	text-decoration: none !important;
+	color: inherit !important;
+	cursor: pointer;
+	isolation: isolate;
+}
+
+.ff-mega-panel a.ff-mega-cover-link .wp-block-cover,
+.ff-menu-sub__mega a.ff-mega-cover-link .wp-block-cover,
+a.ff-mega-cover-link .wp-block-cover,
+a.ff-mega-cover-link .ff-mega-panel__card-media {
+	overflow: hidden;
+}
+
+/* Bild-/Video-Ebene zoomen (img oder span mit background-image) */
+.ff-mega-panel .wp-block-image a img,
+a.ff-mega-cover-link .wp-block-cover__image-background,
+a.ff-mega-cover-link .wp-block-cover__video-background {
+	transform: scale(1);
+	transform-origin: center center;
+	transition: transform 0.55s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+	will-change: transform;
+}
+
+.ff-mega-panel .wp-block-image a:hover img,
+.ff-mega-panel .wp-block-image a:focus-visible img,
+a.ff-mega-cover-link:hover .wp-block-cover__image-background,
+a.ff-mega-cover-link:focus-visible .wp-block-cover__image-background,
+a.ff-mega-cover-link:hover .wp-block-cover__video-background,
+a.ff-mega-cover-link:focus-visible .wp-block-cover__video-background {
+	transform: scale(1.08);
+}
+
+/* Fallback ohne image-background-Node: ganzes Cover leicht zoomen */
+a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-block-cover__video-background)) .wp-block-cover {
+	transform: scale(1);
+	transform-origin: center center;
+	transition: transform 0.55s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+	will-change: transform;
+}
+
+a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-block-cover__video-background)):hover .wp-block-cover,
+a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-block-cover__video-background)):focus-visible .wp-block-cover {
+	transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ff-mega-panel .wp-block-image a img,
+	a.ff-mega-cover-link .wp-block-cover__image-background,
+	a.ff-mega-cover-link .wp-block-cover__video-background,
+	a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-block-cover__video-background)) .wp-block-cover {
+		transition: none;
+		transform: none;
+		will-change: auto;
+	}
+}
+
 .ff-mega-panel__card-body {
 	display: flex;
 	flex-direction: column;
@@ -1866,15 +1975,59 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 }
 
 @media (max-width: 960px) {
-	body:not(.block-editor-iframe__body) .ff-mega-panel-slot,
-	body:not(.block-editor-iframe__body) .ff-mega-panel-slot.is-open {
+	/*
+	 * Mobile/Tablet: Mega-Panel = Menü (Burger öffnet es).
+	 * Altes Drill-Menü (.ff-menu-layer) bleibt im DOM, wird aber nicht genutzt.
+	 */
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot {
+		display: block;
+		overflow-x: hidden;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior: contain;
+		bottom: 0;
+	}
+
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
+		min-height: 100%;
+		box-shadow: none;
+		padding: 1.25em var(--ff-gutter, 1em) calc(1.5em + env(safe-area-inset-bottom, 0px)) !important;
+		box-sizing: border-box;
+	}
+
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel__cols.wp-block-columns,
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel .ff-mega-panel__cols {
+		flex-direction: column !important;
+		flex-wrap: nowrap !important;
+		gap: 1.5em !important;
+	}
+
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel__cols > .wp-block-column {
+		flex-basis: 100% !important;
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-list--categories .ff-mega-panel__links,
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__live {
+		column-count: 1;
+	}
+
+	/* Native WP-Untermenüs der Mega-Trigger bleiben aus — Inhalt kommt aus dem Panel */
+	.ff-header__nav .wp-block-navigation-submenu.is-style-ff-mega > .wp-block-navigation__submenu-container,
+	.ff-header__nav .wp-block-navigation-item.is-style-ff-mega > .wp-block-navigation__submenu-container {
 		display: none !important;
 	}
 
-	/* Mobile: native submenu again */
-	.ff-header__nav .wp-block-navigation-submenu.is-style-ff-mega > .wp-block-navigation__submenu-container,
-	.ff-header__nav .wp-block-navigation-item.is-style-ff-mega > .wp-block-navigation__submenu-container {
-		display: flex !important;
+	/* Altes Mobile-Menü-Overlay: nicht mehr anzeigen */
+	.ff-menu-overlay-slot,
+	.ff-menu-layer {
+		display: none !important;
+	}
+
+	/* Mega als Menü-Panel: Body-Scroll sperren */
+	html.is-ff-mega-open body {
+		overflow: hidden;
 	}
 }
 
@@ -1972,7 +2125,7 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	display: flex;
 	align-items: center;
 	align-self: center;
-	gap: 8px;
+	gap: 0 !important;
 	flex-shrink: 0;
 	margin: 0;
 	--ff-icon-fg: var(--wp--preset--color--contrast, #0e1114);
@@ -2389,116 +2542,106 @@ body.ff-shape-rounded .ff-header__actions {
 }
 
 /*
- * Konto-Icon: Editor-Farben sitzen am Woo-Block-Wrapper (.ff-account),
- * nicht am inneren Link — deshalb ist der Wrapper die sichtbare Fläche.
+ * Profil-Icon (Button, wie Suche/Warenkorb): hellgrauer Kreis, feine Border, ganz rechts.
+ * Kein Woo-customer-account-Block — der war im Frontend oft unsichtbar.
  */
 .ff-header__icons .ff-account,
-.ff-header__icons .wp-block-woocommerce-customer-account.ff-account,
-.ff-header__icons .wp-block-woocommerce-customer-account,
-.ff-header__actions .ff-account,
-.ff-header__actions .wp-block-woocommerce-customer-account.ff-account,
-.ff-header__actions .wp-block-woocommerce-customer-account {
+.ff-header__actions .ff-account {
+	display: flex !important;
+	align-items: center;
+	align-self: center;
+	margin: 0 !important;
+	/* Wrapper zeichnet keinen Kasten — der Link ist der Kreis */
+	border: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	padding: 0 !important;
+	width: auto !important;
+	height: auto !important;
+	min-width: 0 !important;
+	min-height: 0 !important;
+	overflow: visible !important;
+}
+
+.ff-header__icons .ff-account .wp-block-button__link,
+.ff-header__icons .ff-account.is-style-fill .wp-block-button__link,
+.ff-header__actions .ff-account .wp-block-button__link,
+.ff-header__actions .ff-account.is-style-fill .wp-block-button__link {
 	position: relative;
 	display: grid !important;
 	place-items: center;
-	align-self: center;
-	width: 40px !important;
-	min-width: 40px !important;
-	max-width: 40px !important;
-	height: 40px !important;
-	min-height: 40px !important;
+	width: 36px !important;
+	min-width: 36px !important;
+	max-width: 36px !important;
+	height: 36px !important;
+	min-height: 36px !important;
 	padding: 0 !important;
 	margin: 0 !important;
-	border-radius: var(--ff-icon-radius) !important;
+	border-radius: 50% !important;
 	border-style: solid !important;
 	border-width: 1px !important;
-	box-sizing: border-box;
-	overflow: visible;
-	transition: background 0.25s var(--ff-ease), transform 0.3s var(--ff-ease), border-color 0.25s var(--ff-ease);
-}
-
-.ff-header__icons .ff-account:not(.has-background),
-.ff-header__actions .ff-account:not(.has-background) {
-	background-color: var(--ff-i-bg);
-}
-
-.ff-header__icons .ff-account:not(.has-text-color),
-.ff-header__actions .ff-account:not(.has-text-color) {
-	color: var(--ff-i-fg);
-}
-
-.ff-header__icons .ff-account:not(.has-border-color),
-.ff-header__actions .ff-account:not(.has-border-color) {
-	border-color: var(--ff-i-line);
-}
-
-.ff-header__icons .ff-account .wc-block-customer-account__link,
-.ff-header__icons .ff-account .wc-block-customer-account__toggle,
-.ff-header__actions .ff-account .wc-block-customer-account__link,
-.ff-header__actions .ff-account .wc-block-customer-account__toggle {
-	position: relative;
-	display: grid !important;
-	place-items: center;
-	width: 100% !important;
-	min-width: 0 !important;
-	max-width: none !important;
-	height: 100% !important;
-	min-height: 0 !important;
-	padding: 0 !important;
-	border: 0 !important;
-	border-radius: inherit !important;
-	background: transparent !important;
-	background-image: none !important;
-	color: inherit !important;
+	border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent) !important;
+	background: #eceff1 !important;
+	background-color: #eceff1 !important;
 	box-shadow: none !important;
+	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
 	font-size: 0 !important;
 	line-height: 0 !important;
 	text-decoration: none !important;
+	overflow: hidden !important;
+	box-sizing: border-box;
+}
+
+.ff-header__icons .ff-account .wp-block-button__link::before,
+.ff-header__actions .ff-account .wp-block-button__link::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	translate: -50% -50%;
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+	background-color: currentColor !important;
+	-webkit-mask: center / contain no-repeat;
+	mask: center / contain no-repeat;
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='8' r='3.25' stroke='black' stroke-width='1.75'/%3E%3Cpath d='M5.5 19.5c1.6-3.2 4-4.75 6.5-4.75s4.9 1.55 6.5 4.75' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='8' r='3.25' stroke='black' stroke-width='1.75'/%3E%3Cpath d='M5.5 19.5c1.6-3.2 4-4.75 6.5-4.75s4.9 1.55 6.5 4.75' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
 .ff-header__icons .ff-search-toggle .wp-block-button__link:hover,
 .ff-header__icons .ff-cart .wp-block-button__link:hover,
-.ff-header__icons .ff-account:hover,
 .ff-header__actions .ff-search-toggle .wp-block-button__link:hover,
-.ff-header__actions .ff-cart .wp-block-button__link:hover,
-.ff-header__actions .ff-account:hover {
+.ff-header__actions .ff-cart .wp-block-button__link:hover {
 	filter: brightness(0.97);
 	text-decoration: none !important;
 	transform: translateY(-1px);
 }
 
-.ff-header__icons .wc-block-customer-account__account-icon,
-.ff-header__icons .wc-block-customer-account__visual > svg,
-.ff-header__actions .wc-block-customer-account__account-icon,
-.ff-header__actions .wc-block-customer-account__visual > svg {
-	width: 18px !important;
-	height: 18px !important;
-	color: inherit !important;
-	border: 0 !important;
-	border-radius: 0 !important;
-	box-shadow: none !important;
-	background: transparent !important;
+.ff-header__icons .ff-account .wp-block-button__link:hover,
+.ff-header__actions .ff-account .wp-block-button__link:hover {
+	filter: none;
+	opacity: 0.88;
+	transform: none;
+	text-decoration: none !important;
+	background: #e4e7ea !important;
+	background-color: #e4e7ea !important;
+	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
 }
 
-.ff-header__icons .ff-account .wc-block-customer-account__visual,
-.ff-header__actions .ff-account .wc-block-customer-account__visual {
+/* Legacy Woo-Account-Block (falls noch in gespeichertem Header) */
+.ff-header__icons .wp-block-woocommerce-customer-account,
+.ff-header__actions .wp-block-woocommerce-customer-account {
+	position: relative;
 	display: grid !important;
 	place-items: center;
-	width: 100%;
-	height: 100%;
-	border: 0 !important;
-	border-radius: 0 !important;
-	background: transparent !important;
-	box-shadow: none !important;
+	width: 36px !important;
+	height: 36px !important;
+	border-radius: 50% !important;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent) !important;
+	background: #eceff1 !important;
 	overflow: hidden !important;
-}
-
-/* Logged-in Gravatar must not spill out of the 40×40 account face. */
-.ff-header__icons .ff-account .wc-block-customer-account__avatar,
-.ff-header__actions .ff-account .wc-block-customer-account__avatar,
-.ff-header__icons .ff-account .avatar,
-.ff-header__actions .ff-account .avatar {
-	display: none !important;
+	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
 }
 
 /* Icons via CSS so buttons stay stylable in the Site Editor */
@@ -2530,13 +2673,15 @@ body.ff-shape-rounded .ff-header__actions {
 	transition: transform 0.25s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-/* Burger → Close, wenn Mobile-Menü offen (Suche bleibt sichtbar) */
-body.is-ff-menu-open .ff-nav-burger .wp-block-button__link::before {
+/* Burger → Close, wenn Mobile-Menü / Mega offen (Suche bleibt sichtbar) */
+body.is-ff-menu-open .ff-nav-burger .wp-block-button__link::before,
+html.is-ff-mega-open .ff-nav-burger .wp-block-button__link::before {
 	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 6l12 12M18 6L6 18' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
 	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 6l12 12M18 6L6 18' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
-body.is-ff-menu-open .ff-header {
+body.is-ff-menu-open .ff-header,
+html.is-ff-mega-open .ff-header {
 	z-index: 80;
 }
 
@@ -2558,12 +2703,20 @@ body.is-ff-menu-open .ff-header {
 }
 
 /*
- * Cart wrapper must not paint a box — badge positions on the link face.
- * display:contents removes the second frame under Randlos/Eckig.
+ * Cart: keep a real box (not display:contents) so icon + badge CSS always match.
  */
 .ff-header__icons .ff-cart,
 .ff-header__actions .ff-cart {
-	display: contents !important;
+	display: flex !important;
+	align-items: center;
+	position: relative;
+	/* Lupe → Warenkorb enger (Hit-Areas 40px, Glyphs kleiner) */
+	margin: 0 0 0 -10px !important;
+	border: 0 !important;
+	background: transparent !important;
+	padding: 0 !important;
+	width: auto !important;
+	height: auto !important;
 }
 
 .ff-cart {
@@ -2750,6 +2903,40 @@ body.is-ff-menu-open .ff-header {
 .ff-search-layer.is-open .ff-search-shell {
 	opacity: 1;
 	transform: translateY(0);
+}
+
+/*
+ * Desktop: Suchpanel dockt unter der Lupe (rechtsbündig), wie Account-Popup.
+ * Feine Position setzt header-search.js (top/right).
+ */
+@media (min-width: 961px) {
+	.ff-search-backdrop {
+		background: rgba(14, 17, 20, 0.28);
+	}
+
+	.ff-search-layer-ui {
+		display: block;
+		padding: 0;
+		justify-content: unset;
+		align-items: unset;
+	}
+
+	.ff-search-shell {
+		position: absolute;
+		top: calc(var(--ff-header-top, 1em) + var(--ff-header-height, 56px) + 8px);
+		right: max(12px, var(--ff-gutter, 1em));
+		left: auto;
+		bottom: auto;
+		width: min(440px, calc(100vw - 16px));
+		max-height: min(70vh, calc(100dvh - 80px));
+		transform-origin: top right;
+		transform: translateY(-6px);
+		box-shadow: 0 16px 40px rgba(14, 17, 20, 0.22);
+	}
+
+	.ff-search-layer.is-open .ff-search-shell {
+		transform: translateY(0);
+	}
 }
 
 /* Mega-Unterseite im Suchpanel (Nav-Item mit Stil „Mega“) */
@@ -3728,10 +3915,19 @@ body.ff-header-style-edge .ff-menu-layer {
 	transform: translateX(100%);
 	transition: transform 0.4s var(--ff-ease);
 	color: var(--wp--preset--color--contrast, #0e1114);
+	box-sizing: border-box;
 }
 
 .ff-cart-layer.is-open .ff-cart-drawer {
 	transform: translateX(0);
+}
+
+/* Mobil/Tablet: Drawer nur 90% der Bildschirmbreite */
+@media (max-width: 960px) {
+	.ff-cart-drawer {
+		width: 90vw;
+		max-width: 90vw;
+	}
 }
 
 .ff-cart-drawer__head {
@@ -4067,7 +4263,40 @@ a.ff-cart-line__title:hover {
 	transform: translateY(0);
 }
 
-.ff-product-modal__close {
+/*
+ * Close sitzt am Layer (nicht im Modal) — Modal-transform würde sonst
+ * position:fixed/absolute verfälschen und den Button aus dem Viewport schieben.
+ * Desktop: oben rechts auf dem zentrierten Dialog.
+ */
+.ff-product-layer > .ff-product-modal__close {
+	position: absolute;
+	top: calc(50% - min(45vh, 45dvh) + 6px);
+	right: max(calc(1em + 6px), calc(50% - min(460px, calc(50% - 1em)) + 6px));
+	z-index: 6;
+	display: grid;
+	place-items: center;
+	width: 36px;
+	height: 36px;
+	padding: 0;
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
+	background: var(--ff-surface, #fff);
+	color: var(--wp--preset--color--contrast, #0e1114);
+	cursor: pointer;
+	box-shadow: 0 4px 12px rgba(14, 17, 20, 0.12);
+	/* Unsichtbar, bis Layer offen — vermeidet Flash */
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ff-product-layer.is-open > .ff-product-modal__close {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* Legacy: Close noch im Modal (ältere Caches) */
+.ff-product-modal > .ff-product-modal__close {
 	position: absolute;
 	top: 6px;
 	right: 6px;
@@ -4887,7 +5116,11 @@ body.is-ff-loading {
 		flex: 1 1 auto;
 		min-height: 0;
 		height: 100%;
-		overflow: hidden;
+		/* Eine Scrollfläche: Galerie scrollt mit dem Inhalt nach oben weg */
+		overflow-x: hidden;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior: contain;
 	}
 
 	/*
@@ -4904,6 +5137,7 @@ body.is-ff-loading {
 		margin: 0;
 		overflow: hidden;
 		background: var(--wp--preset--color--base, #f3f5f4);
+		touch-action: pan-y pinch-zoom;
 	}
 
 	.ff-product-modal__stage {
@@ -4981,37 +5215,48 @@ body.is-ff-loading {
 	.ff-product-modal__copy {
 		display: flex;
 		flex-direction: column;
-		flex: 1 1 auto;
+		flex: 0 0 auto;
 		min-height: 0;
 		height: auto;
 		max-height: none;
-		overflow: hidden;
+		overflow: visible;
 		padding: 0;
 		background: var(--ff-surface, #fff);
 	}
 
-	/* Close über dem Bottom-Sheet, im Backdrop-Bereich */
-	.ff-product-modal__close {
-		top: auto;
-		bottom: calc(100% + 10px);
-		right: 12px;
+	/*
+	 * Close immer oben im Viewport (safe-area), nie über dem Sheet hinaus
+	 * aus dem Bildschirm — Layer hat kein transform → absolute = Viewport.
+	 */
+	.ff-product-layer > .ff-product-modal__close,
+	.ff-product-modal > .ff-product-modal__close {
+		top: max(10px, env(safe-area-inset-top, 0px));
+		right: max(12px, env(safe-area-inset-right, 0px));
+		bottom: auto;
+		left: auto;
 		box-shadow: 0 4px 16px rgba(14, 17, 20, 0.28);
 	}
 
+	/* Sheet lässt oben Platz für Close (Fallback, falls Close wieder im Modal liegt) */
+	.ff-product-modal {
+		height: min(92vh, calc(100svh - 52px - env(safe-area-inset-top, 0px)));
+		max-height: min(92vh, calc(100svh - 52px - env(safe-area-inset-top, 0px)));
+	}
+
 	.ff-product-modal__scroll {
-		flex: 1 1 auto;
+		flex: 0 0 auto;
 		min-height: 0;
-		overflow-x: hidden;
-		overflow-y: auto;
-		-webkit-overflow-scrolling: touch;
+		overflow: visible;
 		padding: 16px 20px 12px;
 	}
 
-	/* Hinzufügen / Konfigurieren: immer unten im Popup fixiert */
+	/* CTA klebt am unteren Rand der Scrollfläche */
 	.ff-product-modal__actions {
-		position: relative;
+		position: sticky;
+		bottom: 0;
+		z-index: 6;
 		flex: 0 0 auto;
-		margin-top: auto;
+		margin-top: 0;
 		padding: 12px 20px calc(16px + env(safe-area-inset-bottom, 0px));
 		box-shadow: 0 -10px 28px -8px rgba(14, 17, 20, 0.34);
 		background: var(--ff-surface, #fff);
@@ -8027,7 +8272,7 @@ body.is-ff-ptable-open {
 
 .ff-product ul.products li.product:hover,
 .ff-product .wc-block-product-template .wc-block-product:hover {
-	transform: translateY(-4px);
+	transform: none;
 	border-color: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 28%, transparent);
 }
 
@@ -8109,7 +8354,7 @@ body.is-ff-ptable-open {
 .ff-product .wc-block-product-template .ff-prod-card__body {
 	display: grid;
 	gap: 6px;
-	padding: var(--wp--preset--spacing--20, 16px) !important;
+	padding: var(--wp--preset--spacing--20, 16px) var(--wp--preset--spacing--20, 16px) 8px !important;
 	text-align: left !important;
 	justify-items: stretch;
 }
@@ -8608,7 +8853,7 @@ body.is-ff-ptable-open {
 	}
 }
 
-/* —— Account overview popup —— */
+/* —— Account overview popup (unter Profil-Icon, rechtsbündig) —— */
 .ff-account-layer {
 	position: fixed;
 	inset: 0;
@@ -8625,32 +8870,41 @@ body.is-ff-ptable-open {
 .ff-account-backdrop {
 	position: absolute;
 	inset: 0;
-	background: rgba(14, 17, 20, 0.45);
+	background: rgba(14, 17, 20, 0.28);
 	opacity: 0;
-	transition: opacity 0.3s var(--ff-ease);
+	transition: opacity 0.25s var(--ff-ease);
 }
 
 .ff-account-layer.is-open .ff-account-backdrop {
 	opacity: 1;
 }
 
+/*
+ * Position kommt von JS (top/right unter dem Account-Icon).
+ * Fallback: oben rechts unter typischer Header-Höhe.
+ */
 .ff-account-modal {
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	translate: -50% -50%;
-	width: min(420px, calc(100% - 48px));
-	max-height: min(640px, calc(100vh - 48px));
+	top: calc(var(--ff-header-top, 1em) + var(--ff-header-height, 56px) + 8px);
+	right: max(12px, var(--ff-gutter, 1em));
+	left: auto;
+	bottom: auto;
+	translate: none;
+	width: min(320px, calc(100vw - 16px));
+	max-height: min(70vh, calc(100dvh - 80px));
 	display: flex;
 	flex-direction: column;
-	background: var(--ff-trust-surface);
+	background: var(--ff-trust-surface, var(--ff-surface, #fff));
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
 	border-radius: var(--wp--custom--radius--md, 16px);
-	box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
-	color: var(--ff-trust-ink);
+	box-shadow: 0 16px 40px rgba(14, 17, 20, 0.22);
+	color: var(--ff-trust-ink, var(--wp--preset--color--contrast, #0e1114));
 	opacity: 0;
-	transform: translateY(10px);
-	transition: opacity 0.3s var(--ff-ease), transform 0.3s var(--ff-ease);
+	transform: translateY(-6px);
+	transform-origin: top right;
+	transition: opacity 0.22s var(--ff-ease), transform 0.22s var(--ff-ease);
 	overflow: hidden;
+	box-sizing: border-box;
 }
 
 .ff-account-layer.is-open .ff-account-modal {
@@ -8726,8 +8980,16 @@ body.is-ff-ptable-open {
 	gap: 4px;
 }
 
-.ff-account-modal__full {
-	margin-top: 16px;
+/* Schlägt Shared-Textlink-:is(… a, .ff-account-modal__full) (Spezifität 0,1,1) */
+.ff-account-modal a.ff-account-modal__full {
+	display: block !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	box-sizing: border-box;
+	margin: calc(16px + 1em) 0 0 !important;
+	padding: 16px 2px 6px !important;
+	border: 0 !important;
+	border-top: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 14%, transparent) !important;
 }
 
 .ff-account-modal__login .woocommerce-form-login,
@@ -8817,24 +9079,12 @@ body.is-ff-ptable-open {
 	margin: 16px 0 0;
 }
 
+/* Mobil/Tablet: gleiches Andocken unter dem Profil-Icon (Position via JS) */
 @media (max-width: 960px) {
-	/* Full-screen panel from top — not a bottom sheet */
 	.ff-account-modal {
-		top: 0;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		translate: none;
-		width: 100%;
-		height: 100%;
-		max-height: none;
-		border-radius: 0;
-		box-shadow: none;
-		transform: translateY(12px);
-	}
-
-	.ff-account-layer.is-open .ff-account-modal {
-		transform: translateY(0);
+		width: min(300px, calc(100vw - 16px));
+		border-radius: var(--wp--custom--radius--md, 16px);
+		box-shadow: 0 16px 40px rgba(14, 17, 20, 0.24);
 	}
 }
 
@@ -9151,12 +9401,31 @@ body.is-ff-ptable-open {
 		gap: 10px;
 		min-width: 0;
 		align-items: center;
+		/* Burger näher an den linken Rand */
+		padding-left: 6px;
+		padding-right: 12px;
+	}
+
+	body.ff-header-style-edge .ff-header__bar,
+	.ff-header.ff-header--edge .ff-header__bar {
+		padding-left: 0.45em;
+		padding-right: var(--ff-gutter, 1em);
 	}
 
 	.ff-header__brand {
 		min-width: 0;
 		flex: 1 1 auto;
 		align-self: center;
+		gap: 12px;
+	}
+
+	/* Hit-Area etwas schmaler → weniger Leerraum links vom Glyph */
+	.ff-header .ff-header__brand .ff-nav-burger.wp-block-button .wp-block-button__link.wp-element-button,
+	.ff-header .ff-header__brand .ff-nav-burger.is-style-fill .wp-block-button__link.wp-element-button {
+		width: 34px !important;
+		min-width: 34px !important;
+		max-width: 34px !important;
+		margin-left: -2px !important;
 	}
 
 	.ff-header__brand .wp-block-site-logo img {
@@ -9168,7 +9437,7 @@ body.is-ff-ptable-open {
 	.ff-header__icons,
 	.ff-header__actions {
 		align-self: center;
-		gap: 8px;
+		gap: 0 !important;
 	}
 
 	/*
@@ -9242,12 +9511,13 @@ body.is-ff-ptable-open {
 	.ff-header__icons .ff-search-toggle .wp-block-button__link,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link,
 	.ff-header__icons .ff-nav-burger .wp-block-button__link,
-	.ff-header__actions .ff-nav-burger .wp-block-button__link {
-		width: 48px !important;
-		min-width: 48px !important;
-		max-width: 48px !important;
-		height: 48px !important;
-		min-height: 48px !important;
+	.ff-header__actions .ff-nav-burger .wp-block-button__link,
+	.ff-header__brand .ff-nav-burger .wp-block-button__link {
+		width: 40px !important;
+		min-width: 40px !important;
+		max-width: 40px !important;
+		height: 40px !important;
+		min-height: 40px !important;
 		padding: 0 !important;
 		font-size: 0 !important;
 	}
@@ -9265,7 +9535,8 @@ body.is-ff-ptable-open {
 	.ff-header__icons .ff-search-toggle .wp-block-button__link::before,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link::before,
 	.ff-header__icons .ff-nav-burger .wp-block-button__link::before,
-	.ff-header__actions .ff-nav-burger .wp-block-button__link::before {
+	.ff-header__actions .ff-nav-burger .wp-block-button__link::before,
+	.ff-header__brand .ff-nav-burger .wp-block-button__link::before {
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -9284,33 +9555,35 @@ body.is-ff-ptable-open {
 		height: 18px;
 	}
 
-	/* Mobile: Suche + Burger in der Leiste (nur Icons); Account/Cart nur im Menü */
-	.ff-header .ff-account,
-	.ff-header .wp-block-woocommerce-customer-account,
-	.ff-header .wp-block-woocommerce-customer-account.ff-account,
-	.ff-header__icons .ff-account,
-	.ff-header__icons .wp-block-woocommerce-customer-account,
-	.ff-header__icons .wp-block-woocommerce-customer-account.ff-account,
-	.ff-header__icons .ff-header__cart-btns,
-	.ff-header__icons .ff-cart,
-	.ff-header__actions .ff-account,
-	.ff-header__actions .wp-block-woocommerce-customer-account,
-	.ff-header__actions .wp-block-woocommerce-customer-account.ff-account,
-	.ff-header__actions .ff-header__cart-btns,
-	.ff-header__actions .ff-cart {
-		display: none !important;
-	}
-
+	/* Mobile: Burger links am Logo · rechts Suche · Warenkorb · Account */
 	.ff-header__icons .ff-search-toggle,
 	.ff-header__actions .ff-search-toggle {
 		display: flex !important;
 	}
 
-	.ff-nav-burger {
+	.ff-header__icons .ff-account,
+	.ff-header__actions .ff-account,
+	.ff-header__icons .ff-header__account-btns,
+	.ff-header__actions .ff-header__account-btns {
 		display: flex !important;
 	}
 
-	/* Mobile-Icons ohne Kontur / Fläche — nur Glyph */
+	.ff-header__icons .wp-block-woocommerce-customer-account,
+	.ff-header__actions .wp-block-woocommerce-customer-account {
+		display: grid !important;
+	}
+
+	.ff-header__icons .ff-header__cart-btns,
+	.ff-header__actions .ff-header__cart-btns {
+		display: flex !important;
+	}
+
+	.ff-nav-burger,
+	.ff-header__brand .ff-nav-burger {
+		display: flex !important;
+	}
+
+	/* Mobile-Icons ohne Kontur / Fläche — nur Glyph (Account behält den Kreis) */
 	.ff-header__icons,
 	.ff-header__actions {
 		border: 0 !important;
@@ -9318,23 +9591,31 @@ body.is-ff-ptable-open {
 		background: transparent !important;
 		box-shadow: none !important;
 		padding: 0 !important;
-		gap: 4px;
+		gap: 0 !important;
 	}
 
 	.ff-header__icons .ff-search-toggle .wp-block-button__link,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link,
 	.ff-header__icons .ff-nav-burger .wp-block-button__link,
 	.ff-header__actions .ff-nav-burger .wp-block-button__link,
+	.ff-header__brand .ff-nav-burger .wp-block-button__link,
+	.ff-header__icons .ff-cart .wp-block-button__link,
+	.ff-header__actions .ff-cart .wp-block-button__link,
 	.ff-header__icons .ff-search-toggle.is-style-fill .wp-block-button__link,
 	.ff-header__actions .ff-search-toggle.is-style-fill .wp-block-button__link,
 	.ff-header__icons .ff-nav-burger.is-style-fill .wp-block-button__link,
-	.ff-header__actions .ff-nav-burger.is-style-fill .wp-block-button__link {
+	.ff-header__actions .ff-nav-burger.is-style-fill .wp-block-button__link,
+	.ff-header__brand .ff-nav-burger.is-style-fill .wp-block-button__link,
+	.ff-header__icons .ff-cart.is-style-fill .wp-block-button__link,
+	.ff-header__actions .ff-cart.is-style-fill .wp-block-button__link {
 		border: 0 !important;
 		border-width: 0 !important;
 		border-color: transparent !important;
 		background: transparent !important;
 		background-color: transparent !important;
 		box-shadow: none !important;
+		/* Button-Theme setzt oft Weiß — Glyph muss Contrast wie Suche/Burger sein */
+		color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
 		width: 40px !important;
 		min-width: 40px !important;
 		max-width: 40px !important;
@@ -9342,14 +9623,70 @@ body.is-ff-ptable-open {
 		padding: 0 !important;
 	}
 
+	/* Lupe → Warenkorb enger (nach Face-Lock, sonst wird’s überschrieben) */
+	.ff-header__icons .ff-cart,
+	.ff-header__actions .ff-cart {
+		margin-left: -12px !important;
+	}
+
+	.ff-header__icons .ff-search-toggle .wp-block-button__link::before,
+	.ff-header__actions .ff-search-toggle .wp-block-button__link::before,
+	.ff-header__icons .ff-nav-burger .wp-block-button__link::before,
+	.ff-header__actions .ff-nav-burger .wp-block-button__link::before,
+	.ff-header__brand .ff-nav-burger .wp-block-button__link::before,
+	.ff-header__icons .ff-cart .wp-block-button__link::before,
+	.ff-header__actions .ff-cart .wp-block-button__link::before {
+		background-color: currentColor !important;
+	}
+
+	/* Profil: hellgrauer Kreis ganz rechts — nicht transparent wie Suche/Cart */
+	.ff-header__icons .ff-account .wp-block-button__link,
+	.ff-header__icons .ff-account.is-style-fill .wp-block-button__link,
+	.ff-header__actions .ff-account .wp-block-button__link,
+	.ff-header__actions .ff-account.is-style-fill .wp-block-button__link {
+		border-radius: 50% !important;
+		border-style: solid !important;
+		border-width: 1px !important;
+		border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent) !important;
+		background: #eceff1 !important;
+		background-color: #eceff1 !important;
+		box-shadow: none !important;
+		color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
+		width: 36px !important;
+		min-width: 36px !important;
+		max-width: 36px !important;
+		height: 36px !important;
+		padding: 0 !important;
+		overflow: hidden !important;
+	}
+
+	.ff-header__icons .ff-account .wp-block-button__link::before,
+	.ff-header__actions .ff-account .wp-block-button__link::before {
+		background-color: currentColor !important;
+	}
+
 	.ff-header__icons .ff-search-toggle .wp-block-button__link:hover,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link:hover,
 	.ff-header__icons .ff-nav-burger .wp-block-button__link:hover,
-	.ff-header__actions .ff-nav-burger .wp-block-button__link:hover {
+	.ff-header__actions .ff-nav-burger .wp-block-button__link:hover,
+	.ff-header__brand .ff-nav-burger .wp-block-button__link:hover,
+	.ff-header__icons .ff-cart .wp-block-button__link:hover,
+	.ff-header__actions .ff-cart .wp-block-button__link:hover {
 		background: transparent !important;
 		transform: none;
 		filter: none;
 		opacity: 0.75;
+		color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
+	}
+
+	.ff-header__icons .ff-account .wp-block-button__link:hover,
+	.ff-header__actions .ff-account .wp-block-button__link:hover {
+		background: #e4e7ea !important;
+		background-color: #e4e7ea !important;
+		transform: none;
+		filter: none;
+		opacity: 0.9;
+		color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
 	}
 
 	.ff-cart__count {
@@ -9781,7 +10118,7 @@ a.ff-collection-card,
 	color: #fff;
 }
 
-/* Titles-only: no images — centered H2 on plain cards */
+/* Titles-only: centered category name only (link stays visually hidden, card remains clickable) */
 .ff-pattern-collections.ff-collections-titles .ff-collection-card,
 .ff-pattern-collections.ff-collections-titles .wp-block-group.ff-collection-card,
 .ff-collection-card.ff-collection-card--titles,
@@ -9793,12 +10130,17 @@ a.ff-collection-card,
 	color: var(--wp--preset--color--contrast, #0e1114);
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
 	min-height: 160px;
+	transition:
+		border-color 0.3s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		box-shadow 0.3s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		background-color 0.3s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		color 0.3s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-.ff-pattern-collections.ff-collections-titles .ff-collection-card__bg,
-.ff-pattern-collections.ff-collections-titles .ff-collection-card::after,
-.ff-collection-card.ff-collection-card--titles .ff-collection-card__bg,
-.ff-collection-card.ff-collection-card--titles::after {
+.ff-pattern-collections.ff-collections-titles .ff-collection-card__bg:not(.ff-collection-card__bg--blur),
+.ff-pattern-collections.ff-collections-titles .ff-collection-card:not(.ff-collection-card--titles-blur)::after,
+.ff-collection-card.ff-collection-card--titles:not(.ff-collection-card--titles-blur) .ff-collection-card__bg:not(.ff-collection-card__bg--blur),
+.ff-collection-card.ff-collection-card--titles:not(.ff-collection-card--titles-blur)::after {
 	display: none !important;
 }
 
@@ -9813,10 +10155,13 @@ a.ff-collection-card,
 .ff-collection-card.ff-collection-card--titles h2,
 .ff-collection-card.ff-collection-card--titles h3,
 .ff-collection-card.ff-collection-card--titles .wp-block-heading {
+	position: relative;
+	z-index: 1;
 	margin: 0;
 	text-align: center;
 	color: inherit;
 	font-size: clamp(1.25rem, 1.8vw, 1.625rem);
+	transition: letter-spacing 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .ff-pattern-collections.ff-collections-titles .ff-collection-card:hover,
@@ -9825,8 +10170,80 @@ a.ff-collection-card,
 .ff-collection-card.ff-collection-card--titles:hover,
 .ff-collection-card.ff-collection-card--titles:focus-within,
 .ff-collection-card.ff-collection-card--titles:focus-visible {
-	color: var(--wp--preset--color--contrast, #0e1114);
-	border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 28%, transparent);
+	color: var(--wp--preset--color--brand, #377530);
+	border-color: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 45%, transparent);
+	box-shadow: 0 10px 28px color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
+	background: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 6%, var(--wp--preset--color--base, #f3f5f4)) !important;
+}
+
+.ff-pattern-collections.ff-collections-titles .ff-collection-card:hover .wp-block-heading,
+.ff-collection-card.ff-collection-card--titles:hover .wp-block-heading {
+	letter-spacing: 0.02em;
+}
+
+/* Titles + blurred category image */
+.ff-pattern-collections.ff-collections-titles-blur .ff-collection-card.ff-collection-card--titles-blur,
+.ff-collection-card.ff-collection-card--titles.ff-collection-card--titles-blur {
+	background: #1a1d1c !important;
+	color: #fff;
+	border-color: transparent;
+}
+
+.ff-pattern-collections.ff-collections-titles-blur .ff-collection-card--titles-blur .ff-collection-card__bg--blur,
+.ff-collection-card.ff-collection-card--titles-blur .ff-collection-card__bg--blur {
+	display: block !important;
+	z-index: -2;
+	filter: blur(14px);
+	transform: scale(1.18);
+	transform-origin: center center;
+	transition:
+		transform 0.55s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		filter 0.55s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ff-pattern-collections.ff-collections-titles-blur .ff-collection-card--titles-blur::after,
+.ff-collection-card.ff-collection-card--titles-blur::after {
+	display: block !important;
+	z-index: -1;
+	background: linear-gradient(
+		160deg,
+		rgba(14, 17, 20, 0.55) 0%,
+		rgba(14, 17, 20, 0.72) 100%
+	);
+	transition: background 0.4s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ff-pattern-collections.ff-collections-titles-blur .ff-collection-card--titles-blur .wp-block-heading,
+.ff-collection-card.ff-collection-card--titles-blur .wp-block-heading {
+	color: #fff;
+	text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+}
+
+.ff-pattern-collections.ff-collections-titles-blur .ff-collection-card--titles-blur:hover,
+.ff-pattern-collections.ff-collections-titles-blur .ff-collection-card--titles-blur:focus-within,
+.ff-collection-card.ff-collection-card--titles-blur:hover,
+.ff-collection-card.ff-collection-card--titles-blur:focus-within {
+	color: #fff;
+	background: #1a1d1c !important;
+	border-color: color-mix(in srgb, #fff 22%, transparent);
+	box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+}
+
+.ff-pattern-collections.ff-collections-titles-blur .ff-collection-card--titles-blur:hover .ff-collection-card__bg--blur,
+.ff-collection-card.ff-collection-card--titles-blur:hover .ff-collection-card__bg--blur,
+.ff-collection-card.ff-collection-card--titles-blur:focus-within .ff-collection-card__bg--blur {
+	filter: blur(10px);
+	transform: scale(1.26);
+}
+
+.ff-pattern-collections.ff-collections-titles-blur .ff-collection-card--titles-blur:hover::after,
+.ff-collection-card.ff-collection-card--titles-blur:hover::after,
+.ff-collection-card.ff-collection-card--titles-blur:focus-within::after {
+	background: linear-gradient(
+		160deg,
+		rgba(14, 17, 20, 0.4) 0%,
+		rgba(14, 17, 20, 0.62) 100%
+	);
 }
 
 .ff-collection-card > p:not(.ff-collection-card__meta) {
@@ -9887,6 +10304,38 @@ a.ff-collection-card,
 	font-size: inherit;
 	color: inherit;
 	text-decoration: underline;
+}
+
+/* Titles-only: „Zur Kollektion“ auch im Editor aus — nur der Name bleibt sichtbar */
+.ff-collection-card__meta--hidden,
+.ff-pattern-collections.ff-collections-titles .ff-collection-card__meta,
+.ff-collection-card.ff-collection-card--titles .ff-collection-card__meta,
+.editor-styles-wrapper .ff-pattern-collections.ff-collections-titles .ff-collection-card__meta,
+.block-editor-iframe__body .ff-pattern-collections.ff-collections-titles .ff-collection-card__meta,
+.editor-styles-wrapper .ff-collection-card--titles .ff-collection-card__meta,
+.block-editor-iframe__body .ff-collection-card--titles .ff-collection-card__meta {
+	position: absolute !important;
+	inset: 0 !important;
+	z-index: 2;
+	margin: 0 !important;
+	padding: 0 !important;
+	font-size: 0 !important;
+	line-height: 0 !important;
+	color: transparent !important;
+	overflow: hidden;
+}
+
+.editor-styles-wrapper .ff-pattern-collections.ff-collections-titles .ff-collection-card__meta a,
+.block-editor-iframe__body .ff-pattern-collections.ff-collections-titles .ff-collection-card__meta a,
+.editor-styles-wrapper .ff-collection-card--titles .ff-collection-card__meta a,
+.block-editor-iframe__body .ff-collection-card--titles .ff-collection-card__meta a,
+.ff-collection-card__meta--hidden a {
+	display: block !important;
+	width: 100% !important;
+	height: 100% !important;
+	font-size: 0 !important;
+	color: transparent !important;
+	text-decoration: none !important;
 }
 
 .editor-styles-wrapper .ff-collection-card:hover .ff-collection-card__bg,
@@ -12115,7 +12564,7 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 .ff-shop .ff-shop__collection:not(.ff-prod-slider__track) .wc-block-product:hover,
 .ff-shop .ff-shop__collection:not(.ff-prod-slider__track) .wc-block-product-template__product:hover,
 .ff-shop .ff-shop__collection:not(.ff-prod-slider__track) li.wc-block-product:hover {
-	transform: translate3d(0, -8px, 0);
+	transform: none;
 	border-color: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 25%, transparent);
 	overflow: hidden;
 }
@@ -12195,10 +12644,7 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	transition: opacity 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-.ff-shop__collection .wc-block-product::after,
-.ff-shop__collection .wc-block-product-template__product::after,
-.ff-shop__collection li.wc-block-product::after {
-	content: "Ansehen";
+.ff-shop__collection .ff-prod-card__ansehen {
 	position: absolute;
 	left: 0;
 	right: 0;
@@ -12224,10 +12670,12 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	line-height: 1.3;
 	text-align: left;
 	text-transform: uppercase;
+	text-decoration: none !important;
 	white-space: nowrap;
 	opacity: 0;
 	translate: 0 12px;
 	pointer-events: none;
+	cursor: pointer;
 	transition:
 		opacity 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
 		translate 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
@@ -12240,17 +12688,21 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	opacity: 1;
 }
 
-.ff-shop__collection .wc-block-product:hover::after,
-.ff-shop__collection .wc-block-product-template__product:hover::after,
-.ff-shop__collection li.wc-block-product:hover::after {
+.ff-shop__collection .wc-block-product:hover .ff-prod-card__ansehen,
+.ff-shop__collection .wc-block-product-template__product:hover .ff-prod-card__ansehen,
+.ff-shop__collection li.wc-block-product:hover .ff-prod-card__ansehen,
+.ff-shop__collection .ff-prod-card__ansehen:focus-visible {
 	opacity: 1;
 	translate: 0 0;
 	color: var(--wp--preset--color--brand, #377530);
+	pointer-events: auto;
 }
 
 .ff-shop__collection .ff-prod-card__body {
 	display: grid;
 	gap: 6px;
+	/* Inline spacing-20 unten war zu groß — enger an die Lieferzeile */
+	padding-bottom: 8px !important;
 	text-align: left !important;
 	justify-items: stretch;
 }
@@ -13169,7 +13621,7 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 .ff-pattern-products--woo .ff-prod-slider__track .wc-block-product:hover,
 .ff-pattern-products--woo .ff-prod-slider__track .wc-block-product-template__product:hover,
 .ff-pattern-products--woo .ff-prod-slider__track li:hover {
-	transform: translate3d(0, -8px, 0);
+	transform: none;
 	border-color: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 25%, transparent);
 	overflow: hidden;
 }
@@ -13254,10 +13706,7 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	transition: opacity 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product::after,
-.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product-template__product::after,
-.ff-pattern-products--woo .ff-prod-slider__track li.wc-block-product::after {
-	content: "Ansehen";
+.ff-pattern-products--woo .ff-prod-slider__track .ff-prod-card__ansehen {
 	position: absolute;
 	left: 0;
 	right: 0;
@@ -13283,10 +13732,12 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	line-height: 1.3;
 	text-align: left;
 	text-transform: uppercase;
+	text-decoration: none !important;
 	white-space: nowrap;
 	opacity: 0;
 	translate: 0 12px;
 	pointer-events: none;
+	cursor: pointer;
 	transition:
 		opacity 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
 		translate 0.35s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
@@ -13299,17 +13750,20 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	opacity: 1;
 }
 
-.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product:hover::after,
-.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product-template__product:hover::after,
-.ff-pattern-products--woo .ff-prod-slider__track li.wc-block-product:hover::after {
+.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product:hover .ff-prod-card__ansehen,
+.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product-template__product:hover .ff-prod-card__ansehen,
+.ff-pattern-products--woo .ff-prod-slider__track li.wc-block-product:hover .ff-prod-card__ansehen,
+.ff-pattern-products--woo .ff-prod-slider__track .ff-prod-card__ansehen:focus-visible {
 	opacity: 1;
 	translate: 0 0;
 	color: var(--wp--preset--color--brand, #377530);
+	pointer-events: auto;
 }
 
 .ff-pattern-products--woo .ff-prod-card__body {
 	display: grid;
 	gap: 6px;
+	padding-bottom: 8px !important;
 	text-align: left !important;
 	justify-items: stretch;
 }
@@ -13851,4 +14305,147 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	.ff-band {
 		border-radius: 24px;
 	}
+}
+
+/* —— Header icon face lock (beats theme.json button fills) ——
+ * Search / Cart / Account / Burger must never render as green text pills.
+ */
+.ff-header .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button,
+.ff-header .ff-cart.wp-block-button .wp-block-button__link.wp-element-button,
+.ff-header .ff-account.wp-block-button .wp-block-button__link.wp-element-button,
+.ff-header .ff-nav-burger.wp-block-button .wp-block-button__link.wp-element-button,
+.ff-header .ff-search-toggle.is-style-fill .wp-block-button__link.wp-element-button,
+.ff-header .ff-cart.is-style-fill .wp-block-button__link.wp-element-button,
+.ff-header .ff-account.is-style-fill .wp-block-button__link.wp-element-button,
+.ff-header .ff-nav-burger.is-style-fill .wp-block-button__link.wp-element-button,
+.ff-header .ff-header__brand .ff-nav-burger.wp-block-button .wp-block-button__link.wp-element-button,
+.ff-header .ff-header__brand .ff-nav-burger.is-style-fill .wp-block-button__link.wp-element-button {
+	position: relative !important;
+	display: grid !important;
+	place-items: center !important;
+	width: 40px !important;
+	min-width: 40px !important;
+	max-width: 40px !important;
+	height: 40px !important;
+	min-height: 40px !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	border-style: solid !important;
+	border-width: 0 !important;
+	border-color: transparent !important;
+	border-radius: 0 !important;
+	background: transparent !important;
+	background-color: transparent !important;
+	background-image: none !important;
+	box-shadow: none !important;
+	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
+	font-size: 0 !important;
+	line-height: 0 !important;
+	letter-spacing: 0 !important;
+	text-decoration: none !important;
+	text-transform: none !important;
+	overflow: visible !important;
+	white-space: nowrap !important;
+}
+
+.ff-header .ff-account.wp-block-button .wp-block-button__link.wp-element-button,
+.ff-header .ff-account.is-style-fill .wp-block-button__link.wp-element-button {
+	width: 36px !important;
+	min-width: 36px !important;
+	max-width: 36px !important;
+	height: 36px !important;
+	min-height: 36px !important;
+	border-radius: 50% !important;
+	border-width: 1px !important;
+	border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent) !important;
+	background: #eceff1 !important;
+	background-color: #eceff1 !important;
+	overflow: hidden !important;
+}
+
+.ff-header .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button::before,
+.ff-header .ff-cart.wp-block-button .wp-block-button__link.wp-element-button::before,
+.ff-header .ff-account.wp-block-button .wp-block-button__link.wp-element-button::before,
+.ff-header .ff-nav-burger.wp-block-button .wp-block-button__link.wp-element-button::before,
+.ff-header .ff-header__brand .ff-nav-burger .wp-block-button__link.wp-element-button::before {
+	content: "" !important;
+	position: absolute !important;
+	top: 50% !important;
+	left: 50% !important;
+	translate: -50% -50% !important;
+	width: 18px !important;
+	height: 18px !important;
+	flex-shrink: 0 !important;
+	background-color: currentColor !important;
+	background-image: none !important;
+	/* Kein mask-Shorthand: setzt mask-image auf none und erzeugt schwarze Quadrate */
+	-webkit-mask-position: center !important;
+	-webkit-mask-size: contain !important;
+	-webkit-mask-repeat: no-repeat !important;
+	mask-position: center !important;
+	mask-size: contain !important;
+	mask-repeat: no-repeat !important;
+}
+
+.ff-header .ff-search-toggle .wp-block-button__link.wp-element-button::before {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='11' cy='11' r='7' stroke='black' stroke-width='1.75'/%3E%3Cpath d='M20 20l-3-3' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='11' cy='11' r='7' stroke='black' stroke-width='1.75'/%3E%3Cpath d='M20 20l-3-3' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+}
+
+.ff-header .ff-cart .wp-block-button__link.wp-element-button::before {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4 7h16l-1.2 12.2A2 2 0 0 1 16.8 21H7.2a2 2 0 0 1-2-1.8L4 7z' stroke='black' stroke-width='1.75' stroke-linejoin='round'/%3E%3Cpath d='M8 7a4 4 0 0 1 8 0' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4 7h16l-1.2 12.2A2 2 0 0 1 16.8 21H7.2a2 2 0 0 1-2-1.8L4 7z' stroke='black' stroke-width='1.75' stroke-linejoin='round'/%3E%3Cpath d='M8 7a4 4 0 0 1 8 0' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+}
+
+.ff-header .ff-account .wp-block-button__link.wp-element-button::before {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='8' r='3.25' stroke='black' stroke-width='1.75'/%3E%3Cpath d='M5.5 19.5c1.6-3.2 4-4.75 6.5-4.75s4.9 1.55 6.5 4.75' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='8' r='3.25' stroke='black' stroke-width='1.75'/%3E%3Cpath d='M5.5 19.5c1.6-3.2 4-4.75 6.5-4.75s4.9 1.55 6.5 4.75' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+}
+
+.ff-header .ff-nav-burger .wp-block-button__link.wp-element-button::before {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+	width: 22px !important;
+	height: 22px !important;
+}
+
+body.is-ff-menu-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element-button::before,
+html.is-ff-mega-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element-button::before {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 6l12 12M18 6L6 18' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 6l12 12M18 6L6 18' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+}
+
+.ff-header .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button:hover,
+.ff-header .ff-cart.wp-block-button .wp-block-button__link.wp-element-button:hover,
+.ff-header .ff-nav-burger.wp-block-button .wp-block-button__link.wp-element-button:hover {
+	background: transparent !important;
+	background-color: transparent !important;
+	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
+	opacity: 0.75;
+	transform: none !important;
+	filter: none !important;
+}
+
+.ff-header .ff-account.wp-block-button .wp-block-button__link.wp-element-button:hover {
+	background: #e4e7ea !important;
+	background-color: #e4e7ea !important;
+	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
+	opacity: 0.9;
+	transform: none !important;
+	filter: none !important;
+}
+
+/* Lupe + Warenkorb enger (schlägt Icon-Face-Lock 40px) */
+.ff-header .ff-header__icons .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button,
+.ff-header .ff-header__icons .ff-search-toggle.is-style-fill .wp-block-button__link.wp-element-button,
+.ff-header .ff-header__icons .ff-cart.wp-block-button .wp-block-button__link.wp-element-button,
+.ff-header .ff-header__icons .ff-cart.is-style-fill .wp-block-button__link.wp-element-button {
+	width: 34px !important;
+	min-width: 34px !important;
+	max-width: 34px !important;
+}
+
+.ff-header .ff-header__icons .ff-cart.wp-block-button .wp-block-button__link.wp-element-button,
+.ff-header .ff-header__icons .ff-cart.is-style-fill .wp-block-button__link.wp-element-button {
+	margin-left: -6px !important;
 }

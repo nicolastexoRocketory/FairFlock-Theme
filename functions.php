@@ -32,6 +32,7 @@ require_once FAIRFLOCK_DIR . '/inc/editor-product-collection.php';
 require_once FAIRFLOCK_DIR . '/inc/editor-collections.php';
 require_once FAIRFLOCK_DIR . '/inc/performance.php';
 require_once FAIRFLOCK_DIR . '/inc/woocommerce.php';
+require_once FAIRFLOCK_DIR . '/inc/order-number.php';
 require_once FAIRFLOCK_DIR . '/inc/checkout.php';
 require_once FAIRFLOCK_DIR . '/inc/product-layout.php';
 require_once FAIRFLOCK_DIR . '/inc/category-overview.php';

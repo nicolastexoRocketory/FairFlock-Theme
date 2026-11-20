@@ -66,15 +66,42 @@
 		return el.closest(TOUCH_ZOOM_SEL);
 	}
 
+	function clampPct(n) {
+		return Math.max(0, Math.min(100, n));
+	}
+
 	function setOrigin(host, clientX, clientY) {
 		var rect = host.getBoundingClientRect();
 		if (!rect.width || !rect.height) {
 			return;
 		}
-		var x = ((clientX - rect.left) / rect.width) * 100;
-		var y = ((clientY - rect.top) / rect.height) * 100;
-		x = Math.max(0, Math.min(100, x));
-		y = Math.max(0, Math.min(100, y));
+		var x = clampPct(((clientX - rect.left) / rect.width) * 100);
+		var y = clampPct(((clientY - rect.top) / rect.height) * 100);
+		host.style.setProperty("--ff-zoom-x", x.toFixed(2) + "%");
+		host.style.setProperty("--ff-zoom-y", y.toFixed(2) + "%");
+	}
+
+	function readOriginPct(host) {
+		var x = parseFloat(host.style.getPropertyValue("--ff-zoom-x"));
+		var y = parseFloat(host.style.getPropertyValue("--ff-zoom-y"));
+		return {
+			x: Number.isFinite(x) ? x : 50,
+			y: Number.isFinite(y) ? y : 50
+		};
+	}
+
+	/**
+	 * Touch-Pan: Fokus wandert umgekehrt zur Fingerbewegung
+	 * (Finger nach rechts → Bildinhalt nach rechts / Zoom-Ursprung nach links).
+	 */
+	function panOriginInverted(host, clientX, clientY, lastX, lastY) {
+		var rect = host.getBoundingClientRect();
+		if (!rect.width || !rect.height) {
+			return;
+		}
+		var origin = readOriginPct(host);
+		var x = clampPct(origin.x - ((clientX - lastX) / rect.width) * 100);
+		var y = clampPct(origin.y - ((clientY - lastY) / rect.height) * 100);
 		host.style.setProperty("--ff-zoom-x", x.toFixed(2) + "%");
 		host.style.setProperty("--ff-zoom-y", y.toFixed(2) + "%");
 	}
@@ -160,6 +187,8 @@
 			host: host,
 			startX: t.clientX,
 			startY: t.clientY,
+			lastX: t.clientX,
+			lastY: t.clientY,
 			moved: false,
 			zooming: host.classList.contains("is-ff-zooming")
 		};
@@ -176,7 +205,15 @@
 			touchState.moved = true;
 		}
 		if (touchState.zooming && touchState.host) {
-			setOrigin(touchState.host, t.clientX, t.clientY);
+			panOriginInverted(
+				touchState.host,
+				t.clientX,
+				t.clientY,
+				touchState.lastX,
+				touchState.lastY
+			);
+			touchState.lastX = t.clientX;
+			touchState.lastY = t.clientY;
 			if (event.cancelable) {
 				event.preventDefault();
 			}

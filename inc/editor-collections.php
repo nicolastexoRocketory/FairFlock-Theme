@@ -3,7 +3,7 @@
  * Collections editor UX — exclude categories + titles-only mode.
  *
  * core/group.ff-pattern-collections: className tokens
- * ff-collections-exclude-{id}-{id}-… · ff-collections-titles
+ * ff-collections-exclude-{id}-{id}-… · ff-collections-titles · ff-collections-titles-blur
  *
  * @package FairFlock
  * @since 0.9.250
@@ -48,12 +48,15 @@ function fairflock_enqueue_collections_editor_assets() {
 		'fairflockCollections',
 		array(
 			'i18n' => array(
-				'panel'      => __( 'Kollektionen', 'fairflock' ),
-				'titlesOnly' => __( 'Nur Titel (ohne Bilder)', 'fairflock' ),
-				'titlesHelp' => __( 'Karten zeigen nur den Kategorie-Titel als H2, zentriert — ohne Bild und Beschreibung.', 'fairflock' ),
-				'exclude'    => __( 'Kategorien ausschließen', 'fairflock' ),
-				'loading'    => __( 'Kategorien werden geladen…', 'fairflock' ),
-				'hint'       => __( 'Ausgeschlossene Kategorien erscheinen auf der Website nicht. Die Karten im Editor dienen als Platzhalter.', 'fairflock' ),
+				'panel'          => __( 'Kollektionen', 'fairflock' ),
+				'titlesOnly'     => __( 'Nur Titel (ohne Bilder)', 'fairflock' ),
+				'titlesHelp'     => __( 'Karten zeigen nur den Kategorie-Namen, zentriert — ohne sichtbaren Link und Beschreibung.', 'fairflock' ),
+				'titlesBlur'           => __( 'Weichgezeichnetes Hintergrundbild anzeigen', 'fairflock' ),
+				'titlesBlurHelp'       => __( 'Kategoriebild unscharf hinter dem Titel, mit Overlay für Lesbarkeit.', 'fairflock' ),
+				'titlesBlurNeedTitles' => __( 'Nur verfügbar, wenn „Nur Titel“ aktiv ist.', 'fairflock' ),
+				'exclude'        => __( 'Kategorien ausschließen', 'fairflock' ),
+				'loading'        => __( 'Kategorien werden geladen…', 'fairflock' ),
+				'hint'           => __( 'Ausgeschlossene Kategorien erscheinen auf der Website nicht. Die Karten im Editor dienen als Platzhalter.', 'fairflock' ),
 			),
 		)
 	);

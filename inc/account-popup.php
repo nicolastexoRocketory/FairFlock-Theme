@@ -142,3 +142,63 @@ function fairflock_print_account_popup() {
 	<?php
 }
 add_action( 'wp_footer', 'fairflock_print_account_popup', 5 );
+
+/**
+ * Markup for the header profile icon button.
+ *
+ * @since 0.9.447
+ *
+ * @return string
+ */
+function fairflock_account_icon_button_html() {
+	return '<div class="wp-block-buttons ff-header__action-btns ff-header__account-btns">'
+		. '<div class="wp-block-button ff-account is-style-fill">'
+		. '<a class="wp-block-button__link wp-element-button" href="#ff-open-account" aria-label="'
+		. esc_attr__( 'Konto', 'fairflock' )
+		. '" aria-controls="ffAccountLayer" aria-expanded="false">'
+		. esc_html__( 'Konto', 'fairflock' )
+		. '</a></div></div>';
+}
+
+/**
+ * Ensures the profile icon is present and last inside .ff-header__icons
+ * (covers Site-Editor copies that still miss the button).
+ *
+ * @since 0.9.447
+ *
+ * @param string $block_content Rendered HTML.
+ * @param array  $block         Parsed block.
+ * @return string
+ */
+function fairflock_ensure_header_account_icon( $block_content, $block ) {
+	if ( is_admin() || empty( $block['attrs']['className'] ) ) {
+		return $block_content;
+	}
+
+	$class = (string) $block['attrs']['className'];
+	if ( false === strpos( $class, 'ff-header__icons' ) ) {
+		return $block_content;
+	}
+
+	/* Already has our button — keep as-is (order from template). */
+	if ( false !== strpos( $block_content, 'ff-account' ) && false !== strpos( $block_content, '#ff-open-account' ) ) {
+		return $block_content;
+	}
+
+	$button = fairflock_account_icon_button_html();
+
+	/* Drop a non-functional Woo account block so we don’t show two icons. */
+	$block_content = preg_replace(
+		'/<div[^>]*class="[^"]*wp-block-woocommerce-customer-account[^"]*"[^>]*>.*?<\/div>/is',
+		'',
+		$block_content,
+		1
+	);
+
+	if ( preg_match( '/<\/div>\s*$/', $block_content ) ) {
+		return preg_replace( '/<\/div>\s*$/', $button . '</div>', $block_content, 1 );
+	}
+
+	return $block_content . $button;
+}
+add_filter( 'render_block_core/group', 'fairflock_ensure_header_account_icon', 25, 2 );

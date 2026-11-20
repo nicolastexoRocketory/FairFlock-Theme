@@ -225,4 +225,132 @@
 	}, "withFairflockMegaListControls");
 
 	wp.hooks.addFilter("editor.BlockEdit", "fairflock/mega-list-controls", withMegaListControls);
+
+	/* —— Cover-Link + Zoom (WP 7 Cover hat kein natives Link-Icon) —— */
+	wp.hooks.addFilter(
+		"blocks.registerBlockType",
+		"fairflock/mega-cover-link-attr",
+		function (settings, name) {
+			if (name !== "core/cover") {
+				return settings;
+			}
+			settings.attributes = Object.assign({}, settings.attributes, {
+				ffMegaLink: { type: "string", default: "" },
+			});
+			return settings;
+		}
+	);
+
+	var TextControl = wp.components.TextControl;
+	var BlockControls = wp.blockEditor.BlockControls;
+	var LinkControl = wp.blockEditor.LinkControl;
+	var ToolbarButton = wp.components.ToolbarButton;
+	var Popover = wp.components.Popover;
+	var ToolbarGroup = wp.components.ToolbarGroup;
+
+	var withMegaCoverLink = createHigherOrderComponent(function (BlockEdit) {
+		return function (props) {
+			if (props.name !== "core/cover") {
+				return el(BlockEdit, props);
+			}
+
+			var attrs = props.attributes || {};
+			var className = attrs.className || "";
+			var link = typeof attrs.ffMegaLink === "string" ? attrs.ffMegaLink : "";
+			var isMegaMedia = hasClass(className, "ff-mega-panel__card-media");
+			var isLinked = !!link;
+
+			var openState = useState(false);
+			var isOpen = openState[0];
+			var setOpen = openState[1];
+
+			function setLink(next) {
+				var url = next && next.url ? String(next.url) : "";
+				props.setAttributes({ ffMegaLink: url });
+				if (!url) {
+					setOpen(false);
+				}
+			}
+
+			return el(
+				Fragment,
+				null,
+				el(BlockEdit, props),
+				el(
+					BlockControls,
+					{ group: "block" },
+					el(
+						ToolbarGroup,
+						null,
+						el(ToolbarButton, {
+							icon: isLinked ? "admin-links" : "admin-links",
+							label: isLinked
+								? i18n.coverLinkEdit || "Cover-Link bearbeiten"
+								: i18n.coverLinkAdd || "Cover verlinken",
+							onClick: function () {
+								setOpen(!isOpen);
+							},
+							isPressed: isOpen || isLinked,
+						}),
+						isOpen
+							? el(
+									Popover,
+									{
+										placement: "bottom-start",
+										onClose: function () {
+											setOpen(false);
+										},
+										offset: 8,
+									},
+									el(
+										"div",
+										{
+											style: {
+												minWidth: 320,
+												padding: 8,
+											},
+										},
+										el(LinkControl, {
+											value: link ? { url: link } : undefined,
+											onChange: setLink,
+											onRemove: function () {
+												setLink({ url: "" });
+											},
+											hasTextControl: false,
+											settings: [],
+										})
+									)
+							  )
+							: null
+					)
+				),
+				el(
+					InspectorControls,
+					null,
+					el(
+						PanelBody,
+						{
+							title: i18n.coverLinkPanel || "Cover-Link",
+							initialOpen: isMegaMedia || isLinked,
+						},
+						el(TextControl, {
+							label: i18n.coverLinkLabel || "URL",
+							value: link,
+							placeholder: i18n.coverLinkPlaceholder || "/shop/ oder https://…",
+							onChange: function (value) {
+								props.setAttributes({ ffMegaLink: value || "" });
+							},
+							help:
+								i18n.coverLinkHelp ||
+								"Cover verlinken. Mit Link: Zoom-In beim Hover im Frontend.",
+							__next40pxDefaultSize: true,
+							__nextHasNoMarginBottom: true,
+						})
+					)
+				)
+			);
+		};
+	}, "withFairflockMegaCoverLink");
+
+	wp.hooks.addFilter("editor.BlockEdit", "fairflock/mega-cover-link", withMegaCoverLink);
 })(window.wp, window.fairflockMegaList || {});

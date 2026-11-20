@@ -113,19 +113,35 @@ function fairflock_collections_is_titles_only( $class_name ) {
 }
 
 /**
+ * Whether titles-only cards show a blurred category image behind the title.
+ *
+ * Token: ff-collections-titles-blur (implies titles-only).
+ *
+ * @since 0.9.463
+ *
+ * @param string $class_name Block className.
+ * @return bool
+ */
+function fairflock_collections_has_titles_blur( $class_name ) {
+	return (bool) preg_match( '/(?:^|\s)ff-collections-titles-blur(?:\s|$)/', (string) $class_name );
+}
+
+/**
  * Block markup for one category card.
  *
  * @since 0.9.99
  * @since 0.9.133 Optional CTA label for collections vs categories.
  * @since 0.9.383 Optional titles-only mode (h2, no image/desc).
+ * @since 0.9.463 Optional blurred category image behind titles-only cards.
  *
  * @param WP_Term $term        Category.
  * @param int     $index       Zero-based index (first card is brand).
  * @param string  $cta_label   Link label (default: Zur Kategorie).
  * @param bool    $titles_only No images; centered h2 title only.
+ * @param bool    $titles_blur Blurred category image behind title (titles-only).
  * @return string
  */
-function fairflock_get_category_overview_card_markup( WP_Term $term, $index, $cta_label = '', $titles_only = false ) {
+function fairflock_get_category_overview_card_markup( WP_Term $term, $index, $cta_label = '', $titles_only = false, $titles_blur = false ) {
 	$link = get_term_link( $term );
 	if ( is_wp_error( $link ) ) {
 		$link = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' );
@@ -139,13 +155,28 @@ function fairflock_get_category_overview_card_markup( WP_Term $term, $index, $ct
 	}
 	$cta = esc_html( $cta_label );
 
-	$classes = array( 'ff-collection-card' );
-	$bg_html = '';
+	$classes   = array( 'ff-collection-card' );
+	$bg_html   = '';
 	$desc_html = '';
+	$meta_cls  = 'ff-collection-card__meta';
+
+	$thumb_id = (int) get_term_meta( $term->term_id, 'thumbnail_id', true );
+	$image    = $thumb_id ? wp_get_attachment_image_url( $thumb_id, 'large' ) : '';
+	$img_url  = ( is_string( $image ) && $image !== '' ) ? esc_url( $image ) : '';
 
 	if ( $titles_only ) {
 		$classes[] = 'ff-collection-card--titles';
-		$heading   = <<<HTML
+		$meta_cls .= ' ff-collection-card__meta--hidden';
+		if ( $titles_blur && $img_url !== '' ) {
+			$classes[] = 'ff-collection-card--titles-blur';
+			$classes[] = 'has-cat-image';
+			$bg_html   = <<<HTML
+				<!-- wp:html -->
+				<div class="ff-collection-card__bg ff-collection-card__bg--blur" style="background-image:url({$img_url})" aria-hidden="true"></div>
+				<!-- /wp:html -->
+HTML;
+		}
+		$heading = <<<HTML
 				<!-- wp:heading {"level":2,"textAlign":"center"} -->
 				<h2 class="wp-block-heading has-text-align-center">{$title}</h2>
 				<!-- /wp:heading -->
@@ -168,11 +199,8 @@ HTML;
 				<!-- /wp:paragraph -->
 HTML;
 
-		$thumb_id = (int) get_term_meta( $term->term_id, 'thumbnail_id', true );
-		$image    = $thumb_id ? wp_get_attachment_image_url( $thumb_id, 'large' ) : '';
-		if ( is_string( $image ) && $image !== '' ) {
+		if ( $img_url !== '' ) {
 			$classes[] = 'has-cat-image';
-			$img_url   = esc_url( $image );
 			// Background via wp:html — custom style on core/group breaks block validation in the editor.
 			$bg_html   = <<<HTML
 				<!-- wp:html -->
@@ -193,6 +221,7 @@ HTML;
 	}
 
 	$class_attr = esc_attr( implode( ' ', $classes ) );
+	$meta_attr  = esc_attr( $meta_cls );
 	$aria       = esc_attr(
 		sprintf(
 			/* translators: %s: category/collection name */
@@ -205,8 +234,8 @@ HTML;
 			<!-- wp:group {"className":"{$class_attr}","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"default"}} -->
 			<div class="wp-block-group {$class_attr}">
 {$bg_html}{$heading}{$desc_html}
-				<!-- wp:paragraph {"className":"ff-collection-card__meta"} -->
-				<p class="ff-collection-card__meta"><a href="{$href}" aria-label="{$aria}">{$cta}</a></p>
+				<!-- wp:paragraph {"className":"{$meta_attr}"} -->
+				<p class="{$meta_attr}"><a href="{$href}" aria-label="{$aria}">{$cta}</a></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:group -->
@@ -221,9 +250,10 @@ HTML;
  *
  * @param array<int, int> $exclude     Extra term IDs to exclude.
  * @param bool            $titles_only No images; centered h2 only.
+ * @param bool            $titles_blur Blurred category image behind title.
  * @return string
  */
-function fairflock_get_collections_cards_markup( $exclude = array(), $titles_only = false ) {
+function fairflock_get_collections_cards_markup( $exclude = array(), $titles_only = false, $titles_blur = false ) {
 	$shop  = esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' ) );
 	$terms = fairflock_get_category_overview_terms( $exclude );
 	$cta   = __( 'Zur Kollektion →', 'fairflock' );
@@ -231,7 +261,7 @@ function fairflock_get_collections_cards_markup( $exclude = array(), $titles_onl
 
 	if ( $terms ) {
 		foreach ( $terms as $i => $term ) {
-			$cards .= fairflock_get_category_overview_card_markup( $term, (int) $i, $cta, $titles_only ) . "\n";
+			$cards .= fairflock_get_category_overview_card_markup( $term, (int) $i, $cta, $titles_only, $titles_blur ) . "\n";
 		}
 		return $cards;
 	}
@@ -253,6 +283,7 @@ function fairflock_get_collections_cards_markup( $exclude = array(), $titles_onl
 				$item[0]
 			)
 		);
+		$meta_cls = $titles_only ? 'ff-collection-card__meta ff-collection-card__meta--hidden' : 'ff-collection-card__meta';
 		if ( $titles_only ) {
 			$cards .= <<<HTML
 			<!-- wp:group {"className":"ff-collection-card {$mod}","style":{"spacing":{"blockGap":"8px"}},"layout":{"type":"default"}} -->
@@ -260,8 +291,8 @@ function fairflock_get_collections_cards_markup( $exclude = array(), $titles_onl
 				<!-- wp:heading {"level":2,"textAlign":"center"} -->
 				<h2 class="wp-block-heading has-text-align-center">{$title}</h2>
 				<!-- /wp:heading -->
-				<!-- wp:paragraph {"className":"ff-collection-card__meta"} -->
-				<p class="ff-collection-card__meta"><a href="{$shop}" aria-label="{$aria}">{$label}</a></p>
+				<!-- wp:paragraph {"className":"{$meta_cls}"} -->
+				<p class="{$meta_cls}"><a href="{$shop}" aria-label="{$aria}">{$label}</a></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:group -->
@@ -364,7 +395,8 @@ function fairflock_render_collections_section( $block_content, $block ) {
 
 	$exclude     = fairflock_collections_parse_exclude_ids( $class );
 	$titles_only = fairflock_collections_is_titles_only( $class );
-	$markup      = fairflock_get_collections_cards_markup( $exclude, $titles_only );
+	$titles_blur = $titles_only && fairflock_collections_has_titles_blur( $class );
+	$markup      = fairflock_get_collections_cards_markup( $exclude, $titles_only, $titles_blur );
 	$live        = do_blocks( $markup );
 
 	if ( ! is_string( $live ) || $live === '' ) {
@@ -400,9 +432,11 @@ function fairflock_get_collections_section_markup( array $args = array() ) {
 
 	$shop        = esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' ) );
 	$section_cls = trim( 'ff-pattern-collections ' . $extra );
+	$titles_only = fairflock_collections_is_titles_only( $section_cls );
 	$cards       = fairflock_get_collections_cards_markup(
 		fairflock_collections_parse_exclude_ids( $section_cls ),
-		fairflock_collections_is_titles_only( $section_cls )
+		$titles_only,
+		$titles_only && fairflock_collections_has_titles_blur( $section_cls )
 	);
 
 	$heading_esc = esc_html( $heading );

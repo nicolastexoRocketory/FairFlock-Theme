@@ -1,6 +1,6 @@
 /**
- * Collections section: exclude categories + titles-only mode via className tokens.
- * Tokens: ff-collections-exclude-{id}-{id}-… · ff-collections-titles
+ * Collections section: exclude categories + titles-only + blurred bg via className tokens.
+ * Tokens: ff-collections-exclude-{id}-{id}-… · ff-collections-titles · ff-collections-titles-blur
  */
 (function (wp, config) {
 	if (
@@ -68,6 +68,7 @@
 
 	function stripTitlesToken(className) {
 		return String(className || "")
+			.replace(/(?:^|\s)ff-collections-titles-blur(?=\s|$)/g, " ")
 			.replace(/(?:^|\s)ff-collections-titles(?=\s|$)/g, " ")
 			.replace(/\s+/g, " ")
 			.trim();
@@ -77,7 +78,11 @@
 		return hasClass(className, "ff-collections-titles");
 	}
 
-	function buildClassName(className, excludeIds, titlesOnly) {
+	function hasTitlesBlur(className) {
+		return hasClass(className, "ff-collections-titles-blur");
+	}
+
+	function buildClassName(className, excludeIds, titlesOnly, titlesBlur) {
 		var base = stripTitlesToken(stripExcludeToken(className));
 		var ids = (excludeIds || [])
 			.map(function (id) {
@@ -94,6 +99,9 @@
 		}
 		if (titlesOnly) {
 			base = (base + " ff-collections-titles").trim();
+			if (titlesBlur) {
+				base = (base + " ff-collections-titles-blur").trim();
+			}
 		}
 		return base;
 	}
@@ -202,6 +210,7 @@
 			var className = props.attributes.className || "";
 			var excludeIds = parseExcludeIds(className);
 			var titlesOnly = hasTitlesOnly(className);
+			var titlesBlur = titlesOnly && hasTitlesBlur(className);
 
 			return el(
 				Fragment,
@@ -220,11 +229,41 @@
 							label: i18n.titlesOnly || "Nur Titel (ohne Bilder)",
 							help:
 								i18n.titlesHelp ||
-								"Karten zeigen nur den Kategorie-Titel als H2, zentriert — ohne Bild und Beschreibung.",
+								"Karten zeigen nur den Kategorie-Namen, zentriert — ohne sichtbaren Link und Beschreibung.",
 							checked: titlesOnly,
 							onChange: function (next) {
 								props.setAttributes({
-									className: buildClassName(className, excludeIds, !!next),
+									className: buildClassName(
+										className,
+										excludeIds,
+										!!next,
+										!!next && titlesBlur
+									),
+								});
+							},
+						}),
+						el(ToggleControl, {
+							label:
+								i18n.titlesBlur ||
+								"Weichgezeichnetes Hintergrundbild anzeigen",
+							help: titlesOnly
+								? i18n.titlesBlurHelp ||
+								  "Kategoriebild unscharf hinter dem Titel, mit Overlay für Lesbarkeit."
+								: i18n.titlesBlurNeedTitles ||
+								  "Nur verfügbar, wenn „Nur Titel“ aktiv ist.",
+							checked: titlesBlur,
+							disabled: !titlesOnly,
+							onChange: function (next) {
+								if (!titlesOnly) {
+									return;
+								}
+								props.setAttributes({
+									className: buildClassName(
+										className,
+										excludeIds,
+										true,
+										!!next
+									),
 								});
 							},
 						}),
@@ -232,7 +271,12 @@
 							excludeIds: excludeIds,
 							onChange: function (ids) {
 								props.setAttributes({
-									className: buildClassName(className, ids, titlesOnly),
+									className: buildClassName(
+										className,
+										ids,
+										titlesOnly,
+										titlesBlur
+									),
 								});
 							},
 						}),

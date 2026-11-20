@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.471',
+			'items'   => array(
+				__( 'Bestellnummern: Anhängsel mit „#“ (z. B. 12345#AH001).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.470',
 			'items'   => array(
 				__( 'Checkout AGB: sichtbare Checkbox, korrekte Abstände, deutsche Fehlermeldung (Germanized/Woo).', 'fairflock' ),

@@ -1,6 +1,8 @@
 <?php
 /**
- * Prefixed order numbers (e.g. AH001).
+ * Order number appendage (e.g. 12345#AH001).
+ *
+ * WooCommerce-Bestellnummer + „#“ + Prefix/Sequenz.
  *
  * @package FairFlock
  * @since 0.9.444
@@ -57,7 +59,7 @@ function fairflock_order_number_next() {
 }
 
 /**
- * Formats prefix + padded sequence.
+ * Formats the appendage only: Prefix + padded sequence (e.g. AH001).
  *
  * @since 0.9.444
  *
@@ -71,6 +73,24 @@ function fairflock_order_number_format( $prefix, $seq, $pad = 0 ) {
 	$seq    = max( 1, (int) $seq );
 	$pad    = $pad > 0 ? (int) $pad : fairflock_order_number_pad();
 	return $prefix . str_pad( (string) $seq, $pad, '0', STR_PAD_LEFT );
+}
+
+/**
+ * Full display number: {Woo-Bestellnummer}#{Anhängsel}.
+ *
+ * @since 0.9.471
+ *
+ * @param string $base_order_number WooCommerce order number / id.
+ * @param string $suffix            Appendage without leading #.
+ * @return string
+ */
+function fairflock_order_number_with_suffix( $base_order_number, $suffix ) {
+	$base   = preg_replace( '/#[A-Za-z0-9]+$/', '', (string) $base_order_number );
+	$suffix = ltrim( (string) $suffix, '#' );
+	if ( '' === $suffix ) {
+		return $base;
+	}
+	return $base . '#' . $suffix;
 }
 
 /**
@@ -122,9 +142,10 @@ add_action( 'woocommerce_new_order', 'fairflock_order_number_assign', 20 );
 add_action( 'woocommerce_checkout_order_processed', 'fairflock_order_number_assign', 20 );
 
 /**
- * Displays prefixed order numbers in admin, emails, account, etc.
+ * Displays order numbers as {Woo-Nr}#{Prefix}{Sequenz} in admin, emails, account, etc.
  *
  * @since 0.9.444
+ * @since 0.9.471 Anhängsel mit führendem # an die Woo-Bestellnummer.
  *
  * @param string   $order_number Default order number.
  * @param WC_Order $order        Order.
@@ -136,18 +157,23 @@ function fairflock_filter_order_number( $order_number, $order ) {
 		return $order_number;
 	}
 
-	$stored = (string) $order->get_meta( FAIRFLOCK_META_ORDER_NUMBER );
-	if ( '' !== $stored ) {
-		return $stored;
+	$suffix = (string) $order->get_meta( FAIRFLOCK_META_ORDER_NUMBER );
+	if ( '' === $suffix ) {
+		$seq = $order->get_meta( FAIRFLOCK_META_ORDER_SEQ );
+		if ( '' === $seq || null === $seq || false === $seq ) {
+			/* Legacy orders without a claimed sequence: pad WooCommerce id. */
+			$seq = $order->get_id();
+		}
+		$suffix = fairflock_order_number_format( $prefix, (int) $seq );
 	}
 
-	$seq = $order->get_meta( FAIRFLOCK_META_ORDER_SEQ );
-	if ( '' === $seq || null === $seq || false === $seq ) {
-		/* Legacy orders without a claimed sequence: pad WooCommerce id. */
-		$seq = $order->get_id();
+	/* Meta may already contain a full "123#AH001" from older logic — normalize. */
+	if ( false !== strpos( $suffix, '#' ) ) {
+		$parts  = explode( '#', $suffix );
+		$suffix = (string) end( $parts );
 	}
 
-	return fairflock_order_number_format( $prefix, (int) $seq );
+	return fairflock_order_number_with_suffix( $order_number, $suffix );
 }
 add_filter( 'woocommerce_order_number', 'fairflock_filter_order_number', 10, 2 );
 
@@ -268,8 +294,9 @@ function fairflock_order_number_render_admin_page() {
 	$prefix  = fairflock_order_number_prefix();
 	$pad     = fairflock_order_number_pad();
 	$next    = fairflock_order_number_next();
-	$preview = '' !== $prefix
-		? fairflock_order_number_format( $prefix, $next, $pad )
+	$suffix  = '' !== $prefix ? fairflock_order_number_format( $prefix, $next, $pad ) : '';
+	$preview = '' !== $suffix
+		? fairflock_order_number_with_suffix( '{Bestellnummer}', $suffix )
 		: __( '— (kein Prefix = WooCommerce-Standard)', 'fairflock' );
 	?>
 	<div class="wrap">
@@ -279,7 +306,7 @@ function fairflock_order_number_render_admin_page() {
 		<?php endif; ?>
 
 		<p>
-			<?php esc_html_e( 'Jede neue Bestellung erhält eine Nummer nach dem Schema Prefix + laufende Zahl, z. B. AH001, AH002. Ohne Prefix bleibt die normale WooCommerce-Bestellnummer.', 'fairflock' ); ?>
+			<?php esc_html_e( 'Das Anhängsel wird mit „#“ an die WooCommerce-Bestellnummer gehängt, z. B. 12345#AH001. Ohne Prefix bleibt die normale WooCommerce-Bestellnummer.', 'fairflock' ); ?>
 		</p>
 
 		<form method="post" action="">

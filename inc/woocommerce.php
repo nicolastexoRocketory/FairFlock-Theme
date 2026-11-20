@@ -1236,6 +1236,9 @@ function fairflock_render_product_card_hover_image( $content, $block, $instance 
 	if ( ( $block['blockName'] ?? '' ) !== 'woocommerce/product-image' ) {
 		return $content;
 	}
+	if ( function_exists( 'fairflock_product_card_hover_swap_enabled' ) && ! fairflock_product_card_hover_swap_enabled() ) {
+		return $content;
+	}
 	if ( ! function_exists( 'wc_get_product' ) || false !== strpos( $content, 'ff-prod-card__hover-img' ) ) {
 		return $content;
 	}

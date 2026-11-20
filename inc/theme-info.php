@@ -20,6 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.475',
+			'items'   => array(
+				__( 'Mobile Checkout: klarere Reihenfolge (Jetzt kaufen zuletzt), weniger Überladen, Text bleibt in den Cards.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.474',
+			'items'   => array(
+				__( 'Bestellnummern: #Anhängsel zuverlässig (Store-API/Blocks, Filter spät, Basis = Order-ID).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.473',
+			'items'   => array(
+				__( 'Darstellung: Produktkarten-Hover — nur Zoom oder Zoom + Galerie-Bildwechsel.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.472',
 			'items'   => array(
 				__( 'Desktop-Header: Suche + Warenkorb wieder sichtbar links neben dem Profil (Glyph-Farbe folgt der Leiste, feste Reihenfolge).', 'fairflock' ),

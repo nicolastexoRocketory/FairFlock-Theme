@@ -107,6 +107,25 @@ function fairflock_order_number_claim_next() {
 }
 
 /**
+ * Resolves a WC_Order from id or object.
+ *
+ * @since 0.9.474
+ *
+ * @param mixed $order Order id or object.
+ * @return WC_Order|null
+ */
+function fairflock_order_number_resolve_order( $order ) {
+	if ( $order instanceof WC_Order ) {
+		return $order;
+	}
+	if ( is_numeric( $order ) && function_exists( 'wc_get_order' ) ) {
+		$resolved = wc_get_order( (int) $order );
+		return $resolved instanceof WC_Order ? $resolved : null;
+	}
+	return null;
+}
+
+/**
  * Assigns a stable sequence + display number on a new order.
  *
  * @since 0.9.444
@@ -120,9 +139,7 @@ function fairflock_order_number_assign( $order ) {
 		return;
 	}
 
-	if ( is_numeric( $order ) && function_exists( 'wc_get_order' ) ) {
-		$order = wc_get_order( (int) $order );
-	}
+	$order = fairflock_order_number_resolve_order( $order );
 	if ( ! $order instanceof WC_Order ) {
 		return;
 	}
@@ -132,28 +149,36 @@ function fairflock_order_number_assign( $order ) {
 		return;
 	}
 
-	$seq      = fairflock_order_number_claim_next();
-	$display  = fairflock_order_number_format( $prefix, $seq );
+	$seq     = fairflock_order_number_claim_next();
+	$display = fairflock_order_number_format( $prefix, $seq );
 	$order->update_meta_data( FAIRFLOCK_META_ORDER_SEQ, $seq );
 	$order->update_meta_data( FAIRFLOCK_META_ORDER_NUMBER, $display );
 	$order->save();
 }
 add_action( 'woocommerce_new_order', 'fairflock_order_number_assign', 20 );
 add_action( 'woocommerce_checkout_order_processed', 'fairflock_order_number_assign', 20 );
+add_action( 'woocommerce_store_api_checkout_order_processed', 'fairflock_order_number_assign', 20 );
+add_action( 'woocommerce_checkout_order_created', 'fairflock_order_number_assign', 20 );
 
 /**
- * Displays order numbers as {Woo-Nr}#{Prefix}{Sequenz} in admin, emails, account, etc.
+ * Displays order numbers as {Woo-ID}#{Prefix}{Sequenz} in admin, emails, account, etc.
  *
  * @since 0.9.444
  * @since 0.9.471 Anhängsel mit führendem # an die Woo-Bestellnummer.
+ * @since 0.9.474 Basis immer Order-ID; spät im Filter-Stack; Store-API-Zuweisung.
  *
- * @param string   $order_number Default order number.
- * @param WC_Order $order        Order.
+ * @param string        $order_number Default order number.
+ * @param WC_Order|mixed $order       Order.
  * @return string
  */
 function fairflock_filter_order_number( $order_number, $order ) {
 	$prefix = fairflock_order_number_prefix();
-	if ( '' === $prefix || ! $order instanceof WC_Order ) {
+	if ( '' === $prefix ) {
+		return $order_number;
+	}
+
+	$order = fairflock_order_number_resolve_order( $order );
+	if ( ! $order instanceof WC_Order ) {
 		return $order_number;
 	}
 
@@ -161,7 +186,7 @@ function fairflock_filter_order_number( $order_number, $order ) {
 	if ( '' === $suffix ) {
 		$seq = $order->get_meta( FAIRFLOCK_META_ORDER_SEQ );
 		if ( '' === $seq || null === $seq || false === $seq ) {
-			/* Legacy orders without a claimed sequence: pad WooCommerce id. */
+			/* Legacy / noch nicht zugewiesen: Sequenz = Order-ID, Anhängsel trotzdem zeigen. */
 			$seq = $order->get_id();
 		}
 		$suffix = fairflock_order_number_format( $prefix, (int) $seq );
@@ -173,9 +198,15 @@ function fairflock_filter_order_number( $order_number, $order ) {
 		$suffix = (string) end( $parts );
 	}
 
-	return fairflock_order_number_with_suffix( $order_number, $suffix );
+	/*
+	 * Basis = WooCommerce-Bestell-ID (nicht $order_number): sonst bleibt bei alter
+	 * „nur AH001“-Logik oder Fremd-Filtern das „#“ oft weg / doppelt.
+	 */
+	$base = (string) $order->get_id();
+
+	return fairflock_order_number_with_suffix( $base, $suffix );
 }
-add_filter( 'woocommerce_order_number', 'fairflock_filter_order_number', 10, 2 );
+add_filter( 'woocommerce_order_number', 'fairflock_filter_order_number', 99, 2 );
 
 /**
  * Lets shop order search find the custom number (classic CPT storage).

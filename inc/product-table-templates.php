@@ -11,11 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Max length for a template description.
+ * Max length for a template description (HTML markup).
  *
  * @since 0.9.435
  */
-const FAIRFLOCK_PRODUCT_TABLE_DESC_LENGTH = 2000;
+const FAIRFLOCK_PRODUCT_TABLE_DESC_LENGTH = 20000;
 
 /**
  * Raw option payload (unfiltered). Used for safe writes so no template is dropped.
@@ -30,7 +30,7 @@ function fairflock_product_table_templates_raw() {
 }
 
 /**
- * Sanitize a template description (plain text, multiline).
+ * Sanitize a template description (rich HTML).
  *
  * @since 0.9.435
  *
@@ -38,12 +38,35 @@ function fairflock_product_table_templates_raw() {
  * @return string
  */
 function fairflock_product_table_template_description( $value ) {
-	$text = sanitize_textarea_field( is_string( $value ) ? $value : '' );
-	$text = fairflock_product_table_repair_text( $text );
-	if ( function_exists( 'mb_substr' ) ) {
-		return mb_substr( $text, 0, FAIRFLOCK_PRODUCT_TABLE_DESC_LENGTH );
+	$html = is_string( $value ) ? $value : '';
+	$html = fairflock_product_table_repair_text( $html );
+	$html = wp_kses_post( $html );
+	if ( strlen( $html ) > FAIRFLOCK_PRODUCT_TABLE_DESC_LENGTH ) {
+		$html = substr( $html, 0, FAIRFLOCK_PRODUCT_TABLE_DESC_LENGTH );
+		$html = force_balance_tags( $html );
+		$html = wp_kses_post( $html );
 	}
-	return substr( $text, 0, FAIRFLOCK_PRODUCT_TABLE_DESC_LENGTH );
+	return $html;
+}
+
+/**
+ * Frontend-safe HTML for a size-table description.
+ * Legacy plain-text entries keep their line breaks.
+ *
+ * @since 0.9.476
+ *
+ * @param string $description Stored description.
+ * @return string
+ */
+function fairflock_product_table_description_html( $description ) {
+	$description = is_string( $description ) ? trim( $description ) : '';
+	if ( '' === $description ) {
+		return '';
+	}
+	if ( $description === wp_strip_all_tags( $description ) ) {
+		return nl2br( esc_html( $description ), false );
+	}
+	return wp_kses_post( $description );
 }
 
 /**
@@ -211,11 +234,11 @@ function fairflock_product_table_template_preview( $template ) {
 	$columns     = isset( $template['columns'] ) && is_array( $template['columns'] ) ? $template['columns'] : array();
 	$rows        = isset( $template['rows'] ) && is_array( $template['rows'] ) ? $template['rows'] : array();
 	$description = isset( $template['description'] ) ? (string) $template['description'] : '';
-	if ( '' !== $description ) {
-		echo '<p class="ff-ptable-admin__preview-desc">' . nl2br( esc_html( $description ) ) . '</p>';
-	}
 	if ( empty( $rows ) ) {
 		echo '<p class="ff-ptable-admin__empty">' . esc_html__( 'Diese Vorlage hat noch keine Zeilen.', 'fairflock' ) . '</p>';
+		if ( '' !== $description ) {
+			echo '<div class="ff-ptable-admin__preview-desc">' . fairflock_product_table_description_html( $description ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in helper.
+		}
 		return;
 	}
 
@@ -238,6 +261,9 @@ function fairflock_product_table_template_preview( $template ) {
 		echo '</tr>';
 	}
 	echo '</tbody></table>';
+	if ( '' !== $description ) {
+		echo '<div class="ff-ptable-admin__preview-desc">' . fairflock_product_table_description_html( $description ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in helper.
+	}
 }
 
 /**
@@ -454,17 +480,19 @@ function fairflock_product_table_templates_page() {
 	echo '</tr></thead><tbody>';
 	foreach ( $templates as $template ) {
 		$edit = admin_url( 'admin.php?page=fairflock-produkte&action=edit&template=' . rawurlencode( $template['id'] ) );
-		$desc = isset( $template['description'] ) ? (string) $template['description'] : '';
-		if ( '' !== $desc ) {
-			$desc = function_exists( 'mb_substr' ) ? mb_substr( $desc, 0, 80 ) : substr( $desc, 0, 80 );
-			if ( strlen( (string) $template['description'] ) > 80 ) {
-				$desc .= '…';
+		$desc_plain = isset( $template['description'] ) ? wp_strip_all_tags( (string) $template['description'] ) : '';
+		$desc_plain = trim( preg_replace( '/\s+/u', ' ', $desc_plain ) );
+		if ( '' !== $desc_plain ) {
+			$short = function_exists( 'mb_substr' ) ? mb_substr( $desc_plain, 0, 80 ) : substr( $desc_plain, 0, 80 );
+			if ( ( function_exists( 'mb_strlen' ) ? mb_strlen( $desc_plain ) : strlen( $desc_plain ) ) > 80 ) {
+				$short .= '…';
 			}
+			$desc_plain = $short;
 		}
 		echo '<tr>';
 		echo '<td><a href="' . esc_url( $edit ) . '"><strong>' . esc_html( $template['name'] ) . '</strong></a></td>';
 		echo '<td>' . esc_html( $template['title'] ) . '</td>';
-		echo '<td>' . ( '' !== $desc ? esc_html( $desc ) : '&mdash;' ) . '</td>';
+		echo '<td>' . ( '' !== $desc_plain ? esc_html( $desc_plain ) : '&mdash;' ) . '</td>';
 		echo '<td>' . esc_html( (string) count( $template['columns'] ) ) . '</td>';
 		echo '<td>' . esc_html( (string) count( $template['rows'] ) ) . '</td>';
 		echo '<td>';
@@ -538,11 +566,21 @@ function fairflock_product_table_template_edit_page( $action ) {
 	echo '</div>';
 	echo '<div class="ff-ptable-admin__desc">';
 	echo '<label for="ff_ptable_description">' . esc_html__( 'Beschreibung', 'fairflock' ) . '</label>';
-	printf(
-		'<textarea id="ff_ptable_description" name="ff_ptable_description" rows="4" maxlength="%d" placeholder="%s">%s</textarea>',
-		(int) FAIRFLOCK_PRODUCT_TABLE_DESC_LENGTH,
-		esc_attr__( 'z. B. Maße in cm, flach liegend gemessen. Toleranz ±1–2 cm.', 'fairflock' ),
-		esc_textarea( (string) $template['description'] )
+	wp_editor(
+		(string) $template['description'],
+		'ff_ptable_description',
+		array(
+			'textarea_name' => 'ff_ptable_description',
+			'textarea_rows' => 10,
+			'media_buttons' => false,
+			'teeny'         => false,
+			'quicktags'     => true,
+			'tinymce'       => array(
+				'toolbar1'      => 'formatselect,bold,italic,underline,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,unlink,undo,redo,removeformat',
+				'toolbar2'      => '',
+				'block_formats' => 'Paragraph=p;Heading 2=h2;Heading 3=h3;Heading 4=h4',
+			),
+		)
 	);
 	echo '</div>';
 	echo '<p class="ff-ptable-admin__lead">' . esc_html__( 'Der Name erscheint in der Auswahl am Produkt. Die Überschrift steht im Shop über der Tabelle. Die Beschreibung erscheint darunter im Größentabelle-Popup.', 'fairflock' ) . '</p>';

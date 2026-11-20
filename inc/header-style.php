@@ -211,6 +211,45 @@ function fairflock_get_collections_cols() {
 }
 
 /**
+ * Product card image hover modes.
+ *
+ * @since 0.9.473
+ *
+ * @return array<string, string>
+ */
+function fairflock_product_card_hover_choices() {
+	return array(
+		'swap' => __( 'Zoom + Bildwechsel (Galerie)', 'fairflock' ),
+		'zoom' => __( 'Nur Zoom (kein Bildwechsel)', 'fairflock' ),
+	);
+}
+
+/**
+ * Current product card hover mode.
+ *
+ * @since 0.9.473
+ *
+ * @return string swap|zoom
+ */
+function fairflock_get_product_card_hover() {
+	$mode = (string) get_option( 'fairflock_product_card_hover', 'swap' );
+	$ok   = array_keys( fairflock_product_card_hover_choices() );
+
+	return in_array( $mode, $ok, true ) ? $mode : 'swap';
+}
+
+/**
+ * Whether product cards swap to the gallery image on hover.
+ *
+ * @since 0.9.473
+ *
+ * @return bool
+ */
+function fairflock_product_card_hover_swap_enabled() {
+	return 'swap' === fairflock_get_product_card_hover();
+}
+
+/**
  * Hero slideshow height in vh (all devices).
  *
  * @since 0.9.216
@@ -478,6 +517,7 @@ function fairflock_header_style_body_class( $classes ) {
 	$classes[] = 'ff-mega-width-' . fairflock_get_mega_width();
 	$classes[] = 'ff-hero-nav-' . fairflock_get_hero_nav_layout();
 	$classes[] = 'ff-collections-cols-' . fairflock_get_collections_cols();
+	$classes[] = 'ff-product-hover-' . fairflock_get_product_card_hover();
 
 	return $classes;
 }
@@ -516,6 +556,7 @@ function fairflock_enqueue_darstellung_editor_bridge() {
 				'ff-mega-width-' . fairflock_get_mega_width(),
 				'ff-hero-nav-' . fairflock_get_hero_nav_layout(),
 				'ff-collections-cols-' . fairflock_get_collections_cols(),
+				'ff-product-hover-' . fairflock_get_product_card_hover(),
 			),
 			'headerMod'   => 'ff-header--' . fairflock_get_header_style(),
 			'navLayout'   => 'ff-header--nav-' . fairflock_get_nav_layout(),
@@ -635,6 +676,10 @@ function fairflock_header_style_handle_admin_save() {
 	$cols_ok  = array_keys( fairflock_collections_cols_choices() );
 	$cols     = in_array( $cols_raw, $cols_ok, true ) ? $cols_raw : 3;
 
+	$hover_raw = isset( $_POST['fairflock_product_card_hover'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_product_card_hover'] ) ) : 'swap';
+	$hover_ok  = array_keys( fairflock_product_card_hover_choices() );
+	$hover     = in_array( $hover_raw, $hover_ok, true ) ? $hover_raw : 'swap';
+
 	$marquee_defaults = fairflock_marquee_gradient_defaults();
 	$marquee_deep     = isset( $_POST['fairflock_marquee_color_deep'] ) ? fairflock_sanitize_hex_color( wp_unslash( (string) $_POST['fairflock_marquee_color_deep'] ) ) : '';
 	$marquee_mid      = isset( $_POST['fairflock_marquee_color_mid'] ) ? fairflock_sanitize_hex_color( wp_unslash( (string) $_POST['fairflock_marquee_color_mid'] ) ) : '';
@@ -648,6 +693,7 @@ function fairflock_header_style_handle_admin_save() {
 	update_option( 'fairflock_hero_nav_layout', $hero_nav, false );
 	update_option( 'fairflock_hero_height_vh', $hero_vh, false );
 	update_option( 'fairflock_collections_cols', $cols, false );
+	update_option( 'fairflock_product_card_hover', $hover, false );
 	update_option( 'fairflock_marquee_color_deep', '' !== $marquee_deep ? $marquee_deep : $marquee_defaults['deep'], false );
 	update_option( 'fairflock_marquee_color_mid', '' !== $marquee_mid ? $marquee_mid : $marquee_defaults['mid'], false );
 	update_option( 'fairflock_marquee_color_soft', '' !== $marquee_soft ? $marquee_soft : $marquee_defaults['soft'], false );
@@ -692,6 +738,8 @@ function fairflock_header_style_render_admin_page() {
 	$hero_vh        = fairflock_get_hero_height_vh();
 	$cols_current   = fairflock_get_collections_cols();
 	$cols_choices   = fairflock_collections_cols_choices();
+	$hover_current  = fairflock_get_product_card_hover();
+	$hover_choices  = fairflock_product_card_hover_choices();
 	$marquee_colors = fairflock_get_marquee_gradient_colors();
 	$marquee_defs   = fairflock_marquee_gradient_defaults();
 	?>
@@ -701,7 +749,7 @@ function fairflock_header_style_render_admin_page() {
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Einstellungen gespeichert.', 'fairflock' ); ?></p></div>
 		<?php endif; ?>
 
-		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite, Formen, Mega-Menü, Hero, Trust-Banner und Kollektionen — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
+		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite, Formen, Mega-Menü, Hero, Trust-Banner, Kollektionen und Produktkarten — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
 
 		<form method="post" action="">
 			<?php wp_nonce_field( 'fairflock_header_style_settings' ); ?>
@@ -834,6 +882,22 @@ function fairflock_header_style_render_admin_page() {
 						</fieldset>
 						<p class="description">
 							<?php esc_html_e( 'Desktop-Raster der Kollektionen-Karten (Startseite und /kategorien/). Auf dem Handy bleibt der horizontale Slider. „Mehr anzeigen“ zeigt weiterhin 3 Reihen.', 'fairflock' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Produktkarten Hover', 'fairflock' ); ?></th>
+					<td>
+						<fieldset>
+							<?php foreach ( $hover_choices as $key => $label ) : ?>
+								<label style="display:block;margin:0 0 10px;">
+									<input type="radio" name="fairflock_product_card_hover" value="<?php echo esc_attr( $key ); ?>" <?php checked( $hover_current, $key ); ?> />
+									<strong><?php echo esc_html( $label ); ?></strong>
+								</label>
+							<?php endforeach; ?>
+						</fieldset>
+						<p class="description">
+							<?php esc_html_e( 'Desktop: Beim Überfahren der Produktbilder. „Bildwechsel“ zeigt das erste Galeriebild; „Nur Zoom“ behält das Hauptbild und zoomt dem Cursor nach. Touch-Geräte sind unverändert.', 'fairflock' ); ?>
 						</p>
 					</td>
 				</tr>

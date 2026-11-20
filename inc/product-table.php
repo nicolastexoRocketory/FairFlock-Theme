@@ -249,15 +249,12 @@ function fairflock_product_table_markup( $product ) {
 	$html       .= '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 	$html       .= esc_html__( 'Schließen', 'fairflock' );
 	$html       .= '</button></div>';
-	if ( '' !== $description ) {
-		$html .= '<p class="ff-product-table__desc">' . nl2br( esc_html( $description ) ) . '</p>';
-	}
 	$html .= '<div class="ff-product-table__gallery" data-ff-ptable-gallery hidden></div>';
-	$html   .= '<div class="ff-product-table__sheet">';
-	$html   .= '<button type="button" class="ff-product-table__arrow is-prev" data-ff-ptable-scroll="-1" aria-label="' . esc_attr__( 'Nach links', 'fairflock' ) . '" hidden>';
-	$html   .= fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 18 ) );
-	$html   .= '</button>';
-	$html   .= '<div class="ff-product-table__wrap"><table>';
+	$html .= '<div class="ff-product-table__sheet">';
+	$html .= '<button type="button" class="ff-product-table__arrow is-prev" data-ff-ptable-scroll="-1" aria-label="' . esc_attr__( 'Nach links', 'fairflock' ) . '" hidden>';
+	$html .= fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 18 ) );
+	$html .= '</button>';
+	$html .= '<div class="ff-product-table__wrap"><table>';
 	$html .= '<thead><tr>';
 	foreach ( $columns as $index => $column ) {
 		$label = '' !== $column ? $column : sprintf(
@@ -277,8 +274,8 @@ function fairflock_product_table_markup( $product ) {
 				__( 'Spalte %d', 'fairflock' ),
 				$index + 1
 			);
-			$cell  = isset( $row[ $index ] ) ? $row[ $index ] : '';
-			$attr  = ' data-label="' . esc_attr( $label ) . '"';
+			$cell = isset( $row[ $index ] ) ? $row[ $index ] : '';
+			$attr = ' data-label="' . esc_attr( $label ) . '"';
 			if ( 0 === $index && count( $columns ) > 1 ) {
 				$html .= '<th scope="row"' . $attr . '>' . esc_html( $cell ) . '</th>';
 			} else {
@@ -291,7 +288,14 @@ function fairflock_product_table_markup( $product ) {
 	$html .= '</tbody></table></div>';
 	$html .= '<button type="button" class="ff-product-table__arrow is-next" data-ff-ptable-scroll="1" aria-label="' . esc_attr__( 'Nach rechts', 'fairflock' ) . '" hidden>';
 	$html .= fairflock_chevron_svg( array( 'dir' => 'right', 'size' => 18 ) );
-	$html .= '</button></div></div></div></section>';
+	$html .= '</button></div>';
+	$desc_html = function_exists( 'fairflock_product_table_description_html' )
+		? fairflock_product_table_description_html( $description )
+		: '';
+	if ( '' !== $desc_html ) {
+		$html .= '<div class="ff-product-table__desc">' . $desc_html . '</div>';
+	}
+	$html .= '</div></div></section>';
 	return $html;
 }
 

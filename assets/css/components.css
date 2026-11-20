@@ -12893,11 +12893,16 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.wc-block-product:hover .ff-prod-card__hover-img,
-	li.wc-block-product:hover .ff-prod-card__hover-img,
-	.wc-block-components-product-image:hover .ff-prod-card__hover-img {
+	body:not(.ff-product-hover-zoom) .wc-block-product:hover .ff-prod-card__hover-img,
+	body:not(.ff-product-hover-zoom) li.wc-block-product:hover .ff-prod-card__hover-img,
+	body:not(.ff-product-hover-zoom) .wc-block-components-product-image:hover .ff-prod-card__hover-img {
 		opacity: 1;
 	}
+}
+
+/* FairFlock → Darstellung: „Nur Zoom“ — Bildwechsel aus */
+body.ff-product-hover-zoom .ff-prod-card__hover-img {
+	display: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

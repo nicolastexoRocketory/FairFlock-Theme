@@ -1,5 +1,5 @@
 /**
- * Checkout: German CTA / terms, hide English step blurbs, keep checkbox visible.
+ * Checkout: German CTA / terms checkbox, hide English blurbs.
  *
  * @package FairFlock
  * @since 0.9.302
@@ -10,6 +10,10 @@
 	var cfg = window.fairflockCheckout || {};
 	var cta = typeof cfg.cta === "string" && cfg.cta ? cfg.cta : "Jetzt kaufen";
 	var termsHtml = typeof cfg.terms === "string" ? cfg.terms : "";
+	var termsError =
+		typeof cfg.termsError === "string" && cfg.termsError
+			? cfg.termsError
+			: "Bitte bestätige AGB und Widerrufsbelehrung, um die Bestellung abzuschließen.";
 	var EN_DESC =
 		/\b(enter your|select a|choose a|add a note|shipping options|contact details|billing address|payment options|we'll use this|we will use this|for order updates|with your order|terms and conditions)\b/i;
 
@@ -21,14 +25,20 @@
 		return n === "buy now" || n === "place order";
 	}
 
-	function looksEnglishTerms(text) {
+	function needsTermsRewrite(text) {
 		var n = String(text || "").toLowerCase();
+		if (!n.trim()) {
+			return true;
+		}
 		return (
 			n.indexOf("with your order") !== -1 ||
 			n.indexOf("terms and conditions") !== -1 ||
 			n.indexOf("cancellation policy") !== -1 ||
 			n.indexOf("you must accept our") !== -1 ||
-			n.indexOf("privacy policy") !== -1
+			n.indexOf("to complete the order") !== -1 ||
+			n.indexOf("privacy policy") !== -1 ||
+			/* Alte Button-Lösung ohne Checkbox — Text ersetzen */
+			n.indexOf("mit deiner bestellung bestätigst du") !== -1
 		);
 	}
 
@@ -50,26 +60,165 @@
 		}
 	}
 
+	function ensureTermsCheckbox(termsRoot) {
+		if (!termsRoot || termsRoot.querySelector(".wc-block-components-checkbox__input")) {
+			return termsRoot.querySelector(".wc-block-components-checkbox__input");
+		}
+		if (termsRoot.getAttribute("data-ff-terms-box") === "1") {
+			return termsRoot.querySelector(".ff-checkout-terms-input");
+		}
+
+		var wrap = document.createElement("label");
+		wrap.className = "wc-block-components-checkbox ff-checkout-terms-box";
+		wrap.setAttribute("data-ff-terms-box", "1");
+
+		var input = document.createElement("input");
+		input.type = "checkbox";
+		input.className =
+			"wc-block-components-checkbox__input ff-checkout-terms-input";
+		input.id = "ff-checkout-terms-accept";
+		input.name = "ff-checkout-terms-accept";
+		input.setAttribute("aria-required", "true");
+
+		var text = document.createElement("span");
+		text.className = "wc-block-components-checkbox__label";
+		text.innerHTML = termsHtml || termsRoot.innerHTML;
+
+		/* Bestehenden Hinweistext in die Checkbox-Label-Zeile legen */
+		termsRoot.innerHTML = "";
+		wrap.appendChild(input);
+		wrap.appendChild(text);
+		termsRoot.appendChild(wrap);
+		termsRoot.setAttribute("data-ff-terms-box", "1");
+
+		input.addEventListener("change", function () {
+			syncTermsAcceptance(input.checked);
+		});
+
+		return input;
+	}
+
+	function syncTermsAcceptance(checked) {
+		/* Germanized / klassische Felder mitziehen */
+		document
+			.querySelectorAll(
+				'input[name="legal"], input#legal, input[name="terms"], input#terms, input.woocommerce-form__input-checkbox[name="terms"]'
+			)
+			.forEach(function (el) {
+				if (el === document.activeElement) {
+					return;
+				}
+				el.checked = !!checked;
+				el.dispatchEvent(new Event("change", { bubbles: true }));
+			});
+
+		try {
+			var data = window.wc && window.wc.wcBlocksData;
+			var wpData = window.wp && window.wp.data;
+			if (!data || !wpData || !wpData.dispatch) {
+				return;
+			}
+			var checkoutStore = data.checkoutStore || "wc/store/checkout";
+			var validationStore = data.validationStore || "wc/store/validation";
+			var dispatchCheckout = wpData.dispatch(checkoutStore);
+			var dispatchValidation = wpData.dispatch(validationStore);
+
+			if (dispatchCheckout) {
+				if (typeof dispatchCheckout.__internalSetTermsCheckbox === "function") {
+					dispatchCheckout.__internalSetTermsCheckbox(!!checked);
+				} else if (typeof dispatchCheckout.setTermsAccepted === "function") {
+					dispatchCheckout.setTermsAccepted(!!checked);
+				}
+			}
+
+			if (dispatchValidation) {
+				var ids = [
+					"terms-and-conditions",
+					"terms",
+					"legal",
+					"woocommerce-gzd-checkbox-terms",
+				];
+				if (checked && typeof dispatchValidation.clearValidationError === "function") {
+					ids.forEach(function (id) {
+						dispatchValidation.clearValidationError(id);
+					});
+				} else if (
+					!checked &&
+					typeof dispatchValidation.setValidationErrors === "function"
+				) {
+					dispatchValidation.setValidationErrors({
+						"terms-and-conditions": {
+							message: termsError,
+							hidden: true,
+						},
+					});
+				}
+			}
+		} catch (e) {
+			/* Store API optional */
+		}
+	}
+
 	function rewriteTerms(root) {
-		if (!termsHtml || !root) {
+		if (!root) {
 			return;
 		}
-		var label = root.querySelector(".wc-block-components-checkbox__label, .wc-block-checkout__terms");
-		var target = label || root;
-		if (target.getAttribute("data-ff-terms") === "1") {
+
+		var termsRoot =
+			root.closest(".wc-block-checkout__terms, .wp-block-woocommerce-checkout-terms-block") ||
+			(root.matches &&
+			root.matches(".wc-block-checkout__terms, .wp-block-woocommerce-checkout-terms-block")
+				? root
+				: null) ||
+			root.querySelector(
+				".wc-block-checkout__terms, .wp-block-woocommerce-checkout-terms-block"
+			);
+
+		if (!termsRoot) {
+			if (root.classList && root.classList.contains("wc-block-components-checkbox")) {
+				var labelOnly = root.querySelector(".wc-block-components-checkbox__label");
+				if (labelOnly && termsHtml && needsTermsRewrite(labelOnly.textContent || "")) {
+					labelOnly.innerHTML = termsHtml;
+					labelOnly.setAttribute("data-ff-terms", "1");
+				}
+			}
 			return;
 		}
-		var plain = target.textContent || "";
-		if (!looksEnglishTerms(plain) && plain.trim() !== "") {
-			return;
-		}
-		if (label) {
-			label.innerHTML = termsHtml;
+
+		var input = ensureTermsCheckbox(termsRoot);
+		var label = termsRoot.querySelector(".wc-block-components-checkbox__label");
+		if (label && termsHtml && label.getAttribute("data-ff-terms") !== "1") {
+			if (needsTermsRewrite(label.textContent || "") || !label.textContent.trim()) {
+				label.innerHTML = termsHtml;
+			}
 			label.setAttribute("data-ff-terms", "1");
-		} else {
-			target.innerHTML = termsHtml;
-			target.setAttribute("data-ff-terms", "1");
 		}
+
+		if (input && input.getAttribute("data-ff-terms-bound") !== "1") {
+			input.setAttribute("data-ff-terms-bound", "1");
+			input.addEventListener("change", function () {
+				syncTermsAcceptance(input.checked);
+			});
+			syncTermsAcceptance(input.checked);
+		}
+	}
+
+	function rewriteGermanizedErrors(scope) {
+		var root = scope && scope.querySelectorAll ? scope : document;
+		root.querySelectorAll(
+			".wc-block-components-validation-error, .wc-block-components-notice-banner__content, .woocommerce-error, .wc-block-components-notice-banner"
+		).forEach(function (el) {
+			var text = (el.textContent || "").replace(/\s+/g, " ").trim();
+			if (!text) {
+				return;
+			}
+			if (
+				/to complete the order you have to accept/i.test(text) ||
+				(/accept/i.test(text) && /terms/i.test(text) && /cancellation|widerruf/i.test(text))
+			) {
+				el.innerHTML = termsError;
+			}
+		});
 	}
 
 	function hideEnglishDescriptions(scope) {
@@ -97,6 +246,7 @@
 		root.querySelectorAll(
 			".wc-block-checkout__terms, .wp-block-woocommerce-checkout-terms-block, .wc-block-components-checkbox"
 		).forEach(rewriteTerms);
+		rewriteGermanizedErrors(root);
 		hideEnglishDescriptions(root);
 	}
 
@@ -121,6 +271,7 @@
 						rewriteButton(btn);
 					}
 				});
+			rewriteGermanizedErrors(document);
 			hideEnglishDescriptions(document);
 		});
 		obs.observe(document.body, { childList: true, subtree: true, characterData: true });

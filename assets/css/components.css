@@ -826,6 +826,28 @@ body:not(.block-editor-iframe__body) .ff-header {
 		grid-column: 3;
 		grid-row: 1;
 		justify-self: end;
+		align-self: center;
+		width: max-content;
+		max-width: 100%;
+	}
+
+	/* Falls Icons je aus der Gruppe ausbrechen: rechts in Zeile 1 halten */
+	body.ff-nav-layout-logo-center .ff-header__bar > .ff-search-toggle,
+	body.ff-nav-layout-logo-center .ff-header__bar > .ff-cart,
+	body.ff-nav-layout-logo-center .ff-header__bar > .ff-account,
+	body.ff-nav-layout-logo-center .ff-header__bar > .ff-header__action-btns,
+	body.ff-nav-layout-logo-center .ff-header__bar > .ff-header__cart-btns,
+	body.ff-nav-layout-logo-center .ff-header__bar > .ff-header__account-btns,
+	.ff-header.ff-header--nav-logo-center .ff-header__bar > .ff-search-toggle,
+	.ff-header.ff-header--nav-logo-center .ff-header__bar > .ff-cart,
+	.ff-header.ff-header--nav-logo-center .ff-header__bar > .ff-account,
+	.ff-header.ff-header--nav-logo-center .ff-header__bar > .ff-header__action-btns,
+	.ff-header.ff-header--nav-logo-center .ff-header__bar > .ff-header__cart-btns,
+	.ff-header.ff-header--nav-logo-center .ff-header__bar > .ff-header__account-btns {
+		grid-column: 3;
+		grid-row: 1;
+		justify-self: end;
+		align-self: center;
 	}
 
 	/* (2) Logo + Menü links, Suchleiste mittig, Icons rechts */
@@ -2122,10 +2144,13 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 
 .ff-header__actions,
 .ff-header__icons {
-	display: flex;
-	align-items: center;
+	display: flex !important;
+	flex-direction: row !important;
+	flex-wrap: nowrap !important;
+	align-items: center !important;
 	align-self: center;
-	gap: 0 !important;
+	/* Einheitlicher Abstand Lupe · Warenkorb · Konto */
+	gap: 6px !important;
 	flex-shrink: 0;
 	margin: 0;
 	--ff-icon-fg: var(--wp--preset--color--contrast, #0e1114);
@@ -2139,6 +2164,8 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	border-width: 0 !important;
 	background: transparent !important;
 	box-shadow: none !important;
+	/* Eigene Grid-Zelle behalten — nie display:contents (bricht Logo-mittig) */
+	min-width: 0;
 }
 
 body.ff-shape-rounded .ff-header__icons,
@@ -2147,15 +2174,26 @@ body.ff-shape-rounded .ff-header__actions {
 }
 
 /*
- * Flatten WP buttons wrappers so Suche / Konto / Warenkorb
- * are equal flex siblings (same gap + vertical align).
- * Keep .wp-block-button itself (cart badge needs position:relative).
+ * Buttons-Wrapper bleiben echte Flex-Kinder der Icons-Gruppe.
+ * display:contents würde sie im Logo-mittig-Grid zu eigenen Zellen machen
+ * (Warenkorb/Konto unter dem Logo).
  */
 .ff-header__icons > .wp-block-buttons,
 .ff-header__icons > .ff-header__action-btns,
 .ff-header__actions > .wp-block-buttons,
 .ff-header__actions > .ff-header__action-btns {
-	display: contents;
+	display: flex !important;
+	flex-direction: row !important;
+	flex-wrap: nowrap !important;
+	align-items: center !important;
+	gap: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	width: auto !important;
+	min-width: 0 !important;
 }
 
 /*
@@ -2710,8 +2748,7 @@ html.is-ff-mega-open .ff-header {
 	display: flex !important;
 	align-items: center;
 	position: relative;
-	/* Lupe → Warenkorb enger (Hit-Areas 40px, Glyphs kleiner) */
-	margin: 0 0 0 -10px !important;
+	margin: 0 !important;
 	border: 0 !important;
 	background: transparent !important;
 	padding: 0 !important;
@@ -9623,10 +9660,10 @@ body.is-ff-ptable-open {
 		padding: 0 !important;
 	}
 
-	/* Lupe → Warenkorb enger (nach Face-Lock, sonst wird’s überschrieben) */
-	.ff-header__icons .ff-cart,
-	.ff-header__actions .ff-cart {
-		margin-left: -12px !important;
+	/* Mobile: etwas enger, aber weiter eine Zeile rechts */
+	.ff-header__icons,
+	.ff-header__actions {
+		gap: 2px !important;
 	}
 
 	.ff-header__icons .ff-search-toggle .wp-block-button__link::before,
@@ -10193,8 +10230,8 @@ a.ff-collection-card,
 .ff-collection-card.ff-collection-card--titles-blur .ff-collection-card__bg--blur {
 	display: block !important;
 	z-index: -2;
-	filter: blur(14px);
-	transform: scale(1.18);
+	filter: blur(6px);
+	transform: scale(1.08);
 	transform-origin: center center;
 	transition:
 		transform 0.55s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
@@ -10232,8 +10269,8 @@ a.ff-collection-card,
 .ff-pattern-collections.ff-collections-titles-blur .ff-collection-card--titles-blur:hover .ff-collection-card__bg--blur,
 .ff-collection-card.ff-collection-card--titles-blur:hover .ff-collection-card__bg--blur,
 .ff-collection-card.ff-collection-card--titles-blur:focus-within .ff-collection-card__bg--blur {
-	filter: blur(10px);
-	transform: scale(1.26);
+	filter: blur(4px);
+	transform: scale(1.12);
 }
 
 .ff-pattern-collections.ff-collections-titles-blur .ff-collection-card--titles-blur:hover::after,
@@ -13928,8 +13965,6 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product,
 	.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product-template__product,
 	.ff-pattern-products--woo .ff-prod-slider__track li.wc-block-product,
-	.ff-collections-grid > *,
-	.wp-block-group.ff-collections-grid > *,
 	.ff-bento > *,
 	.wp-block-group.ff-bento > * {
 		flex: 0 0 calc(100% - 2.5em) !important;
@@ -13942,6 +13977,23 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 		box-sizing: border-box;
 		scroll-snap-align: start;
 		scroll-snap-stop: always;
+		grid-column: auto !important;
+		grid-row: auto !important;
+	}
+
+	/* Kollektionen mobil: immer 2 Karten sichtbar */
+	.ff-collections-grid > *,
+	.wp-block-group.ff-collections-grid > * {
+		flex: 0 0 calc((100% - 16px) / 2) !important;
+		width: calc((100% - 16px) / 2) !important;
+		max-width: calc((100% - 16px) / 2) !important;
+		min-width: 0 !important;
+		align-self: stretch !important;
+		height: auto;
+		min-height: 220px;
+		box-sizing: border-box;
+		scroll-snap-align: start;
+		scroll-snap-stop: normal;
 		grid-column: auto !important;
 		grid-row: auto !important;
 	}

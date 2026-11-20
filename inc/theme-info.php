@@ -20,6 +20,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.470',
+			'items'   => array(
+				__( 'Checkout AGB: sichtbare Checkbox, korrekte Abstände, deutsche Fehlermeldung (Germanized/Woo).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.469',
+			'items'   => array(
+				__( 'Checkout: keine Shop-Akzentfarbe; Lieferung Versand/Abholung lesbar; Rot nur bei Fehlern.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.468',
+			'items'   => array(
+				__( 'Kollektionen: weniger Blur am Hintergrundbild; mobil immer 2 Karten im Slider.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.467',
+			'items'   => array(
+				__( 'Desktop-Header: Suche, Warenkorb und Konto wieder rechts in einer Zeile (Logo-mittig-Layout).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.466',
 			'items'   => array(
 				__( 'Kollektionen: Schalter „Weichgezeichnetes Hintergrundbild“ immer sichtbar unter „Nur Titel“.', 'fairflock' ),

@@ -4,14 +4,18 @@
  */
 
 .ff-checkout-page {
-	/* Trust-Tokens kommen von :root (Theme Base/Contrast) */
-	--ff-checkout-brand: var(--wp--preset--color--brand, #377530);
-	--ff-checkout-line: color-mix(in srgb, var(--ff-trust-ink) 10%, transparent);
-	--ff-checkout-line-strong: color-mix(in srgb, var(--ff-checkout-brand) 28%, transparent);
-	--ff-checkout-line-filled: color-mix(in srgb, var(--ff-checkout-brand) 42%, transparent);
+	/*
+	 * Keine Shop-Akzentfarbe im Checkout.
+	 * Neutral (Ink/Surface) für UI; Grün = positiv, Rot nur Fehler.
+	 */
+	--ff-checkout-line: color-mix(in srgb, var(--ff-trust-ink) 12%, transparent);
+	--ff-checkout-line-strong: color-mix(in srgb, var(--ff-trust-ink) 28%, transparent);
+	--ff-checkout-line-filled: color-mix(in srgb, var(--ff-trust-ink) 42%, transparent);
 	--ff-checkout-field-bg: var(--ff-trust-surface);
 	--ff-checkout-panel: var(--ff-trust-surface);
-	--ff-checkout-soft: color-mix(in srgb, var(--ff-checkout-brand) 8%, var(--ff-trust-surface));
+	--ff-checkout-soft: color-mix(in srgb, var(--ff-trust-ink) 7%, var(--ff-trust-surface));
+	--ff-checkout-selected-bg: #fff;
+	--ff-checkout-selected-fg: #0e1114;
 	/* Constrained-Layout = gleiche Shell wie Header / Checkout-Grid */
 	--wp--style--global--content-size: var(--ff-shell);
 	--wp--style--global--wide-size: var(--ff-shell);
@@ -172,7 +176,7 @@
 }
 
 .ff-checkout-page .wc-block-components-form .wc-block-components-checkout-step:focus-within {
-	border-color: color-mix(in srgb, var(--ff-checkout-brand) 40%, transparent);
+	border-color: color-mix(in srgb, var(--ff-trust-ink) 28%, transparent);
 }
 
 /* Englische Step-Infos ausblenden (Fallback, falls Attr nicht geleert) */
@@ -256,7 +260,7 @@
 .ff-checkout-page .wc-block-components-text-input.has-value input,
 .ff-checkout-page .wc-block-components-combobox.is-active input,
 .ff-checkout-page .wc-block-components-textarea.is-active textarea {
-	border-color: var(--ff-checkout-line-filled) !important;
+	border-color: var(--ff-checkout-line-strong) !important;
 	box-shadow: none !important;
 	outline: none !important;
 	background-color: var(--ff-checkout-field-bg) !important;
@@ -266,13 +270,13 @@
 .ff-checkout-page .wc-block-components-textarea textarea:focus,
 .ff-checkout-page .wc-block-components-combobox .wc-block-components-combobox-control input:focus,
 .ff-checkout-page select:focus {
-	border-color: var(--ff-checkout-brand) !important;
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-checkout-brand) 18%, transparent) !important;
+	border-color: var(--ff-checkout-line-filled) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-trust-ink) 12%, transparent) !important;
 	outline: none !important;
 	background-color: var(--ff-checkout-field-bg) !important;
 }
 
-/* Hinweis / Bestellnotiz: Theme-Brand */
+/* Hinweis / Bestellnotiz */
 .ff-checkout-page .wc-block-checkout__add-note,
 .ff-checkout-page .wc-block-components-textarea,
 .ff-checkout-page .wp-block-woocommerce-checkout-order-note-block,
@@ -287,7 +291,7 @@
 	border-radius: var(--wp--custom--radius--sm, 8px) !important;
 	background-color: var(--ff-checkout-field-bg) !important;
 	color: var(--ff-trust-ink) !important;
-	caret-color: var(--ff-checkout-brand);
+	caret-color: var(--ff-trust-ink);
 }
 
 .ff-checkout-page .wc-block-components-textarea label,
@@ -299,8 +303,8 @@
 
 .ff-checkout-page .wc-block-components-textarea.is-active textarea,
 .ff-checkout-page .wc-block-components-textarea textarea:focus {
-	border-color: var(--ff-checkout-brand) !important;
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-checkout-brand) 18%, transparent) !important;
+	border-color: var(--ff-checkout-line-filled) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-trust-ink) 12%, transparent) !important;
 }
 
 /* Browser-Autofill darf Felder nicht weiß erzwingen */
@@ -317,7 +321,7 @@
 
 .ff-checkout-page .wc-block-components-text-input:hover input:not(:focus):not(:disabled),
 .ff-checkout-page .wc-block-components-combobox:hover input:not(:focus):not(:disabled) {
-	border-color: color-mix(in srgb, var(--ff-checkout-brand) 34%, transparent) !important;
+	border-color: color-mix(in srgb, var(--ff-trust-ink) 34%, transparent) !important;
 }
 
 .ff-checkout-page a.wc-block-components-address-form__address_2-toggle,
@@ -347,17 +351,17 @@
 }
 
 .ff-checkout-page .wc-block-components-radio-control__option:hover {
-	border-color: color-mix(in srgb, var(--ff-checkout-brand) 40%, transparent) !important;
+	border-color: color-mix(in srgb, var(--ff-trust-ink) 28%, transparent) !important;
 }
 
 .ff-checkout-page .wc-block-components-radio-control__option-checked,
 .ff-checkout-page .wc-block-components-radio-control__option--checked-option-highlighted,
 .ff-checkout-page .wc-block-components-radio-control-accordion-option--checked-option-highlighted,
 .ff-checkout-page .wc-block-components-radio-control--highlight-checked label.wc-block-components-radio-control__option--checked-option-highlighted {
-	border-color: var(--ff-checkout-brand) !important;
+	border-color: color-mix(in srgb, var(--ff-trust-ink) 40%, transparent) !important;
 	background: var(--ff-checkout-soft) !important;
 	color: var(--ff-trust-ink) !important;
-	box-shadow: 0 0 0 1px color-mix(in srgb, var(--ff-checkout-brand) 35%, transparent) !important;
+	box-shadow: 0 0 0 1px color-mix(in srgb, var(--ff-trust-ink) 18%, transparent) !important;
 }
 
 .ff-checkout-page .wc-block-components-radio-control__label,
@@ -372,23 +376,93 @@
 }
 
 .ff-checkout-page .wc-block-components-radio-control__input {
-	accent-color: var(--ff-checkout-brand);
+	accent-color: var(--ff-trust-ink);
 	background: var(--ff-trust-surface) !important;
 	border-color: color-mix(in srgb, var(--ff-trust-ink) 35%, transparent) !important;
 }
 
 .ff-checkout-page .wc-block-components-radio-control__input:checked {
-	border-color: var(--ff-checkout-brand) !important;
+	border-color: var(--ff-trust-ink) !important;
 	background: var(--ff-trust-surface) !important;
 }
 
 .ff-checkout-page .wc-block-components-radio-control__input:checked::before {
-	background: var(--ff-checkout-brand) !important;
+	background: var(--ff-trust-ink) !important;
 }
 
 .ff-checkout-page .wc-block-components-radio-control--highlight-checked::after {
 	border-color: var(--ff-checkout-line) !important;
 	box-shadow: none !important;
+}
+
+/* —— Lieferung: Versand / Abholung Segment —— */
+.ff-checkout-page .wc-block-checkout__shipping-method,
+.ff-checkout-page .wc-block-checkout__shipping-method-container {
+	display: flex !important;
+	flex-wrap: nowrap;
+	gap: 8px;
+	width: 100%;
+}
+
+.ff-checkout-page .wc-block-checkout__shipping-method-option,
+.ff-checkout-page button.wc-block-checkout__shipping-method-option {
+	flex: 1 1 0;
+	display: inline-flex !important;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-height: 48px;
+	padding: 12px 16px !important;
+	margin: 0 !important;
+	border: 1px solid var(--ff-checkout-line-strong) !important;
+	border-radius: var(--wp--custom--radius--sm, 8px) !important;
+	background: transparent !important;
+	color: var(--ff-trust-ink) !important;
+	font-weight: 600 !important;
+	box-shadow: none !important;
+	cursor: pointer;
+	transition:
+		background 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		border-color 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		color 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ff-checkout-page .wc-block-checkout__shipping-method-option svg,
+.ff-checkout-page .wc-block-checkout__shipping-method-option .wc-block-checkout__shipping-method-option-icon {
+	flex: 0 0 auto;
+	color: inherit !important;
+	fill: currentColor !important;
+	stroke: currentColor !important;
+}
+
+.ff-checkout-page .wc-block-checkout__shipping-method-option:hover {
+	border-color: color-mix(in srgb, var(--ff-trust-ink) 40%, transparent) !important;
+	background: var(--ff-checkout-soft) !important;
+	color: var(--ff-trust-ink) !important;
+}
+
+/*
+ * Aktiv: immer helles Panel + dunkler Text — unabhängig von Dark Theme,
+ * sonst Weiß-auf-Weiß / Weiß-auf-Dunkel unlesbar.
+ */
+.ff-checkout-page .wc-block-checkout__shipping-method-option--selected,
+.ff-checkout-page .wc-block-checkout__shipping-method-option[aria-checked="true"],
+.ff-checkout-page button.wc-block-checkout__shipping-method-option--selected,
+.ff-checkout-page button.wc-block-checkout__shipping-method-option[aria-checked="true"] {
+	background: var(--ff-checkout-selected-bg) !important;
+	border-color: var(--ff-checkout-selected-bg) !important;
+	color: var(--ff-checkout-selected-fg) !important;
+	box-shadow: 0 1px 2px color-mix(in srgb, #000 18%, transparent) !important;
+}
+
+.ff-checkout-page .wc-block-checkout__shipping-method-option--selected svg,
+.ff-checkout-page .wc-block-checkout__shipping-method-option[aria-checked="true"] svg,
+.ff-checkout-page .wc-block-checkout__shipping-method-option--selected .wc-block-checkout__shipping-method-option-title,
+.ff-checkout-page .wc-block-checkout__shipping-method-option[aria-checked="true"] .wc-block-checkout__shipping-method-option-title,
+.ff-checkout-page .wc-block-checkout__shipping-method-option--selected span,
+.ff-checkout-page .wc-block-checkout__shipping-method-option[aria-checked="true"] span {
+	color: var(--ff-checkout-selected-fg) !important;
+	fill: currentColor !important;
 }
 
 .ff-checkout-page .wc-block-components-notice-banner,
@@ -398,15 +472,25 @@
 
 .ff-checkout-page .wc-block-components-notice-banner.is-error,
 .ff-checkout-page .wc-block-components-validation-error {
-	background: color-mix(in srgb, var(--ff-trust-bad) 8%, #fff) !important;
-	border-color: color-mix(in srgb, var(--ff-trust-bad) 28%, transparent) !important;
-	color: var(--ff-trust-bad-deep) !important;
+	background: color-mix(in srgb, var(--ff-trust-bad) 14%, var(--ff-trust-surface)) !important;
+	border-color: color-mix(in srgb, var(--ff-trust-bad) 40%, transparent) !important;
+	color: var(--ff-trust-bad) !important;
 }
 
 .ff-checkout-page .wc-block-components-notice-banner.is-success {
-	background: color-mix(in srgb, var(--ff-trust-ok) 10%, #fff) !important;
-	border-color: color-mix(in srgb, var(--ff-trust-ok) 30%, transparent) !important;
-	color: var(--ff-trust-ok-deep) !important;
+	background: color-mix(in srgb, var(--ff-trust-ok) 14%, var(--ff-trust-surface)) !important;
+	border-color: color-mix(in srgb, var(--ff-trust-ok) 40%, transparent) !important;
+	color: var(--ff-trust-ok) !important;
+}
+
+/* Validierungs-Rahmen nur bei echtem Fehler — nie Brand/Akzent */
+.ff-checkout-page .wc-block-components-text-input.has-error input,
+.ff-checkout-page .wc-block-components-text-input.is-error input,
+.ff-checkout-page .has-error .wc-block-components-text-input input,
+.ff-checkout-page .wc-block-components-validation-error + .wc-block-components-text-input input,
+.ff-checkout-page .wc-block-components-text-input:has(+ .wc-block-components-validation-error) input {
+	border-color: var(--ff-trust-bad) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-trust-bad) 18%, transparent) !important;
 }
 
 /* —— Order summary —— */
@@ -663,14 +747,47 @@
 .ff-checkout-page .wp-block-woocommerce-checkout-terms-block {
 	font-size: 0.875rem;
 	line-height: 1.45;
-	color: var(--ff-trust-muted);
+	color: var(--ff-trust-ink);
 }
 
-.ff-checkout-page .wc-block-checkout__terms a {
-	color: var(--ff-trust-ok);
+.ff-checkout-page .wc-block-checkout__terms a,
+.ff-checkout-page .wp-block-woocommerce-checkout-terms-block a,
+.ff-checkout-page .ff-checkout-terms-box a {
+	color: var(--ff-trust-ink) !important;
 	font-weight: 700;
 	text-decoration: underline;
 	text-underline-offset: 2px;
+}
+
+/*
+ * AGB-Zeile: Label-Text normal fließen lassen (kein Flex auf dem Text),
+ * sonst verschwinden Leerzeichen um die Links.
+ */
+.ff-checkout-page .wc-block-checkout__terms .wc-block-components-checkbox,
+.ff-checkout-page .wp-block-woocommerce-checkout-terms-block .wc-block-components-checkbox,
+.ff-checkout-page .ff-checkout-terms-box {
+	display: flex !important;
+	align-items: flex-start !important;
+	gap: 12px !important;
+	width: 100%;
+}
+
+.ff-checkout-page .wc-block-checkout__terms .wc-block-components-checkbox > label,
+.ff-checkout-page .wp-block-woocommerce-checkout-terms-block .wc-block-components-checkbox > label {
+	display: flex !important;
+	align-items: flex-start !important;
+	gap: 12px !important;
+	width: 100%;
+}
+
+.ff-checkout-page .wc-block-checkout__terms .wc-block-components-checkbox__label,
+.ff-checkout-page .wp-block-woocommerce-checkout-terms-block .wc-block-components-checkbox__label,
+.ff-checkout-page .ff-checkout-terms-box .wc-block-components-checkbox__label {
+	display: block !important;
+	flex: 1 1 auto;
+	min-width: 0;
+	color: var(--ff-trust-ink) !important;
+	white-space: normal;
 }
 
 /* Trust line under CTA */
@@ -730,14 +847,15 @@
 	background: var(--ff-trust-surface) !important;
 	opacity: 1 !important;
 	visibility: visible !important;
-	accent-color: var(--ff-checkout-brand);
+	accent-color: var(--ff-trust-ink);
 	box-shadow: none !important;
 	flex: 0 0 20px;
 }
 
 .ff-checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__input[type="checkbox"]:checked {
-	background: var(--ff-checkout-brand) !important;
-	border-color: var(--ff-checkout-brand) !important;
+	/* Festes Dunkel — weißer Haken bleibt lesbar auch im Dark Theme */
+	background: var(--ff-checkout-selected-fg) !important;
+	border-color: var(--ff-checkout-selected-fg) !important;
 }
 
 .ff-checkout-page .wc-block-components-checkbox .wc-block-components-checkbox__mark {

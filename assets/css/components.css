@@ -829,6 +829,10 @@ body:not(.block-editor-iframe__body) .ff-header {
 		align-self: center;
 		width: max-content;
 		max-width: 100%;
+		display: flex !important;
+		flex-direction: row !important;
+		flex-wrap: nowrap !important;
+		overflow: visible !important;
 	}
 
 	/* Falls Icons je aus der Gruppe ausbrechen: rechts in Zeile 1 halten */
@@ -2149,11 +2153,13 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	flex-wrap: nowrap !important;
 	align-items: center !important;
 	align-self: center;
+	justify-content: flex-end !important;
 	/* Einheitlicher Abstand Lupe · Warenkorb · Konto */
 	gap: 6px !important;
 	flex-shrink: 0;
 	margin: 0;
-	--ff-icon-fg: var(--wp--preset--color--contrast, #0e1114);
+	/* Glyphs folgen der Header-Leisten-Farbe (hell auf dunklem Bar) — nicht fest Contrast */
+	--ff-icon-fg: currentColor;
 	--ff-icon-bg: color-mix(in srgb, var(--ff-icon-fg) 6%, transparent);
 	--ff-icon-line: color-mix(in srgb, var(--ff-icon-fg) 18%, transparent);
 	--ff-icon-line-w: 1px;
@@ -2166,6 +2172,44 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	box-shadow: none !important;
 	/* Eigene Grid-Zelle behalten — nie display:contents (bricht Logo-mittig) */
 	min-width: 0;
+	overflow: visible !important;
+	width: max-content;
+	max-width: 100%;
+}
+
+/*
+ * Reihenfolge rechts: Suche → Warenkorb → Profil
+ * (auch wenn Site-Editor/Woo-Account-Block anders sortiert)
+ */
+.ff-header__icons > .wp-block-buttons:has(.ff-search-toggle),
+.ff-header__icons > .ff-header__action-btns:not(.ff-header__cart-btns):not(.ff-header__account-btns),
+.ff-header__icons > .ff-search-toggle {
+	order: 1;
+	display: flex !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+	flex: 0 0 auto !important;
+}
+
+.ff-header__icons > .wp-block-buttons:has(.ff-cart),
+.ff-header__icons > .ff-header__cart-btns,
+.ff-header__icons > .ff-cart {
+	order: 2;
+	display: flex !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+	flex: 0 0 auto !important;
+}
+
+.ff-header__icons > .wp-block-buttons:has(.ff-account),
+.ff-header__icons > .ff-header__account-btns,
+.ff-header__icons > .ff-account,
+.ff-header__icons > .wp-block-woocommerce-customer-account {
+	order: 3;
+	display: flex !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+	flex: 0 0 auto !important;
 }
 
 body.ff-shape-rounded .ff-header__icons,
@@ -2201,6 +2245,33 @@ body.ff-shape-rounded .ff-header__actions {
  * text color, background and border for Suche + Account + Warenkorb at once.
  * Individual children can still override via their own color/border/background.
  */
+/* Glyph-Farbe = Header-Leiste (schlägt has-contrast-color auf dunklem Bar) */
+.ff-header__bar .ff-header__icons,
+.ff-header__bar .ff-header__actions {
+	color: inherit !important;
+	--ff-icon-fg: currentColor;
+}
+
+/*
+ * Dunkle Leiste + helle Nav (base/white): Suche/Warenkorb sonst unsichtbar,
+ * weil die Leiste oft nur Hintergrund setzt und color=Contrast bleibt.
+ */
+.ff-header__bar:has(.ff-header__nav.has-base-color) .ff-header__icons,
+.ff-header__bar:has(.ff-header__nav.has-white-color) .ff-header__icons,
+.ff-header__bar:has(.ff-header__nav.has-base-color) .ff-header__actions,
+.ff-header__bar:has(.ff-header__nav.has-white-color) .ff-header__actions {
+	color: var(--wp--preset--color--base, #fff) !important;
+	--ff-icon-fg: var(--wp--preset--color--base, #fff);
+}
+
+.ff-header__bar.has-contrast-background-color .ff-header__icons,
+.ff-header__bar.has-brand-deep-background-color .ff-header__icons,
+.ff-header__bar.has-contrast-background-color .ff-header__actions,
+.ff-header__bar.has-brand-deep-background-color .ff-header__actions {
+	color: var(--wp--preset--color--base, #fff) !important;
+	--ff-icon-fg: var(--wp--preset--color--base, #fff);
+}
+
 .ff-header__icons.has-text-color,
 .ff-header__actions.has-text-color {
 	--ff-icon-fg: currentColor;
@@ -2230,10 +2301,9 @@ body.ff-shape-rounded .ff-header__actions {
 .ff-header__icons.has-white-background-color,
 .ff-header__actions.has-white-background-color { --ff-icon-bg: var(--wp--preset--color--white, #fff); }
 
+/* Bewusste Icon-Farben (nicht Contrast — der folgt der Leiste via currentColor) */
 .ff-header__icons.has-base-color,
 .ff-header__actions.has-base-color { --ff-icon-fg: var(--wp--preset--color--base); }
-.ff-header__icons.has-contrast-color,
-.ff-header__actions.has-contrast-color { --ff-icon-fg: var(--wp--preset--color--contrast); }
 .ff-header__icons.has-brand-color,
 .ff-header__actions.has-brand-color { --ff-icon-fg: var(--wp--preset--color--brand); }
 .ff-header__icons.has-brand-deep-color,
@@ -14390,7 +14460,8 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	background-color: transparent !important;
 	background-image: none !important;
 	box-shadow: none !important;
-	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
+	/* Pro-Icon → Gruppe → Leistenfarbe (dunkler Header: helle Glyphs) */
+	color: var(--ff-i-fg, var(--ff-icon-fg, currentColor)) !important;
 	font-size: 0 !important;
 	line-height: 0 !important;
 	letter-spacing: 0 !important;
@@ -14398,6 +14469,8 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	text-transform: none !important;
 	overflow: visible !important;
 	white-space: nowrap !important;
+	visibility: visible !important;
+	opacity: 1 !important;
 }
 
 .ff-header .ff-account.wp-block-button .wp-block-button__link.wp-element-button,
@@ -14472,7 +14545,7 @@ html.is-ff-mega-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element
 .ff-header .ff-nav-burger.wp-block-button .wp-block-button__link.wp-element-button:hover {
 	background: transparent !important;
 	background-color: transparent !important;
-	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
+	color: var(--ff-i-fg, var(--ff-icon-fg, currentColor)) !important;
 	opacity: 0.75;
 	transform: none !important;
 	filter: none !important;

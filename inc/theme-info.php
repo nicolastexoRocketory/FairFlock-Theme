@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.472',
+			'items'   => array(
+				__( 'Desktop-Header: Suche + Warenkorb wieder sichtbar links neben dem Profil (Glyph-Farbe folgt der Leiste, feste Reihenfolge).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.471',
 			'items'   => array(
 				__( 'Bestellnummern: Anhängsel mit „#“ (z. B. 12345#AH001).', 'fairflock' ),

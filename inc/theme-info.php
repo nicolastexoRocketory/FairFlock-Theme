@@ -20,6 +20,78 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.488',
+			'items'   => array(
+				__( 'Mobil: Bild-Zoom im Produkt-Pop-up und auf der Produktseite wieder aktiv (Tap zum Zoomen).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.487',
+			'items'   => array(
+				__( 'Checkout mobil: AGB-Checkbox direkt über „Jetzt kaufen“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.486',
+			'items'   => array(
+				__( 'Account-Pop-up (Gast): neutrale Trust-Farben, klareres Login-Layout, keine Theme-/Brand-Farbüberschreibungen.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.485',
+			'items'   => array(
+				__( 'Footer mobil: 1em Randabstand; engere Link-Zeilen, kein Uppercase.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.484',
+			'items'   => array(
+				__( 'Checkout: Intro „Vollende deine Bestellung“ als dezenter Seiten-Header mit leicht anderem Hintergrundton.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.483',
+			'items'   => array(
+				__( 'Such-Pop-up: Vorgeschlagene Produkte Desktop 2 pro Zeile (wie Mobil).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.482',
+			'items'   => array(
+				__( 'Checkout: Abstand zwischen „Vollende deine Bestellung“ und Kontaktinformationen verringert.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.480',
+			'items'   => array(
+				__( 'FairFlock → Navigation: individuelle Menüpunkte mit Titel und Link anlegen, sortieren und bearbeiten.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.479',
+			'items'   => array(
+				__( 'Rechtsseiten: Abstand unter der Nav; helle Header-Leiste mit Custom-Hintergrund bekommt dunkle Menüfarbe.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.478',
+			'items'   => array(
+				__( 'Bestell-E-Mails: Produktbilder im 1:1-Rahmen oben mittig (wie Shop-Thumbnails).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.477',
+			'items'   => array(
+				__( 'Größentabelle: Info unter der Tabelle; Rich-Text-Editor (Überschriften, Fettung, Listen) in der Vorlage.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.476',
+			'items'   => array(
+				__( 'Checkout-Summary: doppelte Borders/Padding entfernt, einheitliche Innenabstände, schlankere Trenner.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.475',
 			'items'   => array(
 				__( 'Mobile Checkout: klarere Reihenfolge (Jetzt kaufen zuletzt), weniger Überladen, Text bleibt in den Cards.', 'fairflock' ),

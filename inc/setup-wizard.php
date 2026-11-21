@@ -176,7 +176,7 @@ function fairflock_setup_wizard_steps() {
 	$wc_url       = admin_url( 'admin.php?page=wc-admin' );
 	$wc_pay_url   = admin_url( 'admin.php?page=wc-settings&tab=checkout' );
 	$wc_ship_url  = admin_url( 'admin.php?page=wc-settings&tab=shipping' );
-	$menus_url    = admin_url( 'site-editor.php?p=%2Fnavigation' );
+	$menus_url    = admin_url( 'admin.php?page=fairflock-navigation' );
 	$header_url   = admin_url( 'admin.php?page=fairflock-header-style' );
 	$unsplash_url = admin_url( 'admin.php?page=fairflock-unsplash-credit' );
 	$permalinks   = admin_url( 'options-permalink.php' );
@@ -292,10 +292,10 @@ function fairflock_setup_wizard_steps() {
 		),
 		'navigation'   => array(
 			'title'       => __( 'Navigation prüfen', 'fairflock' ),
-			'description' => __( 'Hauptmenü setzen. Menüpunkt mit Stil „Mega“ öffnet den Template-Teil „Mega-Menü“ (dort Spalten/Blöcke bauen). Unter Darstellung: Nav-Design, Inhaltsbreite und Formen.', 'fairflock' ),
+			'description' => __( 'Hauptmenü setzen: individuelle Punkte mit Titel und Link unter FairFlock → Navigation. Menüpunkt mit Stil „Mega“ öffnet den Template-Teil „Mega-Menü“. Unter Darstellung: Nav-Design, Inhaltsbreite und Formen.', 'fairflock' ),
 			'links'       => array(
 				array(
-					'label' => __( 'Navigation im Site Editor', 'fairflock' ),
+					'label' => __( 'Menüpunkte bearbeiten', 'fairflock' ),
 					'url'   => $menus_url,
 				),
 				array(

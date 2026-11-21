@@ -100,13 +100,25 @@ body,
 .ff-product__hero .wc-block-woocommerce-product-gallery__image.is-ff-zooming img,
 .ff-product__hero .woocommerce-product-gallery__image.is-ff-zooming a img,
 .ff-product-modal__slide.is-ff-zooming img,
-.ff-product-peek__slide.is-ff-zooming img {
-	transform: scale(var(--ff-zoom-scale, 1.85));
+.ff-product-peek__slide.is-ff-zooming img,
+.ff-product__hero .ff-product-peek__slide.is-ff-zooming img {
+	transform: scale(var(--ff-zoom-scale, 1.85)) !important;
+}
+
+.ff-product-modal__slide,
+.ff-product-peek__slide,
+.ff-product__hero .woocommerce-product-gallery__image,
+.ff-product__hero .wc-block-woocommerce-product-gallery__image {
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	user-select: none;
 }
 
 .ff-product-modal__stage.is-ff-zoom-active,
 .ff-product-peek__root.is-ff-zoom-active,
-[data-ff-peek-root].is-ff-zoom-active {
+[data-ff-peek-root].is-ff-zoom-active,
+.ff-product__hero .woocommerce-product-gallery.is-ff-zoom-active,
+.ff-product__gallery.is-ff-zoom-active {
 	touch-action: none;
 }
 
@@ -1168,9 +1180,6 @@ body:not(.block-editor-iframe__body) .ff-header {
 	.ff-search-mega-foot a,
 	.ff-account-modal__nav a,
 	.ff-account-modal__full,
-	.ff-account-modal__links a,
-	.ff-footer__list a,
-	.ff-footer__legal-inline a,
 	.ff-account-page .woocommerce-MyAccount-navigation a,
 	body.woocommerce-account .woocommerce-MyAccount-navigation a,
 	.ff-account-page .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):not(.woocommerce-Button):not(.edit),
@@ -1209,9 +1218,6 @@ body:not(.block-editor-iframe__body) .ff-header {
 	.ff-search-mega-foot a,
 	.ff-account-modal__nav a,
 	.ff-account-modal__full,
-	.ff-account-modal__links a,
-	.ff-footer__list a,
-	.ff-footer__legal-inline a,
 	.ff-account-page .woocommerce-MyAccount-navigation a,
 	body.woocommerce-account .woocommerce-MyAccount-navigation a,
 	.ff-account-page .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):not(.woocommerce-Button):not(.edit),
@@ -1242,9 +1248,6 @@ body:not(.block-editor-iframe__body) .ff-header {
 	.ff-search-mega-foot a,
 	.ff-account-modal__nav a,
 	.ff-account-modal__full,
-	.ff-account-modal__links a,
-	.ff-footer__list a,
-	.ff-footer__legal-inline a,
 	.ff-account-page .woocommerce-MyAccount-navigation a,
 	body.woocommerce-account .woocommerce-MyAccount-navigation a,
 	.ff-account-page .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):not(.woocommerce-Button):not(.edit),
@@ -1257,9 +1260,6 @@ body:not(.block-editor-iframe__body) .ff-header {
 	.ff-search-mega-foot a,
 	.ff-account-modal__nav a,
 	.ff-account-modal__full,
-	.ff-account-modal__links a,
-	.ff-footer__list a,
-	.ff-footer__legal-inline a,
 	.ff-account-page .woocommerce-MyAccount-navigation a,
 	body.woocommerce-account .woocommerce-MyAccount-navigation a,
 	.ff-account-page .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):not(.woocommerce-Button):not(.edit),
@@ -1277,9 +1277,6 @@ body:not(.block-editor-iframe__body) .ff-header {
 	.ff-search-mega-foot a,
 	.ff-account-modal__nav a,
 	.ff-account-modal__full,
-	.ff-account-modal__links a,
-	.ff-footer__list a,
-	.ff-footer__legal-inline a,
 	.ff-account-page .woocommerce-MyAccount-navigation a,
 	body.woocommerce-account .woocommerce-MyAccount-navigation a,
 	.ff-account-page .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):not(.woocommerce-Button):not(.edit),
@@ -1292,9 +1289,6 @@ body:not(.block-editor-iframe__body) .ff-header {
 	.ff-search-mega-foot a,
 	.ff-account-modal__nav a,
 	.ff-account-modal__full,
-	.ff-account-modal__links a,
-	.ff-footer__list a,
-	.ff-footer__legal-inline a,
 	.ff-account-page .woocommerce-MyAccount-navigation a,
 	body.woocommerce-account .woocommerce-MyAccount-navigation a,
 	.ff-account-page .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):not(.woocommerce-Button):not(.edit),
@@ -1306,8 +1300,8 @@ body:not(.block-editor-iframe__body) .ff-header {
 /* Monochrome surfaces: hover stays ink (no brand) */
 .ff-search-shell :is(.ff-search-menu-nav a, .ff-search-mega-foot a):hover,
 .ff-search-shell :is(.ff-search-menu-nav a, .ff-search-mega-foot a):focus-visible,
-.ff-account-modal :is(.ff-account-modal__nav a, .ff-account-modal__full, .ff-account-modal__links a):hover,
-.ff-account-modal :is(.ff-account-modal__nav a, .ff-account-modal__full, .ff-account-modal__links a):focus-visible,
+.ff-account-modal :is(.ff-account-modal__nav a, .ff-account-modal__full):hover,
+.ff-account-modal :is(.ff-account-modal__nav a, .ff-account-modal__full):focus-visible,
 .ff-account-page .woocommerce-MyAccount-navigation a:hover,
 .ff-account-page .woocommerce-MyAccount-navigation a:focus-visible,
 body.woocommerce-account .woocommerce-MyAccount-navigation a:hover,
@@ -1368,11 +1362,21 @@ body.woocommerce-account .woocommerce-MyAccount-navigation li.is-active a::after
 	--ff-nav-item-fg: #fff;
 }
 
-/* Helle Header-Leiste ohne Nav-Textfarbe → dunkle Menüpunkte, Hover Brand */
+/*
+ * Helle Header-Leiste ohne Nav-Textfarbe → dunkle Menüpunkte, Hover Brand.
+ * Deckt auch Custom-Hex (has-background / inline style) — nicht nur Palette-Klassen.
+ * Sonst bleibt der Hero-Fallback (weiß) und Nav verschwindet auf Rechts-/Innen­seiten.
+ */
 .ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item,
 .ff-header__bar.has-base-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu,
 .ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item,
 .ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu,
+.ff-header__bar.has-brand-soft-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item,
+.ff-header__bar.has-brand-soft-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu,
+.ff-header__bar.has-background:not([class*="-background-color"]) .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item,
+.ff-header__bar.has-background:not([class*="-background-color"]) .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu,
+.ff-header__bar[style*="background"] .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item,
+.ff-header__bar[style*="background"] .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu,
 .ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item,
 .ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu {
 	--ff-nav-item-fg: var(--wp--preset--color--contrast, #0e1114);
@@ -1386,6 +1390,18 @@ body.woocommerce-account .woocommerce-MyAccount-navigation li.is-active a::after
 .ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:focus-within,
 .ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:hover,
 .ff-header__bar.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within,
+.ff-header__bar.has-brand-soft-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:hover,
+.ff-header__bar.has-brand-soft-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:focus-within,
+.ff-header__bar.has-brand-soft-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:hover,
+.ff-header__bar.has-brand-soft-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within,
+.ff-header__bar.has-background:not([class*="-background-color"]) .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:hover,
+.ff-header__bar.has-background:not([class*="-background-color"]) .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:focus-within,
+.ff-header__bar.has-background:not([class*="-background-color"]) .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:hover,
+.ff-header__bar.has-background:not([class*="-background-color"]) .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within,
+.ff-header__bar[style*="background"] .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:hover,
+.ff-header__bar[style*="background"] .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:focus-within,
+.ff-header__bar[style*="background"] .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:hover,
+.ff-header__bar[style*="background"] .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:focus-within,
 .ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:hover,
 .ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-item:focus-within,
 .ff-header.has-white-background-color .ff-header__nav:not(.has-text-color) .wp-block-navigation__container > .wp-block-navigation-submenu:hover,
@@ -3406,7 +3422,7 @@ ul.ff-search-menu-nav {
 
 .ff-search-hits {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 12px;
 	min-height: 8px;
 	align-items: stretch;
@@ -7919,7 +7935,8 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 	max-width: min(100%, calc(100vw - 2rem));
 	height: auto;
 	max-height: min(90vh, calc(100vh - 2rem));
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: auto;
 	border-radius: var(--wp--custom--radius--md, 16px);
 	background: var(--ff-surface, #fff);
 	box-shadow: 0 24px 64px rgba(14, 17, 20, 0.28);
@@ -7945,12 +7962,74 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 }
 
 .ff-product-table__desc {
+	flex: 0 0 auto;
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
 	margin: 0;
-	padding: 0 4px 12px;
+	padding: 4px 20px 20px;
 	color: var(--wp--preset--color--muted, #66707a);
 	font-size: 0.875rem;
-	font-weight: 500;
-	line-height: 1.45;
+	font-weight: 400;
+	line-height: 1.5;
+}
+
+.ff-product-table__desc > *:first-child {
+	margin-top: 0;
+}
+
+.ff-product-table__desc > *:last-child {
+	margin-bottom: 0;
+}
+
+.ff-product-table__desc p {
+	margin: 0 0 0.65em;
+}
+
+.ff-product-table__desc h2,
+.ff-product-table__desc h3,
+.ff-product-table__desc h4 {
+	margin: 0.85em 0 0.35em;
+	color: var(--wp--preset--color--contrast, #0e1114);
+	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.25;
+}
+
+.ff-product-table__desc h2 {
+	font-size: 1.05rem;
+}
+
+.ff-product-table__desc h3 {
+	font-size: 0.975rem;
+}
+
+.ff-product-table__desc h4 {
+	font-size: 0.9rem;
+}
+
+.ff-product-table__desc ul,
+.ff-product-table__desc ol {
+	margin: 0 0 0.65em;
+	padding-left: 1.25em;
+}
+
+.ff-product-table__desc li {
+	margin: 0 0 0.25em;
+}
+
+.ff-product-table__desc strong,
+.ff-product-table__desc b {
+	font-weight: 700;
+	color: var(--wp--preset--color--contrast, #0e1114);
+}
+
+.ff-product-table__desc a {
+	color: inherit;
+	font-weight: 700;
+	text-decoration: underline;
+	text-underline-offset: 2px;
 }
 
 .ff-product-table__close {
@@ -8087,7 +8166,7 @@ form.cart .single_add_to_cart_button .ff-atc-check::after {
 	min-height: 0;
 	width: 100%;
 	box-sizing: border-box;
-	padding: 12px 20px 20px;
+	padding: 12px 20px 12px;
 	background: var(--ff-surface, #fff);
 }
 
@@ -8988,9 +9067,16 @@ body.is-ff-ptable-open {
 
 /*
  * Position kommt von JS (top/right unter dem Account-Icon).
- * Fallback: oben rechts unter typischer Header-Höhe.
+ * Farben: Trust-Tokens (Ink/Surface) — unabhängig von Brand/Theme-Akzenten.
  */
 .ff-account-modal {
+	--ff-account-modal-ink: var(--ff-trust-ink, #0e1114);
+	--ff-account-modal-muted: var(--ff-trust-muted, #66707a);
+	--ff-account-modal-surface: var(--ff-trust-surface, #fff);
+	--ff-account-modal-base: var(--ff-trust-base, #f3f5f4);
+	--ff-account-modal-line: color-mix(in srgb, var(--ff-account-modal-ink) 12%, transparent);
+	--ff-account-modal-line-strong: color-mix(in srgb, var(--ff-account-modal-ink) 28%, transparent);
+	--ff-account-modal-field: color-mix(in srgb, var(--ff-account-modal-ink) 4%, var(--ff-account-modal-surface));
 	position: absolute;
 	top: calc(var(--ff-header-top, 1em) + var(--ff-header-height, 56px) + 8px);
 	right: max(12px, var(--ff-gutter, 1em));
@@ -9001,17 +9087,21 @@ body.is-ff-ptable-open {
 	max-height: min(70vh, calc(100dvh - 80px));
 	display: flex;
 	flex-direction: column;
-	background: var(--ff-trust-surface, var(--ff-surface, #fff));
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
+	background: var(--ff-account-modal-surface) !important;
+	border: 1px solid var(--ff-account-modal-line) !important;
 	border-radius: var(--wp--custom--radius--md, 16px);
 	box-shadow: 0 16px 40px rgba(14, 17, 20, 0.22);
-	color: var(--ff-trust-ink, var(--wp--preset--color--contrast, #0e1114));
+	color: var(--ff-account-modal-ink) !important;
 	opacity: 0;
 	transform: translateY(-6px);
 	transform-origin: top right;
 	transition: opacity 0.22s var(--ff-ease), transform 0.22s var(--ff-ease);
 	overflow: hidden;
 	box-sizing: border-box;
+}
+
+.ff-account-modal--guest {
+	width: min(360px, calc(100vw - 16px));
 }
 
 .ff-account-layer.is-open .ff-account-modal {
@@ -9025,28 +9115,32 @@ body.is-ff-ptable-open {
 	justify-content: space-between;
 	gap: 16px;
 	padding: 16px 20px;
-	border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
+	background: var(--ff-account-modal-surface);
+	border-bottom: 1px solid var(--ff-account-modal-line);
+	color: var(--ff-account-modal-ink);
 }
 
 .ff-account-modal__head h2 {
 	margin: 0;
 	font-family: var(--wp--preset--font-family--heading);
-	font-size: 1.35rem;
-	font-weight: 700;
+	font-size: 1.25rem;
+	font-weight: 600;
 	letter-spacing: -0.03em;
+	color: var(--ff-account-modal-ink) !important;
 }
 
 .ff-account-modal__close {
 	display: grid;
 	place-items: center;
-	width: 40px;
-	height: 40px;
+	width: 36px;
+	height: 36px;
 	padding: 0;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
-	background: var(--ff-surface, #fff);
-	color: var(--wp--preset--color--contrast, #0e1114);
+	border: 1px solid var(--ff-account-modal-line) !important;
+	background: var(--ff-account-modal-surface) !important;
+	color: var(--ff-account-modal-ink) !important;
 	cursor: pointer;
+	box-shadow: none !important;
 }
 
 .ff-account-modal__close svg {
@@ -9057,24 +9151,28 @@ body.is-ff-ptable-open {
 }
 
 .ff-account-modal__close:hover {
-	background: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 8%, var(--ff-surface, #fff));
+	background: color-mix(in srgb, var(--ff-account-modal-ink) 6%, var(--ff-account-modal-surface)) !important;
+	border-color: var(--ff-account-modal-line-strong) !important;
 }
 
 .ff-account-modal__body {
 	flex: 1;
 	overflow: auto;
-	padding: 20px;
+	padding: 18px 20px 20px;
+	background: var(--ff-account-modal-surface);
+	color: var(--ff-account-modal-ink);
 }
 
 .ff-account-modal__hello {
 	margin: 0 0 16px;
 	font-size: 1rem;
-	font-weight: 700;
+	font-weight: 600;
+	color: var(--ff-account-modal-ink);
 }
 
 .ff-account-modal__note {
 	margin: 0 0 16px;
-	color: var(--ff-trust-muted);
+	color: var(--ff-account-modal-muted) !important;
 	font-size: 0.9375rem;
 	line-height: 1.45;
 }
@@ -9096,94 +9194,243 @@ body.is-ff-ptable-open {
 	margin: calc(16px + 1em) 0 0 !important;
 	padding: 16px 2px 6px !important;
 	border: 0 !important;
-	border-top: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 14%, transparent) !important;
+	border-top: 1px solid var(--ff-account-modal-line) !important;
+	color: var(--ff-account-modal-ink) !important;
+	background: transparent !important;
+}
+
+/* —— Gast: Login-Formular (Woo/Theme-Farben aushebeln) —— */
+.ff-account-modal__login {
+	color: var(--ff-account-modal-ink);
 }
 
 .ff-account-modal__login .woocommerce-form-login,
+.ff-account-modal__login form.login,
+.ff-account-modal__login form.woocommerce-form-login,
 .ff-account-modal__login form {
-	display: grid;
-	gap: 12px;
-	margin: 0;
+	display: grid !important;
+	gap: 12px !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	color: var(--ff-account-modal-ink) !important;
 }
 
 .ff-account-modal__login .form-row,
-.ff-account-modal__login p {
-	margin: 0;
+.ff-account-modal__login p,
+.ff-account-modal__login .woocommerce-form-row {
+	margin: 0 !important;
+	padding: 0 !important;
+	float: none !important;
+	width: 100% !important;
 }
 
 .ff-account-modal__login label {
 	display: block;
-	margin-bottom: 6px;
-	font-size: 0.8125rem;
-	font-weight: 700;
+	margin: 0 0 6px !important;
+	padding: 0 !important;
+	font-size: 0.8125rem !important;
+	font-weight: 600 !important;
+	letter-spacing: normal !important;
+	text-transform: none !important;
+	color: var(--ff-account-modal-ink) !important;
+	background: transparent !important;
+}
+
+.ff-account-modal__login .password-input,
+.ff-account-modal__login .woocommerce-Input,
+.ff-account-modal__login .show-password-input {
+	position: relative;
 }
 
 .ff-account-modal__login input.input-text,
 .ff-account-modal__login input[type="text"],
 .ff-account-modal__login input[type="email"],
-.ff-account-modal__login input[type="password"] {
-	width: 100%;
-	box-sizing: border-box;
-	min-height: 44px;
-	padding: 10px 12px;
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent);
-	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: var(--ff-surface, #fff);
-	font: inherit;
+.ff-account-modal__login input[type="password"],
+.ff-account-modal__login .woocommerce-Input--text,
+.ff-account-modal__login .woocommerce-Input--email,
+.ff-account-modal__login .woocommerce-Input--password {
+	width: 100% !important;
+	max-width: none !important;
+	box-sizing: border-box !important;
+	min-height: 44px !important;
+	padding: 10px 12px !important;
+	border: 1px solid var(--ff-account-modal-line-strong) !important;
+	border-radius: var(--wp--custom--radius--sm, 8px) !important;
+	background: var(--ff-account-modal-field) !important;
+	background-color: var(--ff-account-modal-field) !important;
+	color: var(--ff-account-modal-ink) !important;
+	font: inherit !important;
+	font-size: 0.9375rem !important;
+	line-height: 1.3 !important;
+	box-shadow: none !important;
+	outline: none !important;
+	caret-color: var(--ff-account-modal-ink);
+}
+
+.ff-account-modal__login input.input-text:focus,
+.ff-account-modal__login input[type="text"]:focus,
+.ff-account-modal__login input[type="email"]:focus,
+.ff-account-modal__login input[type="password"]:focus {
+	border-color: var(--ff-account-modal-ink) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--ff-account-modal-ink) 12%, transparent) !important;
+	background: var(--ff-account-modal-surface) !important;
+}
+
+.ff-account-modal__login .show-password-input,
+.ff-account-modal__login .woocommerce-form__input-password + button,
+.ff-account-modal__login .password-input button {
+	color: var(--ff-account-modal-muted) !important;
+	background: transparent !important;
+	border: 0 !important;
+	box-shadow: none !important;
+}
+
+/* Woo „Passwort vergessen?“ im Formular ausblenden — steht darunter in __links */
+.ff-account-modal__login .lost_password,
+.ff-account-modal__login a.woocommerce-LostPassword,
+.ff-account-modal__login .woocommerce-LostPassword {
+	display: none !important;
 }
 
 .ff-account-modal__login .woocommerce-form-login__submit,
+.ff-account-modal__login .woocommerce-button,
+.ff-account-modal__login button.button,
+.ff-account-modal__login button.woocommerce-button,
 .ff-account-modal__login input[type="submit"],
-.ff-account-modal__login button[type="submit"] {
-	display: inline-flex;
+.ff-account-modal__login button[type="submit"],
+.ff-account-modal__login .button {
+	display: inline-flex !important;
 	align-items: center;
 	justify-content: center;
-	min-height: 44px;
-	padding: 10px 16px;
-	border: 0;
-	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: var(--ff-trust-ink);
-	color: #fff;
-	font: inherit;
-	font-weight: 700;
+	width: 100% !important;
+	min-height: 44px !important;
+	margin: 4px 0 0 !important;
+	padding: 10px 16px !important;
+	border: 0 !important;
+	border-radius: var(--wp--custom--radius--sm, 8px) !important;
+	background: var(--ff-account-modal-ink) !important;
+	background-color: var(--ff-account-modal-ink) !important;
+	background-image: none !important;
+	color: #fff !important;
+	font: inherit !important;
+	font-size: 0.9375rem !important;
+	font-weight: 600 !important;
+	letter-spacing: normal !important;
+	text-transform: none !important;
+	text-decoration: none !important;
+	box-shadow: none !important;
 	cursor: pointer;
 }
 
 .ff-account-modal__login .woocommerce-form-login__submit:hover,
+.ff-account-modal__login .woocommerce-button:hover,
+.ff-account-modal__login button.button:hover,
+.ff-account-modal__login button.woocommerce-button:hover,
 .ff-account-modal__login input[type="submit"]:hover,
-.ff-account-modal__login button[type="submit"]:hover {
-	background: #1a1e22;
+.ff-account-modal__login button[type="submit"]:hover,
+.ff-account-modal__login .button:hover {
+	background: color-mix(in srgb, var(--ff-account-modal-ink) 88%, #fff) !important;
+	background-color: color-mix(in srgb, var(--ff-account-modal-ink) 88%, #fff) !important;
+	color: #fff !important;
 }
 
-.ff-account-modal .woocommerce-message {
-	background: color-mix(in srgb, var(--ff-trust-ok) 10%, #fff);
-	border: 1px solid color-mix(in srgb, var(--ff-trust-ok) 28%, transparent);
-	color: var(--ff-trust-ok-deep);
+.ff-account-modal .woocommerce-message,
+.ff-account-modal .woocommerce-info {
+	background: color-mix(in srgb, var(--ff-trust-ok, #2f6b3a) 10%, var(--ff-account-modal-surface)) !important;
+	border: 1px solid color-mix(in srgb, var(--ff-trust-ok, #2f6b3a) 28%, transparent) !important;
+	color: var(--ff-trust-ok-deep, #1f4d28) !important;
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	padding: 12px 14px;
+	margin: 0 0 12px !important;
 }
 
-.ff-account-modal .woocommerce-error {
-	background: color-mix(in srgb, var(--ff-trust-bad) 8%, #fff);
-	border: 1px solid color-mix(in srgb, var(--ff-trust-bad) 28%, transparent);
-	color: var(--ff-trust-bad-deep);
+.ff-account-modal .woocommerce-error,
+.ff-account-modal .woocommerce-error li {
+	background: color-mix(in srgb, var(--ff-trust-bad, #b42318) 8%, var(--ff-account-modal-surface)) !important;
+	border: 1px solid color-mix(in srgb, var(--ff-trust-bad, #b42318) 28%, transparent) !important;
+	color: var(--ff-trust-bad-deep, #8a1c14) !important;
 	border-radius: var(--wp--custom--radius--sm, 8px);
 	padding: 12px 14px;
+	margin: 0 0 12px !important;
+	list-style: none !important;
 }
 
-.ff-account-modal__login .woocommerce-form-login__rememberme {
-	display: flex;
+.ff-account-modal__login .woocommerce-form-login__rememberme,
+.ff-account-modal__login .woocommerce-form__label-for-checkbox,
+.ff-account-modal__login label.woocommerce-form__label-for-checkbox {
+	display: flex !important;
 	align-items: center;
 	gap: 8px;
-	font-size: 0.875rem;
-	font-weight: 400;
+	margin: 0 !important;
+	font-size: 0.875rem !important;
+	font-weight: 400 !important;
+	color: var(--ff-account-modal-ink) !important;
+	cursor: pointer;
+}
+
+.ff-account-modal__login .woocommerce-form-login__rememberme input,
+.ff-account-modal__login input[type="checkbox"] {
+	width: 16px !important;
+	height: 16px !important;
+	min-height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	accent-color: var(--ff-account-modal-ink);
+	flex-shrink: 0;
 }
 
 .ff-account-modal__links {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 8px 16px;
+	align-items: center;
+	gap: 6px 12px;
 	margin: 16px 0 0;
+	padding-top: 14px;
+	border-top: 1px solid var(--ff-account-modal-line);
+	font-size: 0.875rem;
+	line-height: 1.35;
+	color: var(--ff-account-modal-muted);
+}
+
+.ff-account-modal__links a {
+	display: inline !important;
+	width: auto !important;
+	max-width: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	border: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	color: var(--ff-account-modal-ink) !important;
+	font-size: inherit !important;
+	font-weight: 500 !important;
+	letter-spacing: normal !important;
+	line-height: inherit !important;
+	text-transform: none !important;
+	text-decoration: none !important;
+	white-space: normal !important;
+	opacity: 0.92;
+}
+
+.ff-account-modal__links a::after {
+	display: none !important;
+	content: none !important;
+}
+
+.ff-account-modal__links a:hover,
+.ff-account-modal__links a:focus-visible {
+	opacity: 1;
+	color: var(--ff-account-modal-ink) !important;
+	text-decoration: underline !important;
+	text-underline-offset: 2px;
+}
+
+.ff-account-modal__links span[aria-hidden="true"] {
+	color: var(--ff-account-modal-muted);
+	opacity: 0.7;
 }
 
 /* Mobil/Tablet: gleiches Andocken unter dem Profil-Icon (Position via JS) */
@@ -9192,6 +9439,10 @@ body.is-ff-ptable-open {
 		width: min(300px, calc(100vw - 16px));
 		border-radius: var(--wp--custom--radius--md, 16px);
 		box-shadow: 0 16px 40px rgba(14, 17, 20, 0.24);
+	}
+
+	.ff-account-modal--guest {
+		width: min(340px, calc(100vw - 16px));
 	}
 }
 
@@ -9326,14 +9577,49 @@ body.is-ff-ptable-open {
 
 .ff-footer__list {
 	display: grid;
-	gap: 2px;
+	gap: 0;
+	row-gap: 0;
 }
 
-/* Engere Zeilen als Navbar-Default (Padding 6px wäre zu luftig in Spalten) */
+/* Footer-Links: kein Caps, engere Zeilen (nicht Navbar-Textlink-Stil). */
 .ff-footer__list a,
 .ff-footer__legal-inline a {
-	padding-top: 2px;
-	padding-bottom: 2px;
+	position: relative;
+	display: inline-flex;
+	align-items: baseline;
+	width: fit-content;
+	max-width: 100%;
+	margin: 0;
+	padding: 1px 0;
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+	color: inherit;
+	font-size: inherit;
+	font-weight: 500;
+	font-style: normal;
+	letter-spacing: normal;
+	line-height: 1.35;
+	text-transform: none;
+	text-decoration: none;
+	white-space: normal;
+	opacity: 0.92;
+	transition: color 0.28s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		opacity 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ff-footer__list li + li {
+	margin-top: 0;
+}
+
+.ff-footer__list a:hover,
+.ff-footer__list a:focus-visible,
+.ff-footer__legal-inline a:hover,
+.ff-footer__legal-inline a:focus-visible {
+	opacity: 1;
+	color: var(--wp--preset--color--brand, #377530);
+	text-decoration: underline;
+	text-underline-offset: 2px;
 }
 
 .ff-footer .wp-block-column > .wp-block-heading + .wp-block-navigation,
@@ -9902,15 +10188,26 @@ body.is-ff-ptable-open {
 		box-sizing: border-box;
 	}
 
-	/* Footer mobil: genau 1em Innenabstand (wie Header/Hero), kein spacing-40 */
+	/* Footer mobil: genau 1em zum Rand — Shell trägt den Gutter, Kinder nicht nochmal. */
 	.ff-footer__shell,
 	.wp-block-group.ff-footer__shell {
-		width: calc(100% - 2em) !important;
-		max-width: calc(100% - 2em) !important;
+		width: var(--ff-shell) !important;
+		max-width: var(--ff-shell) !important;
 		margin-inline: auto !important;
 		padding-left: 0 !important;
 		padding-right: 0 !important;
-		box-sizing: border-box;
+		box-sizing: border-box !important;
+	}
+
+	.ff-footer__shell.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)),
+	.ff-footer__shell.has-global-padding.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)),
+	.wp-block-group.ff-footer__shell.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+		width: 100% !important;
+		max-width: none !important;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
 	}
 
 	.ff-pattern-products__shell,

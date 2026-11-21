@@ -10,14 +10,17 @@
 		".ff-prod-card__media, .wc-block-components-product-image, .ff-shop__collection .wc-block-components-product-image";
 	var GALLERY_SEL =
 		".ff-product__hero .woocommerce-product-gallery__image, .ff-product__hero .wc-block-woocommerce-product-gallery__image, .ff-product-modal__slide, .ff-product-peek__slide";
-	var TOUCH_ZOOM_SEL = ".ff-product-modal__slide, .ff-product-peek__slide";
+	/* Touch/Tap-Zoom: Modal, Peek und Fallback Woo-Galerie auf der PDP */
+	var TOUCH_ZOOM_SEL =
+		".ff-product-modal__slide, .ff-product-peek__slide, .ff-product__hero .woocommerce-product-gallery__image, .ff-product__hero .wc-block-woocommerce-product-gallery__image";
 	var HINT_ROOT_SEL =
 		".ff-product-modal__stage, .ff-product-peek__root, [data-ff-peek-root]";
 	var HOST_SEL = CARD_SEL + ", " + GALLERY_SEL;
 	var SKIP_SEL =
 		".ff-product__hero .flex-control-thumbs, .ff-product-modal__thumbs, .ff-product-modal__thumb";
+	/* Nur echte Controls — keine Galerie-<a> um das Bild (sonst kein Tap-Zoom). */
 	var CTRL_SEL =
-		"button, a, .ff-product-modal__gallery-btn, .ff-product-peek__btn, .ff-product-modal__close";
+		"button, .ff-product-modal__gallery-btn, .ff-product-peek__btn, .ff-product-modal__close, .ff-zoom-hint-tag";
 
 	var LOUPE_SVG =
 		'<svg class="ff-zoom-hint-tag__icon" viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" fill="none">' +
@@ -33,6 +36,7 @@
 	};
 
 	var touchState = null;
+	var suppressClickUntil = 0;
 
 	function ready(fn) {
 		if (document.readyState === "loading") {
@@ -63,7 +67,12 @@
 		if (el.closest(CTRL_SEL)) {
 			return null;
 		}
-		return el.closest(TOUCH_ZOOM_SEL);
+		var host = el.closest(TOUCH_ZOOM_SEL);
+		if (!host) {
+			return null;
+		}
+		/* Woo wrappt Galeriebilder oft in <a> — Zoom erlauben, Navigation nicht. */
+		return host;
 	}
 
 	function clampPct(n) {
@@ -113,7 +122,9 @@
 		host.classList.remove("is-ff-zooming");
 		host.style.removeProperty("--ff-zoom-x");
 		host.style.removeProperty("--ff-zoom-y");
-		var root = host.closest(".ff-product-modal__stage, .ff-product-peek__root, [data-ff-peek-root], .ff-product-modal__media");
+		var root = host.closest(
+			".ff-product-modal__stage, .ff-product-peek__root, [data-ff-peek-root], .ff-product-modal__media, .ff-product__hero .woocommerce-product-gallery, .ff-product__gallery"
+		);
 		if (root) {
 			root.classList.remove("is-ff-zoom-active");
 		}
@@ -127,9 +138,22 @@
 		});
 		setOrigin(host, clientX, clientY);
 		host.classList.add("is-ff-zooming");
-		var root = host.closest(".ff-product-modal__stage, .ff-product-peek__root, [data-ff-peek-root], .ff-product-modal__media");
+		var root = host.closest(
+			".ff-product-modal__stage, .ff-product-peek__root, [data-ff-peek-root], .ff-product-modal__media, .ff-product__hero .woocommerce-product-gallery, .ff-product__gallery"
+		);
 		if (root) {
 			root.classList.add("is-ff-zoom-active");
+		}
+	}
+
+	function toggleZoom(host, clientX, clientY) {
+		if (!host) {
+			return;
+		}
+		if (host.classList.contains("is-ff-zooming")) {
+			clearOrigin(host);
+		} else {
+			activateZoom(host, clientX, clientY);
 		}
 	}
 
@@ -146,6 +170,10 @@
 		if (!isFinePointer()) {
 			return;
 		}
+		/* Echte Touch-Pointer nicht als Hover-Zoom behandeln */
+		if (event.pointerType === "touch") {
+			return;
+		}
 		var host = isHost(event.target);
 		if (!host) {
 			return;
@@ -156,6 +184,9 @@
 
 	function onLeave(event) {
 		if (!isFinePointer()) {
+			return;
+		}
+		if (event.pointerType === "touch") {
 			return;
 		}
 		var host = isHost(event.target);
@@ -170,9 +201,7 @@
 	}
 
 	function onTouchStart(event) {
-		if (isFinePointer()) {
-			return;
-		}
+		/* Kein isFinePointer-Gate: Touch-Events = Touch-Gerät (auch Hybrid/DevTools). */
 		if (!event.touches || event.touches.length !== 1) {
 			touchState = null;
 			return;
@@ -195,7 +224,12 @@
 	}
 
 	function onTouchMove(event) {
-		if (!touchState || !event.touches || !event.touches.length) {
+		/* Pinch (2+ Finger) nie blockieren — Browser-/OS-Zoom erlauben. */
+		if (!event.touches || event.touches.length !== 1) {
+			touchState = null;
+			return;
+		}
+		if (!touchState) {
 			return;
 		}
 		var t = event.touches[0];
@@ -228,13 +262,12 @@
 		}
 		var state = touchState;
 		touchState = null;
-		if (isFinePointer()) {
-			return;
-		}
+
 		if (state.zooming) {
 			/* Pan/Zoom beendet — Slide-Wisch nicht auslösen. */
 			event.stopPropagation();
 			if (state.moved) {
+				suppressClickUntil = Date.now() + 400;
 				return;
 			}
 		}
@@ -245,11 +278,34 @@
 		if (!touch || !state.host) {
 			return;
 		}
-		if (state.host.classList.contains("is-ff-zooming")) {
-			clearOrigin(state.host);
-		} else {
-			activateZoom(state.host, touch.clientX, touch.clientY);
+		toggleZoom(state.host, touch.clientX, touch.clientY);
+		suppressClickUntil = Date.now() + 400;
+		event.stopPropagation();
+	}
+
+	/**
+	 * Klick-Fallback (manche WebViews liefern kein zuverlässiges touchend-Toggle).
+	 */
+	function onClickCapture(event) {
+		if (Date.now() < suppressClickUntil) {
+			var hostBusy = isTouchZoomHost(event.target);
+			if (hostBusy) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			return;
 		}
+		/* Desktop-Hover-Geräte: Klick nicht für Zoom missbrauchen. */
+		if (isFinePointer() && !(event.sourceCapabilities && event.sourceCapabilities.firesTouchEvents)) {
+			return;
+		}
+		var host = isTouchZoomHost(event.target);
+		if (!host) {
+			return;
+		}
+		event.preventDefault();
+		event.stopPropagation();
+		toggleZoom(host, event.clientX, event.clientY);
 	}
 
 	ready(function () {
@@ -260,7 +316,7 @@
 		document.addEventListener(
 			"pointerout",
 			function (event) {
-				if (!isFinePointer()) {
+				if (!isFinePointer() || event.pointerType === "touch") {
 					return;
 				}
 				var host = isHost(event.target);
@@ -279,15 +335,21 @@
 		document.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
 		document.addEventListener("touchmove", onTouchMove, { passive: false, capture: true });
 		document.addEventListener("touchend", onTouchEnd, { passive: true, capture: true });
-		document.addEventListener("touchcancel", function () {
-			touchState = null;
-		}, { passive: true, capture: true });
+		document.addEventListener(
+			"touchcancel",
+			function () {
+				touchState = null;
+			},
+			{ passive: true, capture: true }
+		);
+		document.addEventListener("click", onClickCapture, true);
 
-		var obs = typeof MutationObserver !== "undefined"
-			? new MutationObserver(function () {
-					ensureZoomHints();
-			  })
-			: null;
+		var obs =
+			typeof MutationObserver !== "undefined"
+				? new MutationObserver(function () {
+						ensureZoomHints();
+				  })
+				: null;
 		if (obs) {
 			obs.observe(document.body, { childList: true, subtree: true });
 		}

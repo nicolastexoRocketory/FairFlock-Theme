@@ -750,6 +750,11 @@ function fairflock_header_style_render_admin_page() {
 		<?php endif; ?>
 
 		<p><?php esc_html_e( 'Globale Optik für Navigation, Inhaltsbreite, Formen, Mega-Menü, Hero, Trust-Banner, Kollektionen und Produktkarten — gilt für den gesamten Shop.', 'fairflock' ); ?></p>
+		<p>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=fairflock-navigation' ) ); ?>">
+				<?php esc_html_e( 'Menüpunkte bearbeiten (Titel und Links)', 'fairflock' ); ?>
+			</a>
+		</p>
 
 		<form method="post" action="">
 			<?php wp_nonce_field( 'fairflock_header_style_settings' ); ?>

@@ -1352,3 +1352,83 @@ function fairflock_render_product_card_ansehen_link( $content, $block, $instance
 	return $content . $link;
 }
 add_filter( 'render_block', 'fairflock_render_product_card_ansehen_link', 14, 3 );
+
+/**
+ * Square frame size (px) for product thumbs in WooCommerce emails.
+ *
+ * @since 0.9.478
+ */
+const FAIRFLOCK_EMAIL_ORDER_THUMB_PX = 48;
+
+/**
+ * Order-email product thumbs: 1:1 frame, 2:3 source cropped top-center (shop cards).
+ *
+ * @since 0.9.478
+ *
+ * @param string                $image Image HTML.
+ * @param WC_Order_Item_Product $item  Order line item.
+ * @return string
+ */
+function fairflock_email_order_item_thumbnail( $image, $item ) {
+	$product = null;
+	if ( is_a( $item, 'WC_Order_Item_Product' ) ) {
+		$product = $item->get_product();
+	}
+	if ( ! $product || ! is_a( $product, 'WC_Product' ) ) {
+		return $image;
+	}
+
+	$px    = (int) FAIRFLOCK_EMAIL_ORDER_THUMB_PX;
+	$style = sprintf(
+		'width:%1$dpx;height:%1$dpx;max-width:%1$dpx;object-fit:cover;object-position:top center;display:block;border:0;outline:none;margin:0;vertical-align:top;',
+		$px
+	);
+
+	return $product->get_image(
+		'woocommerce_thumbnail',
+		array(
+			'class'  => 'ff-email-order-thumb',
+			'style'  => $style,
+			'width'  => $px,
+			'height' => $px,
+		)
+	);
+}
+add_filter( 'woocommerce_order_item_thumbnail', 'fairflock_email_order_item_thumbnail', 20, 2 );
+
+/**
+ * Email CSS: keep order thumbs top-centered inside the 1:1 slot.
+ *
+ * @since 0.9.478
+ *
+ * @param string $css Email CSS.
+ * @return string
+ */
+function fairflock_email_styles_order_thumbs( $css ) {
+	$px = (int) FAIRFLOCK_EMAIL_ORDER_THUMB_PX;
+	$css .= "
+/* FairFlock: Produktbilder in Bestell-Mails wie Shop-Karten (1:1, oben mittig) */
+.email-order-item-thumbnail {
+	width: {$px}px !important;
+	max-width: {$px}px !important;
+	height: {$px}px !important;
+	overflow: hidden !important;
+	vertical-align: top !important;
+	line-height: 0 !important;
+}
+.email-order-item-thumbnail img,
+img.ff-email-order-thumb {
+	width: {$px}px !important;
+	height: {$px}px !important;
+	max-width: {$px}px !important;
+	object-fit: cover !important;
+	object-position: top center !important;
+	display: block !important;
+	border: 0 !important;
+	margin: 0 !important;
+	vertical-align: top !important;
+}
+";
+	return $css;
+}
+add_filter( 'woocommerce_email_styles', 'fairflock_email_styles_order_thumbs', 20 );

@@ -410,6 +410,38 @@ function fairflock_ensure_legal_pages( $overwrite = false ) {
 }
 
 /**
+ * Whether the current request is a FairFlock legal page.
+ *
+ * @since 0.9.479
+ *
+ * @return bool
+ */
+function fairflock_is_legal_page() {
+	if ( ! is_page() ) {
+		return false;
+	}
+	$slugs = array( 'impressum', 'datenschutz', 'agb', 'widerruf', 'versand-zahlung' );
+	if ( is_page( $slugs ) ) {
+		return true;
+	}
+	$templates = array(
+		'page-impressum',
+		'page-datenschutz',
+		'page-agb',
+		'page-widerruf',
+		'page-versand-zahlung',
+	);
+	$slug = get_page_template_slug();
+	if ( is_string( $slug ) && '' !== $slug ) {
+		$base = preg_replace( '/\\.html?$/', '', basename( str_replace( '\\', '/', $slug ) ) );
+		if ( is_string( $base ) && in_array( $base, $templates, true ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
  * Adds body classes for legal / account pages.
  *
  * @since 0.9.158
@@ -418,7 +450,7 @@ function fairflock_ensure_legal_pages( $overwrite = false ) {
  * @return array<int, string>
  */
 function fairflock_legal_body_classes( $classes ) {
-	if ( is_page( array( 'impressum', 'datenschutz', 'agb', 'widerruf', 'versand-zahlung' ) ) ) {
+	if ( fairflock_is_legal_page() ) {
 		$classes[] = 'ff-legal-page';
 	}
 	if ( function_exists( 'is_account_page' ) && is_account_page() ) {

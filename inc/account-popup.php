@@ -48,7 +48,7 @@ function fairflock_print_account_popup() {
 	<div class="ff-account-layer" id="ffAccountLayer" aria-hidden="true">
 		<div class="ff-account-backdrop" id="ffAccountBackdrop"></div>
 		<div
-			class="ff-account-modal"
+			class="ff-account-modal<?php echo $logged_in ? '' : ' ff-account-modal--guest'; ?>"
 			id="ffAccountModal"
 			role="dialog"
 			aria-modal="true"

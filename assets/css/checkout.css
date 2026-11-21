@@ -43,12 +43,10 @@
 		linear-gradient(180deg, var(--ff-trust-base) 0%, transparent 100%);
 }
 
-/* —— Intro + Checkout: identische Inhaltsbreite (--ff-shell) —— */
-.ff-checkout-page.is-layout-constrained > .ff-checkout-page__intro,
+/* —— Checkout-Inhalt: Shell-Breite —— */
 .ff-checkout-page.is-layout-constrained > .wp-block-post-content,
 .ff-checkout-page.is-layout-constrained > .wp-block-woocommerce-store-notices,
 .ff-checkout-page.is-layout-constrained > .wc-block-store-notices,
-.ff-checkout-page__intro,
 .ff-checkout-page .wp-block-post-content,
 .ff-checkout-page .wp-block-woocommerce-checkout,
 .ff-checkout-page .wc-block-checkout,
@@ -63,15 +61,41 @@
 	padding-right: 0 !important;
 }
 
+/*
+ * Seiten-Header („Vollende deine Bestellung“):
+ * leicht anderer Ton als der Formularbereich, volle Breite, Inhalt auf Shell.
+ */
+.ff-checkout-page.is-layout-constrained > .ff-checkout-page__intro,
 .ff-checkout-page__intro {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 	gap: 10px;
-	margin-top: 0;
-	margin-bottom: var(--wp--preset--spacing--40, 32px) !important;
-	padding-top: 0 !important;
-	padding-bottom: 0 !important;
+	width: 100% !important;
+	max-width: none !important;
+	box-sizing: border-box !important;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	margin-bottom: 0 !important;
+	/* Band bis unter die Navbar ziehen (Main-Padding ausgleichen). */
+	margin-top: calc(-1 * var(--ff-header-clearance, 5.5rem)) !important;
+	padding-top: calc(var(--ff-header-clearance, 5.5rem) + 0.35rem) !important;
+	padding-bottom: 1.15rem !important;
+	padding-left: max(1rem, calc((100% - var(--ff-shell)) / 2)) !important;
+	padding-right: max(1rem, calc((100% - var(--ff-shell)) / 2)) !important;
+	/* ~5 % Ink auf Base: klar als Header lesbar, ohne starken Kontrast. */
+	background: color-mix(in srgb, var(--ff-trust-ink) 5%, var(--ff-trust-base));
+	border-bottom: 1px solid color-mix(in srgb, var(--ff-trust-ink) 9%, transparent);
+}
+
+/* Enger Anschluss: Titel/Trust → Kontaktinformationen (statt 2× spacing-40). */
+.ff-checkout-page.is-layout-constrained > .wp-block-post-content,
+.ff-checkout-page.is-layout-constrained > .wp-block-woocommerce-store-notices,
+.ff-checkout-page.is-layout-constrained > .wc-block-store-notices,
+.ff-checkout-page > .wp-block-post-content,
+.ff-checkout-page > .wp-block-woocommerce-store-notices,
+.ff-checkout-page > .wc-block-store-notices {
+	margin-block-start: 10px !important;
 }
 
 .ff-checkout-page__title,
@@ -173,6 +197,11 @@
 	border-radius: var(--wp--custom--radius--md, 16px);
 	box-shadow: none !important;
 	transition: border-color 0.25s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+/* Erste Stufe dichter unter Intro („Vollende…“ → Kontaktinformationen). */
+.ff-checkout-page .wc-block-components-form .wc-block-components-checkout-step:first-of-type {
+	padding-top: 16px !important;
 }
 
 .ff-checkout-page .wc-block-components-form .wc-block-components-checkout-step:focus-within {
@@ -536,7 +565,7 @@
 .ff-checkout-page .wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title,
 .ff-checkout-page .wp-block-woocommerce-checkout-order-summary-block > .wc-block-components-title,
 .ff-checkout-page .wc-block-components-checkout-order-summary__title {
-	margin: 0 0 12px !important;
+	margin: 0 !important;
 	padding: 0 0 12px !important;
 	border: 0 !important;
 	border-bottom: 1px solid var(--ff-checkout-line) !important;
@@ -552,10 +581,6 @@
 	padding: 12px 0 !important;
 	border: 0 !important;
 	border-bottom: 1px solid var(--ff-checkout-line) !important;
-}
-
-.ff-checkout-page .wc-block-components-order-summary-item:first-child {
-	padding-top: 0 !important;
 }
 
 .ff-checkout-page .wc-block-components-order-summary-item:last-child {
@@ -727,8 +752,29 @@
 
 .ff-checkout-page .wc-block-checkout__actions,
 .ff-checkout-page .wp-block-woocommerce-checkout-actions-block {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 12px;
 	margin: 12px 0 0;
 	padding: 0;
+}
+
+/* AGB sitzt (per JS) im Actions-Block direkt über dem CTA. */
+.ff-checkout-page .wc-block-checkout__actions > .wc-block-checkout__terms,
+.ff-checkout-page .wc-block-checkout__actions > .wp-block-woocommerce-checkout-terms-block,
+.ff-checkout-page .wp-block-woocommerce-checkout-actions-block > .wc-block-checkout__terms,
+.ff-checkout-page .wp-block-woocommerce-checkout-actions-block > .wp-block-woocommerce-checkout-terms-block {
+	order: 1;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.ff-checkout-page .wc-block-checkout__actions > .wc-block-components-checkout-place-order-button,
+.ff-checkout-page .wp-block-woocommerce-checkout-actions-block > .wc-block-components-checkout-place-order-button,
+.ff-checkout-page .wc-block-checkout__actions .wc-block-checkout__actions-wrapper,
+.ff-checkout-page .wp-block-woocommerce-checkout-actions-block .wc-block-checkout__actions-wrapper {
+	order: 2;
 }
 
 .ff-checkout-page .wc-block-components-checkout-place-order-button,
@@ -931,9 +977,26 @@
 		padding-bottom: 2rem !important;
 	}
 
+	.ff-checkout-page.is-layout-constrained > .ff-checkout-page__intro,
 	.ff-checkout-page__intro {
 		gap: 8px;
-		margin-bottom: 1.25rem !important;
+		margin-bottom: 0 !important;
+		padding-bottom: 0.95rem !important;
+		padding-left: max(1rem, calc((100% - var(--ff-shell)) / 2)) !important;
+		padding-right: max(1rem, calc((100% - var(--ff-shell)) / 2)) !important;
+	}
+
+	.ff-checkout-page.is-layout-constrained > .wp-block-post-content,
+	.ff-checkout-page.is-layout-constrained > .wp-block-woocommerce-store-notices,
+	.ff-checkout-page.is-layout-constrained > .wc-block-store-notices,
+	.ff-checkout-page > .wp-block-post-content,
+	.ff-checkout-page > .wp-block-woocommerce-store-notices,
+	.ff-checkout-page > .wc-block-store-notices {
+		margin-block-start: 8px !important;
+	}
+
+	.ff-checkout-page .wc-block-components-form .wc-block-components-checkout-step:first-of-type {
+		padding-top: 14px !important;
 	}
 
 	.ff-checkout-page__title,
@@ -979,24 +1042,35 @@
 		min-width: 0 !important;
 	}
 
-	.ff-checkout-page .wc-block-checkout__terms,
-	.ff-checkout-page .wp-block-woocommerce-checkout-terms-block,
-	.ff-checkout-page .ff-checkout-terms-box,
-	.ff-checkout-page .woocommerce-terms-and-conditions-wrapper,
-	.ff-checkout-page .wc-gzd-checkbox,
-	.ff-checkout-page [class*="legal-checkbox"] {
-		order: 70 !important;
-		margin: 0.25rem 0 0 !important;
+	/* AGB + CTA als Einheit nach der Bestellübersicht */
+	.ff-checkout-page .wc-block-checkout__actions,
+	.ff-checkout-page .wp-block-woocommerce-checkout-actions-block {
+		order: 80 !important;
+		margin: 10px 0 0 !important;
+		padding: 0 !important;
+		min-width: 0 !important;
+		gap: 10px;
+	}
+
+	/* Falls Terms noch nicht per JS verschoben: trotzdem nach Summary, vor CTA */
+	.ff-checkout-page .wc-block-checkout__terms:not([data-ff-terms-placed]),
+	.ff-checkout-page .wp-block-woocommerce-checkout-terms-block:not([data-ff-terms-placed]),
+	.ff-checkout-page .ff-checkout-terms-box:not([data-ff-terms-placed]),
+	.ff-checkout-page .woocommerce-terms-and-conditions-wrapper:not([data-ff-terms-placed]),
+	.ff-checkout-page .wc-gzd-checkbox:not([data-ff-terms-placed]),
+	.ff-checkout-page [class*="legal-checkbox"]:not([data-ff-terms-placed]) {
+		order: 75 !important;
+		margin: 8px 0 0 !important;
 		padding: 0 !important;
 		min-width: 0 !important;
 	}
 
-	.ff-checkout-page .wc-block-checkout__actions,
-	.ff-checkout-page .wp-block-woocommerce-checkout-actions-block {
-		order: 80 !important;
-		margin: 0.25rem 0 0 !important;
-		padding: 0 !important;
-		min-width: 0 !important;
+	.ff-checkout-page .wc-block-checkout__actions > .wc-block-checkout__terms,
+	.ff-checkout-page .wc-block-checkout__actions > .wp-block-woocommerce-checkout-terms-block,
+	.ff-checkout-page .wp-block-woocommerce-checkout-actions-block > .wc-block-checkout__terms,
+	.ff-checkout-page .wp-block-woocommerce-checkout-actions-block > .wp-block-woocommerce-checkout-terms-block {
+		order: 1 !important;
+		margin: 0 !important;
 	}
 
 	.ff-checkout-page .wc-block-components-express-payment,
@@ -1008,7 +1082,7 @@
 		max-width: 100% !important;
 		box-sizing: border-box !important;
 		margin: 0 0 0.75rem !important;
-		padding: 14px 14px 16px !important;
+		padding: 16px !important;
 		overflow: hidden;
 	}
 
@@ -1022,12 +1096,17 @@
 		font-size: 0.875rem;
 	}
 
-	.ff-checkout-page .wp-block-woocommerce-checkout-order-summary-block,
-	.ff-checkout-page .wc-block-components-order-summary {
-		padding: 14px 14px 12px !important;
+	.ff-checkout-page .wp-block-woocommerce-checkout-order-summary-block {
+		padding: 16px !important;
 		overflow: hidden !important;
 		min-width: 0 !important;
 		box-sizing: border-box !important;
+	}
+
+	.ff-checkout-page .wp-block-woocommerce-checkout-order-summary-block .wc-block-components-order-summary {
+		padding: 0 !important;
+		border: 0 !important;
+		background: transparent !important;
 	}
 
 	.ff-checkout-page .wc-block-components-order-summary-item,
@@ -1105,13 +1184,19 @@
 		font-size: 0.75rem;
 	}
 
-	.ff-checkout-page .wc-block-components-totals-item,
-	.ff-checkout-page .wc-block-components-totals-footer-item {
-		padding: 10px 0 !important;
+	.ff-checkout-page .wc-block-components-totals-item {
+		padding: 8px 0 !important;
+	}
+
+	.ff-checkout-page .wc-block-components-totals-footer-item,
+	.ff-checkout-page .wc-block-components-totals-item.wc-block-components-totals-footer-item {
+		padding-top: 12px !important;
+		padding-bottom: 0 !important;
+		margin-top: 4px !important;
 	}
 
 	.ff-checkout-page .wc-block-components-panel__button {
-		padding: 14px 0 !important;
+		padding: 12px 0 !important;
 	}
 }
 

@@ -462,21 +462,28 @@
 					deltaX = 0;
 					return;
 				}
+				var finalAxis = axis;
+				var finalDelta = deltaX;
 				dragging = false;
+				axis = null;
+				deltaX = 0;
+				/* Tap oder Zoom: Index nicht neu setzen — sonst verschwindet is-ff-zooming sofort. */
+				if (isGalleryZoomed() || finalAxis !== "x") {
+					applyGalleryShift(galleryShiftForIndex(galleryIndex), true);
+					return;
+				}
 				var m = galleryMetrics();
-				var dragPct = m.trackW ? (deltaX / m.trackW) * 100 : 0;
+				var dragPct = m.trackW ? (finalDelta / m.trackW) * 100 : 0;
 				var current = Math.max(0, Math.min(m.maxShift, baseShift - dragPct));
 				var nearest = Math.round(current / m.step);
 				nearest = Math.max(0, Math.min(m.total - 1, nearest));
-				axis = null;
-				deltaX = 0;
 				setGalleryIndex(nearest);
 			}
 
 			track.addEventListener(
 				"touchstart",
 				function (e) {
-					if (!e.touches || !e.touches.length || galleryImages.length < 2) return;
+					if (!e.touches || e.touches.length !== 1 || galleryImages.length < 2) return;
 					if (isGalleryZoomed()) {
 						dragging = false;
 						axis = null;
@@ -496,7 +503,7 @@
 			track.addEventListener(
 				"touchmove",
 				function (e) {
-					if (!dragging || isGalleryZoomed() || !e.touches || !e.touches.length) {
+					if (!dragging || isGalleryZoomed() || !e.touches || e.touches.length !== 1) {
 						return;
 					}
 					var x = e.touches[0].clientX;

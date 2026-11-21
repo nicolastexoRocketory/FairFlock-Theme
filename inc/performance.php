@@ -46,6 +46,9 @@ function fairflock_is_thin_storefront_surface() {
 	if ( function_exists( 'is_account_page' ) && is_account_page() ) {
 		return true;
 	}
+	if ( function_exists( 'fairflock_is_legal_page' ) && fairflock_is_legal_page() ) {
+		return true;
+	}
 	if ( is_page( array( 'impressum', 'datenschutz', 'agb', 'widerruf', 'versand-zahlung' ) ) ) {
 		return true;
 	}
@@ -150,7 +153,7 @@ function fairflock_enqueue_frontend_assets() {
 		);
 	}
 
-	if ( is_page( array( 'impressum', 'datenschutz', 'agb', 'widerruf', 'versand-zahlung' ) ) ) {
+	if ( function_exists( 'fairflock_is_legal_page' ) ? fairflock_is_legal_page() : is_page( array( 'impressum', 'datenschutz', 'agb', 'widerruf', 'versand-zahlung' ) ) ) {
 		wp_enqueue_style(
 			'fairflock-legal',
 			FAIRFLOCK_URI . '/assets/css/legal.css',

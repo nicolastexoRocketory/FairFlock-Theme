@@ -6,23 +6,29 @@
  */
 
 body.ff-legal-page .ff-legal-page,
-.ff-legal-page {
+.ff-legal-page,
+main.ff-legal-page {
 	--ff-legal-measure: min(42rem, var(--ff-shell));
 	--ff-legal-line: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 10%, transparent);
+	--ff-legal-clearance: calc(var(--ff-header-clearance, 7rem) + clamp(2rem, 5vw, 3rem));
 	position: relative;
 	isolation: isolate;
 	width: 100% !important;
 	max-width: none !important;
 	margin-inline: 0 !important;
+	/* Clearance hier setzen — nicht nur über body.ff-legal-page (Slug-/Enqueue-Abhängigkeit) */
+	padding-top: var(--ff-legal-clearance) !important;
 	padding-left: 0 !important;
 	padding-right: 0 !important;
 	padding-bottom: var(--wp--preset--spacing--70, 64px) !important;
 	box-sizing: border-box;
 }
 
-/* Beat global `body … > main { padding-top: clearance }` */
+/* Beat global `body … > main { padding-top: clearance }` with equal-or-higher specificity */
+body:not(.home):not(.front-page) .wp-site-blocks > main.ff-legal-page,
+body:not(.home):not(.front-page) .wp-site-blocks main.ff-legal-page,
 body.ff-legal-page:not(.home):not(.front-page) .wp-site-blocks > main.ff-legal-page {
-	padding-top: calc(var(--ff-header-clearance) + var(--wp--preset--spacing--50, 40px)) !important;
+	padding-top: var(--ff-legal-clearance) !important;
 }
 
 body.ff-legal-page .ff-legal-page::before,

@@ -238,6 +238,59 @@
 		});
 	}
 
+	/**
+	 * AGB direkt über „Jetzt kaufen“: Terms in den Actions-Block vor den CTA ziehen.
+	 * CSS-order allein reicht nicht zuverlässig (Panel/Sidebar/display:contents).
+	 */
+	function placeTermsAboveBuy() {
+		var page = document.querySelector(".ff-checkout-page");
+		if (!page) {
+			return;
+		}
+
+		var actions = page.querySelector(
+			".wp-block-woocommerce-checkout-actions-block, .wc-block-checkout__actions"
+		);
+		var terms = page.querySelector(
+			".wp-block-woocommerce-checkout-terms-block, .wc-block-checkout__terms"
+		);
+		var btn = page.querySelector(
+			".wc-block-components-checkout-place-order-button, button.wc-block-components-checkout-place-order-button"
+		);
+
+		if (!actions || !terms || !btn) {
+			return;
+		}
+
+		/* Anker: Button selbst oder sein Wrapper direkt unter Actions. */
+		var anchor = btn;
+		while (anchor.parentElement && anchor.parentElement !== actions) {
+			anchor = anchor.parentElement;
+		}
+		if (anchor.parentElement !== actions) {
+			anchor = actions.firstElementChild;
+		}
+
+		/* Schon korrekt: Terms ist Kind von Actions und steht vor dem CTA. */
+		if (terms.parentElement === actions) {
+			var next = terms.nextElementSibling;
+			while (next && next !== anchor && !(anchor && next.contains && next.contains(btn))) {
+				next = next.nextElementSibling;
+			}
+			if (next === anchor || (next && next.contains && next.contains(btn))) {
+				terms.setAttribute("data-ff-terms-placed", "1");
+				return;
+			}
+		}
+
+		try {
+			actions.insertBefore(terms, anchor || null);
+			terms.setAttribute("data-ff-terms-placed", "1");
+		} catch (e) {
+			/* DOM kann während React-Render kurz inkonsistent sein */
+		}
+	}
+
 	function scan(scope) {
 		var root = scope && scope.querySelectorAll ? scope : document;
 		root.querySelectorAll(
@@ -246,6 +299,7 @@
 		root.querySelectorAll(
 			".wc-block-checkout__terms, .wp-block-woocommerce-checkout-terms-block, .wc-block-components-checkbox"
 		).forEach(rewriteTerms);
+		placeTermsAboveBuy();
 		rewriteGermanizedErrors(root);
 		hideEnglishDescriptions(root);
 	}
@@ -255,24 +309,38 @@
 		if (typeof MutationObserver === "undefined") {
 			return;
 		}
+		var scheduled = false;
+		function schedule() {
+			if (scheduled) {
+				return;
+			}
+			scheduled = true;
+			requestAnimationFrame(function () {
+				scheduled = false;
+				scan(document);
+			});
+		}
 		var obs = new MutationObserver(function (records) {
+			var needs = false;
 			for (var i = 0; i < records.length; i++) {
 				var nodes = records[i].addedNodes;
 				for (var j = 0; j < nodes.length; j++) {
 					if (nodes[j].nodeType === 1) {
-						scan(nodes[j]);
+						needs = true;
+						break;
 					}
 				}
+				if (needs) {
+					break;
+				}
+				if (records[i].type === "characterData") {
+					needs = true;
+					break;
+				}
 			}
-			document
-				.querySelectorAll(".wc-block-components-checkout-place-order-button")
-				.forEach(function (btn) {
-					if (btn.getAttribute("data-ff-cta") !== "1") {
-						rewriteButton(btn);
-					}
-				});
-			rewriteGermanizedErrors(document);
-			hideEnglishDescriptions(document);
+			if (needs) {
+				schedule();
+			}
 		});
 		obs.observe(document.body, { childList: true, subtree: true, characterData: true });
 	}

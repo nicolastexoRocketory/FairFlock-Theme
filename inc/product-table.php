@@ -732,30 +732,58 @@ function fairflock_product_table_admin_css() {
 	.ff-ptable-admin__desc {
 		display: flex;
 		flex-direction: column;
-		align-items: flex-start;
+		align-items: stretch;
 		gap: 6px;
-		margin: 0 0 12px;
-		max-width: 560px;
+		margin: 16px 0 12px;
+		max-width: 720px;
+		width: 100%;
 	}
 	.ff-ptable-admin__desc label {
 		font-weight: 600;
 		font-size: 12px;
 		color: #1d2327;
 	}
+	.ff-ptable-admin__desc .wp-editor-wrap {
+		width: 100%;
+	}
+	.ff-ptable-admin__desc .wp-editor-container,
+	.ff-ptable-admin__desc .mce-tinymce {
+		border-radius: 4px;
+	}
 	.ff-ptable-admin__desc textarea {
 		width: 100%;
-		min-height: 88px;
+		min-height: 160px;
 		margin: 0;
 		padding: 8px 10px;
 		line-height: 1.45;
 		resize: vertical;
 	}
 	.ff-ptable-admin__preview-desc {
-		margin: 0 0 10px;
+		margin: 12px 0 0;
+		padding-top: 10px;
+		border-top: 1px solid #dcdcde;
 		color: #646970;
 		font-size: 12px;
 		line-height: 1.45;
-		white-space: pre-wrap;
+		white-space: normal;
+	}
+	.ff-ptable-admin__preview-desc > *:first-child {
+		margin-top: 0;
+	}
+	.ff-ptable-admin__preview-desc > *:last-child {
+		margin-bottom: 0;
+	}
+	.ff-ptable-admin__preview-desc h2,
+	.ff-ptable-admin__preview-desc h3,
+	.ff-ptable-admin__preview-desc h4 {
+		margin: 0.6em 0 0.25em;
+		color: #1d2327;
+		font-size: 13px;
+		font-weight: 700;
+		line-height: 1.3;
+	}
+	.ff-ptable-admin__preview-desc p {
+		margin: 0 0 0.5em;
 	}
 	.ff-ptable-admin__lead {
 		color: #646970;

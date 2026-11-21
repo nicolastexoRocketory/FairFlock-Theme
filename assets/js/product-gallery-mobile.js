@@ -228,7 +228,7 @@
 		track.addEventListener(
 			"touchstart",
 			function (e) {
-				if (!e.touches || !e.touches.length) return;
+				if (!e.touches || e.touches.length !== 1) return;
 				if (isZoomed()) {
 					swipeArmed = false;
 					deltaX = 0;
@@ -243,7 +243,7 @@
 		track.addEventListener(
 			"touchmove",
 			function (e) {
-				if (!swipeArmed || isZoomed() || !e.touches || !e.touches.length) {
+				if (!swipeArmed || isZoomed() || !e.touches || e.touches.length !== 1) {
 					deltaX = 0;
 					return;
 				}

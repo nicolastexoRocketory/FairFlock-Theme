@@ -564,8 +564,10 @@ function fairflock_product_table_template_edit_page( $action ) {
 		esc_attr__( 'z. B. Hoodie Maße', 'fairflock' )
 	);
 	echo '</div>';
+	echo '<p class="ff-ptable-admin__lead">' . esc_html__( 'Der Name erscheint in der Auswahl am Produkt. Die Überschrift steht im Shop über der Tabelle.', 'fairflock' ) . '</p>';
+	fairflock_product_table_admin_editor( $template );
 	echo '<div class="ff-ptable-admin__desc">';
-	echo '<label for="ff_ptable_description">' . esc_html__( 'Beschreibung', 'fairflock' ) . '</label>';
+	echo '<label for="ff_ptable_description">' . esc_html__( 'Info unter der Tabelle', 'fairflock' ) . '</label>';
 	wp_editor(
 		(string) $template['description'],
 		'ff_ptable_description',
@@ -582,9 +584,8 @@ function fairflock_product_table_template_edit_page( $action ) {
 			),
 		)
 	);
+	echo '<p class="ff-ptable-admin__lead">' . esc_html__( 'Erscheint im Shop unter der Größentabelle. Überschriften, Fettung und Listen sind möglich.', 'fairflock' ) . '</p>';
 	echo '</div>';
-	echo '<p class="ff-ptable-admin__lead">' . esc_html__( 'Der Name erscheint in der Auswahl am Produkt. Die Überschrift steht im Shop über der Tabelle. Die Beschreibung erscheint darunter im Größentabelle-Popup.', 'fairflock' ) . '</p>';
-	fairflock_product_table_admin_editor( $template );
 	echo '</div>';
 	submit_button( __( 'Speichern', 'fairflock' ) );
 	echo '</form>';

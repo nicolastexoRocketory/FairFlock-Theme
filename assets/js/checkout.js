@@ -73,19 +73,35 @@
 		return panel;
 	}
 
+	/**
+	 * Germanized renders its own submit area (summary total + actions) in the
+	 * sidebar and hides Woo's actions in the form; use that one in this case.
+	 */
+	function findActions(root) {
+		var all = Array.prototype.slice.call(root.querySelectorAll(".wc-block-checkout__actions"));
+		if (root.querySelector(".wc-gzd-checkout-submit") || root.closest(".wc-gzd-checkout-has-custom-submit")) {
+			return all.filter(function (el) {
+				return !el.closest(".wc-block-checkout__main");
+			})[0];
+		}
+		return all[0];
+	}
+
 	function placeBuyArea(root) {
 		var sidebar = root.querySelector(".wc-block-checkout__sidebar");
-		var actions = root.querySelector(".wc-block-checkout__actions");
+		var actions = findActions(root);
 		if (!sidebar || !actions) {
 			return;
 		}
 		var slot = ensurePanel(sidebar).querySelector(".ff-checkout-buy__actions");
-		var terms = root.querySelector(".wc-block-checkout__terms");
+		var consent = root.querySelectorAll(".wc-gzd-checkboxes, .wc-block-checkout__terms");
 
-		if (terms && terms.parentNode !== slot) {
-			slot.insertBefore(terms, slot.firstChild);
-		}
-		if (actions.parentNode !== slot) {
+		Array.prototype.forEach.call(consent, function (el) {
+			if (el.parentNode !== slot) {
+				slot.insertBefore(el, actions.parentNode === slot ? actions : null);
+			}
+		});
+		if (actions.parentNode !== slot || actions.nextElementSibling) {
 			slot.appendChild(actions);
 		}
 	}

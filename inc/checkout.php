@@ -232,6 +232,87 @@ function fairflock_checkout_gettext( $translation, $text, $domain ) {
 add_filter( 'gettext', 'fairflock_checkout_gettext', 20, 3 );
 
 /**
+ * Germanized terms checkbox: German label when the stored label is English.
+ *
+ * @since 0.9.500
+ *
+ * @param string $label    Label HTML (shortcodes already replaced).
+ * @param object $checkbox WC_GZD_Legal_Checkbox instance.
+ * @return string
+ */
+function fairflock_checkout_gzd_terms_label( $label, $checkbox = null ) {
+	if ( ! fairflock_checkout_is_english_terms( $label ) && false === stripos( (string) $label, 'agree to have read' ) ) {
+		return $label;
+	}
+
+	$german = __( 'Ich habe die {term_link}AGB{/term_link} und die {revocation_link}Widerrufsbelehrung{/revocation_link} gelesen und stimme zu.', 'fairflock' );
+	if ( function_exists( 'wc_gzd_replace_label_shortcodes' ) && is_object( $checkbox ) && method_exists( $checkbox, 'get_label_args' ) ) {
+		return wc_gzd_replace_label_shortcodes( $german, $checkbox->get_label_args() );
+	}
+
+	return fairflock_checkout_terms_text();
+}
+add_filter( 'woocommerce_gzd_legal_checkbox_terms_label', 'fairflock_checkout_gzd_terms_label', 20, 2 );
+
+/**
+ * Germanized terms checkbox: German error message when the stored one is English.
+ *
+ * @since 0.9.500
+ *
+ * @param string $text Error text.
+ * @return string
+ */
+function fairflock_checkout_gzd_terms_error( $text ) {
+	if ( preg_match( '/to complete the order|accept|terms/i', wp_strip_all_tags( (string) $text ) ) ) {
+		return fairflock_checkout_terms_error();
+	}
+	return $text;
+}
+add_filter( 'woocommerce_gzd_legal_checkbox_terms_error_text', 'fairflock_checkout_gzd_terms_error', 20 );
+
+/**
+ * Checkout colour mode choices (FairFlock → Darstellung).
+ *
+ * @since 0.9.501
+ *
+ * @return array<string, string>
+ */
+function fairflock_checkout_mode_choices() {
+	return array(
+		'light' => __( 'Hell', 'fairflock' ),
+		'dark'  => __( 'Dunkel', 'fairflock' ),
+	);
+}
+
+/**
+ * Current checkout colour mode.
+ *
+ * @since 0.9.501
+ *
+ * @return string light|dark
+ */
+function fairflock_get_checkout_mode() {
+	$mode = (string) get_option( 'fairflock_checkout_mode', 'light' );
+	return array_key_exists( $mode, fairflock_checkout_mode_choices() ) ? $mode : 'light';
+}
+
+/**
+ * Body class for the dark checkout.
+ *
+ * @since 0.9.501
+ *
+ * @param string[] $classes Body classes.
+ * @return string[]
+ */
+function fairflock_checkout_mode_body_class( $classes ) {
+	if ( function_exists( 'is_checkout' ) && is_checkout() && 'dark' === fairflock_get_checkout_mode() ) {
+		$classes[] = 'ff-checkout-dark';
+	}
+	return $classes;
+}
+add_filter( 'body_class', 'fairflock_checkout_mode_body_class' );
+
+/**
  * Trust points shown below the buy button.
  *
  * @since 0.9.499

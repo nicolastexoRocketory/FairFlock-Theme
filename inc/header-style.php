@@ -694,6 +694,11 @@ function fairflock_header_style_handle_admin_save() {
 	update_option( 'fairflock_hero_height_vh', $hero_vh, false );
 	update_option( 'fairflock_collections_cols', $cols, false );
 	update_option( 'fairflock_product_card_hover', $hover, false );
+
+	if ( function_exists( 'fairflock_checkout_mode_choices' ) ) {
+		$checkout_mode = isset( $_POST['fairflock_checkout_mode'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_checkout_mode'] ) ) : 'light';
+		update_option( 'fairflock_checkout_mode', array_key_exists( $checkout_mode, fairflock_checkout_mode_choices() ) ? $checkout_mode : 'light', false );
+	}
 	update_option( 'fairflock_marquee_color_deep', '' !== $marquee_deep ? $marquee_deep : $marquee_defaults['deep'], false );
 	update_option( 'fairflock_marquee_color_mid', '' !== $marquee_mid ? $marquee_mid : $marquee_defaults['mid'], false );
 	update_option( 'fairflock_marquee_color_soft', '' !== $marquee_soft ? $marquee_soft : $marquee_defaults['soft'], false );
@@ -906,6 +911,24 @@ function fairflock_header_style_render_admin_page() {
 						</p>
 					</td>
 				</tr>
+				<?php if ( function_exists( 'fairflock_checkout_mode_choices' ) ) : ?>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Checkout', 'fairflock' ); ?></th>
+					<td>
+						<fieldset>
+							<?php foreach ( fairflock_checkout_mode_choices() as $key => $label ) : ?>
+								<label style="display:inline-block;margin:0 16px 10px 0;">
+									<input type="radio" name="fairflock_checkout_mode" value="<?php echo esc_attr( $key ); ?>" <?php checked( fairflock_get_checkout_mode(), $key ); ?> />
+									<strong><?php echo esc_html( $label ); ?></strong>
+								</label>
+							<?php endforeach; ?>
+						</fieldset>
+						<p class="description">
+							<?php esc_html_e( 'Farbmodus der Kasse. Der Checkout hat ein eigenes, vom Theme unabhängiges Design — hier wählst du nur Hell oder Dunkel.', 'fairflock' ); ?>
+						</p>
+					</td>
+				</tr>
+				<?php endif; ?>
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Trust-Banner Verlauf', 'fairflock' ); ?></th>
 					<td>

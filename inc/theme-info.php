@@ -20,6 +20,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.502',
+			'items'   => array(
+				__( 'Leerer Warenkorb neu: Hinweis mit „Weiter einkaufen“ und volle Produktreihe „Neu im Shop“ statt gequetschter Karte.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.501',
+			'items'   => array(
+				__( 'Darstellung: Checkout zwischen Hell und Dunkel umschaltbar.', 'fairflock' ),
+				__( 'Checkout: Kopfbereich „Vollende deine Bestellung“ mit leicht abgesetztem Hintergrund.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.500',
+			'items'   => array(
+				__( 'Checkout mit Germanized: nur noch ein „Jetzt kaufen“-Button, Rechtstext-Checkboxen direkt darüber in der rechten Spalte.', 'fairflock' ),
+				__( 'Checkout: Germanized-AGB-Checkbox und Fehlermeldung auf Deutsch.', 'fairflock' ),
+				__( 'Bestellübersicht: Produktbild oben mittig im 1:1-Rahmen, Mengen-Badge lesbar, keine Linie und keine graue Fläche mehr.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.499',
 			'items'   => array(
 				__( 'Checkout komplett neu aufgebaut: eigenes, theme-unabhängiges Design, 8-Punkt-Raster, keine Trennlinien.', 'fairflock' ),

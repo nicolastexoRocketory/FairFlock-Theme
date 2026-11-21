@@ -3,9 +3,13 @@
 <!-- wp:woocommerce/page-content-wrapper {"page":"checkout"} -->
 <!-- wp:group {"tagName":"main","metadata":{"name":"Kasse"},"className":"ff-checkout","layout":{"type":"default"}} -->
 <main class="wp-block-group ff-checkout">
-	<!-- wp:heading {"level":1,"className":"ff-checkout__title"} -->
-	<h1 class="wp-block-heading ff-checkout__title">Vollende deine Bestellung</h1>
-	<!-- /wp:heading -->
+	<!-- wp:group {"metadata":{"name":"Kasse Kopf"},"className":"ff-checkout__head","layout":{"type":"default"}} -->
+	<div class="wp-block-group ff-checkout__head">
+		<!-- wp:heading {"level":1,"className":"ff-checkout__title"} -->
+		<h1 class="wp-block-heading ff-checkout__title">Vollende deine Bestellung</h1>
+		<!-- /wp:heading -->
+	</div>
+	<!-- /wp:group -->
 
 	<!-- wp:woocommerce/store-notices /-->
 

@@ -1,7 +1,9 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:group {"tagName":"main","metadata":{"name":"Bestellbestätigung"},"className":"ff-order-confirmation","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|70"},"margin":{"top":"0","bottom":"0"},"blockGap":"var:preset|spacing|40"}},"layout":{"type":"constrained"}} -->
-<main class="wp-block-group ff-order-confirmation" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--70)">
+<!-- wp:group {"tagName":"main","metadata":{"name":"Bestellbestätigung"},"className":"ff-order-confirmation","style":{"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|70"},"margin":{"top":"0","bottom":"0"},"blockGap":"0"}},"layout":{"type":"constrained"}} -->
+<main class="wp-block-group ff-order-confirmation" style="margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:var(--wp--preset--spacing--70)">
+	<!-- wp:group {"className":"ff-order-confirmation__card","layout":{"type":"default"}} -->
+	<div class="wp-block-group ff-order-confirmation__card">
 	<!-- wp:woocommerce/order-confirmation-status {"fontSize":"large"} /-->
 
 	<!-- wp:woocommerce/order-confirmation-summary /-->
@@ -44,6 +46,8 @@
 	<!-- /wp:woocommerce/order-confirmation-additional-fields-wrapper -->
 
 	<!-- wp:woocommerce/order-confirmation-additional-information /-->
+	</div>
+	<!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 

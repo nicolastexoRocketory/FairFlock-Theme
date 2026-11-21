@@ -20,6 +20,66 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.498',
+			'items'   => array(
+				__( 'Checkout: doppelte Bestellübersicht entfernt, nur die volle Übersicht bleibt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.497',
+			'items'   => array(
+				__( 'Checkout: Abschnittskarten, Trennlinien und Summary-Rahmen entfernt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.496',
+			'items'   => array(
+				__( 'Checkout: Abstand zwischen Radio, Versandname und Preis.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.495',
+			'items'   => array(
+				__( 'Checkout: leere Rahmen über den Kontaktinformationen entfernt.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.494',
+			'items'   => array(
+				__( 'Suche: keine Extra-Rahmen an Eingabe, Produktvorschlägen und Fußzeile.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.493',
+			'items'   => array(
+				__( 'Suche Desktop: Beliebt und vorgeschlagene Produkte untereinander, nicht nebeneinander.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.492',
+			'items'   => array(
+				__( 'Checkout: Versand- und Zahlungszeilen ohne Extra-Rahmen, Gesamtsumme in der Summary; leerer Warenkorb als Karte.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.491',
+			'items'   => array(
+				__( 'Bestellbestätigung: Inhalt in einer Karte, Meta-Zeile, Tabelle und Adressen mit einheitlichen Abständen.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.490',
+			'items'   => array(
+				__( 'Checkout: feste Content-Maxbreite; Lieferung wieder im Karten-Layout; Zahlungsoptionen entschachtelt; PayPal-Button volle Breite.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.489',
+			'items'   => array(
+				__( 'Account-Pop-up (Gast): Anmelden-Button gegen Theme-/Brand-Styles abgesichert, Layout mit „Angemeldet bleiben“ korrigiert.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.488',
 			'items'   => array(
 				__( 'Mobil: Bild-Zoom im Produkt-Pop-up und auf der Produktseite wieder aktiv (Tap zum Zoomen).', 'fairflock' ),

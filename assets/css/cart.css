@@ -265,9 +265,71 @@
 	border-color: var(--wp--preset--color--brand-deep, #2a5c25) !important;
 }
 
+/* —— Leerer Warenkorb —— */
+.ff-cart-page:has(.wp-block-woocommerce-empty-cart-block) .wc-block-components-sidebar-layout,
+.ff-cart-page .wp-block-woocommerce-filled-cart-block:empty {
+	display: none !important;
+}
+
+.ff-cart-page .wp-block-woocommerce-empty-cart-block {
+	width: min(480px, var(--ff-shell)) !important;
+	max-width: var(--ff-shell) !important;
+	margin: 8px auto 0 !important;
+	padding: 36px 28px 32px !important;
+	box-sizing: border-box;
+	text-align: center;
+	background: var(--ff-trust-surface, var(--wp--custom--surface, #fff));
+	border: 1px solid color-mix(in srgb, var(--ff-trust-ink, var(--wp--preset--color--contrast, #0e1114)) 12%, transparent);
+	border-radius: var(--wp--custom--radius--md, 16px);
+	color: var(--ff-trust-ink, var(--wp--preset--color--contrast, #0e1114));
+}
+
 .ff-cart-page .wc-block-cart__empty-cart__title {
+	margin: 0 0 8px !important;
 	font-family: var(--wp--preset--font-family--heading);
-	font-weight: 400;
+	font-size: clamp(1.5rem, 3vw, 2rem) !important;
+	font-weight: 400 !important;
+	letter-spacing: -0.03em;
+	line-height: 1.15 !important;
+	color: inherit !important;
+}
+
+.ff-cart-page .wc-block-cart__empty-cart__title.with-empty-cart-icon::before {
+	height: 2.75rem;
+	width: 2.75rem;
+	margin: 0 auto 16px;
+	opacity: 0.55;
+}
+
+.ff-cart-page .wp-block-woocommerce-empty-cart-block p,
+.ff-cart-page .wc-block-cart__empty-cart p {
+	margin: 0 0 20px;
+	color: var(--ff-trust-muted, var(--wp--preset--color--muted, #66707a));
+	font-size: 1rem;
+	line-height: 1.45;
+}
+
+.ff-cart-page .wp-block-woocommerce-empty-cart-block .wp-block-button,
+.ff-cart-page .wp-block-woocommerce-empty-cart-block .wp-element-button,
+.ff-cart-page .wc-block-cart__empty-cart .wp-element-button {
+	display: inline-flex !important;
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	padding: 12px 22px !important;
+	border: 0 !important;
+	border-radius: var(--wp--custom--radius--sm, 8px) !important;
+	background: var(--ff-trust-ink, var(--wp--preset--color--contrast, #0e1114)) !important;
+	color: var(--ff-trust-surface, #fff) !important;
+	font-weight: 600 !important;
+	text-decoration: none !important;
+	box-shadow: none !important;
+}
+
+.ff-cart-page .wp-block-woocommerce-empty-cart-block .wp-element-button:hover,
+.ff-cart-page .wc-block-cart__empty-cart .wp-element-button:hover {
+	background: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 88%, var(--ff-trust-surface, #fff)) !important;
+	color: var(--ff-trust-surface, #fff) !important;
 }
 
 @media (max-width: 960px) {

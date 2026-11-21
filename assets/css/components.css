@@ -295,6 +295,15 @@ body.ff-shape-sharp .ff-cart-drawer__close,
 body.ff-shape-sharp .ff-cart-line__thumb,
 body.ff-shape-sharp .ff-account-modal,
 body.ff-shape-sharp .ff-account-modal__close,
+body.ff-shape-sharp .ff-account-modal__login input.input-text,
+body.ff-shape-sharp .ff-account-modal__login input[type="text"],
+body.ff-shape-sharp .ff-account-modal__login input[type="email"],
+body.ff-shape-sharp .ff-account-modal__login input[type="password"],
+body.ff-shape-sharp .ff-account-modal__login .woocommerce-form-login__submit,
+body.ff-shape-sharp .ff-account-modal__login button.button,
+body.ff-shape-sharp .ff-account-modal__login button[type="submit"],
+body.ff-shape-sharp .ff-account-modal__login .button,
+body.ff-shape-sharp .ff-account-modal__login .wp-element-button,
 body.ff-shape-sharp .ff-product-modal,
 body.ff-shape-sharp .ff-product-modal__body,
 body.ff-shape-sharp .ff-product-modal__close,
@@ -310,6 +319,8 @@ body.ff-shape-sharp .ff-checkout-page input,
 body.ff-shape-sharp .ff-checkout-page select,
 body.ff-shape-sharp .ff-checkout-page textarea,
 body.ff-shape-sharp .ff-checkout-page .wc-block-components-radio-control__option,
+body.ff-shape-sharp .ff-checkout-page .wc-block-checkout__payment-method .wc-block-components-radio-control,
+body.ff-shape-sharp .ff-checkout-page .wc-block-checkout__shipping-method-option,
 body.ff-shape-sharp .ff-checkout-page .wc-block-components-sidebar,
 body.ff-shape-sharp .ff-checkout-page .wc-block-components-main,
 body.ff-shape-sharp .ff-checkout-page .wp-block-woocommerce-checkout-order-summary-block,
@@ -3203,7 +3214,7 @@ html.is-ff-mega-open .ff-header {
 	padding: 6px 6px 6px 16px !important;
 	box-sizing: border-box;
 	border-radius: var(--wp--custom--radius--md, 16px) !important;
-	border: 1px solid color-mix(in srgb, var(--ff-trust-ink, #0e1114) 12%, transparent) !important;
+	border: 0 !important;
 	background: color-mix(
 		in srgb,
 		var(--ff-trust-ink, #0e1114) 6%,
@@ -3260,8 +3271,9 @@ html.is-ff-mega-open .ff-header {
 
 .ff-search-bar:focus-within {
 	outline: none;
-	border-color: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 45%, transparent) !important;
-	background: var(--ff-surface, #fff) !important;
+	border: 0 !important;
+	box-shadow: none !important;
+	background: var(--ff-trust-surface, #fff) !important;
 }
 
 .ff-search-bar .wp-block-search__input::placeholder {
@@ -3303,8 +3315,8 @@ html.is-ff-mega-open .ff-header {
 
 .ff-search-mega {
 	display: grid;
-	grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr);
-	gap: 12px !important;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 20px !important;
 	align-content: start;
 	width: 100% !important;
 	max-width: none !important;
@@ -3455,21 +3467,22 @@ ul.ff-search-menu-nav {
 	height: 100%;
 	min-width: 0;
 	width: 100%;
-	padding: 10px;
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent);
-	border-radius: var(--wp--custom--radius--md, 16px) !important;
-	background: var(--ff-trust-soft);
+	padding: 0;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background: transparent;
 	color: var(--ff-trust-ink);
 	text-decoration: none;
 	justify-self: stretch;
 	box-sizing: border-box;
-	transition: background 0.25s var(--ff-ease), border-color 0.25s var(--ff-ease), transform 0.3s var(--ff-ease);
+	transition: opacity 0.25s var(--ff-ease);
 }
 
 .ff-search-hit:hover {
-	background: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 10%, var(--ff-trust-surface));
-	border-color: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 28%, transparent);
-	transform: translateY(-2px);
+	background: transparent;
+	border: 0 !important;
+	opacity: 0.82;
+	transform: none;
 }
 
 .ff-search-hit-thumb {
@@ -3521,7 +3534,9 @@ ul.ff-search-menu-nav {
 .ff-search-mega-foot {
 	grid-column: 1 / -1;
 	margin-top: 4px !important;
-	padding-top: 10px !important;
+	padding-top: 4px !important;
+	border: 0 !important;
+	border-top: 0 !important;
 }
 
 .ff-search-mega.is-querying {
@@ -9295,46 +9310,84 @@ body.is-ff-ptable-open {
 	display: none !important;
 }
 
+/*
+ * Woo legt Remember-me + Submit in dieselbe .form-row —
+ * Spalte erzwingen, sonst zerlegt Theme-/Button-CSS das Layout.
+ */
+.ff-account-modal__login .form-row:has(.woocommerce-form-login__submit),
+.ff-account-modal__login .form-row:has(button[type="submit"]),
+.ff-account-modal__login .form-row:has(input[type="submit"]) {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: stretch !important;
+	gap: 12px !important;
+}
+
+/* Anmelden: Trust-CTA — Theme/Brand (.wp-element-button) komplett aushebeln */
 .ff-account-modal__login .woocommerce-form-login__submit,
-.ff-account-modal__login .woocommerce-button,
-.ff-account-modal__login button.button,
-.ff-account-modal__login button.woocommerce-button,
+.ff-account-modal__login button.woocommerce-form-login__submit,
+.ff-account-modal__login button.button[type="submit"],
+.ff-account-modal__login button.woocommerce-button[type="submit"],
+.ff-account-modal__login button.wp-element-button[type="submit"],
 .ff-account-modal__login input[type="submit"],
 .ff-account-modal__login button[type="submit"],
-.ff-account-modal__login .button {
-	display: inline-flex !important;
-	align-items: center;
-	justify-content: center;
+.ff-account-modal--guest .ff-account-modal__login .wp-element-button[name="login"] {
+	appearance: none !important;
+	-webkit-appearance: none !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
 	width: 100% !important;
+	max-width: none !important;
 	min-height: 44px !important;
-	margin: 4px 0 0 !important;
+	margin: 0 !important;
 	padding: 10px 16px !important;
 	border: 0 !important;
+	border-width: 0 !important;
+	border-style: none !important;
 	border-radius: var(--wp--custom--radius--sm, 8px) !important;
+	outline: none !important;
 	background: var(--ff-account-modal-ink) !important;
 	background-color: var(--ff-account-modal-ink) !important;
 	background-image: none !important;
-	color: #fff !important;
-	font: inherit !important;
+	/* Surface statt #fff: funktioniert auch bei Dark-Style-Variation */
+	color: var(--ff-account-modal-surface, #fff) !important;
+	font-family: var(--wp--preset--font-family--body, inherit) !important;
 	font-size: 0.9375rem !important;
 	font-weight: 600 !important;
+	font-style: normal !important;
 	letter-spacing: normal !important;
+	line-height: 1.25 !important;
 	text-transform: none !important;
 	text-decoration: none !important;
+	text-shadow: none !important;
 	box-shadow: none !important;
-	cursor: pointer;
+	opacity: 1 !important;
+	cursor: pointer !important;
 }
 
 .ff-account-modal__login .woocommerce-form-login__submit:hover,
-.ff-account-modal__login .woocommerce-button:hover,
-.ff-account-modal__login button.button:hover,
-.ff-account-modal__login button.woocommerce-button:hover,
+.ff-account-modal__login .woocommerce-form-login__submit:focus-visible,
+.ff-account-modal__login button.woocommerce-form-login__submit:hover,
+.ff-account-modal__login button.woocommerce-form-login__submit:focus-visible,
+.ff-account-modal__login button.button[type="submit"]:hover,
+.ff-account-modal__login button.button[type="submit"]:focus-visible,
+.ff-account-modal__login button.woocommerce-button[type="submit"]:hover,
+.ff-account-modal__login button.woocommerce-button[type="submit"]:focus-visible,
+.ff-account-modal__login button.wp-element-button[type="submit"]:hover,
+.ff-account-modal__login button.wp-element-button[type="submit"]:focus-visible,
 .ff-account-modal__login input[type="submit"]:hover,
+.ff-account-modal__login input[type="submit"]:focus-visible,
 .ff-account-modal__login button[type="submit"]:hover,
-.ff-account-modal__login .button:hover {
-	background: color-mix(in srgb, var(--ff-account-modal-ink) 88%, #fff) !important;
-	background-color: color-mix(in srgb, var(--ff-account-modal-ink) 88%, #fff) !important;
-	color: #fff !important;
+.ff-account-modal__login button[type="submit"]:focus-visible,
+.ff-account-modal--guest .ff-account-modal__login .wp-element-button[name="login"]:hover,
+.ff-account-modal--guest .ff-account-modal__login .wp-element-button[name="login"]:focus-visible {
+	background: color-mix(in srgb, var(--ff-account-modal-ink) 88%, var(--ff-account-modal-surface, #fff)) !important;
+	background-color: color-mix(in srgb, var(--ff-account-modal-ink) 88%, var(--ff-account-modal-surface, #fff)) !important;
+	background-image: none !important;
+	color: var(--ff-account-modal-surface, #fff) !important;
+	border: 0 !important;
+	box-shadow: none !important;
 }
 
 .ff-account-modal .woocommerce-message,

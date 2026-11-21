@@ -187,10 +187,8 @@
 
 		var input = ensureTermsCheckbox(termsRoot);
 		var label = termsRoot.querySelector(".wc-block-components-checkbox__label");
-		if (label && termsHtml && label.getAttribute("data-ff-terms") !== "1") {
-			if (needsTermsRewrite(label.textContent || "") || !label.textContent.trim()) {
-				label.innerHTML = termsHtml;
-			}
+		if (label && termsHtml && needsTermsRewrite(label.textContent || "")) {
+			label.innerHTML = termsHtml;
 			label.setAttribute("data-ff-terms", "1");
 		}
 

@@ -1,23 +1,15 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
 <!-- wp:woocommerce/page-content-wrapper {"page":"checkout"} -->
-<!-- wp:group {"tagName":"main","metadata":{"name":"Kasse"},"className":"ff-checkout-page","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|70"},"margin":{"top":"0","bottom":"0"},"blockGap":"0.875rem"}},"layout":{"type":"constrained"}} -->
-<main class="wp-block-group ff-checkout-page" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--70)">
-
-	<!-- wp:group {"metadata":{"name":"Kasse Intro"},"className":"ff-checkout-page__intro","layout":{"type":"default"}} -->
-	<div class="wp-block-group ff-checkout-page__intro">
-		<!-- wp:heading {"level":1,"className":"ff-checkout-page__title"} -->
-		<h1 class="wp-block-heading ff-checkout-page__title">Vollende deine Bestellung</h1>
-		<!-- /wp:heading -->
-
-		<!-- wp:paragraph {"className":"ff-checkout-page__trust"} -->
-		<p class="ff-checkout-page__trust"><span class="ff-checkout-page__trust-item ff-checkout-page__trust-item--icon"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/><rect x="5.5" y="10" width="13" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 14v2.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>SSL-verschlüsselt</span><span class="ff-checkout-page__trust-item ff-checkout-page__trust-item--icon"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M4 20V9.5L12 4l8 5.5V20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M9.5 20v-6h5v6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></svg>Verkauf durch FairFlock GmbH</span><span class="ff-checkout-page__trust-item ff-checkout-page__trust-item--icon"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M3.5 8 12 4l8.5 4v8L12 20l-8.5-4V8z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M12 12.2 20.5 8M12 12.2V20M12 12.2 3.5 8" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></svg>Versand per DHL</span></p>
-		<!-- /wp:paragraph -->
-	</div>
-	<!-- /wp:group -->
+<!-- wp:group {"tagName":"main","metadata":{"name":"Kasse"},"className":"ff-checkout","layout":{"type":"default"}} -->
+<main class="wp-block-group ff-checkout">
+	<!-- wp:heading {"level":1,"className":"ff-checkout__title"} -->
+	<h1 class="wp-block-heading ff-checkout__title">Vollende deine Bestellung</h1>
+	<!-- /wp:heading -->
 
 	<!-- wp:woocommerce/store-notices /-->
-	<!-- wp:post-content {"align":"wide"} /-->
+
+	<!-- wp:post-content {"layout":{"type":"default"}} /-->
 </main>
 <!-- /wp:group -->
 <!-- /wp:woocommerce/page-content-wrapper -->

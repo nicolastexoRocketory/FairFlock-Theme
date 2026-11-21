@@ -1,6 +1,6 @@
 <?php
 /**
- * Checkout: positive green accents and German CTA / terms copy.
+ * Checkout: German CTA / terms copy, terms checkbox and buy-panel data.
  *
  * @package FairFlock
  * @since 0.9.302
@@ -232,7 +232,40 @@ function fairflock_checkout_gettext( $translation, $text, $domain ) {
 add_filter( 'gettext', 'fairflock_checkout_gettext', 20, 3 );
 
 /**
- * Checkout front-end script for payment-method CTAs that stay English in JS.
+ * Trust points shown below the buy button.
+ *
+ * @since 0.9.499
+ *
+ * @return array<int, array{icon: string, label: string}>
+ */
+function fairflock_checkout_trust_items() {
+	$items = array(
+		array(
+			'icon'  => 'lock',
+			'label' => __( 'SSL-verschlüsselt', 'fairflock' ),
+		),
+		array(
+			'icon'  => 'box',
+			'label' => __( 'Versand per DHL', 'fairflock' ),
+		),
+		array(
+			'icon'  => 'store',
+			'label' => __( 'Verkauf durch FairFlock GmbH', 'fairflock' ),
+		),
+	);
+
+	/**
+	 * Filters the checkout trust points.
+	 *
+	 * @since 0.9.499
+	 *
+	 * @param array $items List of `icon` (lock|box|store|return) + `label`.
+	 */
+	return (array) apply_filters( 'fairflock_checkout_trust_items', $items );
+}
+
+/**
+ * Checkout front-end script: buy panel + German fallbacks.
  *
  * @since 0.9.302
  *
@@ -240,6 +273,9 @@ add_filter( 'gettext', 'fairflock_checkout_gettext', 20, 3 );
  */
 function fairflock_checkout_enqueue_script() {
 	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+		return;
+	}
+	if ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'order-received' ) ) {
 		return;
 	}
 
@@ -258,6 +294,7 @@ function fairflock_checkout_enqueue_script() {
 				'cta'        => fairflock_checkout_cta_label(),
 				'terms'      => fairflock_checkout_terms_text(),
 				'termsError' => fairflock_checkout_terms_error(),
+				'trust'      => fairflock_checkout_trust_items(),
 			)
 		) . ';',
 		'before'

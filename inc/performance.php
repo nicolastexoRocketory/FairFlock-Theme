@@ -115,12 +115,28 @@ function fairflock_enqueue_frontend_assets() {
 	}
 
 	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
-		wp_enqueue_style(
-			'fairflock-checkout',
-			FAIRFLOCK_URI . '/assets/css/checkout.css',
-			array( 'fairflock-components' ),
-			FAIRFLOCK_VERSION
-		);
+		$is_order_received = function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'order-received' );
+		if ( $is_order_received ) {
+			wp_enqueue_style(
+				'fairflock-order-confirmation',
+				FAIRFLOCK_URI . '/assets/css/order-confirmation.css',
+				array( 'fairflock-components' ),
+				FAIRFLOCK_VERSION
+			);
+		} else {
+			$checkout_deps = array( 'fairflock-components' );
+			foreach ( array( 'wc-blocks-style', 'wc-blocks-style-checkout', 'wc-blocks-packages-style' ) as $handle ) {
+				if ( wp_style_is( $handle, 'registered' ) || wp_style_is( $handle, 'enqueued' ) ) {
+					$checkout_deps[] = $handle;
+				}
+			}
+			wp_enqueue_style(
+				'fairflock-checkout',
+				FAIRFLOCK_URI . '/assets/css/checkout.css',
+				$checkout_deps,
+				FAIRFLOCK_VERSION
+			);
+		}
 	}
 
 	if ( function_exists( 'is_cart' ) && is_cart() ) {

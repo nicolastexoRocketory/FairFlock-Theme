@@ -20,6 +20,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.499',
+			'items'   => array(
+				__( 'Checkout komplett neu aufgebaut: eigenes, theme-unabhängiges Design, 8-Punkt-Raster, keine Trennlinien.', 'fairflock' ),
+				__( 'Checkout: Formular links, Kaufen-Spalte rechts (Übersicht, Gutschein, Summe, AGB, „Jetzt kaufen“, Vertrauenspunkte).', 'fairflock' ),
+				__( 'Bestellbestätigung: Styles in eigene Datei order-confirmation.css ausgelagert.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.498',
 			'items'   => array(
 				__( 'Checkout: doppelte Bestellübersicht entfernt, nur die volle Übersicht bleibt.', 'fairflock' ),

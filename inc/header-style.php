@@ -250,6 +250,34 @@ function fairflock_product_card_hover_swap_enabled() {
 }
 
 /**
+ * Glassmorphism surface choices (search bar, suggestions, overlay).
+ *
+ * @since 0.9.518
+ *
+ * @return array<string, string>
+ */
+function fairflock_glass_style_choices() {
+	return array(
+		'light' => __( 'Hell (weißes Glas)', 'fairflock' ),
+		'dark'  => __( 'Dunkel (dunkles Glas)', 'fairflock' ),
+	);
+}
+
+/**
+ * Current glassmorphism style.
+ *
+ * @since 0.9.518
+ *
+ * @return string light|dark
+ */
+function fairflock_get_glass_style() {
+	$style = (string) get_option( 'fairflock_glass_style', 'light' );
+	$ok    = array_keys( fairflock_glass_style_choices() );
+
+	return in_array( $style, $ok, true ) ? $style : 'light';
+}
+
+/**
  * Hero slideshow height in vh (all devices).
  *
  * @since 0.9.216
@@ -525,6 +553,7 @@ function fairflock_header_style_body_class( $classes ) {
 	$classes[] = 'ff-hero-nav-' . fairflock_get_hero_nav_layout();
 	$classes[] = 'ff-collections-cols-' . fairflock_get_collections_cols();
 	$classes[] = 'ff-product-hover-' . fairflock_get_product_card_hover();
+	$classes[] = 'ff-glass-' . fairflock_get_glass_style();
 
 	return $classes;
 }
@@ -564,6 +593,7 @@ function fairflock_enqueue_darstellung_editor_bridge() {
 				'ff-hero-nav-' . fairflock_get_hero_nav_layout(),
 				'ff-collections-cols-' . fairflock_get_collections_cols(),
 				'ff-product-hover-' . fairflock_get_product_card_hover(),
+				'ff-glass-' . fairflock_get_glass_style(),
 			),
 			'headerMod'   => 'ff-header--' . fairflock_get_header_style(),
 			'navLayout'   => 'ff-header--nav-' . fairflock_get_nav_layout(),
@@ -687,6 +717,10 @@ function fairflock_header_style_handle_admin_save() {
 	$hover_ok  = array_keys( fairflock_product_card_hover_choices() );
 	$hover     = in_array( $hover_raw, $hover_ok, true ) ? $hover_raw : 'swap';
 
+	$glass_raw = isset( $_POST['fairflock_glass_style'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_glass_style'] ) ) : 'light';
+	$glass_ok  = array_keys( fairflock_glass_style_choices() );
+	$glass     = in_array( $glass_raw, $glass_ok, true ) ? $glass_raw : 'light';
+
 	$marquee_defaults = fairflock_marquee_gradient_defaults();
 	$marquee_deep     = isset( $_POST['fairflock_marquee_color_deep'] ) ? fairflock_sanitize_hex_color( wp_unslash( (string) $_POST['fairflock_marquee_color_deep'] ) ) : '';
 	$marquee_mid      = isset( $_POST['fairflock_marquee_color_mid'] ) ? fairflock_sanitize_hex_color( wp_unslash( (string) $_POST['fairflock_marquee_color_mid'] ) ) : '';
@@ -701,6 +735,7 @@ function fairflock_header_style_handle_admin_save() {
 	update_option( 'fairflock_hero_height_vh', $hero_vh, false );
 	update_option( 'fairflock_collections_cols', $cols, false );
 	update_option( 'fairflock_product_card_hover', $hover, false );
+	update_option( 'fairflock_glass_style', $glass, false );
 
 	if ( function_exists( 'fairflock_checkout_mode_choices' ) ) {
 		$checkout_mode = isset( $_POST['fairflock_checkout_mode'] ) ? sanitize_key( wp_unslash( (string) $_POST['fairflock_checkout_mode'] ) ) : 'light';
@@ -752,6 +787,8 @@ function fairflock_header_style_render_admin_page() {
 	$cols_choices   = fairflock_collections_cols_choices();
 	$hover_current  = fairflock_get_product_card_hover();
 	$hover_choices  = fairflock_product_card_hover_choices();
+	$glass_current  = fairflock_get_glass_style();
+	$glass_choices  = fairflock_glass_style_choices();
 	$marquee_colors = fairflock_get_marquee_gradient_colors();
 	$marquee_defs   = fairflock_marquee_gradient_defaults();
 	?>
@@ -915,6 +952,22 @@ function fairflock_header_style_render_admin_page() {
 						</fieldset>
 						<p class="description">
 							<?php esc_html_e( 'Desktop: Beim Überfahren der Produktbilder. „Bildwechsel“ zeigt das erste Galeriebild; „Nur Zoom“ behält das Hauptbild und zoomt dem Cursor nach. Touch-Geräte sind unverändert.', 'fairflock' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Glassmorphism', 'fairflock' ); ?></th>
+					<td>
+						<fieldset>
+							<?php foreach ( $glass_choices as $key => $label ) : ?>
+								<label style="display:block;margin:0 0 10px;">
+									<input type="radio" name="fairflock_glass_style" value="<?php echo esc_attr( $key ); ?>" <?php checked( $glass_current, $key ); ?> />
+									<strong><?php echo esc_html( $label ); ?></strong>
+								</label>
+							<?php endforeach; ?>
+						</fieldset>
+						<p class="description">
+							<?php esc_html_e( 'Hintergrund der Suchleiste, Such-Vorschläge und des Such-Overlays. Hell = helles Milchglas, Dunkel = dunkles Glas wie die Untermenüs.', 'fairflock' ); ?>
 						</p>
 					</td>
 				</tr>

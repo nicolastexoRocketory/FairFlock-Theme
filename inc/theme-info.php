@@ -20,6 +20,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.519',
+			'items'   => array(
+				__( 'Nav-Icons: Suche/Warenkorb größer; mehr Abstand zwischen den Icons, besonders Warenkorb → Profil — gilt für alle Nav-Layouts.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.518',
+			'items'   => array(
+				__( 'Darstellung: Glassmorphism Hell/Dunkel für Suchleiste, Vorschläge und Overlay umschaltbar.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.517',
+			'items'   => array(
+				__( 'Suche: Schließen-X fade/scale am Animationsende auch bei Hover (kein abruptes Verschwinden mehr).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.516',
+			'items'   => array(
+				__( 'Mega-Menü: Innenabstand und Spalten-Abstand aus dem Site-Editor greifen im Frontend (kein !important-Override mehr).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.515',
 			'items'   => array(
 				__( 'Suche: Ausblende-Animation fade/scale am Ende für den Rest der Leiste inkl. Schließen-X.', 'fairflock' ),

@@ -780,6 +780,7 @@
         window.clearTimeout(closeCleanupTimer);
         closeCleanupTimer = null;
       }
+      layer.classList.remove("is-closing");
       positionSearchShell();
       if (shell) void shell.offsetWidth;
       layer.classList.add("is-open");
@@ -800,17 +801,28 @@
 
     function closeSearch() {
       if (!layer) return;
-      var wasOpen = layer.classList.contains("is-open");
-      if (wasOpen && isDesktopSearchDock()) setCollapseShape();
+      if (layer.classList.contains("is-closing")) return;
+      if (!layer.classList.contains("is-open")) return;
+      if (isDesktopSearchDock()) setCollapseShape();
+      /* is-closing keeps the layer visible long enough for the X/pill end-fade;
+         :hover on the X must not pin opacity at 1 during that fade. */
+      layer.classList.add("is-closing");
       layer.classList.remove("is-open");
       layer.setAttribute("aria-hidden", "true");
       document.body.classList.remove("is-ff-search-open");
       setSearchExpanded(false);
+      if (closeBtn && typeof closeBtn.blur === "function") closeBtn.blur();
+      if (document.activeElement && layer.contains(document.activeElement)) {
+        try {
+          document.activeElement.blur();
+        } catch (err) {}
+      }
       if (closeCleanupTimer) window.clearTimeout(closeCleanupTimer);
       closeCleanupTimer = window.setTimeout(function () {
         closeCleanupTimer = null;
+        layer.classList.remove("is-closing");
         if (!layer.classList.contains("is-open")) clearSearchPosition();
-      }, wasOpen ? 580 : 0);
+      }, 620);
     }
 
     window.fairflockCloseMenu = closeMenu;

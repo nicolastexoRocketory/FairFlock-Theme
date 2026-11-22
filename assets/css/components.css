@@ -42,6 +42,44 @@
 	--ff-trust-ok-deep: #248a38;
 	--ff-trust-bad: #c0392b;
 	--ff-trust-bad-deep: #7a1c14;
+	/*
+	 * Glassmorphism tokens (FairFlock → Darstellung → Glassmorphism).
+	 * body.ff-glass-light (default) · body.ff-glass-dark
+	 */
+	--ff-glass-surface: color-mix(in srgb, var(--ff-trust-surface, #fff) 88%, transparent);
+	--ff-glass-ink: var(--ff-trust-ink, #0e1114);
+	--ff-glass-muted: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 58%, transparent);
+	--ff-glass-border: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 12%, transparent);
+	--ff-glass-border-strong: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 28%, transparent);
+	--ff-glass-ring: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 8%, transparent);
+	--ff-glass-hover: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 7%, transparent);
+	--ff-glass-shadow:
+		0 1px 2px color-mix(in srgb, #0e1114 6%, transparent),
+		0 8px 24px color-mix(in srgb, #0e1114 10%, transparent);
+	--ff-glass-shadow-lift:
+		0 1px 2px color-mix(in srgb, #0e1114 6%, transparent),
+		0 12px 32px color-mix(in srgb, #0e1114 12%, transparent);
+	--ff-glass-overlay: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 60%, transparent);
+	--ff-glass-blur: blur(18px) saturate(1.15);
+}
+
+/* Dunkles Glas — Suche & Overlay (Darstellung → Glassmorphism) */
+body.ff-glass-dark {
+	--ff-glass-surface: rgba(14, 17, 20, 0.78);
+	--ff-glass-ink: #f3f5f4;
+	--ff-glass-muted: rgba(243, 245, 244, 0.62);
+	--ff-glass-border: rgba(255, 255, 255, 0.14);
+	--ff-glass-border-strong: rgba(255, 255, 255, 0.28);
+	--ff-glass-ring: rgba(255, 255, 255, 0.1);
+	--ff-glass-hover: rgba(255, 255, 255, 0.1);
+	--ff-glass-shadow:
+		0 1px 2px rgba(0, 0, 0, 0.25),
+		0 12px 36px rgba(0, 0, 0, 0.38);
+	--ff-glass-shadow-lift:
+		0 1px 2px rgba(0, 0, 0, 0.28),
+		0 16px 40px rgba(0, 0, 0, 0.45);
+	--ff-glass-overlay: color-mix(in srgb, #0e1114 58%, transparent);
+	--ff-glass-blur: blur(20px) saturate(1.25);
 }
 
 /*
@@ -1740,7 +1778,8 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 	display: flex !important;
 	flex-wrap: nowrap !important;
 	align-items: start !important;
-	gap: 28px !important;
+	/* Fallback only — Site-Editor Block-/Innenabstand (gap) must win. */
+	gap: var(--wp--style--block-gap, 28px);
 }
 
 .ff-mega-panel__cols > .wp-block-column {
@@ -2032,10 +2071,17 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 		bottom: 0;
 	}
 
+	/*
+	 * Do not set panel padding here — Site-Editor Innenabstand (inline styles)
+	 * must apply. Safe-area lives on the slot so it stacks under the panel.
+	 */
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot {
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+	}
+
 	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
 		min-height: 100%;
 		box-shadow: none;
-		padding: 1.25em var(--ff-gutter, 1em) calc(1.5em + env(safe-area-inset-bottom, 0px)) !important;
 		box-sizing: border-box;
 	}
 
@@ -2043,7 +2089,7 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel .ff-mega-panel__cols {
 		flex-direction: column !important;
 		flex-wrap: nowrap !important;
-		gap: 1.5em !important;
+		gap: var(--wp--style--block-gap, 1.5em);
 	}
 
 	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel__cols > .wp-block-column {
@@ -2172,8 +2218,8 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	align-items: center !important;
 	align-self: center;
 	justify-content: flex-end !important;
-	/* Einheitlicher Abstand Lupe · Warenkorb · Konto */
-	gap: 6px !important;
+	/* Einheitlicher Abstand Lupe · Warenkorb · Konto (alle Nav-Layouts) */
+	gap: 10px !important;
 	flex-shrink: 0;
 	margin: 0;
 	/* Glyphs folgen der Header-Leisten-Farbe (hell auf dunklem Bar) — nicht fest Contrast */
@@ -2228,6 +2274,8 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 	visibility: visible !important;
 	opacity: 1 !important;
 	flex: 0 0 auto !important;
+	/* Extra Luft zwischen Warenkorb und Profil */
+	margin-inline-start: 4px !important;
 }
 
 body.ff-shape-rounded .ff-header__icons,
@@ -2618,12 +2666,13 @@ body.ff-shape-rounded .ff-header__actions {
 	display: grid !important;
 	place-items: center;
 	align-self: center;
-	width: 40px !important;
-	min-width: 40px !important;
-	max-width: 40px !important;
-	height: 40px !important;
-	min-height: 40px !important;
+	width: 42px !important;
+	min-width: 42px !important;
+	max-width: 42px !important;
+	height: 42px !important;
+	min-height: 42px !important;
 	padding: 0 !important;
+	margin: 0 !important;
 	border-radius: var(--ff-icon-radius) !important;
 	border-style: solid !important;
 	border-width: 1px !important;
@@ -2696,11 +2745,11 @@ body.ff-shape-rounded .ff-header__actions {
 	position: relative;
 	display: grid !important;
 	place-items: center;
-	width: 36px !important;
-	min-width: 36px !important;
-	max-width: 36px !important;
-	height: 36px !important;
-	min-height: 36px !important;
+	width: 40px !important;
+	min-width: 40px !important;
+	max-width: 40px !important;
+	height: 40px !important;
+	min-height: 40px !important;
 	padding: 0 !important;
 	margin: 0 !important;
 	border-radius: 50% !important;
@@ -2721,8 +2770,8 @@ body.ff-shape-rounded .ff-header__actions {
 	top: 50%;
 	left: 50%;
 	translate: -50% -50%;
-	width: 18px;
-	height: 18px;
+	width: 20px;
+	height: 20px;
 	flex-shrink: 0;
 	background-color: currentColor !important;
 	-webkit-mask: center / contain no-repeat;
@@ -2754,8 +2803,8 @@ body.ff-shape-rounded .ff-header__actions {
 	position: relative;
 	display: grid !important;
 	place-items: center;
-	width: 36px !important;
-	height: 36px !important;
+	width: 40px !important;
+	height: 40px !important;
 	border-radius: 50% !important;
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent) !important;
 	background: #eceff1 !important;
@@ -2768,8 +2817,8 @@ body.ff-shape-rounded .ff-header__actions {
 .ff-cart .wp-block-button__link::before,
 .ff-nav-burger .wp-block-button__link::before {
 	content: "";
-	width: 18px;
-	height: 18px;
+	width: 20px;
+	height: 20px;
 	flex-shrink: 0;
 	background-color: currentColor;
 	-webkit-mask: center / contain no-repeat;
@@ -2944,8 +2993,8 @@ html.is-ff-mega-open .ff-header {
 .ff-search-backdrop {
 	position: absolute;
 	inset: 0;
-	/* Theme base @ 60% — blur lives on .wp-site-blocks (opacity would kill backdrop-filter). */
-	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 60%, transparent);
+	/* Glass overlay tint — token from Darstellung (light/dark). */
+	background: var(--ff-glass-overlay);
 	opacity: 1;
 	transition: background-color 0.42s cubic-bezier(0.22, 1, 0.36, 1),
 		-webkit-backdrop-filter 0.42s cubic-bezier(0.22, 1, 0.36, 1),
@@ -2959,7 +3008,7 @@ html.is-ff-mega-open .ff-header {
 }
 
 .ff-search-layer.is-open .ff-search-backdrop {
-	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 60%, transparent);
+	background: var(--ff-glass-overlay);
 	-webkit-backdrop-filter: blur(14px) saturate(1.05);
 	backdrop-filter: blur(14px) saturate(1.05);
 }
@@ -14929,21 +14978,6 @@ html.is-ff-mega-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element
 	background-color: #e4e7ea !important;
 }
 
-/* Lupe + Warenkorb enger (schlägt Icon-Face-Lock 40px) */
-.ff-header .ff-header__icons .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button,
-.ff-header .ff-header__icons .ff-search-toggle.is-style-fill .wp-block-button__link.wp-element-button,
-.ff-header .ff-header__icons .ff-cart.wp-block-button .wp-block-button__link.wp-element-button,
-.ff-header .ff-header__icons .ff-cart.is-style-fill .wp-block-button__link.wp-element-button {
-	width: 34px !important;
-	min-width: 34px !important;
-	max-width: 34px !important;
-}
-
-.ff-header .ff-header__icons .ff-cart.wp-block-button .wp-block-button__link.wp-element-button,
-.ff-header .ff-header__icons .ff-cart.is-style-fill .wp-block-button__link.wp-element-button {
-	margin-left: -6px !important;
-}
-
 /*
  * —— Search overlay v2 ——
  * Blurred theme-background veil, floating pill search bar,
@@ -14953,17 +14987,22 @@ html.is-ff-mega-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element
 body .ff-search-layer {
 	--ff-search-ease: cubic-bezier(0.22, 1, 0.36, 1);
 	--ff-search-dur: 0.42s;
-	--ff-search-fade-dur: 0.22s;
-	--ff-search-fade-delay: 0.28s;
+	--ff-search-fade-dur: 0.28s;
+	--ff-search-fade-delay: 0.3s;
 	/* clip collapse + delayed remnant fade (X / pill) */
 	--ff-search-total: calc(var(--ff-search-fade-delay) + var(--ff-search-fade-dur));
 	visibility: hidden;
 	transition: visibility 0s linear var(--ff-search-total);
 }
 
-body .ff-search-layer.is-open {
+body .ff-search-layer.is-open,
+body .ff-search-layer.is-closing {
 	visibility: visible;
 	transition-delay: 0s;
+}
+
+body .ff-search-layer.is-closing {
+	pointer-events: none;
 }
 
 body .ff-search-layer .ff-search-backdrop {
@@ -14978,7 +15017,7 @@ body .ff-search-layer .ff-search-backdrop {
 }
 
 body .ff-search-layer.is-open .ff-search-backdrop {
-	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 60%, transparent) !important;
+	background: var(--ff-glass-overlay) !important;
 	-webkit-backdrop-filter: blur(14px) saturate(1.05) !important;
 	backdrop-filter: blur(14px) saturate(1.05) !important;
 }
@@ -15021,21 +15060,22 @@ body .ff-search-layer .ff-search-bar.has-base-background-color {
 	gap: 4px;
 	min-height: 56px;
 	padding: 6px 6px 6px 52px !important;
-	border: 1px solid color-mix(in srgb, var(--ff-trust-ink, #0e1114) 12%, transparent) !important;
+	border: 1px solid var(--ff-glass-border) !important;
 	border-radius: 999px !important;
-	background: var(--ff-trust-surface, #fff) !important;
-	box-shadow:
-		0 1px 2px color-mix(in srgb, #0e1114 6%, transparent),
-		0 8px 24px color-mix(in srgb, #0e1114 10%, transparent) !important;
-	/* Closed: remnant (X + pill) scales/fades out after the clip collapses. */
+	background: var(--ff-glass-surface) !important;
+	color: var(--ff-glass-ink) !important;
+	-webkit-backdrop-filter: var(--ff-glass-blur);
+	backdrop-filter: var(--ff-glass-blur);
+	box-shadow: var(--ff-glass-shadow) !important;
+	/* Idle closed: already faded. Closing: delayed scale+fade (see .is-closing). */
 	opacity: 0;
 	transform: scale(0.55);
 	transform-origin: right center;
 	transition:
 		border-color 0.2s ease,
 		box-shadow 0.2s ease,
-		opacity var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
-		transform var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay);
+		opacity var(--ff-search-fade-dur) var(--ff-search-ease),
+		transform var(--ff-search-fade-dur) var(--ff-search-ease);
 }
 
 body .ff-search-layer.is-open .ff-search-bar,
@@ -15049,6 +15089,19 @@ body .ff-search-layer.is-open .ff-search-bar.has-base-background-color {
 		box-shadow 0.2s ease,
 		opacity 0.22s var(--ff-search-ease),
 		transform 0.36s var(--ff-search-ease);
+}
+
+/* End of close: pill + X scale/fade after the clip has mostly collapsed. */
+body .ff-search-layer.is-closing .ff-search-bar,
+body .ff-search-layer.is-closing .ff-search-bar.has-background,
+body .ff-search-layer.is-closing .ff-search-bar.has-base-background-color {
+	opacity: 0;
+	transform: scale(0.55);
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease,
+		opacity var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
+		transform var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay);
 }
 
 body .ff-search-layer .ff-search-bar::before {
@@ -15067,11 +15120,11 @@ body .ff-search-layer .ff-search-bar::before {
 }
 
 body .ff-search-layer .ff-search-bar:focus-within {
-	background: var(--ff-trust-surface, #fff) !important;
-	border-color: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 28%, transparent) !important;
+	background: var(--ff-glass-surface) !important;
+	border-color: var(--ff-glass-border-strong) !important;
 	box-shadow:
-		0 0 0 4px color-mix(in srgb, var(--ff-trust-ink, #0e1114) 8%, transparent),
-		0 8px 24px color-mix(in srgb, #0e1114 10%, transparent) !important;
+		0 0 0 4px var(--ff-glass-ring),
+		var(--ff-glass-shadow) !important;
 }
 
 body .ff-search-layer .ff-search-bar .wp-block-search__input {
@@ -15079,7 +15132,12 @@ body .ff-search-layer .ff-search-bar .wp-block-search__input {
 	font-size: 1.0625rem;
 	font-weight: 500;
 	letter-spacing: -0.005em;
-	color: var(--ff-trust-ink, #0e1114);
+	color: var(--ff-glass-ink);
+	caret-color: var(--ff-glass-ink);
+}
+
+body .ff-search-layer .ff-search-bar .wp-block-search__input::placeholder {
+	color: var(--ff-glass-muted);
 }
 
 body .ff-search-layer .ff-search-bar .wp-block-search__input::-webkit-search-cancel-button {
@@ -15096,40 +15154,51 @@ body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link {
 	height: 44px;
 	min-height: 44px;
 	border-radius: 50% !important;
-	color: var(--ff-trust-ink, #0e1114) !important;
+	color: var(--ff-glass-ink) !important;
 	opacity: 0.6;
 	transform: scale(1);
 	transform-origin: center;
 	transition:
 		opacity 0.2s ease,
 		background-color 0.2s ease,
-		transform var(--ff-search-fade-dur) var(--ff-search-ease);
+		transform 0.2s ease;
 }
 
-body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link {
-	opacity: 0;
-	transform: scale(0.7);
-	transition:
-		opacity var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
-		transform var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
-		background-color 0.2s ease;
-}
-
-body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link:hover,
-body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link:focus-visible {
-	background: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 7%, transparent) !important;
-	color: var(--ff-trust-ink, #0e1114) !important;
+body .ff-search-layer.is-open .ff-search-bar .ff-search-close .wp-block-button__link:hover,
+body .ff-search-layer.is-open .ff-search-bar .ff-search-close .wp-block-button__link:focus-visible {
+	background: var(--ff-glass-hover) !important;
+	color: var(--ff-glass-ink) !important;
 	opacity: 1;
 }
 
-/* Bar contents fade in once the pill has opened out */
-body .ff-search-layer .ff-search-bar > *,
+/*
+ * Closing: X must fade even while the pointer is still over it.
+ * Hover/focus must not pin opacity at 1 (that caused the abrupt snap).
+ */
+body .ff-search-layer.is-closing .ff-search-bar .ff-search-close .wp-block-button__link,
+body .ff-search-layer.is-closing .ff-search-bar .ff-search-close .wp-block-button__link:hover,
+body .ff-search-layer.is-closing .ff-search-bar .ff-search-close .wp-block-button__link:focus,
+body .ff-search-layer.is-closing .ff-search-bar .ff-search-close .wp-block-button__link:focus-visible,
+body .ff-search-layer.is-closing .ff-search-bar .ff-search-close .wp-block-button__link:active {
+	opacity: 0 !important;
+	transform: scale(0.65);
+	background: transparent !important;
+	transition:
+		opacity var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
+		transform var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
+		background-color 0.15s ease !important;
+}
+
+/* Bar contents fade in once the pill has opened out — exclude close so its end-fade stays independent */
+body .ff-search-layer .ff-search-bar > :not(.ff-search-close),
 body .ff-search-layer .ff-search-bar::before {
 	transition: opacity 0.18s ease;
 }
 
 body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-field,
-body .ff-search-layer:not(.is-open) .ff-search-bar::before {
+body .ff-search-layer:not(.is-open) .ff-search-bar::before,
+body .ff-search-layer.is-closing .ff-search-bar .ff-search-field,
+body .ff-search-layer.is-closing .ff-search-bar::before {
 	opacity: 0;
 }
 
@@ -15148,10 +15217,12 @@ body .ff-search-layer .ff-search-mega.has-background {
 	overflow: hidden;
 	transform: translateY(-6px);
 	border-radius: 24px !important;
-	background: var(--ff-trust-surface, #fff) !important;
-	box-shadow:
-		0 1px 2px color-mix(in srgb, #0e1114 6%, transparent),
-		0 12px 32px color-mix(in srgb, #0e1114 12%, transparent) !important;
+	border: 1px solid var(--ff-glass-border);
+	background: var(--ff-glass-surface) !important;
+	color: var(--ff-glass-ink) !important;
+	-webkit-backdrop-filter: var(--ff-glass-blur);
+	backdrop-filter: var(--ff-glass-blur);
+	box-shadow: var(--ff-glass-shadow-lift) !important;
 	transition:
 		max-height var(--ff-search-dur) var(--ff-search-ease),
 		padding var(--ff-search-dur) var(--ff-search-ease),
@@ -15168,6 +15239,26 @@ body .ff-search-layer .ff-search-mega.is-querying {
 	overflow: auto;
 	transform: none;
 	transition-delay: 0s;
+}
+
+body .ff-search-layer .ff-search-mega .wp-block-heading,
+body .ff-search-layer .ff-search-mega #ffSearchProductsTitle,
+body .ff-search-layer .ff-search-mega .ff-search-hit,
+body .ff-search-layer .ff-search-mega .ff-search-hit-price,
+body .ff-search-layer .ff-search-mega .ff-search-mega-foot a,
+body .ff-search-layer .ff-search-mega .ff-search-menu-nav a,
+body .ff-search-layer .ff-search-mega .ff-search-empty {
+	color: var(--ff-glass-ink) !important;
+}
+
+body .ff-search-layer .ff-search-mega .ff-search-hit-price,
+body .ff-search-layer .ff-search-mega .has-muted-color {
+	color: var(--ff-glass-muted) !important;
+}
+
+body .ff-search-layer .ff-search-mega .ff-search-hit:hover,
+body .ff-search-layer .ff-search-mega .ff-search-hit:focus-visible {
+	background: var(--ff-glass-hover) !important;
 }
 
 @media (max-width: 960px) {

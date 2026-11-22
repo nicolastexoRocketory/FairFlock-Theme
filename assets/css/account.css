@@ -558,15 +558,19 @@ body.woocommerce-account .woocommerce-password-hint,
 body.woocommerce-account .woocommerce-MyAccount-content .button,
 body.woocommerce-account .woocommerce-MyAccount-content button.button,
 body.woocommerce-account .woocommerce-form-login .button,
-body.woocommerce-account .woocommerce-form-register .button {
+body.woocommerce-account .woocommerce-form-register .button,
+body.woocommerce-account .woocommerce-ResetPassword .button,
+body.woocommerce-lost-password .woocommerce-ResetPassword .button,
+body.woocommerce-lost-password button.button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	min-height: 48px;
 	padding: 10px 18px;
-	border: 0;
+	border: 0 !important;
 	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: var(--ff-trust-ink);
+	/* Brand stays readable on light and dark account surfaces. */
+	background: var(--wp--preset--color--brand, #c8102e) !important;
 	color: #fff !important;
 	font-family: var(--wp--preset--font-family--body, inherit);
 	font-weight: 700;
@@ -577,8 +581,12 @@ body.woocommerce-account .woocommerce-form-register .button {
 .ff-account-page .button:hover,
 .ff-account-page button.button:hover,
 body.woocommerce-account .woocommerce-MyAccount-content .button:hover,
-body.woocommerce-account .woocommerce-form-login .button:hover {
-	background: #1a1e22;
+body.woocommerce-account .woocommerce-form-login .button:hover,
+body.woocommerce-account .woocommerce-ResetPassword .button:hover,
+body.woocommerce-lost-password .woocommerce-ResetPassword .button:hover,
+body.woocommerce-lost-password button.button:hover {
+	background: var(--wp--preset--color--brand-deep, #9a0c23) !important;
+	color: #fff !important;
 }
 
 /* —— Login / Register cards —— */
@@ -624,6 +632,131 @@ body.woocommerce-account .woocommerce > form.login,
 	display: grid;
 	gap: 12px;
 	box-sizing: border-box;
+}
+
+/*
+ * Lost / reset password — centered card, readable on light and dark shops.
+ * Staging often uses a generic page main; body.woocommerce-lost-password is reliable.
+ */
+body.woocommerce-lost-password main,
+body.woocommerce-account.woocommerce-lost-password main.ff-account-page,
+body.woocommerce-account.woocommerce-lost-password main.ff-page {
+	min-height: min(70vh, calc(100dvh - var(--ff-header-clearance, 5rem) - 6rem));
+	display: flex !important;
+	flex-direction: column;
+	justify-content: center;
+	padding-top: calc(var(--ff-header-clearance, 5rem) + 1.5rem) !important;
+	padding-bottom: clamp(3rem, 8vw, 5rem) !important;
+	box-sizing: border-box;
+}
+
+body.woocommerce-lost-password .ff-account-page__intro,
+body.woocommerce-lost-password .ff-page .wp-block-post-title,
+body.woocommerce-lost-password main > .wp-block-post-title {
+	display: none !important;
+}
+
+body.woocommerce-lost-password .woocommerce,
+body.woocommerce-account.woocommerce-lost-password .woocommerce {
+	width: min(28rem, 100%) !important;
+	max-width: 28rem !important;
+	margin-inline: auto !important;
+	display: grid !important;
+	justify-items: stretch;
+	gap: 14px;
+	float: none !important;
+}
+
+body.woocommerce-lost-password .woocommerce > h2,
+body.woocommerce-account.woocommerce-lost-password .woocommerce > h2 {
+	width: 100%;
+	margin: 0 0 4px !important;
+	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-size: clamp(1.75rem, 4vw, 2.25rem);
+	font-weight: 600;
+	letter-spacing: -0.03em;
+	line-height: 1.15;
+	text-transform: none;
+	text-align: center;
+	color: var(--ff-trust-ink);
+}
+
+body.woocommerce-lost-password .woocommerce-ResetPassword,
+body.woocommerce-account .woocommerce-ResetPassword,
+.ff-account-page .woocommerce-ResetPassword {
+	width: 100%;
+	margin: 0;
+	padding: 24px !important;
+	background: color-mix(in srgb, var(--ff-trust-ink) 6%, var(--ff-trust-base)) !important;
+	border: 1px solid color-mix(in srgb, var(--ff-trust-ink) 14%, transparent) !important;
+	border-radius: var(--wp--custom--radius--md, 16px) !important;
+	display: grid !important;
+	gap: 14px;
+	box-sizing: border-box;
+	float: none !important;
+}
+
+body.woocommerce-lost-password .woocommerce-ResetPassword > p:first-child,
+body.woocommerce-account .woocommerce-ResetPassword > p:first-child {
+	margin: 0;
+	font-size: 0.98rem;
+	line-height: 1.55;
+	color: var(--ff-trust-muted);
+	text-align: left;
+}
+
+body.woocommerce-lost-password .woocommerce-ResetPassword .form-row,
+body.woocommerce-account .woocommerce-ResetPassword .form-row {
+	float: none !important;
+	width: 100% !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+body.woocommerce-lost-password .woocommerce-ResetPassword label,
+body.woocommerce-account .woocommerce-ResetPassword label {
+	display: inline-block;
+	margin: 0 0 6px;
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--ff-trust-muted);
+}
+
+body.woocommerce-lost-password .woocommerce-ResetPassword input.input-text,
+body.woocommerce-lost-password .woocommerce-ResetPassword input[type="text"],
+body.woocommerce-lost-password .woocommerce-ResetPassword input[type="email"],
+body.woocommerce-lost-password .woocommerce-ResetPassword input[type="password"],
+body.woocommerce-account .woocommerce-ResetPassword input.input-text,
+body.woocommerce-account .woocommerce-ResetPassword input[type="text"],
+body.woocommerce-account .woocommerce-ResetPassword input[type="email"],
+body.woocommerce-account .woocommerce-ResetPassword input[type="password"] {
+	width: 100% !important;
+	min-height: 48px !important;
+	padding: 10px 14px !important;
+	border: 1px solid color-mix(in srgb, var(--ff-trust-ink) 18%, transparent) !important;
+	border-radius: var(--wp--custom--radius--sm, 8px) !important;
+	background: color-mix(in srgb, var(--ff-trust-ink) 8%, var(--ff-trust-base)) !important;
+	color: var(--ff-trust-ink) !important;
+	caret-color: var(--ff-trust-ink);
+	box-shadow: none !important;
+	box-sizing: border-box;
+}
+
+body.woocommerce-lost-password .woocommerce-ResetPassword .button,
+body.woocommerce-account .woocommerce-ResetPassword .button {
+	width: 100%;
+	margin-top: 4px;
+}
+
+body.woocommerce-lost-password .woocommerce-message,
+body.woocommerce-lost-password .woocommerce-info,
+body.woocommerce-lost-password .woocommerce-error,
+body.woocommerce-account.woocommerce-lost-password .woocommerce-message,
+body.woocommerce-account.woocommerce-lost-password .woocommerce-info,
+body.woocommerce-account.woocommerce-lost-password .woocommerce-error {
+	width: 100%;
+	margin: 0 0 8px !important;
+	border-radius: var(--wp--custom--radius--sm, 8px);
 }
 
 body.woocommerce-account .woocommerce:not(:has(.woocommerce-MyAccount-navigation)):not(:has(#customer_login)) {

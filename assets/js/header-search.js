@@ -116,8 +116,8 @@
     }
 
     /**
-     * Desktop: shell covers the search icon — search bar centred on the icon,
-     * close button sitting where the icon was, panel opening right-aligned.
+     * Desktop: search bar vertically centred on the search icon;
+     * close button sits over the icon; panel opens right-aligned.
      */
     function positionSearchShell() {
       if (!shell || !toggle) {
@@ -134,19 +134,21 @@
       var shellW = Math.min(440, vw - 16);
       shell.style.setProperty("width", shellW + "px", "important");
 
-      var shellRect = shell.getBoundingClientRect();
       var bar = shell.querySelector(".ff-search-bar");
       var closeEl = shell.querySelector(".ff-search-close .wp-block-button__link, .ff-search-close");
-      var barRect = bar ? bar.getBoundingClientRect() : null;
-      var closeRect = closeEl ? closeEl.getBoundingClientRect() : null;
+      var cs = window.getComputedStyle(shell);
+      var padTop = parseFloat(cs.paddingTop) || 0;
+      var padRight = parseFloat(cs.paddingRight) || 0;
+      var barH = bar ? bar.offsetHeight || 56 : 56;
+      var closeW = closeEl ? closeEl.offsetWidth || 44 : 44;
 
       var iconCx = rect.left + rect.width / 2;
       var iconCy = rect.top + rect.height / 2;
-      var barCy = barRect ? barRect.top - shellRect.top + barRect.height / 2 : 38;
-      var closeToRight = closeRect ? shellRect.right - (closeRect.left + closeRect.width / 2) : 38;
-
-      var top = Math.max(SEARCH_DOCK_GAP, Math.round(iconCy - barCy));
-      var right = Math.round(vw - (iconCx + closeToRight));
+      /* Bar centre = icon centre (shell top accounts for padding + half bar). */
+      var top = Math.max(SEARCH_DOCK_GAP, Math.round(iconCy - padTop - barH / 2));
+      /* Close control centred on the icon horizontally. */
+      var closeCenterFromRight = padRight + closeW / 2;
+      var right = Math.round(vw - (iconCx + closeCenterFromRight));
       var maxRight = Math.max(SEARCH_DOCK_GAP, vw - shellW - SEARCH_DOCK_GAP);
       right = Math.min(Math.max(SEARCH_DOCK_GAP, right), maxRight);
       var maxH = Math.max(180, vh - top - 12);
@@ -158,6 +160,16 @@
       shell.style.setProperty("translate", "none", "important");
       shell.style.setProperty("max-height", maxH + "px", "important");
       setCollapseShape();
+    }
+
+    function playSearchIconReappear() {
+      if (!toggle || !isDesktopSearchDock()) return;
+      toggle.classList.remove("is-ff-search-reappear");
+      void toggle.offsetWidth;
+      toggle.classList.add("is-ff-search-reappear");
+      window.setTimeout(function () {
+        toggle.classList.remove("is-ff-search-reappear");
+      }, 650);
     }
 
     /** Collapsed clip-path = a circle sitting on the search icon / close button. */
@@ -781,6 +793,8 @@
         closeCleanupTimer = null;
       }
       layer.classList.remove("is-closing");
+      document.body.classList.remove("is-ff-search-closing");
+      if (toggle) toggle.classList.remove("is-ff-search-reappear");
       positionSearchShell();
       if (shell) void shell.offsetWidth;
       layer.classList.add("is-open");
@@ -810,6 +824,7 @@
       layer.classList.remove("is-open");
       layer.setAttribute("aria-hidden", "true");
       document.body.classList.remove("is-ff-search-open");
+      document.body.classList.add("is-ff-search-closing");
       setSearchExpanded(false);
       if (closeBtn && typeof closeBtn.blur === "function") closeBtn.blur();
       if (document.activeElement && layer.contains(document.activeElement)) {
@@ -821,7 +836,11 @@
       closeCleanupTimer = window.setTimeout(function () {
         closeCleanupTimer = null;
         layer.classList.remove("is-closing");
-        if (!layer.classList.contains("is-open")) clearSearchPosition();
+        document.body.classList.remove("is-ff-search-closing");
+        if (!layer.classList.contains("is-open")) {
+          clearSearchPosition();
+          playSearchIconReappear();
+        }
       }, 620);
     }
 

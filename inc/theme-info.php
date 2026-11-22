@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.521',
+			'items'   => array(
+				__( 'Nav-Icons: Desktop-Hover; Suchleiste auf Icon-Höhe; Lupe dreht/skaliert nach dem Schließen der Suche wieder ein.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.520',
+			'items'   => array(
+				__( '404: zentriertes Layout mit Suche und CTAs; Passwort zurücksetzen: Karten-Layout, lesbare Felder und Brand-Button (auch auf dunklem Shop).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.519',
 			'items'   => array(
 				__( 'Nav-Icons: Suche/Warenkorb größer; mehr Abstand zwischen den Icons, besonders Warenkorb → Profil — gilt für alle Nav-Layouts.', 'fairflock' ),

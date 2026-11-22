@@ -1,16 +1,40 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:group {"tagName":"main","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"}}},"layout":{"type":"constrained"}} -->
-<main class="wp-block-group" style="padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)">
-	<!-- wp:heading {"level":1} -->
-	<h1 class="wp-block-heading">Seite nicht gefunden</h1>
-	<!-- /wp:heading -->
+<!-- wp:group {"tagName":"main","metadata":{"name":"404"},"className":"ff-404","style":{"spacing":{"margin":{"top":"0","bottom":"0"},"blockGap":"0"}},"layout":{"type":"default"}} -->
+<main class="wp-block-group ff-404" style="margin-top:0;margin-bottom:0">
 
-	<!-- wp:paragraph -->
-	<p>Die gewünschte Seite existiert nicht oder wurde verschoben.</p>
-	<!-- /wp:paragraph -->
+	<!-- wp:group {"metadata":{"name":"404 Inhalt"},"className":"ff-404__inner","layout":{"type":"constrained","contentSize":"36rem"}} -->
+	<div class="wp-block-group ff-404__inner">
 
-	<!-- wp:search {"label":"Suchen","showLabel":false,"placeholder":"Wonach suchst du?","buttonText":"Suchen","buttonUseIcon":true} /-->
+		<!-- wp:paragraph {"align":"center","className":"ff-404__code"} -->
+		<p class="has-text-align-center ff-404__code">404</p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:heading {"textAlign":"center","level":1,"className":"ff-404__title"} -->
+		<h1 class="wp-block-heading has-text-align-center ff-404__title">Seite nicht gefunden</h1>
+		<!-- /wp:heading -->
+
+		<!-- wp:paragraph {"align":"center","className":"ff-404__lead"} -->
+		<p class="has-text-align-center ff-404__lead">Die gewünschte Seite existiert nicht oder wurde verschoben. Such unten weiter — oder geh zurück in den Shop.</p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:search {"label":"Produkte suchen","showLabel":false,"placeholder":"Wonach suchst du?","buttonText":"Suchen","buttonPosition":"button-inside","buttonUseIcon":true,"query":{"post_type":"product"},"className":"ff-404__search"} /-->
+
+		<!-- wp:buttons {"className":"ff-404__actions","layout":{"type":"flex","justifyContent":"center","flexWrap":"wrap"}} -->
+		<div class="wp-block-buttons ff-404__actions">
+			<!-- wp:button {"className":"ff-404__cta"} -->
+			<div class="wp-block-button ff-404__cta"><a class="wp-block-button__link wp-element-button" href="/shop/">Zum Shop</a></div>
+			<!-- /wp:button -->
+
+			<!-- wp:button {"className":"is-style-outline ff-404__secondary"} -->
+			<div class="wp-block-button is-style-outline ff-404__secondary"><a class="wp-block-button__link wp-element-button" href="/">Zur Startseite</a></div>
+			<!-- /wp:button -->
+		</div>
+		<!-- /wp:buttons -->
+
+	</div>
+	<!-- /wp:group -->
+
 </main>
 <!-- /wp:group -->
 

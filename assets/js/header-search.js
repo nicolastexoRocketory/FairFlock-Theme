@@ -241,14 +241,32 @@
       });
     }
 
+    /** Decode HTML entities (&amp;#8222; / &amp;euro; …) and strip tags → plain text. */
+    function decodeEntities(s) {
+      var raw = String(s || "");
+      if (!raw) return "";
+      try {
+        var doc = new DOMParser().parseFromString(raw, "text/html");
+        return ((doc.documentElement && doc.documentElement.textContent) || "").replace(/\u00a0/g, " ").trim();
+      } catch (err) {
+        return raw
+          .replace(/<[^>]*>/g, "")
+          .replace(/&#(\d+);/g, function (_, n) {
+            return String.fromCharCode(Number(n));
+          })
+          .replace(/&#x([0-9a-f]+);/gi, function (_, h) {
+            return String.fromCharCode(parseInt(h, 16));
+          })
+          .replace(/&nbsp;/gi, " ")
+          .replace(/&euro;/gi, "\u20ac")
+          .replace(/&quot;/gi, '"')
+          .replace(/&amp;/gi, "&")
+          .trim();
+      }
+    }
+
     function stripTags(s) {
-      return String(s || "")
-        .replace(/<[^>]*>/g, "")
-        .replace(/&nbsp;/gi, " ")
-        .replace(/&euro;/gi, "\u20ac")
-        .replace(/&#8364;/g, "\u20ac")
-        .replace(/&amp;/g, "&")
-        .trim();
+      return decodeEntities(s);
     }
 
     function formatStorePrice(item) {
@@ -276,12 +294,13 @@
       if (item.images && item.images.length && item.images[0]) {
         img = item.images[0].thumbnail || item.images[0].src || "";
       }
+      var name = decodeEntities(item.name || "");
       return {
-        name: item.name || "",
+        name: name,
         price: formatStorePrice(item),
         url: item.permalink || "",
         img: img,
-        q: item.name || ""
+        q: name
       };
     }
 
@@ -301,7 +320,7 @@
             thumbStyle +
             "></span>" +
             '<span class="ff-search-hit-meta"><strong>' +
-            escapeHtml(item.name) +
+            escapeHtml(decodeEntities(item.name)) +
             '</strong><span class="ff-search-hit-price">' +
             escapeHtml(stripTags(item.price || "")) +
             "</span></span></a>"
@@ -791,7 +810,7 @@
       closeCleanupTimer = window.setTimeout(function () {
         closeCleanupTimer = null;
         if (!layer.classList.contains("is-open")) clearSearchPosition();
-      }, wasOpen ? 460 : 0);
+      }, wasOpen ? 580 : 0);
     }
 
     window.fairflockCloseMenu = closeMenu;

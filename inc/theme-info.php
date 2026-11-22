@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.515',
+			'items'   => array(
+				__( 'Suche: Ausblende-Animation fade/scale am Ende für den Rest der Leiste inkl. Schließen-X.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.514',
+			'items'   => array(
+				__( 'Suche-Vorschau: Produktnamen mit Anführungszeichen und Sonderzeichen werden korrekt angezeigt (HTML-Entities dekodiert).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.513',
 			'items'   => array(
 				__( 'Suche: Overlay in Theme-Hintergrundfarbe (60 %) plus weichgezeichneter Seitenhintergrund; moderne Pill-Suchleiste; Vorschläge erst nach Eingabe; Ein-/Ausklappen vom Such-Icon.', 'fairflock' ),

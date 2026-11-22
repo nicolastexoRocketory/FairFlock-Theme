@@ -14953,8 +14953,12 @@ html.is-ff-mega-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element
 body .ff-search-layer {
 	--ff-search-ease: cubic-bezier(0.22, 1, 0.36, 1);
 	--ff-search-dur: 0.42s;
+	--ff-search-fade-dur: 0.22s;
+	--ff-search-fade-delay: 0.28s;
+	/* clip collapse + delayed remnant fade (X / pill) */
+	--ff-search-total: calc(var(--ff-search-fade-delay) + var(--ff-search-fade-dur));
 	visibility: hidden;
-	transition: visibility 0s linear var(--ff-search-dur);
+	transition: visibility 0s linear var(--ff-search-total);
 }
 
 body .ff-search-layer.is-open {
@@ -15023,7 +15027,28 @@ body .ff-search-layer .ff-search-bar.has-base-background-color {
 	box-shadow:
 		0 1px 2px color-mix(in srgb, #0e1114 6%, transparent),
 		0 8px 24px color-mix(in srgb, #0e1114 10%, transparent) !important;
-	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	/* Closed: remnant (X + pill) scales/fades out after the clip collapses. */
+	opacity: 0;
+	transform: scale(0.55);
+	transform-origin: right center;
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease,
+		opacity var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
+		transform var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay);
+}
+
+body .ff-search-layer.is-open .ff-search-bar,
+body .ff-search-layer.is-open .ff-search-bar.has-background,
+body .ff-search-layer.is-open .ff-search-bar.has-base-background-color {
+	opacity: 1;
+	transform: scale(1);
+	/* Open: appear with the expand, no end-delay. */
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease,
+		opacity 0.22s var(--ff-search-ease),
+		transform 0.36s var(--ff-search-ease);
 }
 
 body .ff-search-layer .ff-search-bar::before {
@@ -15073,7 +15098,21 @@ body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link {
 	border-radius: 50% !important;
 	color: var(--ff-trust-ink, #0e1114) !important;
 	opacity: 0.6;
-	transition: opacity 0.2s ease, background-color 0.2s ease;
+	transform: scale(1);
+	transform-origin: center;
+	transition:
+		opacity 0.2s ease,
+		background-color 0.2s ease,
+		transform var(--ff-search-fade-dur) var(--ff-search-ease);
+}
+
+body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link {
+	opacity: 0;
+	transform: scale(0.7);
+	transition:
+		opacity var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
+		transform var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
+		background-color 0.2s ease;
 }
 
 body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link:hover,
@@ -15138,16 +15177,25 @@ body .ff-search-layer .ff-search-mega.is-querying {
 		background: transparent !important;
 		clip-path: none;
 		opacity: 0;
-		transform: translateY(-12px) !important;
+		transform: translateY(-10px) scale(0.96) !important;
 		transition:
-			opacity 0.3s var(--ff-search-ease),
-			transform var(--ff-search-dur) var(--ff-search-ease);
+			opacity 0.28s var(--ff-search-ease) 0.06s,
+			transform 0.32s var(--ff-search-ease) 0.04s;
 	}
 
 	body .ff-search-layer.is-open .ff-search-shell {
 		clip-path: none;
 		opacity: 1;
 		transform: none !important;
+		transition:
+			opacity 0.28s var(--ff-search-ease),
+			transform 0.36s var(--ff-search-ease);
+	}
+
+	body .ff-search-layer .ff-search-bar,
+	body .ff-search-layer .ff-search-bar.has-background,
+	body .ff-search-layer .ff-search-bar.has-base-background-color {
+		transform-origin: center top;
 	}
 
 	body .ff-search-layer .ff-search-mega.is-querying {

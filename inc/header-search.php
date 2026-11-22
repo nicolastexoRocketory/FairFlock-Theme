@@ -57,7 +57,7 @@ function fairflock_get_search_catalog() {
 		return fairflock_get_search_catalog_fallback();
 	}
 
-	$cache_key = 'fairflock_search_catalog_v1';
+	$cache_key = 'fairflock_search_catalog_v2';
 	$cached    = get_transient( $cache_key );
 	if ( is_array( $cached ) ) {
 		return $cached;
@@ -99,6 +99,7 @@ function fairflock_get_search_catalog() {
  */
 function fairflock_flush_search_catalog_cache() {
 	delete_transient( 'fairflock_search_catalog_v1' );
+	delete_transient( 'fairflock_search_catalog_v2' );
 }
 add_action( 'save_post_product', 'fairflock_flush_search_catalog_cache' );
 add_action( 'deleted_post', 'fairflock_flush_search_catalog_cache' );
@@ -131,11 +132,13 @@ function fairflock_format_search_catalog_item( WC_Product $product ) {
 		}
 	}
 
+	$name = html_entity_decode( wp_strip_all_tags( (string) $product->get_name() ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+
 	return array(
-		'name'  => $product->get_name(),
+		'name'  => $name,
 		'price' => html_entity_decode( wp_strip_all_tags( wc_price( $product->get_price() ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
 		'url'   => $product->get_permalink(),
-		'q'     => $product->get_name(),
+		'q'     => $name,
 		'img'   => $img ? $img : '',
 		'tags'  => implode( ' ', $tag_names ),
 	);

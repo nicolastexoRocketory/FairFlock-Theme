@@ -63,23 +63,19 @@
 	--ff-glass-blur: blur(18px) saturate(1.15);
 }
 
-/* Dunkles Glas — Suche & Overlay (Darstellung → Glassmorphism) */
+/* Dunkles Glas — gleiche Optik wie Untermenüs (.ff-nav-sub) */
 body.ff-glass-dark {
-	--ff-glass-surface: rgba(14, 17, 20, 0.78);
-	--ff-glass-ink: #f3f5f4;
-	--ff-glass-muted: rgba(243, 245, 244, 0.62);
-	--ff-glass-border: rgba(255, 255, 255, 0.14);
-	--ff-glass-border-strong: rgba(255, 255, 255, 0.28);
+	--ff-glass-surface: var(--ff-submenu-bg, rgba(14, 17, 20, 0.94));
+	--ff-glass-ink: #fff;
+	--ff-glass-muted: var(--ff-submenu-color, rgba(255, 255, 255, 0.82));
+	--ff-glass-border: rgba(255, 255, 255, 0.12);
+	--ff-glass-border-strong: rgba(255, 255, 255, 0.22);
 	--ff-glass-ring: rgba(255, 255, 255, 0.1);
-	--ff-glass-hover: rgba(255, 255, 255, 0.1);
-	--ff-glass-shadow:
-		0 1px 2px rgba(0, 0, 0, 0.25),
-		0 12px 36px rgba(0, 0, 0, 0.38);
-	--ff-glass-shadow-lift:
-		0 1px 2px rgba(0, 0, 0, 0.28),
-		0 16px 40px rgba(0, 0, 0, 0.45);
-	--ff-glass-overlay: color-mix(in srgb, #0e1114 58%, transparent);
-	--ff-glass-blur: blur(20px) saturate(1.25);
+	--ff-glass-hover: var(--ff-submenu-hover-bg, rgba(255, 255, 255, 0.08));
+	--ff-glass-shadow: 0 16px 40px rgba(14, 17, 20, 0.28);
+	--ff-glass-shadow-lift: 0 16px 40px rgba(14, 17, 20, 0.28);
+	--ff-glass-overlay: color-mix(in srgb, #0e1114 72%, transparent);
+	--ff-glass-blur: blur(16px);
 }
 
 /*
@@ -2281,7 +2277,8 @@ body:not(.block-editor-iframe__body) .ff-submenu-slot {
 
 body.ff-shape-rounded .ff-header__icons,
 body.ff-shape-rounded .ff-header__actions {
-	--ff-icon-radius: var(--wp--custom--radius--sm, 8px);
+	/* Volle Kreise — Hover-Fläche von Suche/Warenkorb wie das Profil-Icon */
+	--ff-icon-radius: 50%;
 }
 
 /*
@@ -2804,6 +2801,7 @@ body.ff-shape-rounded .ff-header__actions {
 		transform: scale(1.1) translateY(-1px);
 		opacity: 1;
 		filter: none;
+		border-radius: var(--ff-icon-radius, 8px) !important;
 		background-color: color-mix(in srgb, currentColor 10%, transparent) !important;
 		box-shadow: 0 6px 16px color-mix(in srgb, #0e1114 14%, transparent);
 	}
@@ -2814,9 +2812,22 @@ body.ff-shape-rounded .ff-header__actions {
 		transform: scale(1.1) translateY(-1px);
 		opacity: 1;
 		filter: none;
+		border-radius: 50% !important;
 		background: #e4e7ea !important;
 		background-color: #e4e7ea !important;
 		box-shadow: 0 6px 16px color-mix(in srgb, #0e1114 14%, transparent);
+	}
+
+	/* Formen „Abgerundet“: Hover immer als Kreis */
+	body.ff-shape-rounded .ff-header__icons .ff-search-toggle .wp-block-button__link,
+	body.ff-shape-rounded .ff-header__icons .ff-cart .wp-block-button__link,
+	body.ff-shape-rounded .ff-header__actions .ff-search-toggle .wp-block-button__link,
+	body.ff-shape-rounded .ff-header__actions .ff-cart .wp-block-button__link,
+	body.ff-shape-rounded .ff-header__icons .ff-search-toggle .wp-block-button__link:hover,
+	body.ff-shape-rounded .ff-header__icons .ff-cart .wp-block-button__link:hover,
+	body.ff-shape-rounded .ff-header__actions .ff-search-toggle .wp-block-button__link:hover,
+	body.ff-shape-rounded .ff-header__actions .ff-cart .wp-block-button__link:hover {
+		border-radius: 50% !important;
 	}
 }
 
@@ -14968,13 +14979,21 @@ html.is-ff-mega-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element
 	filter: none !important;
 }
 
-@media (min-width: 961px) {
+	@media (min-width: 961px) {
 	.ff-header .ff-header__icons .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button:hover,
 	.ff-header .ff-header__icons .ff-cart.wp-block-button .wp-block-button__link.wp-element-button:hover {
 		background-color: color-mix(in srgb, currentColor 10%, transparent) !important;
 		opacity: 1 !important;
 		transform: scale(1.1) translateY(-1px) !important;
 		filter: none !important;
+		border-radius: var(--ff-icon-radius, 8px) !important;
+	}
+
+	body.ff-shape-rounded .ff-header .ff-header__icons .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button,
+	body.ff-shape-rounded .ff-header .ff-header__icons .ff-cart.wp-block-button .wp-block-button__link.wp-element-button,
+	body.ff-shape-rounded .ff-header .ff-header__icons .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button:hover,
+	body.ff-shape-rounded .ff-header .ff-header__icons .ff-cart.wp-block-button .wp-block-button__link.wp-element-button:hover {
+		border-radius: 50% !important;
 	}
 
 	.ff-header .ff-header__icons .ff-account.wp-block-button .wp-block-button__link.wp-element-button:hover {
@@ -14983,6 +15002,7 @@ html.is-ff-mega-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element
 		opacity: 1 !important;
 		transform: scale(1.1) translateY(-1px) !important;
 		filter: none !important;
+		border-radius: 50% !important;
 	}
 
 	/*
@@ -15101,10 +15121,12 @@ body.is-ff-search-open > .wp-site-blocks {
 	transition: filter var(--ff-search-dur, 0.42s) var(--ff-search-ease, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
-/* Shell = transparent stage; bar and suggestions are their own surfaces. */
+/* Shell = transparent stage; bar and suggestions are their own surfaces.
+ * No padding — JS docks the bar centre to the nav search icon. */
 body .ff-search-layer .ff-search-shell,
-body .ff-search-layer .ff-search-shell.has-background {
-	padding: 16px !important;
+body .ff-search-layer .ff-search-shell.has-background,
+body .ff-search-layer .ff-search-shell.has-base-background-color {
+	padding: 0 !important;
 	gap: 0;
 	background: transparent !important;
 	box-shadow: none !important;
@@ -15114,7 +15136,7 @@ body .ff-search-layer .ff-search-shell.has-background {
 	overflow: auto;
 	scrollbar-width: none;
 	clip-path: inset(
-		var(--ff-sc-top, 16px) var(--ff-sc-right, 16px) var(--ff-sc-bottom, calc(100% - 68px)) var(--ff-sc-left, calc(100% - 68px))
+		var(--ff-sc-top, 0px) var(--ff-sc-right, 0px) var(--ff-sc-bottom, calc(100% - 56px)) var(--ff-sc-left, calc(100% - 56px))
 		round 999px
 	);
 	transition:
@@ -15144,12 +15166,47 @@ body .ff-search-layer .ff-search-bar.has-base-background-color {
 	/* Idle closed: already faded. Closing: delayed scale+fade (see .is-closing). */
 	opacity: 0;
 	transform: scale(0.55);
+	/* JS sets origin to the ✕ centre on desktop so close lands on the lupa. */
 	transform-origin: right center;
 	transition:
 		border-color 0.2s ease,
 		box-shadow 0.2s ease,
 		opacity var(--ff-search-fade-dur) var(--ff-search-ease),
 		transform var(--ff-search-fade-dur) var(--ff-search-ease);
+}
+
+/*
+ * Desktop: pill height + ✕ = nav lupa (40×40), zero side padding on the
+ * close so the button sits flush at the bar’s right edge → clean collapse.
+ */
+@media (min-width: 961px) {
+	body .ff-search-layer .ff-search-bar,
+	body .ff-search-layer .ff-search-bar.has-background,
+	body .ff-search-layer .ff-search-bar.has-base-background-color {
+		/* Outer silhouette matches the 40×40 nav lupa (border-box). */
+		box-sizing: border-box;
+		min-height: 40px;
+		height: 40px;
+		padding: 0 0 0 44px !important;
+		align-items: center;
+	}
+
+	body .ff-search-layer .ff-search-bar .wp-block-search__input {
+		min-height: 38px;
+		height: 38px;
+		font-size: 0.9375rem;
+	}
+
+	body .ff-search-layer .ff-search-bar::before {
+		left: 12px;
+	}
+
+	body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link {
+		/* 40px outer − 1px border each side */
+		width: 38px !important;
+		height: 38px !important;
+		min-height: 38px !important;
+	}
 }
 
 body .ff-search-layer.is-open .ff-search-bar,
@@ -15224,9 +15281,9 @@ body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link {
 	align-items: center;
 	justify-content: center;
 	padding: 0 !important;
-	width: 44px;
-	height: 44px;
-	min-height: 44px;
+	width: 40px;
+	height: 40px;
+	min-height: 40px;
 	border-radius: 50% !important;
 	color: var(--ff-glass-ink) !important;
 	opacity: 0.6;
@@ -15337,8 +15394,9 @@ body .ff-search-layer .ff-search-mega .ff-search-hit:focus-visible {
 
 @media (max-width: 960px) {
 	body .ff-search-layer .ff-search-shell,
-	body .ff-search-layer .ff-search-shell.has-background {
-		padding: 1em !important;
+	body .ff-search-layer .ff-search-shell.has-background,
+	body .ff-search-layer .ff-search-shell.has-base-background-color {
+		padding: 12px !important;
 		background: transparent !important;
 		clip-path: none;
 		opacity: 0;

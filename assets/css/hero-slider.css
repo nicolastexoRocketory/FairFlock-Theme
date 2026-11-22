@@ -523,14 +523,18 @@
 	padding: 0;
 	border-radius: 999px;
 	border: 0;
-	background: rgba(255, 255, 255, 0.35);
+	/* Always light — dots sit on photo heroes, not on theme surface. */
+	background: rgba(255, 255, 255, 0.4);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.22);
 	cursor: pointer;
-	transition: width 0.3s var(--fs-ease), background 0.3s;
+	transition: width 0.3s var(--fs-ease), background 0.3s, box-shadow 0.3s;
 }
 
 .fs-dot.is-on {
 	width: 24px;
-	background: var(--ff-surface, #fff);
+	/* Solid white — never --ff-surface (dark shops made the active pill invisible). */
+	background: #fff;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 /*

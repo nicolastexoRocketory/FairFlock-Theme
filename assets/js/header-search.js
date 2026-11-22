@@ -108,16 +108,34 @@
 
     function clearSearchPosition() {
       if (!shell) return;
-      ["top", "right", "left", "bottom", "max-height", "width", "translate"].forEach(
-        function (prop) {
-          shell.style.removeProperty(prop);
-        }
-      );
+      [
+        "top",
+        "right",
+        "left",
+        "bottom",
+        "max-height",
+        "width",
+        "height",
+        "padding",
+        "padding-top",
+        "padding-right",
+        "padding-bottom",
+        "padding-left",
+        "position",
+        "translate",
+      ].forEach(function (prop) {
+        shell.style.removeProperty(prop);
+      });
+      var bar = shell.querySelector(".ff-search-bar");
+      if (bar) {
+        bar.style.removeProperty("transform-origin");
+      }
     }
 
     /**
-     * Desktop: search bar vertically centred on the search icon;
-     * close button sits over the icon; panel opens right-aligned.
+     * Desktop only: dock the shell so the close ✕ centre sits exactly on the
+     * nav search-icon centre. Two-pass: approximate place → measure → correct.
+     * That way the close animation collapses flush onto the lupa.
      */
     function positionSearchShell() {
       if (!shell || !toggle) {
@@ -128,37 +146,78 @@
         return;
       }
 
-      var rect = toggle.getBoundingClientRect();
+      var iconRect = toggle.getBoundingClientRect();
+      if (!iconRect.width && !iconRect.height) {
+        clearSearchPosition();
+        return;
+      }
+
       var vw = window.innerWidth || document.documentElement.clientWidth || 0;
       var vh = window.innerHeight || document.documentElement.clientHeight || 0;
-      var shellW = Math.min(440, vw - 16);
-      shell.style.setProperty("width", shellW + "px", "important");
-
       var bar = shell.querySelector(".ff-search-bar");
-      var closeEl = shell.querySelector(".ff-search-close .wp-block-button__link, .ff-search-close");
-      var cs = window.getComputedStyle(shell);
-      var padTop = parseFloat(cs.paddingTop) || 0;
-      var padRight = parseFloat(cs.paddingRight) || 0;
-      var barH = bar ? bar.offsetHeight || 56 : 56;
-      var closeW = closeEl ? closeEl.offsetWidth || 44 : 44;
+      var closeEl = shell.querySelector(
+        ".ff-search-close .wp-block-button__link, .ff-search-close"
+      );
+      var shellW = Math.min(440, vw - 16);
+      var iconCx = iconRect.left + iconRect.width / 2;
+      var iconCy = iconRect.top + iconRect.height / 2;
+      var iconSize = Math.max(iconRect.width, iconRect.height) || 40;
 
-      var iconCx = rect.left + rect.width / 2;
-      var iconCy = rect.top + rect.height / 2;
-      /* Bar centre = icon centre (shell top accounts for padding + half bar). */
-      var top = Math.max(SEARCH_DOCK_GAP, Math.round(iconCy - padTop - barH / 2));
-      /* Close control centred on the icon horizontally. */
-      var closeCenterFromRight = padRight + closeW / 2;
-      var right = Math.round(vw - (iconCx + closeCenterFromRight));
-      var maxRight = Math.max(SEARCH_DOCK_GAP, vw - shellW - SEARCH_DOCK_GAP);
-      right = Math.min(Math.max(SEARCH_DOCK_GAP, right), maxRight);
-      var maxH = Math.max(180, vh - top - 12);
-
-      shell.style.setProperty("top", top + "px", "important");
-      shell.style.setProperty("right", right + "px", "important");
+      shell.style.setProperty("position", "absolute", "important");
+      shell.style.setProperty("padding", "0", "important");
+      shell.style.setProperty("width", shellW + "px", "important");
+      shell.style.setProperty("height", "auto", "important");
       shell.style.setProperty("left", "auto", "important");
       shell.style.setProperty("bottom", "auto", "important");
       shell.style.setProperty("translate", "none", "important");
-      shell.style.setProperty("max-height", maxH + "px", "important");
+
+      /* Pass 1 — rough dock using icon size as stand-in for the ✕. */
+      var top = Math.round(iconCy - iconSize / 2);
+      var right = Math.round(vw - (iconCx + iconSize / 2));
+      var maxRight = Math.max(SEARCH_DOCK_GAP, vw - shellW - SEARCH_DOCK_GAP);
+      top = Math.max(4, top);
+      right = Math.min(Math.max(SEARCH_DOCK_GAP, right), maxRight);
+      shell.style.setProperty("top", top + "px", "important");
+      shell.style.setProperty("right", right + "px", "important");
+      shell.style.setProperty("max-height", Math.max(180, vh - top - 8) + "px", "important");
+
+      /* Pass 2 — measure real ✕ vs lupa and nudge until centres match. */
+      void shell.offsetWidth;
+      if (closeEl) {
+        var closeRect = closeEl.getBoundingClientRect();
+        var dx =
+          closeRect.left + closeRect.width / 2 - (iconRect.left + iconRect.width / 2);
+        var dy =
+          closeRect.top + closeRect.height / 2 - (iconRect.top + iconRect.height / 2);
+        if (Math.abs(dx) >= 0.5 || Math.abs(dy) >= 0.5) {
+          right = Math.round(right + dx);
+          top = Math.round(top - dy);
+          top = Math.max(4, top);
+          right = Math.min(Math.max(SEARCH_DOCK_GAP, right), maxRight);
+          shell.style.setProperty("top", top + "px", "important");
+          shell.style.setProperty("right", right + "px", "important");
+          shell.style.setProperty(
+            "max-height",
+            Math.max(180, vh - top - 8) + "px",
+            "important"
+          );
+          void shell.offsetWidth;
+        }
+      }
+
+      /* Scale origin = ✕ centre (bar-local), so close shrinks into the lupa. */
+      if (bar && closeEl) {
+        var barRect = bar.getBoundingClientRect();
+        var c = closeEl.getBoundingClientRect();
+        var ox = c.left + c.width / 2 - barRect.left;
+        var oy = c.top + c.height / 2 - barRect.top;
+        bar.style.setProperty(
+          "transform-origin",
+          Math.round(ox) + "px " + Math.round(oy) + "px",
+          "important"
+        );
+      }
+
       setCollapseShape();
     }
 
@@ -172,22 +231,38 @@
       }, 650);
     }
 
-    /** Collapsed clip-path = a circle sitting on the search icon / close button. */
+    /**
+     * Collapsed clip-path = circle on the ✕, sized like the nav lupa
+     * so the close animation lands flush on the icon.
+     */
     function setCollapseShape() {
-      if (!shell) return;
+      if (!shell || !toggle) return;
       var shellRect = shell.getBoundingClientRect();
-      var bar = shell.querySelector(".ff-search-bar");
-      var closeEl = shell.querySelector(".ff-search-close .wp-block-button__link, .ff-search-close");
-      if (!bar || !closeEl || !shellRect.width) return;
-      var barRect = bar.getBoundingClientRect();
+      var closeEl = shell.querySelector(
+        ".ff-search-close .wp-block-button__link, .ff-search-close"
+      );
+      if (!closeEl || !shellRect.width) return;
+      var iconRect = toggle.getBoundingClientRect();
       var closeRect = closeEl.getBoundingClientRect();
-      var r = Math.max(18, Math.round(barRect.height / 2));
+      var r = Math.max(
+        18,
+        Math.round(Math.max(iconRect.width, iconRect.height, closeRect.width) / 2)
+      );
       var cx = closeRect.left + closeRect.width / 2 - shellRect.left;
-      var cy = barRect.top + barRect.height / 2 - shellRect.top;
+      var cy = closeRect.top + closeRect.height / 2 - shellRect.top;
       shell.style.setProperty("--ff-sc-top", Math.round(cy - r) + "px");
-      shell.style.setProperty("--ff-sc-bottom", Math.max(0, Math.round(shellRect.height - cy - r)) + "px");
-      shell.style.setProperty("--ff-sc-left", Math.max(0, Math.round(cx - r)) + "px");
-      shell.style.setProperty("--ff-sc-right", Math.max(0, Math.round(shellRect.width - cx - r)) + "px");
+      shell.style.setProperty(
+        "--ff-sc-bottom",
+        Math.max(0, Math.round(shellRect.height - cy - r)) + "px"
+      );
+      shell.style.setProperty(
+        "--ff-sc-left",
+        Math.max(0, Math.round(cx - r)) + "px"
+      );
+      shell.style.setProperty(
+        "--ff-sc-right",
+        Math.max(0, Math.round(shellRect.width - cx - r)) + "px"
+      );
     }
 
     var closeCleanupTimer = null;

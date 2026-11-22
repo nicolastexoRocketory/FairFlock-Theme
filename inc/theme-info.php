@@ -20,6 +20,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.525',
+			'items'   => array(
+				__( 'Hero-Slider: Aktiver Dot immer weiß (nicht Theme-Surface) — bleibt auf dunklen Hero-Bildern erkennbar.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.524',
+			'items'   => array(
+				__( 'Suche Desktop: Schließen-X sitzt pixelgenau auf der Lupe; Collapse-Animation endet bündig am Such-Icon.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.523',
+			'items'   => array(
+				__( 'Suche: Dunkles Glassmorphism wie Untermenüs; Suchleiste vertikal auf Icon-Höhe (Desktop & Mobil).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.522',
+			'items'   => array(
+				__( 'Nav-Icons: Bei Form „Abgerundet“ sind Hover-Flächen von Suche/Warenkorb kreisrund.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.521',
 			'items'   => array(
 				__( 'Nav-Icons: Desktop-Hover; Suchleiste auf Icon-Höhe; Lupe dreht/skaliert nach dem Schließen der Suche wieder ein.', 'fairflock' ),

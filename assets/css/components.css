@@ -3616,8 +3616,8 @@ ul.ff-search-menu-nav {
 	margin: 0;
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent) !important;
 	border-radius: var(--wp--custom--radius--md, 16px) !important;
-	background: var(--ff-surface, #fff) !important;
-	color: var(--ff-ink, var(--wp--preset--color--contrast, #0e1114)) !important;
+	background: var(--wp--preset--color--base, #fff) !important;
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
 	text-decoration: none;
 	justify-self: stretch;
 	box-sizing: border-box;
@@ -3628,11 +3628,12 @@ ul.ff-search-menu-nav {
 
 .ff-search-hit:hover,
 .ff-search-hit:focus-visible {
-	background: var(--ff-surface, #fff) !important;
+	background: var(--wp--preset--color--base, #fff) !important;
 	border-color: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 25%, transparent) !important;
 	opacity: 1;
 	transform: none;
 	outline: none;
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
 }
 
 .ff-search-hit .ff-prod-card__media {
@@ -3686,7 +3687,7 @@ ul.ff-search-menu-nav {
 	font-weight: 400;
 	letter-spacing: -0.02em;
 	line-height: 1.3;
-	color: inherit !important;
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
 	text-align: left !important;
 }
 
@@ -3695,7 +3696,7 @@ ul.ff-search-menu-nav {
 	font-size: 0.9375rem;
 	font-weight: 700;
 	line-height: 1.25;
-	color: inherit !important;
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
 	text-align: left !important;
 }
 
@@ -3709,7 +3710,7 @@ ul.ff-search-menu-nav {
 }
 
 .ff-search-hit .ff-prod-card__delivery {
-	color: inherit !important;
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
 }
 
 .ff-search-empty {
@@ -15600,16 +15601,39 @@ body .ff-search-layer .ff-search-mega .has-muted-color {
 	color: var(--ff-glass-muted) !important;
 }
 
-/* Product cards keep solid surface (not glass list-row hover) */
+/*
+ * Product cards: same ink as shop/slideshow cards — never inherit
+ * glass-ink (esp. white on ff-glass-dark) onto the solid surface.
+ */
 body .ff-search-layer .ff-search-mega .ff-search-hit,
 body .ff-search-layer .ff-search-mega .ff-search-hit:hover,
-body .ff-search-layer .ff-search-mega .ff-search-hit:focus-visible {
-	background: var(--ff-surface, #fff) !important;
-	color: var(--ff-ink, var(--wp--preset--color--contrast, #0e1114)) !important;
+body .ff-search-layer .ff-search-mega .ff-search-hit:focus-visible,
+body .ff-search-layer .ff-search-mega a.ff-search-hit,
+body .ff-search-layer .ff-search-mega a.ff-search-hit:visited,
+body .ff-search-layer .ff-search-mega a.ff-search-hit:hover,
+body .ff-search-layer .ff-search-mega a.ff-search-hit:focus-visible {
+	background: var(--wp--preset--color--base, #fff) !important;
+	background-color: var(--wp--preset--color--base, #fff) !important;
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
+}
+
+body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__body,
+body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__title,
+body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__price,
+body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__delivery,
+body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__delivery > span,
+body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__delivery svg {
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
+	fill: none;
+	stroke: currentColor;
 }
 
 body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__tax {
 	color: var(--wp--preset--color--muted, #66707a) !important;
+}
+
+body .ff-search-layer .ff-search-mega .ff-search-hit .ff-delivery-info__btn {
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
 }
 
 @media (max-width: 960px) {

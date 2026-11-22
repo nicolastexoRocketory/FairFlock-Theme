@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.538',
+			'items'   => array(
+				__( 'Suchvorschläge: Produktkarten-Schrift in Contrast/Muted wie Shop — nicht Glass-Ink.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.537',
 			'items'   => array(
 				__( 'Suche: Navbar bleibt scharf und sichtbar; Blur/Overlay nur unter der Header-Leiste.', 'fairflock' ),

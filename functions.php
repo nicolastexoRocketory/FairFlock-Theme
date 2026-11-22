@@ -53,6 +53,7 @@ require_once FAIRFLOCK_DIR . '/inc/product-ai-image.php';
 require_once FAIRFLOCK_DIR . '/inc/delivery-times.php';
 require_once FAIRFLOCK_DIR . '/inc/password-protection.php';
 require_once FAIRFLOCK_DIR . '/inc/unsplash-credit.php';
+require_once FAIRFLOCK_DIR . '/inc/popup.php';
 require_once FAIRFLOCK_DIR . '/inc/theme-info.php';
 require_once FAIRFLOCK_DIR . '/inc/setup-wizard.php';
 require_once FAIRFLOCK_DIR . '/inc/demo-content.php';

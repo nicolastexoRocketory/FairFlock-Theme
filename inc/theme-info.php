@@ -20,6 +20,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.509',
+			'items'   => array(
+				__( 'Pop-up: erscheint sofort (Standard-Verzögerung 0 Sekunden); Admin-Vorschau ebenfalls ohne Wartezeit.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.508',
+			'items'   => array(
+				__( 'Pop-up: drehender Handball im Hintergrund (SVG mit 3D-Eindruck: rotierende Nähte, Lichtreflex, sanftes Schweben; steht still bei „Bewegung reduzieren“).', 'fairflock' ),
+				__( 'Pop-up: Einblenden auch in Hintergrund-Tabs zuverlässig; Countdown-Kacheln deckender für bessere Lesbarkeit.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.507',
+			'items'   => array(
+				__( 'Neu: Pop-up mit Countdown unter FairFlock → Pop-up — Enddatum, Titel, Text, Abschluss-Text, optionaler Button, Verzögerung und Häufigkeit einstellbar; Admin-Vorschau.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.506',
 			'items'   => array(
 				__( 'Header „Logo mittig“: Suche und Warenkorb verschwanden — lose Icons aus gespeicherten Headern werden in die Icon-Gruppe übernommen statt übereinander zu liegen.', 'fairflock' ),

@@ -1,0 +1,310 @@
+/* —— Countdown pop-up (FairFlock → Pop-up) —— */
+.ff-popup {
+	--pp-ink: #fff;
+	--pp-ink-2: rgba(255, 255, 255, 0.72);
+	--pp-surface: var(--wp--preset--color--contrast, #0e1114);
+	--pp-tile: rgba(255, 255, 255, 0.08);
+	--pp-tile-solid: color-mix(in srgb, #fff 9%, var(--pp-surface));
+	--pp-line: rgba(255, 255, 255, 0.14);
+	--pp-accent: var(--wp--preset--color--brand, #c8102e);
+	--pp-radius: var(--wp--custom--radius--md, 16px);
+	position: fixed;
+	inset: 0;
+	z-index: 120;
+	display: grid;
+	place-items: center;
+	padding: 24px;
+	box-sizing: border-box;
+}
+
+.ff-popup[hidden] {
+	display: none;
+}
+
+.ff-popup__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(8, 10, 12, 0.64);
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.ff-popup__dialog {
+	position: relative;
+	width: min(520px, 100%);
+	max-height: calc(100dvh - 48px);
+	overflow: hidden auto;
+	padding: 48px 40px 40px;
+	box-sizing: border-box;
+	border-radius: var(--pp-radius);
+	background: var(--pp-surface);
+	color: var(--pp-ink);
+	box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+	text-align: center;
+	outline: none;
+	opacity: 0;
+	transform: translateY(12px) scale(0.98);
+	transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.ff-popup.is-open .ff-popup__backdrop {
+	opacity: 1;
+}
+
+.ff-popup.is-open .ff-popup__dialog {
+	opacity: 1;
+	transform: none;
+}
+
+/* Background layer (reserved for the rotating handball). */
+.ff-popup__bg {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--pp-accent) 28%, transparent), transparent 70%);
+}
+
+.ff-ball {
+	--ff-ball-turn: 9s;
+	position: absolute;
+	right: -120px;
+	bottom: -150px;
+	width: 400px;
+	height: 400px;
+	overflow: visible;
+	opacity: 0.38;
+}
+
+.ff-ball__body {
+	fill: color-mix(in srgb, var(--pp-accent) 55%, var(--pp-surface));
+}
+
+.ff-ball__seams {
+	fill: none;
+	stroke: rgba(255, 255, 255, 0.6);
+	stroke-width: 1.4;
+}
+
+.ff-ball__seams ellipse {
+	vector-effect: non-scaling-stroke;
+}
+
+.ff-ball__rim {
+	fill: none;
+	stroke: rgba(255, 255, 255, 0.18);
+	stroke-width: 1;
+}
+
+/* Width of a great circle ≈ |cos(angle)|: sine-in to the edge-on line, sine-out back. */
+.ff-ball__meridian {
+	transform-box: fill-box;
+	transform-origin: center;
+	animation: ff-ball-meridian var(--ff-ball-turn) linear infinite;
+	animation-delay: calc(var(--ff-ball-i, 0) * var(--ff-ball-turn) / -3);
+}
+
+.ff-ball__float {
+	transform-box: fill-box;
+	transform-origin: center;
+	animation: ff-ball-float 6s ease-in-out infinite alternate;
+}
+
+@keyframes ff-ball-meridian {
+	0% {
+		transform: scaleX(1);
+		animation-timing-function: cubic-bezier(0.12, 0, 0.39, 0);
+	}
+	50% {
+		transform: scaleX(0.02);
+		animation-timing-function: cubic-bezier(0.61, 1, 0.88, 1);
+	}
+	100% {
+		transform: scaleX(1);
+	}
+}
+
+@keyframes ff-ball-float {
+	from {
+		transform: translateY(0) rotate(0deg);
+	}
+	to {
+		transform: translateY(-6px) rotate(6deg);
+	}
+}
+
+.ff-popup__body {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+}
+
+.ff-popup__close {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--pp-ink-2);
+	cursor: pointer;
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.ff-popup__close:hover,
+.ff-popup__close:focus-visible {
+	background: var(--pp-tile);
+	color: var(--pp-ink);
+}
+
+.ff-popup__close:focus-visible,
+.ff-popup__cta:focus-visible {
+	outline: 2px solid var(--pp-ink);
+	outline-offset: 2px;
+}
+
+.ff-popup__title {
+	margin: 0;
+	color: inherit;
+	font-size: clamp(1.375rem, 1.1rem + 1.2vw, 1.75rem);
+	font-weight: 800;
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+	text-wrap: balance;
+}
+
+.ff-popup__text {
+	margin: 0;
+	max-width: 40ch;
+	color: var(--pp-ink-2);
+	font-size: 1rem;
+	line-height: 1.55;
+	text-wrap: pretty;
+}
+
+.ff-popup__countdown {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 8px;
+	width: 100%;
+	margin-top: 8px;
+}
+
+.ff-popup__countdown[hidden],
+.ff-popup__done[hidden] {
+	display: none;
+}
+
+.ff-popup__unit {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	padding: 16px 8px 12px;
+	border: 1px solid var(--pp-line);
+	border-radius: calc(var(--pp-radius) * 0.75);
+	background: color-mix(in srgb, var(--pp-tile-solid) 88%, transparent);
+}
+
+.ff-popup__num {
+	font-size: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+	font-weight: 800;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
+.ff-popup__label {
+	color: var(--pp-ink-2);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.ff-popup__done {
+	margin: 8px 0 0;
+	font-size: 1.25rem;
+	font-weight: 800;
+}
+
+.ff-popup__cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	margin-top: 8px;
+	padding: 0 24px;
+	border-radius: var(--wp--custom--radius--sm, 8px);
+	background: var(--pp-ink);
+	color: var(--pp-surface);
+	font-weight: 700;
+	text-decoration: none;
+	transition: opacity 0.2s ease;
+}
+
+.ff-popup__cta:hover {
+	opacity: 0.88;
+	color: var(--pp-surface);
+}
+
+html.is-ff-popup-open {
+	overflow: hidden;
+}
+
+body.ff-shape-sharp .ff-popup {
+	--pp-radius: 0px;
+}
+
+@media (max-width: 480px) {
+	.ff-popup {
+		padding: 16px;
+	}
+
+	.ff-popup__dialog {
+		padding: 48px 20px 24px;
+	}
+
+	.ff-popup__countdown {
+		gap: 6px;
+	}
+
+	.ff-popup__unit {
+		padding: 12px 4px 10px;
+	}
+
+	.ff-ball {
+		right: -96px;
+		bottom: -120px;
+		width: 300px;
+		height: 300px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ff-popup__backdrop,
+	.ff-popup__dialog {
+		transition: none;
+	}
+
+	.ff-ball__meridian,
+	.ff-ball__float {
+		animation: none;
+	}
+
+	.ff-ball__meridian:nth-of-type(3) {
+		transform: scaleX(0.5);
+	}
+
+	.ff-ball__meridian:nth-of-type(4) {
+		transform: scaleX(0.5);
+	}
+}

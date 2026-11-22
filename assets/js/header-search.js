@@ -28,6 +28,24 @@
       brand.insertBefore(moveNode, brand.firstChild);
     })();
 
+    /*
+     * Saved Site-Editor headers may keep cart/account (or search) as loose
+     * children of the bar. Grid nav layouts give the icons one cell, so loose
+     * items would stack on top of each other — gather them into the icons group.
+     */
+    (function gatherLooseHeaderIcons() {
+      var bar = document.querySelector(".ff-header__bar");
+      var icons = bar && bar.querySelector(":scope > .ff-header__icons");
+      if (!bar || !icons) return;
+      Array.prototype.slice.call(bar.children).forEach(function (child) {
+        if (child === icons || child.classList.contains("ff-header__brand")) return;
+        if (child.querySelector(".ff-search-toggle, .ff-cart, .ff-account") ||
+            child.matches(".ff-search-toggle, .ff-cart, .ff-account, .wp-block-woocommerce-customer-account")) {
+          icons.appendChild(child);
+        }
+      });
+    })();
+
     var layer = document.getElementById("ffSearchLayer") || document.querySelector(".ff-search-layer");
     var menuLayer = document.getElementById("ffMenuLayer") || document.querySelector(".ff-menu-layer");
     var toggle =

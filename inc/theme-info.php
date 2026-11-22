@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.506',
+			'items'   => array(
+				__( 'Header „Logo mittig“: Suche und Warenkorb verschwanden — lose Icons aus gespeicherten Headern werden in die Icon-Gruppe übernommen statt übereinander zu liegen.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.505',
 			'items'   => array(
 				__( 'Impressum generierbar: neues Paket „Impressum generieren“ unter FairFlock → Demo Content (FairFlock GmbH, USt-IdNr., Handelsregister, Geschäftsführer, News, Streitbeilegung, Karriere).', 'fairflock' ),

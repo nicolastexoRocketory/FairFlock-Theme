@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.513',
+			'items'   => array(
+				__( 'Suche: Overlay in Theme-Hintergrundfarbe (60 %) plus weichgezeichneter Seitenhintergrund; moderne Pill-Suchleiste; Vorschläge erst nach Eingabe; Ein-/Ausklappen vom Such-Icon.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.512',
 			'items'   => array(
 				__( 'Pop-up: Design unter FairFlock → Pop-up einstellbar (Hintergrund, Akzent, Textfarbe) mit Live-Vorschau; Standard wieder dunkel mit heller Schrift.', 'fairflock' ),

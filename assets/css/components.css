@@ -2944,13 +2944,37 @@ html.is-ff-mega-open .ff-header {
 .ff-search-backdrop {
 	position: absolute;
 	inset: 0;
-	background: rgba(0, 0, 0, 0.72);
-	opacity: 0;
-	transition: opacity 0.3s var(--ff-ease);
+	/* Theme base @ 60% — blur lives on .wp-site-blocks (opacity would kill backdrop-filter). */
+	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 60%, transparent);
+	opacity: 1;
+	transition: background-color 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+		-webkit-backdrop-filter 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+		backdrop-filter 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+	-webkit-backdrop-filter: blur(0);
+	backdrop-filter: blur(0);
+}
+
+.ff-search-layer:not(.is-open) .ff-search-backdrop {
+	background: transparent;
 }
 
 .ff-search-layer.is-open .ff-search-backdrop {
-	opacity: 1;
+	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 60%, transparent);
+	-webkit-backdrop-filter: blur(14px) saturate(1.05);
+	backdrop-filter: blur(14px) saturate(1.05);
+}
+
+/* Reliable page blur: layer is portaled to <body>, so this stays sharp. */
+body.is-ff-search-open > .wp-site-blocks {
+	filter: blur(12px);
+	transform: translateZ(0);
+	transition: filter 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	body.is-ff-search-open > .wp-site-blocks {
+		filter: none;
+	}
 }
 
 .ff-search-layer-ui {
@@ -3028,10 +3052,6 @@ html.is-ff-mega-open .ff-header {
  * Feine Position setzt header-search.js (top/right).
  */
 @media (min-width: 961px) {
-	.ff-search-backdrop {
-		background: rgba(14, 17, 20, 0.28);
-	}
-
 	.ff-search-layer-ui {
 		display: block;
 		padding: 0;
@@ -14943,15 +14963,25 @@ body .ff-search-layer.is-open {
 }
 
 body .ff-search-layer .ff-search-backdrop {
-	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 60%, transparent) !important;
-	-webkit-backdrop-filter: blur(14px) saturate(1.05);
-	backdrop-filter: blur(14px) saturate(1.05);
-	opacity: 0;
-	transition: opacity var(--ff-search-dur) var(--ff-search-ease);
+	background: transparent !important;
+	-webkit-backdrop-filter: blur(0) !important;
+	backdrop-filter: blur(0) !important;
+	opacity: 1 !important;
+	transition:
+		background-color var(--ff-search-dur) var(--ff-search-ease),
+		-webkit-backdrop-filter var(--ff-search-dur) var(--ff-search-ease),
+		backdrop-filter var(--ff-search-dur) var(--ff-search-ease) !important;
 }
 
 body .ff-search-layer.is-open .ff-search-backdrop {
-	opacity: 1;
+	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 60%, transparent) !important;
+	-webkit-backdrop-filter: blur(14px) saturate(1.05) !important;
+	backdrop-filter: blur(14px) saturate(1.05) !important;
+}
+
+body.is-ff-search-open > .wp-site-blocks {
+	filter: blur(12px) !important;
+	transition: filter var(--ff-search-dur, 0.42s) var(--ff-search-ease, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 /* Shell = transparent stage; bar and suggestions are their own surfaces. */

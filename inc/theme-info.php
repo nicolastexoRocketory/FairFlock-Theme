@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.512',
+			'items'   => array(
+				__( 'Pop-up: Design unter FairFlock → Pop-up einstellbar (Hintergrund, Akzent, Textfarbe) mit Live-Vorschau; Standard wieder dunkel mit heller Schrift.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.511',
 			'items'   => array(
 				__( 'Trust-Banner/Marquee: Farben aus FairFlock → Darstellung greifen zuverlässig; Markenfarben und Block-Verläufe überschreiben den Banner nicht mehr.', 'fairflock' ),

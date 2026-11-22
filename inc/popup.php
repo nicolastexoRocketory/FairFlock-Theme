@@ -29,6 +29,9 @@ function fairflock_popup_defaults() {
 		'delay'     => '0',
 		'frequency' => 'day',
 		'after_end' => 'hide',
+		'surface'   => '#111418',
+		'accent'    => '#c8102e',
+		'ink'       => '#ffffff',
 	);
 }
 
@@ -73,6 +76,60 @@ function fairflock_popup_settings() {
 	$saved = get_option( 'fairflock_popup', array() );
 	$saved = is_array( $saved ) ? $saved : array();
 	return array_merge( fairflock_popup_defaults(), array_map( 'strval', $saved ) );
+}
+
+/**
+ * Sanitizes a pop-up hex color or returns default.
+ *
+ * @since 0.9.512
+ *
+ * @param string $color   Raw.
+ * @param string $fallback Fallback hex.
+ * @return string
+ */
+function fairflock_popup_color( $color, $fallback ) {
+	$clean = function_exists( 'fairflock_sanitize_hex_color' )
+		? fairflock_sanitize_hex_color( (string) $color )
+		: '';
+	if ( '' === $clean && function_exists( 'sanitize_hex_color' ) ) {
+		$tmp = sanitize_hex_color( (string) $color );
+		$clean = is_string( $tmp ) ? $tmp : '';
+	}
+	return '' !== $clean ? $clean : $fallback;
+}
+
+/**
+ * Design colors for the pop-up (FairFlock → Pop-up).
+ *
+ * @since 0.9.512
+ *
+ * @return array{surface:string,accent:string,ink:string}
+ */
+function fairflock_popup_design_colors() {
+	$s = fairflock_popup_settings();
+	$d = fairflock_popup_defaults();
+	return array(
+		'surface' => fairflock_popup_color( $s['surface'] ?? '', $d['surface'] ),
+		'accent'  => fairflock_popup_color( $s['accent'] ?? '', $d['accent'] ),
+		'ink'     => fairflock_popup_color( $s['ink'] ?? '', $d['ink'] ),
+	);
+}
+
+/**
+ * Inline CSS variables for pop-up design colors.
+ *
+ * @since 0.9.512
+ *
+ * @return string
+ */
+function fairflock_popup_design_css() {
+	$c = fairflock_popup_design_colors();
+	return sprintf(
+		'.ff-popup{--pp-surface:%1$s;--pp-accent:%2$s;--pp-ink:%3$s;--pp-ink-2:color-mix(in srgb,%3$s 72%%, transparent);--pp-tile:color-mix(in srgb,%3$s 10%%, transparent);--pp-tile-solid:color-mix(in srgb,%3$s 9%%, %1$s);--pp-line:color-mix(in srgb,%3$s 16%%, transparent);}',
+		esc_attr( $c['surface'] ),
+		esc_attr( $c['accent'] ),
+		esc_attr( $c['ink'] )
+	);
 }
 
 /**
@@ -184,6 +241,7 @@ function fairflock_popup_enqueue() {
 		array(),
 		FAIRFLOCK_VERSION
 	);
+	wp_add_inline_style( 'fairflock-popup', fairflock_popup_design_css() );
 	wp_enqueue_script(
 		'fairflock-popup',
 		FAIRFLOCK_URI . '/assets/js/popup.js',
@@ -316,6 +374,46 @@ function fairflock_popup_register_admin_page() {
 add_action( 'admin_menu', 'fairflock_popup_register_admin_page', 30 );
 
 /**
+ * Color picker + live preview on the Pop-up admin page.
+ *
+ * @since 0.9.512
+ *
+ * @param string $hook Admin hook.
+ * @return void
+ */
+function fairflock_popup_admin_assets( $hook ) {
+	if ( false === strpos( (string) $hook, 'fairflock-popup' ) ) {
+		return;
+	}
+	wp_enqueue_style( 'wp-color-picker' );
+	wp_enqueue_script( 'wp-color-picker' );
+	$js = <<<'JS'
+(function ($) {
+	function paint() {
+		var surface = $("#ffPopupSurface").val() || "#111418";
+		var accent = $("#ffPopupAccent").val() || "#c8102e";
+		var ink = $("#ffPopupInk").val() || "#ffffff";
+		var box = document.getElementById("ffPopupDesignPreview");
+		if (!box) return;
+		box.style.color = ink;
+		box.style.background = "radial-gradient(120% 80% at 50% 0%," + accent + ", transparent 70%), " + surface;
+		var ball = box.querySelector(".ff-popup-admin-preview__ball");
+		if (ball) ball.style.background = accent;
+	}
+	$(function () {
+		$(".ff-popup-color").wpColorPicker({
+			change: function () { setTimeout(paint, 10); },
+			clear: function () { setTimeout(paint, 10); }
+		});
+		paint();
+	});
+})(jQuery);
+JS;
+	wp_add_inline_script( 'wp-color-picker', $js );
+}
+add_action( 'admin_enqueue_scripts', 'fairflock_popup_admin_assets' );
+
+/**
  * Saves pop-up settings.
  *
  * @since 0.9.507
@@ -360,6 +458,9 @@ function fairflock_popup_handle_admin_save() {
 		'delay'     => (string) min( 60, max( 0, isset( $in['delay'] ) ? (int) $in['delay'] : 0 ) ),
 		'frequency' => $frequency,
 		'after_end' => $after_end,
+		'surface'   => fairflock_popup_color( isset( $in['surface'] ) ? (string) $in['surface'] : '', $def['surface'] ),
+		'accent'    => fairflock_popup_color( isset( $in['accent'] ) ? (string) $in['accent'] : '', $def['accent'] ),
+		'ink'       => fairflock_popup_color( isset( $in['ink'] ) ? (string) $in['ink'] : '', $def['ink'] ),
 	);
 	update_option( 'fairflock_popup', $settings, false );
 
@@ -389,6 +490,8 @@ function fairflock_popup_render_admin_page() {
 	}
 
 	$s       = fairflock_popup_settings();
+	$design  = fairflock_popup_design_colors();
+	$s       = array_merge( $s, $design );
 	$end     = fairflock_popup_end_timestamp( $s['end'] );
 	$preview = add_query_arg( 'ff_popup_preview', '1', home_url( '/' ) );
 	$updated = isset( $_GET['updated'] ) ? sanitize_key( wp_unslash( (string) $_GET['updated'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -504,6 +607,36 @@ function fairflock_popup_render_admin_page() {
 						<input type="text" class="regular-text" name="<?php echo esc_attr( $name( 'cta_label' ) ); ?>" value="<?php echo esc_attr( $s['cta_label'] ); ?>" placeholder="<?php esc_attr_e( 'Beschriftung', 'fairflock' ); ?>" />
 						<input type="url" class="regular-text" name="<?php echo esc_attr( $name( 'cta_url' ) ); ?>" value="<?php echo esc_attr( $s['cta_url'] ); ?>" placeholder="https://" />
 						<p class="description"><?php esc_html_e( 'Nur sichtbar, wenn Beschriftung und Link gesetzt sind.', 'fairflock' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Design', 'fairflock' ); ?></th>
+					<td>
+						<div id="ffPopupDesignPreview" class="ff-popup-admin-preview" style="position:relative;overflow:hidden;max-width:360px;margin:0 0 16px;padding:28px 24px;border-radius:16px;color:#fff;background:#111418;box-shadow:0 12px 32px rgba(0,0,0,.28);">
+							<span class="ff-popup-admin-preview__ball" style="position:absolute;right:-28px;bottom:-36px;width:120px;height:120px;border-radius:50%;opacity:.35;"></span>
+							<strong style="position:relative;display:block;margin:0 0 8px;font-size:1.05rem;line-height:1.25;"><?php echo esc_html( $s['title'] ); ?></strong>
+							<span style="position:relative;display:block;opacity:.75;font-size:13px;line-height:1.45;"><?php echo esc_html( wp_html_excerpt( $s['text'], 90, '…' ) ); ?></span>
+							<div style="position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:16px;">
+								<?php foreach ( array( '21', '01', '53', '14' ) as $n ) : ?>
+									<span style="padding:10px 4px;border:1px solid rgba(255,255,255,.16);border-radius:10px;text-align:center;font-weight:800;font-size:1.1rem;background:rgba(255,255,255,.08);"><?php echo esc_html( $n ); ?></span>
+								<?php endforeach; ?>
+							</div>
+						</div>
+						<p style="display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-start;margin:0;">
+							<label>
+								<span style="display:block;margin-bottom:6px;"><?php esc_html_e( 'Hintergrund', 'fairflock' ); ?></span>
+								<input type="text" class="ff-popup-color" id="ffPopupSurface" name="<?php echo esc_attr( $name( 'surface' ) ); ?>" value="<?php echo esc_attr( $s['surface'] ); ?>" data-default-color="#111418" />
+							</label>
+							<label>
+								<span style="display:block;margin-bottom:6px;"><?php esc_html_e( 'Akzent (Ball / Glow)', 'fairflock' ); ?></span>
+								<input type="text" class="ff-popup-color" id="ffPopupAccent" name="<?php echo esc_attr( $name( 'accent' ) ); ?>" value="<?php echo esc_attr( $s['accent'] ); ?>" data-default-color="#c8102e" />
+							</label>
+							<label>
+								<span style="display:block;margin-bottom:6px;"><?php esc_html_e( 'Textfarbe', 'fairflock' ); ?></span>
+								<input type="text" class="ff-popup-color" id="ffPopupInk" name="<?php echo esc_attr( $name( 'ink' ) ); ?>" value="<?php echo esc_attr( $s['ink'] ); ?>" data-default-color="#ffffff" />
+							</label>
+						</p>
+						<p class="description"><?php esc_html_e( 'Unabhängig von den Markenfarben. Standard: dunkler Hintergrund mit heller Schrift.', 'fairflock' ); ?></p>
 					</td>
 				</tr>
 				<tr>

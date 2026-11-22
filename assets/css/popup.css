@@ -1,12 +1,13 @@
 /* —— Countdown pop-up (FairFlock → Pop-up) —— */
 .ff-popup {
+	/* Defaults; FairFlock → Pop-up → Design overrides via inline CSS. */
 	--pp-ink: #fff;
 	--pp-ink-2: rgba(255, 255, 255, 0.72);
-	--pp-surface: var(--wp--preset--color--contrast, #0e1114);
+	--pp-surface: #111418;
 	--pp-tile: rgba(255, 255, 255, 0.08);
 	--pp-tile-solid: color-mix(in srgb, #fff 9%, var(--pp-surface));
 	--pp-line: rgba(255, 255, 255, 0.14);
-	--pp-accent: var(--wp--preset--color--brand, #c8102e);
+	--pp-accent: #c8102e;
 	--pp-radius: var(--wp--custom--radius--md, 16px);
 	position: fixed;
 	inset: 0;

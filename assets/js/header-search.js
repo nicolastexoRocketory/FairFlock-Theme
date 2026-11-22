@@ -157,7 +157,28 @@
       shell.style.setProperty("bottom", "auto", "important");
       shell.style.setProperty("translate", "none", "important");
       shell.style.setProperty("max-height", maxH + "px", "important");
+      setCollapseShape();
     }
+
+    /** Collapsed clip-path = a circle sitting on the search icon / close button. */
+    function setCollapseShape() {
+      if (!shell) return;
+      var shellRect = shell.getBoundingClientRect();
+      var bar = shell.querySelector(".ff-search-bar");
+      var closeEl = shell.querySelector(".ff-search-close .wp-block-button__link, .ff-search-close");
+      if (!bar || !closeEl || !shellRect.width) return;
+      var barRect = bar.getBoundingClientRect();
+      var closeRect = closeEl.getBoundingClientRect();
+      var r = Math.max(18, Math.round(barRect.height / 2));
+      var cx = closeRect.left + closeRect.width / 2 - shellRect.left;
+      var cy = barRect.top + barRect.height / 2 - shellRect.top;
+      shell.style.setProperty("--ff-sc-top", Math.round(cy - r) + "px");
+      shell.style.setProperty("--ff-sc-bottom", Math.max(0, Math.round(shellRect.height - cy - r)) + "px");
+      shell.style.setProperty("--ff-sc-left", Math.max(0, Math.round(cx - r)) + "px");
+      shell.style.setProperty("--ff-sc-right", Math.max(0, Math.round(shellRect.width - cx - r)) + "px");
+    }
+
+    var closeCleanupTimer = null;
 
     var hasSearch = !!(layer && mega && hitsWrap && input);
     var hasMegaPanelSlot = !!document.querySelector(".ff-mega-panel-slot");
@@ -736,7 +757,12 @@
       if (!hasSearch) return;
       var focusInput = !opts || opts.focusInput !== false;
       closeMenu();
+      if (closeCleanupTimer) {
+        window.clearTimeout(closeCleanupTimer);
+        closeCleanupTimer = null;
+      }
       positionSearchShell();
+      if (shell) void shell.offsetWidth;
       layer.classList.add("is-open");
       layer.setAttribute("aria-hidden", "false");
       document.body.classList.add("is-ff-search-open");
@@ -755,11 +781,17 @@
 
     function closeSearch() {
       if (!layer) return;
+      var wasOpen = layer.classList.contains("is-open");
+      if (wasOpen && isDesktopSearchDock()) setCollapseShape();
       layer.classList.remove("is-open");
       layer.setAttribute("aria-hidden", "true");
       document.body.classList.remove("is-ff-search-open");
       setSearchExpanded(false);
-      clearSearchPosition();
+      if (closeCleanupTimer) window.clearTimeout(closeCleanupTimer);
+      closeCleanupTimer = window.setTimeout(function () {
+        closeCleanupTimer = null;
+        if (!layer.classList.contains("is-open")) clearSearchPosition();
+      }, wasOpen ? 460 : 0);
     }
 
     window.fairflockCloseMenu = closeMenu;

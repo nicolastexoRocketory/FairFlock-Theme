@@ -14923,3 +14923,215 @@ html.is-ff-mega-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element
 .ff-header .ff-header__icons .ff-cart.is-style-fill .wp-block-button__link.wp-element-button {
 	margin-left: -6px !important;
 }
+
+/*
+ * —— Search overlay v2 ——
+ * Blurred theme-background veil, floating pill search bar,
+ * suggestions card only while typing, expand-from-icon animation.
+ * Collapse geometry (--ff-sc-*) is measured by header-search.js.
+ */
+body .ff-search-layer {
+	--ff-search-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--ff-search-dur: 0.42s;
+	visibility: hidden;
+	transition: visibility 0s linear var(--ff-search-dur);
+}
+
+body .ff-search-layer.is-open {
+	visibility: visible;
+	transition-delay: 0s;
+}
+
+body .ff-search-layer .ff-search-backdrop {
+	background: color-mix(in srgb, var(--wp--preset--color--base, #f3f5f4) 60%, transparent) !important;
+	-webkit-backdrop-filter: blur(14px) saturate(1.05);
+	backdrop-filter: blur(14px) saturate(1.05);
+	opacity: 0;
+	transition: opacity var(--ff-search-dur) var(--ff-search-ease);
+}
+
+body .ff-search-layer.is-open .ff-search-backdrop {
+	opacity: 1;
+}
+
+/* Shell = transparent stage; bar and suggestions are their own surfaces. */
+body .ff-search-layer .ff-search-shell,
+body .ff-search-layer .ff-search-shell.has-background {
+	padding: 16px !important;
+	gap: 0;
+	background: transparent !important;
+	box-shadow: none !important;
+	border-radius: 0 !important;
+	transform: none !important;
+	opacity: 1;
+	overflow: auto;
+	scrollbar-width: none;
+	clip-path: inset(
+		var(--ff-sc-top, 16px) var(--ff-sc-right, 16px) var(--ff-sc-bottom, calc(100% - 68px)) var(--ff-sc-left, calc(100% - 68px))
+		round 999px
+	);
+	transition:
+		clip-path var(--ff-search-dur) var(--ff-search-ease),
+		opacity 0.2s ease;
+}
+
+body .ff-search-layer.is-open .ff-search-shell {
+	clip-path: inset(-48px round 28px);
+}
+
+/* Modern pill search bar */
+body .ff-search-layer .ff-search-bar,
+body .ff-search-layer .ff-search-bar.has-background,
+body .ff-search-layer .ff-search-bar.has-base-background-color {
+	position: relative;
+	gap: 4px;
+	min-height: 56px;
+	padding: 6px 6px 6px 52px !important;
+	border: 1px solid color-mix(in srgb, var(--ff-trust-ink, #0e1114) 12%, transparent) !important;
+	border-radius: 999px !important;
+	background: var(--ff-trust-surface, #fff) !important;
+	box-shadow:
+		0 1px 2px color-mix(in srgb, #0e1114 6%, transparent),
+		0 8px 24px color-mix(in srgb, #0e1114 10%, transparent) !important;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body .ff-search-layer .ff-search-bar::before {
+	content: "";
+	position: absolute;
+	left: 20px;
+	top: 50%;
+	width: 20px;
+	height: 20px;
+	translate: 0 -50%;
+	background-color: currentColor;
+	opacity: 0.55;
+	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='11' cy='11' r='7' stroke='black' stroke-width='1.9'/%3E%3Cpath d='M20 20l-3.5-3.5' stroke='black' stroke-width='1.9' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='11' cy='11' r='7' stroke='black' stroke-width='1.9'/%3E%3Cpath d='M20 20l-3.5-3.5' stroke='black' stroke-width='1.9' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+	pointer-events: none;
+}
+
+body .ff-search-layer .ff-search-bar:focus-within {
+	background: var(--ff-trust-surface, #fff) !important;
+	border-color: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 28%, transparent) !important;
+	box-shadow:
+		0 0 0 4px color-mix(in srgb, var(--ff-trust-ink, #0e1114) 8%, transparent),
+		0 8px 24px color-mix(in srgb, #0e1114 10%, transparent) !important;
+}
+
+body .ff-search-layer .ff-search-bar .wp-block-search__input {
+	min-height: 44px;
+	font-size: 1.0625rem;
+	font-weight: 500;
+	letter-spacing: -0.005em;
+	color: var(--ff-trust-ink, #0e1114);
+}
+
+body .ff-search-layer .ff-search-bar .wp-block-search__input::-webkit-search-cancel-button {
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 !important;
+	width: 44px;
+	height: 44px;
+	min-height: 44px;
+	border-radius: 50% !important;
+	color: var(--ff-trust-ink, #0e1114) !important;
+	opacity: 0.6;
+	transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link:hover,
+body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link:focus-visible {
+	background: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 7%, transparent) !important;
+	color: var(--ff-trust-ink, #0e1114) !important;
+	opacity: 1;
+}
+
+/* Bar contents fade in once the pill has opened out */
+body .ff-search-layer .ff-search-bar > *,
+body .ff-search-layer .ff-search-bar::before {
+	transition: opacity 0.18s ease;
+}
+
+body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-field,
+body .ff-search-layer:not(.is-open) .ff-search-bar::before {
+	opacity: 0;
+}
+
+body .ff-search-layer.is-open .ff-search-bar .ff-search-field {
+	transition-delay: 0.12s;
+}
+
+/* Suggestions: hidden until the visitor types, then a separate card */
+body .ff-search-layer .ff-search-mega,
+body .ff-search-layer .ff-search-mega.has-background {
+	margin-top: 10px !important;
+	padding: 0 20px !important;
+	max-height: 0;
+	opacity: 0;
+	visibility: hidden;
+	overflow: hidden;
+	transform: translateY(-6px);
+	border-radius: 24px !important;
+	background: var(--ff-trust-surface, #fff) !important;
+	box-shadow:
+		0 1px 2px color-mix(in srgb, #0e1114 6%, transparent),
+		0 12px 32px color-mix(in srgb, #0e1114 12%, transparent) !important;
+	transition:
+		max-height var(--ff-search-dur) var(--ff-search-ease),
+		padding var(--ff-search-dur) var(--ff-search-ease),
+		opacity 0.25s ease,
+		transform var(--ff-search-dur) var(--ff-search-ease),
+		visibility 0s linear var(--ff-search-dur);
+}
+
+body .ff-search-layer .ff-search-mega.is-querying {
+	padding: 18px 20px 12px !important;
+	max-height: min(72vh, 900px);
+	opacity: 1;
+	visibility: visible;
+	overflow: auto;
+	transform: none;
+	transition-delay: 0s;
+}
+
+@media (max-width: 960px) {
+	body .ff-search-layer .ff-search-shell,
+	body .ff-search-layer .ff-search-shell.has-background {
+		padding: 1em !important;
+		background: transparent !important;
+		clip-path: none;
+		opacity: 0;
+		transform: translateY(-12px) !important;
+		transition:
+			opacity 0.3s var(--ff-search-ease),
+			transform var(--ff-search-dur) var(--ff-search-ease);
+	}
+
+	body .ff-search-layer.is-open .ff-search-shell {
+		clip-path: none;
+		opacity: 1;
+		transform: none !important;
+	}
+
+	body .ff-search-layer .ff-search-mega.is-querying {
+		max-height: none;
+		overflow: visible;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	body .ff-search-layer,
+	body .ff-search-layer .ff-search-backdrop,
+	body .ff-search-layer .ff-search-shell,
+	body .ff-search-layer .ff-search-mega {
+		transition-duration: 0.01s !important;
+		transition-delay: 0s !important;
+	}
+}

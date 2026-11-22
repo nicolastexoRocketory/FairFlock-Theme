@@ -50,6 +50,15 @@ function fairflock_demo_content_packages() {
 				'label' => __( 'Bestehende Startseite überschreiben', 'fairflock' ),
 			),
 		),
+		'impressum'     => array(
+			'label'       => __( 'Impressum generieren', 'fairflock' ),
+			'description' => __( 'Erzeugt nur die Seite /impressum/ mit den FairFlock-GmbH-Daten: Betreiber, Adresse, Kontakt, USt-IdNr., Handelsregister, Geschäftsführer, Urheberrecht, Haftung, News, Online-Streitbeilegung und Karriere.', 'fairflock' ),
+			'risk'        => __( 'Ohne Haken wird das Impressum nur angelegt, wenn es noch fehlt.', 'fairflock' ),
+			'overwrite'   => array(
+				'name'  => 'fairflock_demo_overwrite_impressum',
+				'label' => __( 'Bestehendes Impressum ersetzen', 'fairflock' ),
+			),
+		),
 		'legal_pages'   => array(
 			'label'       => __( 'Rechtliche Seiten (FairFlock-Daten)', 'fairflock' ),
 			'description' => __( 'Impressum, Datenschutz, AGB, Widerrufsrecht, Versand & Zahlung mit den FairFlock-Angaben (wie Amateurhandball.de).', 'fairflock' ),
@@ -119,6 +128,7 @@ function fairflock_demo_content_handle_submit() {
 
 	$overwrite          = ! empty( $_POST['fairflock_demo_overwrite_front'] );
 	$overwrite_legal    = ! empty( $_POST['fairflock_demo_overwrite_legal'] );
+	$overwrite_imprint  = ! empty( $_POST['fairflock_demo_overwrite_impressum'] );
 	$overwrite_about    = ! empty( $_POST['fairflock_demo_overwrite_about'] );
 	$overwrite_category = ! empty( $_POST['fairflock_demo_overwrite_category'] );
 	$results            = array();
@@ -126,6 +136,8 @@ function fairflock_demo_content_handle_submit() {
 	foreach ( $selected as $key ) {
 		if ( 'legal_pages' === $key ) {
 			$results[ $key ] = fairflock_demo_content_install_package( $key, $overwrite_legal );
+		} elseif ( 'impressum' === $key ) {
+			$results[ $key ] = fairflock_demo_content_install_package( $key, $overwrite_imprint );
 		} elseif ( 'about_page' === $key ) {
 			$results[ $key ] = fairflock_demo_content_install_package( $key, $overwrite_about );
 		} elseif ( 'category_page' === $key ) {
@@ -177,6 +189,19 @@ function fairflock_demo_content_install_package( $package, $overwrite = false ) 
 					(int) $stats['created'],
 					(int) $stats['updated']
 				),
+			);
+		case 'impressum':
+			$stats = fairflock_ensure_legal_pages( (bool) $overwrite, array( 'impressum' ) );
+			$page  = get_page_by_path( 'impressum' );
+			$view  = $page instanceof WP_Post ? get_permalink( $page ) : '';
+			if ( 0 === (int) $stats['created'] && 0 === (int) $stats['updated'] ) {
+				$message = __( 'Impressum existiert bereits — „Bestehendes Impressum ersetzen“ anhaken, um es neu zu generieren.', 'fairflock' );
+			} else {
+				$message = (int) $stats['created'] > 0 ? __( 'Impressum angelegt.', 'fairflock' ) : __( 'Impressum neu generiert.', 'fairflock' );
+			}
+			return array(
+				'ok'      => true,
+				'message' => $message . ( $view ? ' <a href="' . esc_url( $view ) . '">' . esc_html__( 'Ansehen', 'fairflock' ) . '</a>' : '' ),
 			);
 		case 'category_page':
 			return fairflock_demo_content_install_category_page( (bool) $overwrite );

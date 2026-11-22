@@ -2706,11 +2706,7 @@ body.ff-shape-rounded .ff-header__actions {
 	border-radius: 50% !important;
 	border-style: solid !important;
 	border-width: 1px !important;
-	border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent) !important;
-	background: #eceff1 !important;
-	background-color: #eceff1 !important;
 	box-shadow: none !important;
-	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
 	font-size: 0 !important;
 	line-height: 0 !important;
 	text-decoration: none !important;
@@ -2750,9 +2746,6 @@ body.ff-shape-rounded .ff-header__actions {
 	opacity: 0.88;
 	transform: none;
 	text-decoration: none !important;
-	background: #e4e7ea !important;
-	background-color: #e4e7ea !important;
-	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
 }
 
 /* Legacy Woo-Account-Block (falls noch in gespeichertem Header) */
@@ -2767,7 +2760,7 @@ body.ff-shape-rounded .ff-header__actions {
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent) !important;
 	background: #eceff1 !important;
 	overflow: hidden !important;
-	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
+	color: #1d2125 !important;
 }
 
 /* Icons via CSS so buttons stay stylable in the Site Editor */
@@ -3205,7 +3198,7 @@ html.is-ff-mega-open .ff-header {
 	padding: 6px 6px 6px 16px !important;
 	box-sizing: border-box;
 	border-radius: var(--wp--custom--radius--md, 16px) !important;
-	border: 0 !important;
+	border: 1px solid color-mix(in srgb, var(--ff-trust-ink, #0e1114) 16%, transparent) !important;
 	background: color-mix(
 		in srgb,
 		var(--ff-trust-ink, #0e1114) 6%,
@@ -3262,7 +3255,7 @@ html.is-ff-mega-open .ff-header {
 
 .ff-search-bar:focus-within {
 	outline: none;
-	border: 0 !important;
+	border-color: color-mix(in srgb, var(--ff-trust-ink, #0e1114) 32%, transparent) !important;
 	box-shadow: none !important;
 	background: var(--ff-trust-surface, #fff) !important;
 }
@@ -10084,11 +10077,7 @@ body.is-ff-ptable-open {
 		border-radius: 50% !important;
 		border-style: solid !important;
 		border-width: 1px !important;
-		border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent) !important;
-		background: #eceff1 !important;
-		background-color: #eceff1 !important;
 		box-shadow: none !important;
-		color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
 		width: 36px !important;
 		min-width: 36px !important;
 		max-width: 36px !important;
@@ -10113,17 +10102,13 @@ body.is-ff-ptable-open {
 		transform: none;
 		filter: none;
 		opacity: 0.75;
-		color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
 	}
 
 	.ff-header__icons .ff-account .wp-block-button__link:hover,
 	.ff-header__actions .ff-account .wp-block-button__link:hover {
-		background: #e4e7ea !important;
-		background-color: #e4e7ea !important;
 		transform: none;
 		filter: none;
 		opacity: 0.9;
-		color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
 	}
 
 	.ff-cart__count {
@@ -14806,8 +14791,6 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 	background-color: transparent !important;
 	background-image: none !important;
 	box-shadow: none !important;
-	/* Pro-Icon → Gruppe → Leistenfarbe (dunkler Header: helle Glyphs) */
-	color: var(--ff-i-fg, var(--ff-icon-fg, currentColor)) !important;
 	font-size: 0 !important;
 	line-height: 0 !important;
 	letter-spacing: 0 !important;
@@ -14828,9 +14811,6 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 	min-height: 36px !important;
 	border-radius: 50% !important;
 	border-width: 1px !important;
-	border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 16%, transparent) !important;
-	background: #eceff1 !important;
-	background-color: #eceff1 !important;
 	overflow: hidden !important;
 }
 
@@ -14891,19 +14871,42 @@ html.is-ff-mega-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element
 .ff-header .ff-nav-burger.wp-block-button .wp-block-button__link.wp-element-button:hover {
 	background: transparent !important;
 	background-color: transparent !important;
-	color: var(--ff-i-fg, var(--ff-icon-fg, currentColor)) !important;
 	opacity: 0.75;
 	transform: none !important;
 	filter: none !important;
 }
 
 .ff-header .ff-account.wp-block-button .wp-block-button__link.wp-element-button:hover {
-	background: #e4e7ea !important;
-	background-color: #e4e7ea !important;
-	color: var(--ff-icon-fg, var(--wp--preset--color--contrast, #0e1114)) !important;
 	opacity: 0.9;
 	transform: none !important;
 	filter: none !important;
+}
+
+/*
+ * Icon colours: only when the icon has no own editor colour.
+ * Editor colours (preset class or inline style on the link) must win.
+ */
+.ff-header :is(.ff-search-toggle, .ff-cart, .ff-nav-burger).wp-block-button .wp-block-button__link.wp-element-button:not(.has-text-color) {
+	color: var(--ff-i-fg, var(--ff-icon-fg, currentColor)) !important;
+}
+
+/* Profile circle default: light disc with dark glyph — readable on light and dark bars. */
+.ff-header .ff-account.wp-block-button .wp-block-button__link.wp-element-button:not(.has-text-color) {
+	color: #1d2125 !important;
+}
+
+.ff-header .ff-account.wp-block-button .wp-block-button__link.wp-element-button:not(.has-background) {
+	background: #eceff1 !important;
+	background-color: #eceff1 !important;
+}
+
+.ff-header .ff-account.wp-block-button .wp-block-button__link.wp-element-button:not(.has-border-color) {
+	border-color: color-mix(in srgb, #0e1114 16%, transparent) !important;
+}
+
+.ff-header .ff-account.wp-block-button .wp-block-button__link.wp-element-button:not(.has-background):hover {
+	background: #e4e7ea !important;
+	background-color: #e4e7ea !important;
 }
 
 /* Lupe + Warenkorb enger (schlägt Icon-Face-Lock 40px) */

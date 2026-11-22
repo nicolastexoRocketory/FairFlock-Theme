@@ -7,8 +7,8 @@
  * Shell width only on the outer wrappers — never nest --ff-shell inside --ff-shell.
  */
 
-body.woocommerce-account .ff-account-page,
-.ff-account-page {
+/* Only the <main>: body also carries .ff-account-page and must not get clearance/gradient. */
+main.ff-account-page {
 	/* Trust-Tokens von :root (Theme Base/Contrast) */
 	--ff-account-line: color-mix(in srgb, var(--ff-trust-ink) 12%, transparent);
 	--ff-account-panel: var(--ff-trust-surface);
@@ -27,7 +27,7 @@ body.woocommerce-account .ff-account-page,
 	box-sizing: border-box;
 }
 
-.ff-account-page::before {
+main.ff-account-page::before {
 	content: "";
 	position: absolute;
 	inset: 0 0 auto;

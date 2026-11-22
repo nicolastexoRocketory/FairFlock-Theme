@@ -5,8 +5,7 @@
  * we pin the reading measure with !important, same approach as cart/account.
  */
 
-body.ff-legal-page .ff-legal-page,
-.ff-legal-page,
+/* Only the <main>: body also carries .ff-legal-page and must not get clearance/gradient. */
 main.ff-legal-page {
 	--ff-legal-measure: min(42rem, var(--ff-shell));
 	--ff-legal-line: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 10%, transparent);
@@ -31,8 +30,7 @@ body.ff-legal-page:not(.home):not(.front-page) .wp-site-blocks > main.ff-legal-p
 	padding-top: var(--ff-legal-clearance) !important;
 }
 
-body.ff-legal-page .ff-legal-page::before,
-.ff-legal-page::before {
+main.ff-legal-page::before {
 	content: "";
 	position: absolute;
 	inset: 0 0 auto;

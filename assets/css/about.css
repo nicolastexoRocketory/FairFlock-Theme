@@ -2,8 +2,7 @@
  * FairFlock About page — full-bleed hero + section stack.
  */
 
-body.ff-about-page .ff-about-page,
-.ff-about-page {
+main.ff-about-page {
 	width: 100% !important;
 	max-width: none !important;
 	margin: 0 !important;

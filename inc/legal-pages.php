@@ -15,20 +15,35 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 0.9.158
  *
- * @return array{name:string,owner:string,street:string,zip:string,city:string,country:string,phone:string,email:string,vat:string}
+ * @since 0.9.505 GmbH, register court, managing director, news + jobs URLs.
+ *
+ * @return array{name:string,owner:string,street:string,zip:string,city:string,country:string,phone:string,email:string,vat:string,register:string,manager:string,news_url:string,jobs_url:string}
  */
 function fairflock_legal_company() {
-	return array(
-		'name'    => 'FairFlock',
-		'owner'   => 'Julian Brandt',
-		'street'  => 'Dünner Str. 12-14',
-		'zip'     => '32257',
-		'city'    => 'Bünde',
-		'country' => 'Deutschland',
-		'phone'   => '05223 – 18 31 964',
-		'email'   => 'info@fairflock.de',
-		'vat'     => 'DE289771815',
+	$company = array(
+		'name'     => 'FairFlock GmbH',
+		'owner'    => 'Julian Brandt',
+		'street'   => 'Dünner Str. 12-14',
+		'zip'      => '32257',
+		'city'     => 'Bünde',
+		'country'  => 'Deutschland',
+		'phone'    => '05223 – 18 31 964',
+		'email'    => 'info@fairflock.de',
+		'vat'      => 'DE450608760',
+		'register' => 'Amtsgericht Bad Oeynhausen | HRB20025',
+		'manager'  => 'Julian Brandt',
+		'news_url' => 'https://www.fairflock.de/news/',
+		'jobs_url' => 'https://www.fairflock.de/jobs',
 	);
+
+	/**
+	 * Filters the operator identity used for generated legal pages.
+	 *
+	 * @since 0.9.505
+	 *
+	 * @param array<string,string> $company Company data.
+	 */
+	return (array) apply_filters( 'fairflock_legal_company', $company );
 }
 
 /**
@@ -41,7 +56,6 @@ function fairflock_legal_company() {
 function fairflock_legal_address_html() {
 	$c = fairflock_legal_company();
 	return esc_html( $c['name'] ) . '<br>'
-		. esc_html( $c['owner'] ) . '<br>'
 		. esc_html( $c['street'] ) . '<br>'
 		. esc_html( $c['zip'] . ' ' . $c['city'] ) . '<br>'
 		. esc_html( $c['country'] );
@@ -156,28 +170,52 @@ function fairflock_get_legal_page_blueprints() {
  * @return string
  */
 function fairflock_legal_content_impressum( $intro, $addr, $c ) {
+	unset( $intro, $addr );
+	$link = static function ( $url, $label = '' ) {
+		$label = '' !== $label ? $label : $url;
+		return '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $label ) . '</a>';
+	};
+
 	$parts   = array();
-	$parts[] = fairflock_legal_block_p( $intro );
-	$parts[] = fairflock_legal_block_p( esc_html__( 'Betreiber der Seite und inhaltlich verantwortlich:', 'fairflock' ) );
-	$parts[] = fairflock_legal_block_h( $c['name'], 2 );
+	$parts[] = fairflock_legal_block_h( __( 'Betreiber der Seite und inhaltlich Verantwortlich', 'fairflock' ), 2 );
+	$parts[] = fairflock_legal_block_p( '<strong>' . esc_html( $c['name'] ) . '</strong>' );
 	$parts[] = fairflock_legal_block_p(
-		esc_html__( 'Inhaber:', 'fairflock' ) . ' ' . esc_html( $c['owner'] ) . '<br>'
-		. $addr . '<br><br>'
-		. esc_html__( 'Telefonnummer:', 'fairflock' ) . ' ' . esc_html( $c['phone'] ) . '<br>'
-		. esc_html__( 'E-Mail-Adresse:', 'fairflock' ) . ' ' . esc_html( $c['email'] ) . '<br>'
+		esc_html( $c['street'] ) . '<br>'
+		. esc_html( $c['zip'] . ' ' . $c['city'] ) . '<br>'
+		. esc_html( $c['country'] )
+	);
+	$parts[] = fairflock_legal_block_p(
+		esc_html__( 'Telefonnummer:', 'fairflock' ) . ' ' . esc_html( $c['phone'] ) . '<br>'
+		. esc_html__( 'E-Mail-Adresse:', 'fairflock' ) . ' <a href="mailto:' . esc_attr( $c['email'] ) . '">' . esc_html( $c['email'] ) . '</a><br>'
 		. esc_html__( 'USt-IDNr:', 'fairflock' ) . ' ' . esc_html( $c['vat'] )
 	);
+	if ( ! empty( $c['register'] ) ) {
+		$parts[] = fairflock_legal_block_p( esc_html( $c['register'] ) );
+	}
+	if ( ! empty( $c['manager'] ) ) {
+		$parts[] = fairflock_legal_block_p( esc_html__( 'Geschäftsführer:', 'fairflock' ) . ' ' . esc_html( $c['manager'] ) );
+	}
 	$parts[] = fairflock_legal_block_h( __( 'Urheberrecht', 'fairflock' ), 2 );
 	$parts[] = fairflock_legal_block_p( esc_html__( 'Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.', 'fairflock' ) );
 	$parts[] = fairflock_legal_block_h( __( 'Haftung für Inhalte', 'fairflock' ), 2 );
-	$parts[] = fairflock_legal_block_p( esc_html__( 'Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.', 'fairflock' ) );
-	$parts[] = fairflock_legal_block_p(
-		esc_html__( 'Alle Neuigkeiten findet ihr unter', 'fairflock' ) . ' <a href="https://www.fairflock.de/news/">https://www.fairflock.de/news/</a>'
-	);
+	$parts[] = fairflock_legal_block_p( esc_html__( 'Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.', 'fairflock' ) );
+	if ( ! empty( $c['news_url'] ) ) {
+		$parts[] = fairflock_legal_block_h( __( 'News', 'fairflock' ), 2 );
+		$parts[] = fairflock_legal_block_p( esc_html__( 'Alle Neuigkeiten findet ihr unter', 'fairflock' ) . ' ' . $link( $c['news_url'] ) );
+	}
 	$parts[] = fairflock_legal_block_h( __( 'Hinweis zur Online-Streitbeilegung', 'fairflock' ), 2 );
 	$parts[] = fairflock_legal_block_p(
-		esc_html__( 'Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:', 'fairflock' ) . ' <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr/</a>'
+		esc_html__( 'Die EU-Kommission bietet die Möglichkeit zur Online-Streitbeilegung auf einer von ihr betriebenen Online-Plattform. Diese Plattform ist über den externen Link', 'fairflock' ) . ' '
+		. $link( 'http://ec.europa.eu/consumers/odr/' ) . ' '
+		. esc_html__( 'zu erreichen.', 'fairflock' )
 	);
+	if ( ! empty( $c['jobs_url'] ) ) {
+		$parts[] = fairflock_legal_block_h( __( 'Karriere / Jobs', 'fairflock' ), 2 );
+		$parts[] = fairflock_legal_block_p(
+			esc_html__( 'Lust auf einen Job bei FairFlock in Bünde? Aktuelle Stellenausschreibungen findest Du unter:', 'fairflock' ) . ' '
+			. $link( $c['jobs_url'], preg_replace( '#^https?://#', '', $c['jobs_url'] ) )
+		);
+	}
 	return implode( "\n\n", $parts );
 }
 
@@ -360,11 +398,17 @@ function fairflock_legal_content_versand( $intro, $c ) {
  *
  * @since 0.9.158
  *
- * @param bool $overwrite Update existing published pages.
+ * @since 0.9.505 Optional slug list (e.g. only „impressum“).
+ *
+ * @param bool               $overwrite Update existing published pages.
+ * @param array<int, string> $only      Limit to these slugs (empty = all).
  * @return array{created:int,updated:int}
  */
-function fairflock_ensure_legal_pages( $overwrite = false ) {
-	$pages   = fairflock_get_legal_page_blueprints();
+function fairflock_ensure_legal_pages( $overwrite = false, array $only = array() ) {
+	$pages = fairflock_get_legal_page_blueprints();
+	if ( $only ) {
+		$pages = array_intersect_key( $pages, array_flip( $only ) );
+	}
 	$created = 0;
 	$updated = 0;
 

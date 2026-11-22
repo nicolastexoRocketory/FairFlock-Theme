@@ -98,7 +98,8 @@
     }
 
     /**
-     * Desktop: shell unter der Lupe, rechtsbündig zum Icon (wie Account-Popup).
+     * Desktop: shell covers the search icon — search bar centred on the icon,
+     * close button sitting where the icon was, panel opening right-aligned.
      */
     function positionSearchShell() {
       if (!shell || !toggle) {
@@ -112,13 +113,24 @@
       var rect = toggle.getBoundingClientRect();
       var vw = window.innerWidth || document.documentElement.clientWidth || 0;
       var vh = window.innerHeight || document.documentElement.clientHeight || 0;
-      var top = Math.round(rect.bottom + SEARCH_DOCK_GAP);
-      var right = Math.max(8, Math.round(vw - rect.right));
-      var shellW = shell.offsetWidth || Math.min(440, vw - 16);
-      var maxRight = Math.max(8, vw - shellW - 8);
-      if (right > maxRight) {
-        right = maxRight;
-      }
+      var shellW = Math.min(440, vw - 16);
+      shell.style.setProperty("width", shellW + "px", "important");
+
+      var shellRect = shell.getBoundingClientRect();
+      var bar = shell.querySelector(".ff-search-bar");
+      var closeEl = shell.querySelector(".ff-search-close .wp-block-button__link, .ff-search-close");
+      var barRect = bar ? bar.getBoundingClientRect() : null;
+      var closeRect = closeEl ? closeEl.getBoundingClientRect() : null;
+
+      var iconCx = rect.left + rect.width / 2;
+      var iconCy = rect.top + rect.height / 2;
+      var barCy = barRect ? barRect.top - shellRect.top + barRect.height / 2 : 38;
+      var closeToRight = closeRect ? shellRect.right - (closeRect.left + closeRect.width / 2) : 38;
+
+      var top = Math.max(SEARCH_DOCK_GAP, Math.round(iconCy - barCy));
+      var right = Math.round(vw - (iconCx + closeToRight));
+      var maxRight = Math.max(SEARCH_DOCK_GAP, vw - shellW - SEARCH_DOCK_GAP);
+      right = Math.min(Math.max(SEARCH_DOCK_GAP, right), maxRight);
       var maxH = Math.max(180, vh - top - 12);
 
       shell.style.setProperty("top", top + "px", "important");
@@ -127,7 +139,6 @@
       shell.style.setProperty("bottom", "auto", "important");
       shell.style.setProperty("translate", "none", "important");
       shell.style.setProperty("max-height", maxH + "px", "important");
-      shell.style.setProperty("width", Math.min(440, vw - 16) + "px", "important");
     }
 
     var hasSearch = !!(layer && mega && hitsWrap && input);

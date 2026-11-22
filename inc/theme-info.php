@@ -20,6 +20,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.505',
+			'items'   => array(
+				__( 'Impressum generierbar: neues Paket „Impressum generieren“ unter FairFlock → Demo Content (FairFlock GmbH, USt-IdNr., Handelsregister, Geschäftsführer, News, Streitbeilegung, Karriere).', 'fairflock' ),
+				__( 'Suche (Desktop): Panel öffnet rechtsbündig direkt in der Navigation und überdeckt das Such-Icon.', 'fairflock' ),
+				__( 'Suche: dezente Border um das Eingabefeld, beim Fokus etwas kräftiger.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.504',
+			'items'   => array(
+				__( 'Header: Profil-Icon übernimmt im Editor gesetzte Text-, Hintergrund- und Rahmenfarben auch im Frontend.', 'fairflock' ),
+				__( 'Header: Profil-Icon ohne eigene Farbe ist dunkel auf hellem Kreis — auch bei dunkler Navbar sichtbar.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.503',
+			'items'   => array(
+				__( 'Rechtsseiten und Konto: doppelter Abstand unter der Navbar entfernt (Body erbte Header-Abstand und Verlauf).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.502',
 			'items'   => array(
 				__( 'Leerer Warenkorb neu: Hinweis mit „Weiter einkaufen“ und volle Produktreihe „Neu im Shop“ statt gequetschter Karte.', 'fairflock' ),

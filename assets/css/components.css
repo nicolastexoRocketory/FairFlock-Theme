@@ -2905,6 +2905,65 @@ html.is-ff-mega-open .ff-header {
 }
 
 /*
+ * Desktop: Nav würde in 2 Zeilen umbrechen → Burger (body.ff-nav-compact
+ * setzt nav-compact.js). Gleiches Verhalten wie ≤960px.
+ */
+@media (min-width: 961px) {
+	/* Nie sichtbar umbrechen — Overflow → Compact-Messung */
+	.ff-header__nav .wp-block-navigation__container,
+	.ff-header__nav .wp-block-navigation__responsive-container-content {
+		flex-wrap: nowrap !important;
+	}
+
+	body:not(.ff-nav-compact) .ff-header__nav {
+		overflow: hidden;
+	}
+
+	body.ff-nav-compact .ff-header__nav:not(:has(.wp-block-navigation__responsive-container-open)) {
+		display: none !important;
+	}
+
+	body.ff-nav-compact .ff-nav-burger,
+	body.ff-nav-compact .ff-header__brand .ff-nav-burger {
+		display: flex !important;
+	}
+
+	/* Mega als Vollflächen-Menü wenn Compact-Burger aktiv */
+	body.ff-nav-compact:not(.block-editor-iframe__body) .ff-mega-panel-slot {
+		display: block;
+		overflow-x: hidden;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior: contain;
+		bottom: 0;
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+	}
+
+	body.ff-nav-compact:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
+		min-height: 100%;
+		box-shadow: none;
+		box-sizing: border-box;
+	}
+
+	body.ff-nav-compact:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel__cols.wp-block-columns,
+	body.ff-nav-compact:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel .ff-mega-panel__cols {
+		flex-direction: column !important;
+		flex-wrap: nowrap !important;
+		gap: var(--wp--style--block-gap, 1.5em);
+	}
+
+	body.ff-nav-compact:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel__cols > .wp-block-column {
+		flex-basis: 100% !important;
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+
+	html.is-ff-mega-open body.ff-nav-compact {
+		overflow: hidden;
+	}
+}
+
+/*
  * Cart: keep a real box (not display:contents) so icon + badge CSS always match.
  */
 .ff-header__icons .ff-cart,
@@ -3027,36 +3086,34 @@ html.is-ff-mega-open .ff-header {
 .ff-search-backdrop {
 	position: absolute;
 	inset: 0;
-	/* Glass overlay tint — token from Darstellung (light/dark). */
+	/* Glass overlay tint — opacity fade owned by search-layer v2 rules below. */
 	background: var(--ff-glass-overlay);
-	opacity: 1;
-	transition: background-color 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-		-webkit-backdrop-filter 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-		backdrop-filter 0.42s cubic-bezier(0.22, 1, 0.36, 1);
-	-webkit-backdrop-filter: blur(0);
-	backdrop-filter: blur(0);
-}
-
-.ff-search-layer:not(.is-open) .ff-search-backdrop {
-	background: transparent;
-}
-
-.ff-search-layer.is-open .ff-search-backdrop {
-	background: var(--ff-glass-overlay);
+	opacity: 0;
+	transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 	-webkit-backdrop-filter: blur(14px) saturate(1.05);
 	backdrop-filter: blur(14px) saturate(1.05);
 }
 
-/* Reliable page blur: layer is portaled to <body>, so this stays sharp. */
-body.is-ff-search-open > .wp-site-blocks {
-	filter: blur(12px);
-	transform: translateZ(0);
-	transition: filter 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+.ff-search-layer.is-open .ff-search-backdrop {
+	opacity: 1;
 }
 
+.ff-search-layer.is-closing .ff-search-backdrop {
+	opacity: 0;
+}
+
+/* Page blur only below the header — navbar stays sharp (see v2 rules). */
 @media (prefers-reduced-motion: reduce) {
-	body.is-ff-search-open > .wp-site-blocks {
+	body.is-ff-search-open > .wp-site-blocks > :not(header),
+	body.is-ff-search-closing > .wp-site-blocks > :not(header) {
 		filter: none;
+		transition: none;
+	}
+
+	body .ff-search-layer .ff-search-backdrop,
+	body .ff-search-layer.is-open .ff-search-backdrop,
+	body .ff-search-layer.is-closing .ff-search-backdrop {
+		transition: none !important;
 	}
 }
 
@@ -3545,71 +3602,114 @@ ul.ff-search-menu-nav {
 	margin-block-start: 0 !important;
 }
 
+/* Search hits = same product-card language as shop / slideshows */
 .ff-search-hit {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: 0;
 	align-items: stretch;
 	align-self: stretch;
 	height: 100%;
 	min-width: 0;
 	width: 100%;
 	padding: 0;
-	border: 0 !important;
-	border-radius: 0 !important;
-	background: transparent;
-	color: var(--ff-trust-ink);
+	margin: 0;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 12%, transparent) !important;
+	border-radius: var(--wp--custom--radius--md, 16px) !important;
+	background: var(--ff-surface, #fff) !important;
+	color: var(--ff-ink, var(--wp--preset--color--contrast, #0e1114)) !important;
 	text-decoration: none;
 	justify-self: stretch;
 	box-sizing: border-box;
-	transition: opacity 0.25s var(--ff-ease);
+	overflow: hidden;
+	isolation: isolate;
+	transition: border-color 0.3s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-.ff-search-hit:hover {
-	background: transparent;
-	border: 0 !important;
-	opacity: 0.82;
+.ff-search-hit:hover,
+.ff-search-hit:focus-visible {
+	background: var(--ff-surface, #fff) !important;
+	border-color: color-mix(in srgb, var(--wp--preset--color--brand, #377530) 25%, transparent) !important;
+	opacity: 1;
 	transform: none;
+	outline: none;
 }
 
-.ff-search-hit-thumb {
+.ff-search-hit .ff-prod-card__media {
+	position: relative;
 	display: block;
 	width: 100%;
 	aspect-ratio: var(--ff-product-aspect, 1 / 1);
 	flex: 0 0 auto;
-	height: auto;
-	border-radius: var(--wp--custom--radius--sm, 8px);
-	background: color-mix(in srgb, var(--wp--preset--color--contrast, #0e1114) 8%, var(--wp--preset--color--base, #f3f5f4)) top center / cover no-repeat;
+	overflow: hidden;
+	margin: 0;
+	background: #e8eceb;
+	border-radius: var(--wp--custom--radius--md, 16px) var(--wp--custom--radius--md, 16px) 0 0;
 }
 
-.ff-search-hit-meta,
-.ff-search-hit > span:not(.ff-search-hit-thumb) {
+.ff-search-hit .ff-prod-card__media img {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100% !important;
+	height: 100% !important;
+	max-width: none !important;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: inherit;
+	object-fit: cover;
+	object-position: top center;
+	background: #e8eceb;
+}
+
+.ff-search-hit .ff-prod-card__body {
 	display: grid;
-	gap: 4px;
-	min-width: 0;
+	gap: 6px;
+	padding: 12px 12px 10px !important;
+	text-align: left !important;
+	justify-items: stretch;
 	flex: 1 1 auto;
-	padding: 0 2px 2px;
+	min-width: 0;
 	align-content: start;
+	color: inherit !important;
 }
 
-.ff-search-hit strong {
+.ff-search-hit .ff-prod-card__title {
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: 2;
 	overflow: hidden;
 	margin: 0;
-	font-size: 0.875rem;
-	font-weight: 700;
+	font-family: var(--wp--preset--font-family--heading, inherit);
+	font-size: 0.95rem;
+	font-weight: 400;
+	letter-spacing: -0.02em;
 	line-height: 1.3;
-	/* kein min-height für 2 Zeilen — sonst klafft Abstand zum Preis bei 1-Zeilen-Titeln */
+	color: inherit !important;
+	text-align: left !important;
 }
 
-.ff-search-hit-price,
-.ff-search-hit span span {
+.ff-search-hit .ff-prod-card__price {
 	margin: 0;
-	font-size: 0.8125rem;
+	font-size: 0.9375rem;
+	font-weight: 700;
 	line-height: 1.25;
-	color: var(--wp--preset--color--muted, #66707a);
+	color: inherit !important;
+	text-align: left !important;
+}
+
+.ff-search-hit .ff-prod-card__tax {
+	margin: 0 !important;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3;
+	color: var(--wp--preset--color--muted, #66707a) !important;
+	text-align: left !important;
+}
+
+.ff-search-hit .ff-prod-card__delivery {
+	color: inherit !important;
 }
 
 .ff-search-empty {
@@ -15006,13 +15106,14 @@ html.is-ff-mega-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element
 	}
 
 	/*
-	 * While search is open/closing: hide the lupe so the panel X owns that spot.
-	 * After close: spin+scale back in from 0.
+	 * While search is open/closing: hide the lupe (keep layout box — no scale(0),
+	 * so morph geometry can still read the icon rect). Pill grows from that spot.
+	 * After close: spin+scale back in.
 	 */
 	body.is-ff-search-open .ff-header .ff-search-toggle .wp-block-button__link,
 	body.is-ff-search-closing .ff-header .ff-search-toggle .wp-block-button__link {
 		opacity: 0 !important;
-		transform: scale(0) !important;
+		transform: none !important;
 		pointer-events: none !important;
 		box-shadow: none !important;
 	}
@@ -15099,30 +15200,55 @@ body .ff-search-layer.is-closing {
 	pointer-events: none;
 }
 
+/*
+ * Overlay: opacity fade (100→0) starts immediately on close.
+ * Keep glass tint + blur while closing so the fade is visible (not a snap).
+ */
 body .ff-search-layer .ff-search-backdrop {
-	background: transparent !important;
-	-webkit-backdrop-filter: blur(0) !important;
-	backdrop-filter: blur(0) !important;
-	opacity: 1 !important;
-	transition:
-		background-color var(--ff-search-dur) var(--ff-search-ease),
-		-webkit-backdrop-filter var(--ff-search-dur) var(--ff-search-ease),
-		backdrop-filter var(--ff-search-dur) var(--ff-search-ease) !important;
+	/* Always under the navbar — Logo/Nav stay uncovered */
+	top: calc(var(--ff-header-top, 0px) + var(--ff-header-height, 56px)) !important;
+	background: var(--ff-glass-overlay) !important;
+	-webkit-backdrop-filter: blur(14px) saturate(1.05) !important;
+	backdrop-filter: blur(14px) saturate(1.05) !important;
+	opacity: 0 !important;
+	transition: opacity 0.32s var(--ff-search-ease) !important;
 }
 
 body .ff-search-layer.is-open .ff-search-backdrop {
+	opacity: 1 !important;
+}
+
+body .ff-search-layer.is-closing .ff-search-backdrop {
+	opacity: 0 !important;
 	background: var(--ff-glass-overlay) !important;
 	-webkit-backdrop-filter: blur(14px) saturate(1.05) !important;
 	backdrop-filter: blur(14px) saturate(1.05) !important;
 }
 
-body.is-ff-search-open > .wp-site-blocks {
-	filter: blur(12px) !important;
-	transition: filter var(--ff-search-dur, 0.42s) var(--ff-search-ease, cubic-bezier(0.22, 1, 0.36, 1));
+/*
+ * Navbar stays sharp + visible while search is open.
+ * Blur/overlay only under the header (backdrop top set in CSS + JS).
+ */
+body.is-ff-search-open > .wp-site-blocks,
+body.is-ff-search-closing > .wp-site-blocks {
+	filter: none !important;
 }
 
-/* Shell = transparent stage; bar and suggestions are their own surfaces.
- * No padding — JS docks the bar centre to the nav search icon. */
+body > .wp-site-blocks > :not(header) {
+	transition: filter 0.32s var(--ff-search-ease, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+body.is-ff-search-open > .wp-site-blocks > :not(header) {
+	filter: blur(12px);
+	transform: translateZ(0);
+}
+
+body.is-ff-search-closing > .wp-site-blocks > :not(header) {
+	filter: blur(0);
+}
+
+/* Shell = transparent stage; clip-path morphs from lupa circle ↔ full pill.
+ * Desktop: JS docks top-right to the nav lupa rect (--ff-sc-* = that circle). */
 body .ff-search-layer .ff-search-shell,
 body .ff-search-layer .ff-search-shell.has-background,
 body .ff-search-layer .ff-search-shell.has-base-background-color {
@@ -15136,7 +15262,7 @@ body .ff-search-layer .ff-search-shell.has-base-background-color {
 	overflow: auto;
 	scrollbar-width: none;
 	clip-path: inset(
-		var(--ff-sc-top, 0px) var(--ff-sc-right, 0px) var(--ff-sc-bottom, calc(100% - 56px)) var(--ff-sc-left, calc(100% - 56px))
+		var(--ff-sc-top, 0px) var(--ff-sc-right, 0px) var(--ff-sc-bottom, calc(100% - 40px)) var(--ff-sc-left, calc(100% - 40px))
 		round 999px
 	);
 	transition:
@@ -15162,38 +15288,68 @@ body .ff-search-layer .ff-search-bar.has-base-background-color {
 	color: var(--ff-glass-ink) !important;
 	-webkit-backdrop-filter: var(--ff-glass-blur);
 	backdrop-filter: var(--ff-glass-blur);
-	box-shadow: var(--ff-glass-shadow) !important;
-	/* Idle closed: already faded. Closing: delayed scale+fade (see .is-closing). */
+	box-shadow: none !important;
 	opacity: 0;
 	transform: scale(0.55);
-	/* JS sets origin to the ✕ centre on desktop so close lands on the lupa. */
 	transform-origin: right center;
 	transition:
 		border-color 0.2s ease,
-		box-shadow 0.2s ease,
 		opacity var(--ff-search-fade-dur) var(--ff-search-ease),
 		transform var(--ff-search-fade-dur) var(--ff-search-ease);
 }
 
+/* Formen → Eckig: Suchleiste / Morph / Close ohne Rundung */
+body.ff-shape-sharp .ff-search-layer .ff-search-shell,
+body.ff-shape-sharp .ff-search-layer .ff-search-shell.has-background,
+body.ff-shape-sharp .ff-search-layer .ff-search-shell.has-base-background-color {
+	clip-path: inset(
+		var(--ff-sc-top, 0px) var(--ff-sc-right, 0px) var(--ff-sc-bottom, calc(100% - 40px)) var(--ff-sc-left, calc(100% - 40px))
+		round 0
+	);
+}
+
+body.ff-shape-sharp .ff-search-layer.is-open .ff-search-shell {
+	clip-path: inset(-48px round 0);
+}
+
+body.ff-shape-sharp .ff-search-layer .ff-search-bar,
+body.ff-shape-sharp .ff-search-layer .ff-search-bar.has-background,
+body.ff-shape-sharp .ff-search-layer .ff-search-bar.has-base-background-color {
+	border-radius: 0 !important;
+}
+
+body.ff-shape-sharp .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link {
+	border-radius: 0 !important;
+}
+
+body.ff-shape-sharp .ff-search-layer .ff-search-mega,
+body.ff-shape-sharp .ff-search-layer .ff-search-mega.has-background {
+	border-radius: 0 !important;
+	border-top-left-radius: 0 !important;
+	border-top-right-radius: 0 !important;
+}
+
 /*
- * Desktop: pill height + ✕ = nav lupa (40×40), zero side padding on the
- * close so the button sits flush at the bar’s right edge → clean collapse.
+ * Desktop morph: bar = same height as lupa; always opaque while the shell
+ * clip expands/collapses (no separate scale pop — the lupa becomes the pill).
  */
 @media (min-width: 961px) {
 	body .ff-search-layer .ff-search-bar,
 	body .ff-search-layer .ff-search-bar.has-background,
 	body .ff-search-layer .ff-search-bar.has-base-background-color {
-		/* Outer silhouette matches the 40×40 nav lupa (border-box). */
 		box-sizing: border-box;
-		min-height: 40px;
-		height: 40px;
+		min-height: var(--ff-search-icon-size, 40px);
+		height: var(--ff-search-icon-size, 40px);
 		padding: 0 0 0 44px !important;
 		align-items: center;
+		opacity: 1;
+		transform: none;
+		transform-origin: right center;
 	}
 
 	body .ff-search-layer .ff-search-bar .wp-block-search__input {
-		min-height: 38px;
-		height: 38px;
+		min-height: calc(var(--ff-search-icon-size, 40px) - 2px);
+		height: calc(var(--ff-search-icon-size, 40px) - 2px);
 		font-size: 0.9375rem;
 	}
 
@@ -15202,10 +15358,19 @@ body .ff-search-layer .ff-search-bar.has-base-background-color {
 	}
 
 	body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link {
-		/* 40px outer − 1px border each side */
-		width: 38px !important;
-		height: 38px !important;
-		min-height: 38px !important;
+		width: calc(var(--ff-search-icon-size, 40px) - 2px) !important;
+		height: calc(var(--ff-search-icon-size, 40px) - 2px) !important;
+		min-height: calc(var(--ff-search-icon-size, 40px) - 2px) !important;
+	}
+
+	/* Open: pill stays opaque (clip expands). Closing fades the glass so no disc remains. */
+	body .ff-search-layer.is-open .ff-search-bar,
+	body .ff-search-layer.is-open .ff-search-bar.has-background,
+	body .ff-search-layer.is-open .ff-search-bar.has-base-background-color {
+		opacity: 1;
+		transform: none;
+		box-shadow: none !important;
+		transition: border-color 0.2s ease;
 	}
 }
 
@@ -15214,7 +15379,6 @@ body .ff-search-layer.is-open .ff-search-bar.has-background,
 body .ff-search-layer.is-open .ff-search-bar.has-base-background-color {
 	opacity: 1;
 	transform: scale(1);
-	/* Open: appear with the expand, no end-delay. */
 	transition:
 		border-color 0.2s ease,
 		box-shadow 0.2s ease,
@@ -15222,17 +15386,19 @@ body .ff-search-layer.is-open .ff-search-bar.has-base-background-color {
 		transform 0.36s var(--ff-search-ease);
 }
 
-/* End of close: pill + X scale/fade after the clip has mostly collapsed. */
-body .ff-search-layer.is-closing .ff-search-bar,
-body .ff-search-layer.is-closing .ff-search-bar.has-background,
-body .ff-search-layer.is-closing .ff-search-bar.has-base-background-color {
-	opacity: 0;
-	transform: scale(0.55);
-	transition:
-		border-color 0.2s ease,
-		box-shadow 0.2s ease,
-		opacity var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
-		transform var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay);
+/* Mobile only: pill scale/fade on close. Desktop morph keeps the pill opaque (clip does it). */
+@media (max-width: 960px) {
+	body .ff-search-layer.is-closing .ff-search-bar,
+	body .ff-search-layer.is-closing .ff-search-bar.has-background,
+	body .ff-search-layer.is-closing .ff-search-bar.has-base-background-color {
+		opacity: 0;
+		transform: scale(0.55);
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease,
+			opacity var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
+			transform var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay);
+	}
 }
 
 body .ff-search-layer .ff-search-bar::before {
@@ -15253,9 +15419,7 @@ body .ff-search-layer .ff-search-bar::before {
 body .ff-search-layer .ff-search-bar:focus-within {
 	background: var(--ff-glass-surface) !important;
 	border-color: var(--ff-glass-border-strong) !important;
-	box-shadow:
-		0 0 0 4px var(--ff-glass-ring),
-		var(--ff-glass-shadow) !important;
+	box-shadow: none !important;
 }
 
 body .ff-search-layer .ff-search-bar .wp-block-search__input {
@@ -15303,21 +15467,70 @@ body .ff-search-layer.is-open .ff-search-bar .ff-search-close .wp-block-button__
 }
 
 /*
- * Closing: X must fade even while the pointer is still over it.
- * Hover/focus must not pin opacity at 1 (that caused the abrupt snap).
+ * ✕ + its round hit-area only while fully open. While closing, the pill
+ * clips to the lupa circle — without this the glass disc (close’s
+ * background) remains as a ghost disc next to the reappearing lupa.
  */
-body .ff-search-layer.is-closing .ff-search-bar .ff-search-close .wp-block-button__link,
-body .ff-search-layer.is-closing .ff-search-bar .ff-search-close .wp-block-button__link:hover,
-body .ff-search-layer.is-closing .ff-search-bar .ff-search-close .wp-block-button__link:focus,
-body .ff-search-layer.is-closing .ff-search-bar .ff-search-close .wp-block-button__link:focus-visible,
-body .ff-search-layer.is-closing .ff-search-bar .ff-search-close .wp-block-button__link:active {
+body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close,
+body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link,
+body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:hover,
+body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:focus,
+body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:focus-visible,
+body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:active {
 	opacity: 0 !important;
-	transform: scale(0.65);
+	transform: none !important;
 	background: transparent !important;
-	transition:
-		opacity var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
-		transform var(--ff-search-fade-dur) var(--ff-search-ease) var(--ff-search-fade-delay),
-		background-color 0.15s ease !important;
+	background-color: transparent !important;
+	border: 0 !important;
+	box-shadow: none !important;
+	color: transparent !important;
+	font-size: 0 !important;
+	line-height: 0 !important;
+	width: 0 !important;
+	height: 0 !important;
+	min-width: 0 !important;
+	min-height: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	overflow: hidden !important;
+	transition: none !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+
+/* Desktop: dissolve glass remnant while clipping — no leftover disc. */
+@media (min-width: 961px) {
+	body .ff-search-layer.is-closing .ff-search-bar,
+	body .ff-search-layer.is-closing .ff-search-bar.has-background,
+	body .ff-search-layer.is-closing .ff-search-bar.has-base-background-color {
+		background: transparent !important;
+		background-color: transparent !important;
+		border-color: transparent !important;
+		box-shadow: none !important;
+		-webkit-backdrop-filter: none !important;
+		backdrop-filter: none !important;
+		opacity: 0 !important;
+		transition:
+			opacity 0.18s ease,
+			background-color 0.18s ease,
+			border-color 0.18s ease,
+			backdrop-filter 0.18s ease,
+			-webkit-backdrop-filter 0.18s ease !important;
+	}
+
+	body .ff-search-layer.is-closing .ff-search-shell {
+		opacity: 0;
+		transition:
+			clip-path var(--ff-search-dur) var(--ff-search-ease),
+			opacity 0.2s ease;
+	}
+
+	/* Idle after cleanup: keep shell invisible even if visibility delay lags */
+	body .ff-search-layer:not(.is-open):not(.is-closing) .ff-search-shell {
+		opacity: 0 !important;
+		visibility: hidden !important;
+		pointer-events: none !important;
+	}
 }
 
 /* Bar contents fade in once the pill has opened out — exclude close so its end-fade stays independent */
@@ -15337,18 +15550,21 @@ body .ff-search-layer.is-open .ff-search-bar .ff-search-field {
 	transition-delay: 0.12s;
 }
 
-/* Suggestions: hidden until the visitor types, then a separate card */
+/* Suggestions: flush under navbar — square top, rounded bottom only */
 body .ff-search-layer .ff-search-mega,
 body .ff-search-layer .ff-search-mega.has-background {
-	margin-top: 10px !important;
+	margin-top: 0 !important;
 	padding: 0 20px !important;
 	max-height: 0;
 	opacity: 0;
 	visibility: hidden;
 	overflow: hidden;
 	transform: translateY(-6px);
-	border-radius: 24px !important;
+	border-radius: 0 0 24px 24px !important;
+	border-top-left-radius: 0 !important;
+	border-top-right-radius: 0 !important;
 	border: 1px solid var(--ff-glass-border);
+	border-top: 0 !important;
 	background: var(--ff-glass-surface) !important;
 	color: var(--ff-glass-ink) !important;
 	-webkit-backdrop-filter: var(--ff-glass-blur);
@@ -15374,22 +15590,26 @@ body .ff-search-layer .ff-search-mega.is-querying {
 
 body .ff-search-layer .ff-search-mega .wp-block-heading,
 body .ff-search-layer .ff-search-mega #ffSearchProductsTitle,
-body .ff-search-layer .ff-search-mega .ff-search-hit,
-body .ff-search-layer .ff-search-mega .ff-search-hit-price,
 body .ff-search-layer .ff-search-mega .ff-search-mega-foot a,
 body .ff-search-layer .ff-search-mega .ff-search-menu-nav a,
 body .ff-search-layer .ff-search-mega .ff-search-empty {
 	color: var(--ff-glass-ink) !important;
 }
 
-body .ff-search-layer .ff-search-mega .ff-search-hit-price,
 body .ff-search-layer .ff-search-mega .has-muted-color {
 	color: var(--ff-glass-muted) !important;
 }
 
+/* Product cards keep solid surface (not glass list-row hover) */
+body .ff-search-layer .ff-search-mega .ff-search-hit,
 body .ff-search-layer .ff-search-mega .ff-search-hit:hover,
 body .ff-search-layer .ff-search-mega .ff-search-hit:focus-visible {
-	background: var(--ff-glass-hover) !important;
+	background: var(--ff-surface, #fff) !important;
+	color: var(--ff-ink, var(--wp--preset--color--contrast, #0e1114)) !important;
+}
+
+body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__tax {
+	color: var(--wp--preset--color--muted, #66707a) !important;
 }
 
 @media (max-width: 960px) {

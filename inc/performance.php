@@ -224,6 +224,17 @@ function fairflock_enqueue_frontend_assets() {
 	);
 
 	wp_enqueue_script(
+		'fairflock-nav-compact',
+		FAIRFLOCK_URI . '/assets/js/nav-compact.js',
+		array(),
+		FAIRFLOCK_VERSION,
+		array(
+			'strategy'  => 'defer',
+			'in_footer' => true,
+		)
+	);
+
+	wp_enqueue_script(
 		'fairflock-header-search',
 		FAIRFLOCK_URI . '/assets/js/header-search.js',
 		array( 'fairflock-loading', 'fairflock-nav-mega' ),
@@ -371,6 +382,7 @@ function fairflock_enqueue_frontend_assets() {
 		'window.fairflockSearchHome=' . wp_json_encode( home_url( '/' ) ) . ';'
 		. 'window.fairflockSearchShop=' . wp_json_encode( $shop ) . ';'
 		. 'window.fairflockSearchApi=' . wp_json_encode( $api ) . ';'
+		. 'window.fairflockProductTaxNote=' . wp_json_encode( __( 'zzgl. Versandkosten | inkl. MwSt', 'fairflock' ) ) . ';'
 		. 'window.fairflockSearchCatalog=' . wp_json_encode( fairflock_get_search_catalog() ) . ';',
 		'before'
 	);

@@ -99,7 +99,12 @@
 		var top = Math.max(0, Math.round(rect.bottom) - 1);
 		slot.style.setProperty("top", top + "px", "important");
 
-		if (!isDesktop()) {
+		/* Burger / compact desktop: full-bleed panel like ≤960px */
+		var fullBleed =
+			openMode === "panel" ||
+			!isDesktop() ||
+			document.body.classList.contains("ff-nav-compact");
+		if (fullBleed) {
 			slot.style.setProperty("left", "0", "important");
 			slot.style.setProperty("right", "0", "important");
 			slot.style.setProperty("width", "100%", "important");

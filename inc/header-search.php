@@ -57,7 +57,7 @@ function fairflock_get_search_catalog() {
 		return fairflock_get_search_catalog_fallback();
 	}
 
-	$cache_key = 'fairflock_search_catalog_v2';
+	$cache_key = 'fairflock_search_catalog_v3';
 	$cached    = get_transient( $cache_key );
 	if ( is_array( $cached ) ) {
 		return $cached;
@@ -100,6 +100,7 @@ function fairflock_get_search_catalog() {
 function fairflock_flush_search_catalog_cache() {
 	delete_transient( 'fairflock_search_catalog_v1' );
 	delete_transient( 'fairflock_search_catalog_v2' );
+	delete_transient( 'fairflock_search_catalog_v3' );
 }
 add_action( 'save_post_product', 'fairflock_flush_search_catalog_cache' );
 add_action( 'deleted_post', 'fairflock_flush_search_catalog_cache' );
@@ -116,6 +117,11 @@ add_action( 'woocommerce_update_product', 'fairflock_flush_search_catalog_cache'
 function fairflock_format_search_catalog_item( WC_Product $product ) {
 	$image_id = $product->get_image_id();
 	$img      = $image_id ? (string) wp_get_attachment_image_url( $image_id, 'woocommerce_thumbnail' ) : '';
+	$img_hover = '';
+	$gallery   = $product->get_gallery_image_ids();
+	if ( is_array( $gallery ) && ! empty( $gallery[0] ) ) {
+		$img_hover = (string) wp_get_attachment_image_url( (int) $gallery[0], 'woocommerce_thumbnail' );
+	}
 
 	$tag_names = array();
 	$tags      = get_the_terms( $product->get_id(), 'product_tag' );
@@ -132,15 +138,21 @@ function fairflock_format_search_catalog_item( WC_Product $product ) {
 		}
 	}
 
-	$name = html_entity_decode( wp_strip_all_tags( (string) $product->get_name() ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+	$name     = html_entity_decode( wp_strip_all_tags( (string) $product->get_name() ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+	$delivery = function_exists( 'fairflock_product_delivery_view' ) ? fairflock_product_delivery_view( $product ) : null;
 
 	return array(
-		'name'  => $name,
-		'price' => html_entity_decode( wp_strip_all_tags( wc_price( $product->get_price() ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
-		'url'   => $product->get_permalink(),
-		'q'     => $name,
-		'img'   => $img ? $img : '',
-		'tags'  => implode( ' ', $tag_names ),
+		'id'          => (string) $product->get_id(),
+		'name'        => $name,
+		'price'       => html_entity_decode( wp_strip_all_tags( wc_price( $product->get_price() ) ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
+		'tax'         => __( 'zzgl. Versandkosten | inkl. MwSt', 'fairflock' ),
+		'delivery'    => is_array( $delivery ) ? (string) $delivery['label'] : '',
+		'deliveryTip' => is_array( $delivery ) ? (string) $delivery['tooltip'] : '',
+		'url'         => $product->get_permalink(),
+		'q'           => $name,
+		'img'         => $img ? $img : '',
+		'imgHover'    => $img_hover ? $img_hover : '',
+		'tags'        => implode( ' ', $tag_names ),
 	);
 }
 
@@ -152,30 +164,44 @@ function fairflock_format_search_catalog_item( WC_Product $product ) {
  * @return array<int, array<string, string>>
  */
 function fairflock_get_search_catalog_fallback() {
+	$tax = __( 'zzgl. Versandkosten | inkl. MwSt', 'fairflock' );
+
 	return array(
 		array(
-			'name'  => 'Beispielprodukt Alpha',
-			'price' => '24,90 €',
-			'q'     => 'Alpha',
-			'url'   => '',
-			'img'   => '',
-			'tags'  => 'beispiel alpha',
+			'name'        => 'Beispielprodukt Alpha',
+			'price'       => '24,90 €',
+			'tax'         => $tax,
+			'delivery'    => __( 'Lieferung in 3–5 Tagen', 'fairflock' ),
+			'deliveryTip' => '',
+			'q'           => 'Alpha',
+			'url'         => '',
+			'img'         => '',
+			'imgHover'    => '',
+			'tags'        => 'beispiel alpha',
 		),
 		array(
-			'name'  => 'Beispielprodukt Beta',
-			'price' => '39,00 €',
-			'q'     => 'Beta',
-			'url'   => '',
-			'img'   => '',
-			'tags'  => 'beispiel beta',
+			'name'        => 'Beispielprodukt Beta',
+			'price'       => '39,00 €',
+			'tax'         => $tax,
+			'delivery'    => __( 'Lieferung in 1–2 Tagen', 'fairflock' ),
+			'deliveryTip' => '',
+			'q'           => 'Beta',
+			'url'         => '',
+			'img'         => '',
+			'imgHover'    => '',
+			'tags'        => 'beispiel beta',
 		),
 		array(
-			'name'  => 'Beispielprodukt Gamma',
-			'price' => '14,90 €',
-			'q'     => 'Gamma',
-			'url'   => '',
-			'img'   => '',
-			'tags'  => 'beispiel gamma',
+			'name'        => 'Beispielprodukt Gamma',
+			'price'       => '14,90 €',
+			'tax'         => $tax,
+			'delivery'    => '',
+			'deliveryTip' => '',
+			'q'           => 'Gamma',
+			'url'         => '',
+			'img'         => '',
+			'imgHover'    => '',
+			'tags'        => 'beispiel gamma',
 		),
 	);
 }

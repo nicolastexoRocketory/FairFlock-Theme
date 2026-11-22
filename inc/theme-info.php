@@ -20,6 +20,78 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.537',
+			'items'   => array(
+				__( 'Suche: Navbar bleibt scharf und sichtbar; Blur/Overlay nur unter der Header-Leiste.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.536',
+			'items'   => array(
+				__( 'Suche: bei Formen „Eckig“ ist die Suchleiste (inkl. Morph/Close) ohne Rundung.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.535',
+			'items'   => array(
+				__( 'Suchvorschläge: Produktkarten wie Shop/Slideshow (Bild, Preis, MwSt-Hinweis, Lieferzeile).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.534',
+			'items'   => array(
+				__( 'Suche: Overlay blendet beim Schließen sofort per Opacity (100→0) aus, ohne späten Ruckler.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.533',
+			'items'   => array(
+				__( 'Suchergebnisse: oben eckig (ohne Rundung), unten rund — schließt optisch an die Navbar an.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.532',
+			'items'   => array(
+				__( 'Suche: kein Ghost-Kreis mehr nach dem Schließen (Glass-Pill/Close-Hintergrund löst sich mit auf).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.531',
+			'items'   => array(
+				__( 'Suche: kein Ghost-✕ mehr nach dem Schließen (Close nur bei offener Suche sichtbar).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.530',
+			'items'   => array(
+				__( 'Header-Nav: sobald die Menüpunkte in eine zweite Zeile umbrechen würden, erscheint der Burger statt der Text-Nav.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.529',
+			'items'   => array(
+				__( 'Suche: Morph aus der Lupe in der Navbar; bei „Randlos“ bleibt Header scharf, Leistenbreite stoppt vor Logo/Nav.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.528',
+			'items'   => array(
+				__( 'Suche bei Nav „Randlos“: Panel unter dem Header, Logo/Nav bleiben frei; Overlay unter der Navbar.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.527',
+			'items'   => array(
+				__( 'Suche: kein Box-Shadow an der Leiste; kein Ghost-✕ beim Schließen; Nav „Randlos“: Header bleibt sichtbar (Overlay unter der Navbar).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.526',
+			'items'   => array(
+				__( 'Suche Desktop: Lupe morph’t zur Suchleiste (Expand nach links) und kollabiert wieder in die Lupe.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.525',
 			'items'   => array(
 				__( 'Hero-Slider: Aktiver Dot immer weiß (nicht Theme-Surface) — bleibt auf dunklen Hero-Bildern erkennbar.', 'fairflock' ),

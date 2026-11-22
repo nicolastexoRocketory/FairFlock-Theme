@@ -101,9 +101,37 @@
         ? window.matchMedia("(min-width: 961px)")
         : { matches: true };
     var SEARCH_DOCK_GAP = 8;
+    /* Cached lupa rect — while search is open the icon is scale(0), so
+       getBoundingClientRect is useless for collapse geometry. */
+    var cachedIconRect = null;
 
     function isDesktopSearchDock() {
       return !!(desktopSearchMq && desktopSearchMq.matches);
+    }
+
+    function readIconRect() {
+      if (!toggle) return null;
+      /* Prefer unscaled box: temporarily ignore open-state transform via cache. */
+      if (
+        cachedIconRect &&
+        (document.body.classList.contains("is-ff-search-open") ||
+          document.body.classList.contains("is-ff-search-closing"))
+      ) {
+        return cachedIconRect;
+      }
+      var icon = toggle.getBoundingClientRect();
+      if (!icon.width && !icon.height) {
+        return cachedIconRect;
+      }
+      cachedIconRect = {
+        top: icon.top,
+        right: icon.right,
+        bottom: icon.bottom,
+        left: icon.left,
+        width: icon.width,
+        height: icon.height,
+      };
+      return cachedIconRect;
     }
 
     function clearSearchPosition() {
@@ -123,19 +151,43 @@
         "padding-left",
         "position",
         "translate",
+        "--ff-search-icon-size",
+        "--ff-sc-top",
+        "--ff-sc-right",
+        "--ff-sc-bottom",
+        "--ff-sc-left",
       ].forEach(function (prop) {
         shell.style.removeProperty(prop);
       });
-      var bar = shell.querySelector(".ff-search-bar");
-      if (bar) {
-        bar.style.removeProperty("transform-origin");
+      var bd = layer && layer.querySelector(".ff-search-backdrop");
+      if (bd) bd.style.removeProperty("top");
+      cachedIconRect = null;
+    }
+
+    /** Left bound so the pill never covers logo / primary nav. */
+    function searchPillLeftBound(iconLeft) {
+      var brand = document.querySelector(
+        ".ff-header__brand, .ff-header .custom-logo-link, .ff-header .wp-block-site-title"
+      );
+      var nav = document.querySelector(".ff-header__nav");
+      var left = SEARCH_DOCK_GAP;
+      if (brand) {
+        left = Math.max(left, brand.getBoundingClientRect().right + 12);
       }
+      if (nav) {
+        var nr = nav.getBoundingClientRect();
+        /* Only use nav if it sits left of the lupa (logo-center / classic). */
+        if (nr.right < iconLeft - 8) {
+          left = Math.max(left, nr.right + 12);
+        }
+      }
+      return left;
     }
 
     /**
-     * Desktop only: dock the shell so the close ✕ centre sits exactly on the
-     * nav search-icon centre. Two-pass: approximate place → measure → correct.
-     * That way the close animation collapses flush onto the lupa.
+     * Desktop morph: dock shell so top-right matches the nav lupa.
+     * Pill grows left in the navbar; width stops before logo/nav.
+     * Randlos: backdrop/blur stay under the header (CSS) so Nav stays sharp.
      */
     function positionSearchShell() {
       if (!shell || !toggle) {
@@ -146,78 +198,57 @@
         return;
       }
 
-      var iconRect = toggle.getBoundingClientRect();
-      if (!iconRect.width && !iconRect.height) {
+      /* Fresh measure only when icon is still visible. */
+      if (
+        !document.body.classList.contains("is-ff-search-open") &&
+        !document.body.classList.contains("is-ff-search-closing")
+      ) {
+        cachedIconRect = null;
+      }
+      var icon = readIconRect();
+      if (!icon || (!icon.width && !icon.height)) {
         clearSearchPosition();
         return;
       }
 
       var vw = window.innerWidth || document.documentElement.clientWidth || 0;
       var vh = window.innerHeight || document.documentElement.clientHeight || 0;
-      var bar = shell.querySelector(".ff-search-bar");
-      var closeEl = shell.querySelector(
-        ".ff-search-close .wp-block-button__link, .ff-search-close"
-      );
-      var shellW = Math.min(440, vw - 16);
-      var iconCx = iconRect.left + iconRect.width / 2;
-      var iconCy = iconRect.top + iconRect.height / 2;
-      var iconSize = Math.max(iconRect.width, iconRect.height) || 40;
+      var iconSize = Math.round(Math.max(icon.width, icon.height)) || 40;
+      var leftBound = searchPillLeftBound(icon.left);
+      var maxW = Math.max(iconSize, Math.round(icon.right - leftBound));
+      var shellW = Math.min(440, maxW);
+      var top = Math.round(icon.top);
+      var right = Math.round(vw - icon.right);
 
-      shell.style.setProperty("position", "absolute", "important");
-      shell.style.setProperty("padding", "0", "important");
-      shell.style.setProperty("width", shellW + "px", "important");
-      shell.style.setProperty("height", "auto", "important");
-      shell.style.setProperty("left", "auto", "important");
-      shell.style.setProperty("bottom", "auto", "important");
-      shell.style.setProperty("translate", "none", "important");
-
-      /* Pass 1 — rough dock using icon size as stand-in for the ✕. */
-      var top = Math.round(iconCy - iconSize / 2);
-      var right = Math.round(vw - (iconCx + iconSize / 2));
-      var maxRight = Math.max(SEARCH_DOCK_GAP, vw - shellW - SEARCH_DOCK_GAP);
-      top = Math.max(4, top);
-      right = Math.min(Math.max(SEARCH_DOCK_GAP, right), maxRight);
-      shell.style.setProperty("top", top + "px", "important");
-      shell.style.setProperty("right", right + "px", "important");
-      shell.style.setProperty("max-height", Math.max(180, vh - top - 8) + "px", "important");
-
-      /* Pass 2 — measure real ✕ vs lupa and nudge until centres match. */
-      void shell.offsetWidth;
-      if (closeEl) {
-        var closeRect = closeEl.getBoundingClientRect();
-        var dx =
-          closeRect.left + closeRect.width / 2 - (iconRect.left + iconRect.width / 2);
-        var dy =
-          closeRect.top + closeRect.height / 2 - (iconRect.top + iconRect.height / 2);
-        if (Math.abs(dx) >= 0.5 || Math.abs(dy) >= 0.5) {
-          right = Math.round(right + dx);
-          top = Math.round(top - dy);
-          top = Math.max(4, top);
-          right = Math.min(Math.max(SEARCH_DOCK_GAP, right), maxRight);
-          shell.style.setProperty("top", top + "px", "important");
-          shell.style.setProperty("right", right + "px", "important");
-          shell.style.setProperty(
-            "max-height",
-            Math.max(180, vh - top - 8) + "px",
-            "important"
-          );
-          void shell.offsetWidth;
-        }
-      }
-
-      /* Scale origin = ✕ centre (bar-local), so close shrinks into the lupa. */
-      if (bar && closeEl) {
-        var barRect = bar.getBoundingClientRect();
-        var c = closeEl.getBoundingClientRect();
-        var ox = c.left + c.width / 2 - barRect.left;
-        var oy = c.top + c.height / 2 - barRect.top;
-        bar.style.setProperty(
-          "transform-origin",
-          Math.round(ox) + "px " + Math.round(oy) + "px",
+      /* Overlay always under the navbar so Logo/Nav stay sharp + visible. */
+      var headerBar =
+        document.querySelector(".ff-header__bar") ||
+        document.querySelector(".ff-header");
+      var headerBottom = headerBar
+        ? headerBar.getBoundingClientRect().bottom
+        : icon.bottom;
+      var bd = layer && layer.querySelector(".ff-search-backdrop");
+      if (bd) {
+        bd.style.setProperty(
+          "top",
+          Math.round(headerBottom) + "px",
           "important"
         );
       }
 
+      shell.style.setProperty("position", "absolute", "important");
+      shell.style.setProperty("padding", "0", "important");
+      shell.style.setProperty("left", "auto", "important");
+      shell.style.setProperty("bottom", "auto", "important");
+      shell.style.setProperty("translate", "none", "important");
+      shell.style.setProperty("height", "auto", "important");
+      shell.style.setProperty("top", top + "px", "important");
+      shell.style.setProperty("right", right + "px", "important");
+      shell.style.setProperty("width", shellW + "px", "important");
+      shell.style.setProperty("max-height", Math.max(180, vh - top - 8) + "px", "important");
+      shell.style.setProperty("--ff-search-icon-size", iconSize + "px");
+
+      void shell.offsetWidth;
       setCollapseShape();
     }
 
@@ -232,24 +263,25 @@
     }
 
     /**
-     * Collapsed clip-path = circle on the ✕, sized like the nav lupa
-     * so the close animation lands flush on the icon.
+     * Collapsed clip-path = circle exactly on the nav lupa rect
+     * (shell top-right is docked to that rect).
      */
     function setCollapseShape() {
-      if (!shell || !toggle) return;
+      if (!shell) return;
       var shellRect = shell.getBoundingClientRect();
-      var closeEl = shell.querySelector(
-        ".ff-search-close .wp-block-button__link, .ff-search-close"
-      );
-      if (!closeEl || !shellRect.width) return;
-      var iconRect = toggle.getBoundingClientRect();
-      var closeRect = closeEl.getBoundingClientRect();
-      var r = Math.max(
-        18,
-        Math.round(Math.max(iconRect.width, iconRect.height, closeRect.width) / 2)
-      );
-      var cx = closeRect.left + closeRect.width / 2 - shellRect.left;
-      var cy = closeRect.top + closeRect.height / 2 - shellRect.top;
+      if (!shellRect.width) return;
+      var icon = readIconRect();
+      var size = icon
+        ? Math.max(icon.width, icon.height)
+        : parseFloat(shell.style.getPropertyValue("--ff-search-icon-size")) || 40;
+      var r = Math.max(14, Math.round(size / 2));
+      /* Docked: lupa sits on the shell’s top-right — circle centre there. */
+      var cx = shellRect.width - r;
+      var cy = r;
+      if (icon && icon.width) {
+        cx = icon.left + icon.width / 2 - shellRect.left;
+        cy = icon.top + icon.height / 2 - shellRect.top;
+      }
       shell.style.setProperty("--ff-sc-top", Math.round(cy - r) + "px");
       shell.style.setProperty(
         "--ff-sc-bottom",
@@ -376,17 +408,58 @@
       return formatted + "\u00a0" + symbol;
     }
 
-    function mapStoreProduct(item) {
-      var img = "";
-      if (item.images && item.images.length && item.images[0]) {
-        img = item.images[0].thumbnail || item.images[0].src || "";
+    var DELIVERY_TRUCK_SVG =
+      '<svg viewBox="0 0 24 24" width="18" height="16" aria-hidden="true"><path d="M2.5 7.5h11v7.5h-11z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M13.5 10.5h4.2L21 14v1.5h-7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><circle cx="6.5" cy="17.2" r="1.5" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="17" cy="17.2" r="1.5" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>';
+
+    function productTaxNote(item) {
+      return stripTags((item && item.tax) || window.fairflockProductTaxNote || "");
+    }
+
+    function deliveryLineHtml(label, tip) {
+      var text = stripTags(label || "");
+      if (!text) return "";
+      var tipText = stripTags(tip || "");
+      var tipHtml = "";
+      if (tipText) {
+        tipHtml =
+          '<span class="ff-delivery-info">' +
+          '<button type="button" class="ff-delivery-info__btn" aria-label="Hinweis zur Lieferzeit"><span aria-hidden="true">i</span></button>' +
+          '<span class="ff-delivery-info__tip" role="tooltip">' +
+          escapeHtml(tipText) +
+          "</span></span>";
       }
+      return (
+        '<p class="ff-prod-card__delivery">' +
+        DELIVERY_TRUCK_SVG +
+        "<span>" +
+        escapeHtml(text) +
+        "</span>" +
+        tipHtml +
+        "</p>"
+      );
+    }
+
+    function mapStoreProduct(item) {
+      var imgs = item.images || [];
+      var img = "";
+      var imgHover = "";
+      if (imgs[0]) {
+        img = imgs[0].thumbnail || imgs[0].src || "";
+      }
+      if (imgs[1]) {
+        imgHover = imgs[1].thumbnail || imgs[1].src || "";
+      }
+      var ext = (item.extensions && item.extensions.fairflock) || {};
       var name = decodeEntities(item.name || "");
       return {
         name: name,
         price: formatStorePrice(item),
+        tax: productTaxNote({ tax: window.fairflockProductTaxNote }),
+        delivery: ext.delivery_label || "",
+        deliveryTip: ext.delivery_tooltip || "",
         url: item.permalink || "",
         img: img,
+        imgHover: imgHover,
         q: name
       };
     }
@@ -396,21 +469,37 @@
       hitsWrap.innerHTML = (items || [])
         .map(function (item) {
           var href = item.url || productSearchUrl(item.q || item.name);
-          var thumbStyle = item.img
-            ? ' style="background-image:url(\'' + String(item.img).replace(/'/g, "%27") + '\')"'
-            : "";
+          var name = escapeHtml(decodeEntities(item.name));
+          var price = escapeHtml(stripTags(item.price || ""));
+          var tax = escapeHtml(productTaxNote(item));
+          var imgSrc = String(item.img || "").replace(/"/g, "%22");
+          var hoverSrc = String(item.imgHover || "").replace(/"/g, "%22");
+          var media =
+            '<span class="ff-prod-card__media">' +
+            (imgSrc
+              ? '<img src="' + imgSrc + '" alt="" loading="lazy" decoding="async">'
+              : "") +
+            (hoverSrc
+              ? '<img class="ff-prod-card__hover-img" src="' +
+                hoverSrc +
+                '" alt="" aria-hidden="true" loading="lazy" decoding="async">'
+              : "") +
+            "</span>";
           return (
             '<a class="ff-search-hit" href="' +
             href +
             '">' +
-            '<span class="ff-search-hit-thumb"' +
-            thumbStyle +
-            "></span>" +
-            '<span class="ff-search-hit-meta"><strong>' +
-            escapeHtml(decodeEntities(item.name)) +
-            '</strong><span class="ff-search-hit-price">' +
-            escapeHtml(stripTags(item.price || "")) +
-            "</span></span></a>"
+            media +
+            '<span class="ff-prod-card__body">' +
+            '<span class="ff-prod-card__title">' +
+            name +
+            "</span>" +
+            '<span class="ff-prod-card__price">' +
+            price +
+            "</span>" +
+            (tax ? '<span class="ff-prod-card__tax">' + tax + "</span>" : "") +
+            deliveryLineHtml(item.delivery, item.deliveryTip) +
+            "</span></a>"
           );
         })
         .join("");
@@ -418,6 +507,16 @@
         emptyEl.hidden = !!(items && items.length);
         emptyEl.setAttribute("aria-hidden", items && items.length ? "true" : "false");
       }
+    }
+
+    if (hitsWrap && !hitsWrap.dataset.ffDeliveryBound) {
+      hitsWrap.dataset.ffDeliveryBound = "1";
+      hitsWrap.addEventListener("click", function (e) {
+        var tipBtn = e.target.closest(".ff-delivery-info__btn");
+        if (!tipBtn || !hitsWrap.contains(tipBtn)) return;
+        e.preventDefault();
+        e.stopPropagation();
+      });
     }
 
     function filterLocalCatalog(q) {
@@ -870,6 +969,8 @@
       layer.classList.remove("is-closing");
       document.body.classList.remove("is-ff-search-closing");
       if (toggle) toggle.classList.remove("is-ff-search-reappear");
+      layer.style.removeProperty("visibility");
+      layer.style.removeProperty("pointer-events");
       positionSearchShell();
       if (shell) void shell.offsetWidth;
       layer.classList.add("is-open");
@@ -914,6 +1015,10 @@
         document.body.classList.remove("is-ff-search-closing");
         if (!layer.classList.contains("is-open")) {
           clearSearchPosition();
+          /* Kill visibility delay so the collapsed pill/✕ cannot flash
+             while CSS still holds visibility:visible after is-closing. */
+          layer.style.setProperty("visibility", "hidden", "important");
+          layer.style.setProperty("pointer-events", "none", "important");
           playSearchIconReappear();
         }
       }, 620);

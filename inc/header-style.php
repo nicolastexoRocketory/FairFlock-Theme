@@ -323,7 +323,12 @@ function fairflock_get_marquee_gradient_colors() {
 /**
  * Prints CSS variables for the trust marquee gradient.
  *
+ * Must run after fairflock_enqueue_frontend_assets (priority 100), otherwise
+ * the style handles are not registered yet and the vars never reach the page —
+ * the marquee then falls back to theme.json brand colors.
+ *
  * @since 0.9.375
+ * @since 0.9.511 Priority 110 + dedicated handle fallback.
  *
  * @return void
  */
@@ -331,22 +336,24 @@ function fairflock_print_marquee_gradient_css() {
 	$c   = fairflock_get_marquee_gradient_colors();
 	$css = sprintf(
 		':root{--ff-strip-deep:%1$s;--ff-strip-brand:%2$s;--ff-strip-soft:%3$s;}',
-		$c['deep'],
-		$c['mid'],
-		$c['soft']
+		esc_attr( $c['deep'] ),
+		esc_attr( $c['mid'] ),
+		esc_attr( $c['soft'] )
 	);
 
-	if ( wp_style_is( 'fairflock-hero-slider', 'enqueued' ) || wp_style_is( 'fairflock-hero-slider', 'registered' ) ) {
-		wp_add_inline_style( 'fairflock-hero-slider', $css );
-		return;
+	foreach ( array( 'fairflock-hero-slider', 'fairflock-components' ) as $handle ) {
+		if ( wp_style_is( $handle, 'enqueued' ) || wp_style_is( $handle, 'registered' ) ) {
+			wp_add_inline_style( $handle, $css );
+			return;
+		}
 	}
 
-	if ( wp_style_is( 'fairflock-components', 'enqueued' ) || wp_style_is( 'fairflock-components', 'registered' ) ) {
-		wp_add_inline_style( 'fairflock-components', $css );
-	}
+	wp_register_style( 'fairflock-marquee-vars', false, array(), FAIRFLOCK_VERSION );
+	wp_enqueue_style( 'fairflock-marquee-vars' );
+	wp_add_inline_style( 'fairflock-marquee-vars', $css );
 }
-add_action( 'wp_enqueue_scripts', 'fairflock_print_marquee_gradient_css', 40 );
-add_action( 'enqueue_block_editor_assets', 'fairflock_print_marquee_gradient_css', 40 );
+add_action( 'wp_enqueue_scripts', 'fairflock_print_marquee_gradient_css', 110 );
+add_action( 'enqueue_block_editor_assets', 'fairflock_print_marquee_gradient_css', 110 );
 
 /**
  * Enqueues color picker on Darstellung admin screen.

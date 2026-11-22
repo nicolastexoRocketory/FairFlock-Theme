@@ -559,13 +559,22 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
  * vollbreite Brand-Verlauf-Leiste, vertikaler Glanz, ·-Trenner, weiße Typo.
  */
 /*
- * Verlauf-Farben: :root --ff-strip-* (FairFlock → Darstellung).
- * Fallback = Brand-Palette aus theme.json.
+ * Verlauf-Farben: nur FairFlock → Darstellung (--ff-strip-*).
+ * Kein Fallback auf theme.json-Markenfarben — sonst überschreibt die Marke den Banner.
  */
 :root {
-	--ff-strip-deep: var(--wp--preset--color--brand-deep, #2a5c25);
-	--ff-strip-brand: var(--wp--preset--color--brand, #377530);
-	--ff-strip-soft: var(--wp--preset--color--brand-soft, #4a8f42);
+	--ff-strip-deep: #2a5c25;
+	--ff-strip-brand: #377530;
+	--ff-strip-soft: #4a8f42;
+}
+
+/* Block-Editor-Markenfarbe am Wrapper darf den Darstellung-Verlauf nicht überdecken. */
+.ff-pattern-trust.has-background,
+.ff-pattern-trust[class*="-background-color"],
+.ff-pattern-trust[style*="background"] {
+	background: transparent !important;
+	background-color: transparent !important;
+	background-image: none !important;
 }
 
 .ff-pattern-trust .strip,
@@ -584,7 +593,8 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 	line-height: 1.3;
 	letter-spacing: 0.02em;
 	text-transform: uppercase;
-	background: linear-gradient(
+	background-color: var(--ff-strip-deep) !important;
+	background-image: linear-gradient(
 		105deg,
 		var(--ff-strip-deep) 0%,
 		var(--ff-strip-brand) 14%,
@@ -594,7 +604,7 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 		var(--ff-strip-soft) 72%,
 		var(--ff-strip-deep) 88%,
 		color-mix(in srgb, var(--ff-strip-brand) 70%, var(--ff-strip-deep)) 100%
-	);
+	) !important;
 	border-block: 1px solid color-mix(in srgb, var(--ff-strip-deep) 55%, transparent);
 	box-shadow:
 		inset 0 1px 0 color-mix(in srgb, #fff 28%, transparent),

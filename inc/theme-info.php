@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.511',
+			'items'   => array(
+				__( 'Trust-Banner/Marquee: Farben aus FairFlock → Darstellung greifen zuverlässig; Markenfarben und Block-Verläufe überschreiben den Banner nicht mehr.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.510',
 			'items'   => array(
 				__( 'Pop-up: Enddatum wird zuverlässig gespeichert (Browser-Werte mit Sekunden); Statusanzeige im Backend, warum es sichtbar/unsichtbar ist.', 'fairflock' ),

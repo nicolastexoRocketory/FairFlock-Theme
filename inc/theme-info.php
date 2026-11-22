@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.510',
+			'items'   => array(
+				__( 'Pop-up: Enddatum wird zuverlässig gespeichert (Browser-Werte mit Sekunden); Statusanzeige im Backend, warum es sichtbar/unsichtbar ist.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.509',
 			'items'   => array(
 				__( 'Pop-up: erscheint sofort (Standard-Verzögerung 0 Sekunden); Admin-Vorschau ebenfalls ohne Wartezeit.', 'fairflock' ),

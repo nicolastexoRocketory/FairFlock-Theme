@@ -76,14 +76,37 @@ function fairflock_popup_settings() {
 }
 
 /**
+ * Normalizes a datetime-local value to "Y-m-d\TH:i" (site timezone).
+ *
+ * Browsers often submit seconds ("…T18:00:00"); we accept that and trim it.
+ *
+ * @since 0.9.510
+ *
+ * @param string $raw Raw form value.
+ * @return string Empty string if invalid.
+ */
+function fairflock_popup_normalize_end( $raw ) {
+	$raw = trim( (string) $raw );
+	if ( '' === $raw ) {
+		return '';
+	}
+	$raw = str_replace( ' ', 'T', $raw );
+	if ( preg_match( '/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(?::\d{2})?$/', $raw, $m ) ) {
+		return $m[1] . 'T' . $m[2];
+	}
+	return '';
+}
+
+/**
  * Countdown end as Unix timestamp (site timezone), 0 if unset/invalid.
  *
  * @since 0.9.507
  *
- * @param string $local Local datetime "Y-m-d\TH:i".
+ * @param string $local Local datetime "Y-m-d\TH:i" (seconds optional).
  * @return int
  */
 function fairflock_popup_end_timestamp( $local ) {
+	$local = fairflock_popup_normalize_end( $local );
 	if ( '' === $local ) {
 		return 0;
 	}
@@ -308,9 +331,13 @@ function fairflock_popup_handle_admin_save() {
 	$in  = isset( $_POST['fairflock_popup'] ) && is_array( $_POST['fairflock_popup'] ) ? wp_unslash( $_POST['fairflock_popup'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized per field below.
 	$def = fairflock_popup_defaults();
 
-	$end = isset( $in['end'] ) ? sanitize_text_field( (string) $in['end'] ) : '';
-	if ( '' !== $end && ! preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/', $end ) ) {
-		$end = '';
+	$end_raw = isset( $in['end'] ) ? sanitize_text_field( (string) $in['end'] ) : '';
+	$end     = fairflock_popup_normalize_end( $end_raw );
+	$enabled = ! empty( $in['enabled'] ) ? '1' : '';
+
+	$status = '1';
+	if ( '1' === $enabled && '' === $end ) {
+		$status = 'no_end';
 	}
 
 	$frequency = isset( $in['frequency'] ) ? sanitize_key( (string) $in['frequency'] ) : $def['frequency'];
@@ -323,7 +350,7 @@ function fairflock_popup_handle_admin_save() {
 	}
 
 	$settings = array(
-		'enabled'   => ! empty( $in['enabled'] ) ? '1' : '',
+		'enabled'   => $enabled,
 		'title'     => isset( $in['title'] ) ? sanitize_text_field( (string) $in['title'] ) : $def['title'],
 		'text'      => isset( $in['text'] ) ? sanitize_textarea_field( (string) $in['text'] ) : $def['text'],
 		'end'       => $end,
@@ -340,7 +367,7 @@ function fairflock_popup_handle_admin_save() {
 		add_query_arg(
 			array(
 				'page'    => 'fairflock-popup',
-				'updated' => '1',
+				'updated' => $status,
 			),
 			admin_url( 'admin.php' )
 		)
@@ -364,15 +391,47 @@ function fairflock_popup_render_admin_page() {
 	$s       = fairflock_popup_settings();
 	$end     = fairflock_popup_end_timestamp( $s['end'] );
 	$preview = add_query_arg( 'ff_popup_preview', '1', home_url( '/' ) );
+	$updated = isset( $_GET['updated'] ) ? sanitize_key( wp_unslash( (string) $_GET['updated'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$name    = static function ( $key ) {
 		return 'fairflock_popup[' . $key . ']';
 	};
+
+	$live = false;
+	$why  = '';
+	if ( '1' !== $s['enabled'] ) {
+		$why = __( 'Noch nicht aktiv — Haken bei „Pop-up auf der Website anzeigen“ setzen.', 'fairflock' );
+	} elseif ( $end <= 0 ) {
+		$why = __( 'Kein gültiges Enddatum — ohne Datum erscheint das Pop-up nicht. Bitte Datum/Uhrzeit setzen und speichern.', 'fairflock' );
+	} elseif ( $end <= time() && 'hide' === $s['after_end'] ) {
+		$why = __( 'Das Enddatum liegt in der Vergangenheit und „Nach Ablauf“ ist auf Ausblenden gestellt.', 'fairflock' );
+	} else {
+		$live = true;
+		$why  = __( 'Bereit: Auf Shop-Seiten (nicht Warenkorb/Kasse/Konto) wird das Pop-up ausgeliefert. Wer es schon geschlossen hat, sieht es je nach Häufigkeit erst wieder später — zum Testen „Bei jedem Seitenaufruf“ wählen oder Vorschau nutzen.', 'fairflock' );
+	}
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Pop-up mit Countdown', 'fairflock' ); ?></h1>
-		<?php if ( ! empty( $_GET['updated'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
+		<?php if ( '1' === $updated ) : ?>
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Einstellungen gespeichert.', 'fairflock' ); ?></p></div>
+		<?php elseif ( 'no_end' === $updated ) : ?>
+			<div class="notice notice-warning is-dismissible"><p><?php esc_html_e( 'Gespeichert, aber ohne gültiges Enddatum. Das Pop-up bleibt deshalb unsichtbar, bis Datum und Uhrzeit gesetzt sind.', 'fairflock' ); ?></p></div>
 		<?php endif; ?>
+
+		<div class="notice <?php echo $live ? 'notice-success' : 'notice-warning'; ?>" style="padding:12px 16px;">
+			<p style="margin:0 0 6px;"><strong><?php echo $live ? esc_html__( 'Status: sichtbar für Besucher', 'fairflock' ) : esc_html__( 'Status: wird aktuell nicht angezeigt', 'fairflock' ); ?></strong></p>
+			<p style="margin:0;"><?php echo esc_html( $why ); ?></p>
+			<?php if ( $end > 0 ) : ?>
+				<p style="margin:8px 0 0;color:#50575e;">
+					<?php
+					printf(
+						/* translators: %s: formatted local datetime */
+						esc_html__( 'Gespeichertes Ende: %s', 'fairflock' ),
+						esc_html( wp_date( 'd.m.Y H:i', $end ) )
+					);
+					?>
+				</p>
+			<?php endif; ?>
+		</div>
 
 		<p><?php esc_html_e( 'Zeigt Besuchern ein Pop-up mit Countdown bis zum eingestellten Zeitpunkt (z. B. dem nächsten Anwurf). Warenkorb, Kasse und Kundenkonto bleiben frei.', 'fairflock' ); ?></p>
 		<p>
@@ -395,7 +454,7 @@ function fairflock_popup_render_admin_page() {
 				<tr>
 					<th scope="row"><label for="ffPopupEnd"><?php esc_html_e( 'Countdown endet am', 'fairflock' ); ?></label></th>
 					<td>
-						<input type="datetime-local" id="ffPopupEnd" name="<?php echo esc_attr( $name( 'end' ) ); ?>" value="<?php echo esc_attr( $s['end'] ); ?>" />
+						<input type="datetime-local" id="ffPopupEnd" name="<?php echo esc_attr( $name( 'end' ) ); ?>" value="<?php echo esc_attr( fairflock_popup_normalize_end( $s['end'] ) ); ?>" step="60" />
 						<p class="description">
 							<?php
 							printf(

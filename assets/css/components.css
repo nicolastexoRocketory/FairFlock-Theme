@@ -735,7 +735,7 @@ body:not(.block-editor-iframe__body) .ff-header {
 	transition: transform 0.3s var(--ff-ease);
 }
 
-	/* Burger (+ mobil Suche) in der Brand-Zeile ohne Extra-Wrapper-Abstand */
+/* Burger-Wrapper: Desktop contents (Burger display:none). Mobil → flex in der ≤960-Regel. */
 .ff-header__brand > .ff-header__menu-btns,
 .ff-header__brand > .wp-block-buttons.ff-header__menu-btns {
 	display: contents;
@@ -1655,15 +1655,15 @@ body.is-ff-menu-open .ff-header {
 	z-index: 100;
 }
 
-html.is-ff-mega-open .ff-header__brand,
-body.is-ff-menu-open .ff-header__brand {
-	position: relative;
-	z-index: 20;
-	overflow: visible;
-}
-
-/* Desktop: Logo im Brand-Flow über dem Panel. Mobil bleibt absolute-Zentrierung. */
+/* Desktop: Brand über dem Panel. Mobil: Brand bleibt static (Logo-Zentrierung an der Leiste). */
 @media (min-width: 961px) {
+	html.is-ff-mega-open .ff-header__brand,
+	body.is-ff-menu-open .ff-header__brand {
+		position: relative;
+		z-index: 20;
+		overflow: visible;
+	}
+
 	html.is-ff-mega-open .ff-header__brand .wp-block-site-logo,
 	body.is-ff-menu-open .ff-header__brand .wp-block-site-logo {
 		position: relative;
@@ -1672,9 +1672,19 @@ body.is-ff-menu-open .ff-header__brand {
 }
 
 @media (max-width: 960px) {
+	html.is-ff-mega-open .ff-header__bar,
+	body.is-ff-menu-open .ff-header__bar {
+		z-index: 20;
+	}
+
 	html.is-ff-mega-open .ff-header__brand .wp-block-site-logo,
 	body.is-ff-menu-open .ff-header__brand .wp-block-site-logo {
-		z-index: 21;
+		z-index: 5;
+	}
+
+	html.is-ff-mega-open .ff-header__brand .ff-nav-burger,
+	body.is-ff-menu-open .ff-header__brand .ff-nav-burger {
+		z-index: 7;
 	}
 }
 
@@ -10074,7 +10084,8 @@ body.is-ff-ptable-open {
 @media (max-width: 960px) {
 	:root {
 		--ff-gutter: 1em;
-		--ff-header-top: 1em;
+		/* Weniger Leerraum über der schwebenden Nav (Floating) */
+		--ff-header-top: 8px;
 		--ff-shell: calc(100% - 2 * var(--ff-gutter));
 	}
 
@@ -10107,12 +10118,19 @@ body.is-ff-ptable-open {
 		max-width: none;
 	}
 
+	/*
+	 * Mobile chrome (auch Nav-Layout „Logo mittig“):
+	 * links Burger+Suche · Logo absolut in der Leisten-Mitte · rechts Cart+Account.
+	 * Brand muss position:static sein, sonst zentriert das Logo nur in der linken Box
+	 * und überdeckt den Burger.
+	 */
 	.ff-header__bar {
 		position: relative;
+		display: grid !important;
+		grid-template-columns: 1fr 1fr;
+		align-items: center;
 		gap: 4px;
 		min-width: 0;
-		align-items: center;
-		/* Links: Burger + Suche · Mitte: Logo · Rechts: Cart + Account */
 		padding-left: 6px;
 		padding-right: 12px;
 	}
@@ -10123,33 +10141,51 @@ body.is-ff-ptable-open {
 		padding-right: var(--ff-gutter, 1em);
 	}
 
-	/* Linke Cluster: nur Burger + Suche (Logo absolut mittig) */
 	.ff-header__brand {
-		min-width: 0;
-		flex: 0 0 auto;
+		grid-column: 1;
+		grid-row: 1;
+		justify-self: start;
 		align-self: center;
+		position: static !important;
+		display: flex !important;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		align-items: center;
 		gap: 0;
+		min-width: 0;
 		max-width: none;
-		z-index: 5;
+		flex: unset;
+		z-index: 6;
 	}
 
+	/* Kein display:contents — Safari blendet den Burger sonst oft aus */
 	.ff-header__brand > .ff-header__menu-btns,
 	.ff-header__brand > .wp-block-buttons.ff-header__menu-btns,
 	.ff-header__brand > .wp-block-buttons:has(.ff-search-toggle),
 	.ff-header__brand > .ff-header__action-btns:has(.ff-search-toggle) {
-		display: contents;
+		display: flex !important;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		align-items: center;
+		gap: 0;
+		margin: 0;
 	}
 
-	/*
-	 * Logo mittig in der Nav — Editor-Breite ehren, Platz für Seiten-Icons lassen.
-	 */
+	.ff-header__brand .ff-nav-burger,
+	.ff-header__brand .ff-search-toggle {
+		position: relative;
+		z-index: 7;
+		flex-shrink: 0;
+	}
+
+	/* Logo in der Mitte der gesamten Header-Leiste (nicht der Brand-Box) */
 	.ff-header__brand .wp-block-site-logo {
 		position: absolute;
 		left: 50%;
 		top: 50%;
 		translate: -50% -50%;
 		z-index: 4;
-		max-width: min(46vw, 180px);
+		max-width: min(42vw, 160px);
 		margin: 0;
 		pointer-events: auto;
 	}
@@ -10170,10 +10206,13 @@ body.is-ff-ptable-open {
 
 	.ff-header__icons,
 	.ff-header__actions {
+		grid-column: 2;
+		grid-row: 1;
+		justify-self: end;
 		align-self: center;
-		margin-left: auto;
+		margin-left: 0 !important;
 		gap: 0 !important;
-		z-index: 5;
+		z-index: 6;
 	}
 
 	/*

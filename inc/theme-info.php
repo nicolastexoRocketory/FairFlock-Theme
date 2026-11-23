@@ -20,6 +20,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.551',
+			'items'   => array(
+				__( 'Suche: Ergebnis-Panel hält „Alle Ergebnisse“ im Glas; Hintergrund scrollt nicht mit.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.550',
+			'items'   => array(
+				__( 'Shop: Standardsortierung „Neueste zuerst“ (Nach Aktualität / date desc).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.549',
+			'items'   => array(
+				__( 'Shop-Filter mobil: PopUp wird nach body portiert — liegt über Navbar/Logo mit Backdrop.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.548',
+			'items'   => array(
+				__( 'Shop-Filter mobil: öffnet als zentriertes PopUp mit Backdrop (nicht mehr als Drawer unter der Navbar).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.547',
 			'items'   => array(
 				__( 'Logo bleibt über dem Mega-Menü (Header über Panel-Stacking).', 'fairflock' ),

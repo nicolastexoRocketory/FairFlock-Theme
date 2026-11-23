@@ -1015,6 +1015,7 @@
       }
       layer.setAttribute("aria-hidden", "false");
       document.body.classList.add("is-ff-search-open");
+      document.documentElement.classList.add("is-ff-search-open");
       setSearchExpanded(true);
       syncMega();
       window.requestAnimationFrame(function () {
@@ -1043,7 +1044,9 @@
       }
       layer.setAttribute("aria-hidden", "true");
       document.body.classList.remove("is-ff-search-open");
+      document.documentElement.classList.remove("is-ff-search-open");
       document.body.classList.add("is-ff-search-closing");
+      document.documentElement.classList.add("is-ff-search-closing");
       setSearchExpanded(false);
       if (closeBtn && typeof closeBtn.blur === "function") closeBtn.blur();
       if (document.activeElement && layer.contains(document.activeElement)) {
@@ -1057,6 +1060,7 @@
         layer.classList.remove("is-closing");
         if (searchUi) searchUi.classList.remove("is-closing");
         document.body.classList.remove("is-ff-search-closing");
+        document.documentElement.classList.remove("is-ff-search-closing");
         if (!layer.classList.contains("is-open")) {
           clearSearchPosition();
           /* Kill visibility delay so the collapsed pill/✕ cannot flash

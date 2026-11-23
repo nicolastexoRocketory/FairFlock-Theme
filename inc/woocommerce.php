@@ -91,6 +91,38 @@ function fairflock_woocommerce_enqueue_styles( $styles ) {
 add_filter( 'woocommerce_enqueue_styles', 'fairflock_woocommerce_enqueue_styles' );
 
 /**
+ * Shop default sort: newest first (“Nach Aktualität” / Neueste zuerst).
+ *
+ * @since 0.9.550
+ *
+ * @param string $orderby Current default orderby.
+ * @return string
+ */
+function fairflock_default_catalog_orderby( $orderby ) {
+	unset( $orderby );
+	return 'date';
+}
+add_filter( 'woocommerce_default_catalog_orderby', 'fairflock_default_catalog_orderby' );
+
+/**
+ * Persist WooCommerce default catalog orderby as date (newest first).
+ *
+ * @since 0.9.550
+ *
+ * @return void
+ */
+function fairflock_ensure_catalog_orderby_date() {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return;
+	}
+	if ( get_option( 'woocommerce_default_catalog_orderby' ) === 'date' ) {
+		return;
+	}
+	update_option( 'woocommerce_default_catalog_orderby', 'date' );
+}
+add_action( 'init', 'fairflock_ensure_catalog_orderby_date', 20 );
+
+/**
  * Remove classic WooCommerce “Angebot!” / sale flash on product images.
  *
  * @since 0.9.131
@@ -849,7 +881,7 @@ function fairflock_shop_columns_script() {
 			filters.insertBefore(toolbar, filters.firstChild);
 		});
 
-		/* „Schließen“-Textbutton über „Anwenden“ im Filter-Drawer */
+		/* „Schließen“-Textbutton über „Anwenden“ im Filter-PopUp */
 		function enhanceFilterClose() {
 			document.querySelectorAll(".wc-block-product-filters").forEach(function (root) {
 				var footer = root.querySelector(".wc-block-product-filters__overlay-footer");
@@ -865,9 +897,49 @@ function fairflock_shop_columns_script() {
 				footer.insertBefore(closeBtn, footer.firstChild);
 			});
 		}
+
+		/**
+		 * Portal filter root to <body> while open so the popup escapes
+		 * header/wp-site-blocks stacking (otherwise it sits under the navbar).
+		 */
+		function syncFilterPopupPortal() {
+			document.querySelectorAll(".wc-block-product-filters").forEach(function (root) {
+				var open = root.classList.contains("is-overlay-opened");
+				var ph = root._ffFilterPh;
+				if (open) {
+					if (!ph) {
+						ph = document.createElement("div");
+						ph.className = "ff-shop-filter-placeholder";
+						ph.setAttribute("aria-hidden", "true");
+						ph.hidden = true;
+						if (root.parentNode) {
+							root.parentNode.insertBefore(ph, root);
+						}
+						root._ffFilterPh = ph;
+					}
+					if (root.parentElement !== document.body) {
+						document.body.appendChild(root);
+					}
+					root.classList.add("is-ff-filter-popup");
+				} else {
+					root.classList.remove("is-ff-filter-popup");
+					if (ph && ph.parentNode && root.parentElement === document.body) {
+						ph.parentNode.insertBefore(root, ph);
+					}
+				}
+			});
+			var anyOpen = !!document.querySelector(".wc-block-product-filters.is-overlay-opened");
+			document.body.classList.toggle("is-ff-filter-open", anyOpen);
+			document.documentElement.classList.toggle("is-ff-filter-open", anyOpen);
+		}
+
 		enhanceFilterClose();
+		syncFilterPopupPortal();
 		document.querySelectorAll(".wc-block-product-filters").forEach(function (root) {
-			new MutationObserver(enhanceFilterClose).observe(root, { childList: true, subtree: true });
+			new MutationObserver(function () {
+				enhanceFilterClose();
+				syncFilterPopupPortal();
+			}).observe(root, { attributes: true, attributeFilter: ["class"], childList: true, subtree: true });
 		});
 
 		var roots = document.querySelectorAll(".ff-shop-cols");

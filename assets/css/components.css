@@ -3804,12 +3804,30 @@ ul.ff-search-menu-nav {
 	border: 0;
 }
 
+html.is-ff-search-open,
+html.is-ff-menu-open,
+html.is-ff-cart-open,
+html.is-ff-account-open,
+html.is-ff-product-open,
 body.is-ff-search-open,
 body.is-ff-menu-open,
 body.is-ff-cart-open,
 body.is-ff-account-open,
 body.is-ff-product-open {
-	overflow: hidden;
+	overflow: hidden !important;
+	overscroll-behavior: none;
+}
+
+/* Search results: keep scroll inside the panel (no background scroll chaining) */
+body.is-ff-search-open .ff-search-shell,
+body.is-ff-search-open .ff-search-mega.is-querying,
+body.is-ff-search-open .ff-search-mega.is-querying .ff-search-mega-products {
+	overscroll-behavior: contain;
+}
+
+/* While results are open, only the products list scrolls — not the shell */
+body.is-ff-search-open .ff-search-shell:has(.ff-search-mega.is-querying) {
+	overflow: hidden !important;
 }
 
 /* —— Mobile menu: full-width under header, drill-down subpages —— */
@@ -13964,18 +13982,89 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 		box-sizing: border-box;
 	}
 
-	/* Filter-Drawer: kein Horizontal-Overflow, 1em Innenabstand */
-	.ff-shop .wc-block-product-filters__overlay,
-	.ff-shop .wc-block-product-filters__overlay-wrapper {
-		overflow-x: hidden !important;
-		max-width: 100vw !important;
+	/*
+	 * Filter als zentriertes PopUp: Root wird per JS nach <body> portiert
+	 * (is-ff-filter-popup), damit es über Header/Logo liegt.
+	 */
+	body > .wc-block-product-filters.is-ff-filter-popup,
+	body > .wc-block-product-filters.is-overlay-opened {
+		position: fixed !important;
+		inset: 0 !important;
+		z-index: 100200 !important;
+		width: auto !important;
+		max-width: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		border: 0 !important;
+		border-radius: 0 !important;
+		background: transparent !important;
+		display: block !important;
+		overflow: visible !important;
 	}
 
-	.ff-shop .wc-block-product-filters__overlay-dialog {
+	body > .wc-block-product-filters.is-ff-filter-popup > .wc-block-product-filters__open-overlay,
+	body > .wc-block-product-filters.is-overlay-opened > .wc-block-product-filters__open-overlay {
+		display: none !important;
+	}
+
+	body > .wc-block-product-filters.is-ff-filter-popup .wc-block-product-filters__overlay,
+	body > .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay,
+	.ff-shop .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay {
+		display: grid !important;
+		place-items: center;
+		padding: max(16px, env(safe-area-inset-top, 0px)) 16px
+			max(16px, env(safe-area-inset-bottom, 0px)) !important;
+		box-sizing: border-box !important;
+		background: rgba(8, 10, 12, 0.64) !important;
+		-webkit-backdrop-filter: blur(6px);
+		backdrop-filter: blur(6px);
+		overflow: auto !important;
+		overflow-x: hidden !important;
+		max-width: none !important;
+		inset: 0 !important;
+		position: fixed !important;
+		z-index: 1 !important;
+	}
+
+	body > .wc-block-product-filters.is-ff-filter-popup .wc-block-product-filters__overlay-wrapper,
+	body > .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-wrapper,
+	.ff-shop .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-wrapper {
+		position: relative !important;
+		inset: auto !important;
+		width: min(440px, 100%) !important;
+		max-width: min(440px, 100%) !important;
+		height: auto !important;
+		max-height: min(85dvh, 900px) !important;
+		margin: 0 auto;
+		overflow: visible !important;
+	}
+
+	body > .wc-block-product-filters.is-ff-filter-popup .wc-block-product-filters__overlay-dialog,
+	body > .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-dialog,
+	.ff-shop .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-dialog {
+		position: relative !important;
+		inset: auto !important;
+		left: auto !important;
+		right: auto !important;
+		top: auto !important;
+		bottom: auto !important;
 		width: 100% !important;
-		max-width: 100vw !important;
+		max-width: 100% !important;
+		height: auto !important;
+		max-height: min(85dvh, 900px) !important;
+		transform: none !important;
+		border-radius: var(--wp--custom--radius--md, 16px) !important;
+		box-shadow: 0 24px 64px rgba(0, 0, 0, 0.38);
 		box-sizing: border-box !important;
 		overflow-x: hidden !important;
+		overflow-y: auto !important;
+		background: var(--ff-surface, #fff) !important;
+	}
+
+	body.ff-shape-sharp > .wc-block-product-filters.is-ff-filter-popup .wc-block-product-filters__overlay-dialog,
+	body.ff-shape-sharp > .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-dialog,
+	body.ff-shape-sharp .ff-shop .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-dialog {
+		border-radius: 0 !important;
 	}
 
 	.ff-shop .wc-block-product-filters__overlay-content,
@@ -14014,6 +14103,9 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 		gap: 8px;
 		padding-top: 1em !important;
 		padding-bottom: calc(1em + env(safe-area-inset-bottom, 0px)) !important;
+		position: sticky;
+		bottom: 0;
+		background: var(--ff-surface, #fff);
 	}
 
 	.ff-shop .ff-shop-filter-close {
@@ -15722,13 +15814,37 @@ body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega.has-background {
 }
 
 body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega.is-querying {
-	padding: 18px 20px 12px !important;
-	max-height: min(72vh, 900px);
+	display: flex !important;
+	flex-direction: column;
+	align-content: stretch;
+	gap: 8px !important;
+	padding: 18px 20px 0 !important;
+	max-height: min(72vh, calc(100dvh - 6rem));
 	opacity: 1;
 	visibility: visible;
-	overflow: auto;
+	overflow: hidden; /* foot stays inside glass; products scroll */
 	transform: none;
 	transition-delay: 0s;
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
+}
+
+/* Product hits scroll; footer link stays pinned in the glass panel */
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega.is-querying .ff-search-mega-products {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow: auto;
+	overscroll-behavior: contain;
+	-webkit-overflow-scrolling: touch;
+	padding-bottom: 4px;
+}
+
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega.is-querying .ff-search-mega-foot {
+	flex: 0 0 auto;
+	margin: 0 !important;
+	padding: 12px 0 14px !important;
+	border-top: 1px solid var(--ff-glass-border) !important;
+	background: transparent;
 }
 
 body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .wp-block-heading,
@@ -15882,8 +15998,9 @@ body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit .
 	}
 
 	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega.is-querying {
-		max-height: none;
-		overflow: visible;
+		/* Same flex+internal scroll as desktop — keep foot inside the glass */
+		max-height: min(78dvh, calc(100dvh - 7rem));
+		overflow: hidden;
 	}
 }
 

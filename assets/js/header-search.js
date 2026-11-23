@@ -1020,6 +1020,10 @@
           layer.style.setProperty("visibility", "hidden", "important");
           layer.style.setProperty("pointer-events", "none", "important");
           playSearchIconReappear();
+          /* Restore clearance after header slide-in (transform-safe measure). */
+          if (typeof window.fairflockSyncHeaderClearance === "function") {
+            window.fairflockSyncHeaderClearance();
+          }
         }
       }, 620);
     }

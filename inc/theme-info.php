@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.543',
+			'items'   => array(
+				__( 'Produkt-PopUp: Schließen erst nach 3 Sekunden (Backdrop/✕/Escape; kein Sofort-Wegklicken).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.542',
+			'items'   => array(
+				__( 'Shop/Listen: Content hängt nicht mehr unter der Navbar (Clearance transform-sicher; kein Filter auf wp-site-blocks).', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.541',
 			'items'   => array(
 				__( 'Suche mobil: Header slided beim Schließen von oben wieder ein.', 'fairflock' ),

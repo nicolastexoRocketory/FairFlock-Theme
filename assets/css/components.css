@@ -399,8 +399,15 @@ body:not(.home):not(.front-page) .wp-site-blocks main.ff-checkout,
 body:not(.home):not(.front-page) .wp-site-blocks main.ff-404,
 body:not(.home):not(.front-page) .wp-site-blocks main.ff-page,
 body:not(.home):not(.front-page) .wp-site-blocks main.ff-shop,
+body:not(.home):not(.front-page) .wp-site-blocks main.ff-shop.ff-shop--search,
 body:not(.home):not(.front-page) .wp-site-blocks main.ff-account-page,
 body:not(.home):not(.front-page) .wp-site-blocks main.ff-legal-page {
+	padding-top: var(--ff-header-clearance) !important;
+}
+
+/* Shop/Archive: clearance must win over inline padding-top:0 on the template */
+body:not(.home):not(.front-page) main.wp-block-group.ff-shop,
+body:not(.home):not(.front-page) main.ff-shop {
 	padding-top: var(--ff-header-clearance) !important;
 }
 
@@ -4621,12 +4628,18 @@ a.ff-cart-line__title:hover {
 	pointer-events: auto;
 }
 
-/* Erste 2s nach Öffnen: Schließen gesperrt */
+/* Erste 3s nach Öffnen: Schließen gesperrt (✕ + Backdrop) */
+.ff-product-layer.is-open.is-ff-close-locked > .ff-product-modal__close,
 .ff-product-layer.is-open > .ff-product-modal__close.is-ff-close-locked,
 .ff-product-modal > .ff-product-modal__close.is-ff-close-locked {
-	opacity: 0.35;
-	pointer-events: none;
-	cursor: default;
+	opacity: 0.35 !important;
+	pointer-events: none !important;
+	cursor: default !important;
+}
+
+.ff-product-layer.is-open.is-ff-close-locked > .ff-product-backdrop,
+.ff-product-layer.is-ff-close-locked #ffProductBackdrop {
+	pointer-events: none !important;
 }
 
 /* Legacy: Close noch im Modal (ältere Caches) */
@@ -15648,25 +15661,36 @@ body .ff-search-layer .ff-search-mega .ff-search-hit .ff-delivery-info__btn {
 }
 
 @media (max-width: 960px) {
-	/* Full-bleed blur — no navbar under the search UI */
+	/* Full-bleed overlay — no navbar under the search UI */
 	body .ff-search-layer .ff-search-backdrop {
 		top: 0 !important;
 	}
 
+	/*
+	 * Blur only main/footer — NEVER filter/transform on .wp-site-blocks
+	 * (that would make position:fixed header stick to the content box).
+	 */
 	body.is-ff-search-open > .wp-site-blocks,
 	body.is-ff-search-closing > .wp-site-blocks {
-		filter: blur(12px) !important;
-		transform: translateZ(0);
+		filter: none !important;
+		transform: none !important;
+	}
+
+	body > .wp-site-blocks > :not(header) {
 		transition: filter 0.32s var(--ff-search-ease, cubic-bezier(0.22, 1, 0.36, 1));
 	}
 
-	body.is-ff-search-closing > .wp-site-blocks {
-		filter: blur(0) !important;
+	body.is-ff-search-open > .wp-site-blocks > :not(header) {
+		filter: blur(12px);
+	}
+
+	body.is-ff-search-closing > .wp-site-blocks > :not(header) {
+		filter: blur(0);
 	}
 
 	/*
 	 * Header: bei Suche weg nach oben; beim Schließen Slide-in von oben nach unten.
-	 * translate statt transform — kompatibel mit floating (-50% 0) / Randlos.
+	 * Mobile header uses translate:none (left/right inset) — always animate Y only.
 	 */
 	body:not(.block-editor-iframe__body) .ff-header {
 		transition:
@@ -15678,27 +15702,13 @@ body .ff-search-layer .ff-search-mega .ff-search-hit .ff-delivery-info__btn {
 		opacity: 0 !important;
 		pointer-events: none !important;
 		visibility: visible !important;
-	}
-
-	body:not(.ff-header-style-edge).is-ff-search-open .ff-header {
-		translate: -50% calc(-100% - var(--ff-header-top, 16px) - 12px) !important;
-	}
-
-	body.ff-header-style-edge.is-ff-search-open .ff-header {
-		translate: 0 calc(-100% - 12px) !important;
+		translate: 0 calc(-100% - var(--ff-header-top, 1em) - 12px) !important;
 	}
 
 	body.is-ff-search-closing .ff-header {
 		opacity: 1 !important;
 		pointer-events: none !important;
 		visibility: visible !important;
-	}
-
-	body:not(.ff-header-style-edge).is-ff-search-closing .ff-header {
-		translate: -50% 0 !important;
-	}
-
-	body.ff-header-style-edge.is-ff-search-closing .ff-header {
 		translate: 0 0 !important;
 	}
 

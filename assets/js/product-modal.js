@@ -38,22 +38,30 @@
 		var galleryImages = [];
 		var currentProduct = null;
 		var selectedOptions = {};
-		var CLOSE_LOCK_MS = 2000;
+		var CLOSE_LOCK_MS = 3000;
 		var openedAt = 0;
 		var closeUnlockTimer = null;
 
 		function isCloseLocked() {
+			if (!layer.classList.contains("is-open")) return false;
+			if (layer.classList.contains("is-ff-close-locked")) return true;
 			return openedAt > 0 && Date.now() - openedAt < CLOSE_LOCK_MS;
 		}
 
 		function setCloseLocked(locked) {
-			if (!closeBtn) return;
-			closeBtn.classList.toggle("is-ff-close-locked", !!locked);
-			closeBtn.setAttribute("aria-disabled", locked ? "true" : "false");
-			if (locked) {
-				closeBtn.setAttribute("tabindex", "-1");
-			} else {
-				closeBtn.removeAttribute("tabindex");
+			layer.classList.toggle("is-ff-close-locked", !!locked);
+			document.body.classList.toggle("is-ff-product-close-locked", !!locked);
+			if (closeBtn) {
+				closeBtn.classList.toggle("is-ff-close-locked", !!locked);
+				closeBtn.setAttribute("aria-disabled", locked ? "true" : "false");
+				if (locked) {
+					closeBtn.setAttribute("tabindex", "-1");
+				} else {
+					closeBtn.removeAttribute("tabindex");
+				}
+			}
+			if (backdrop) {
+				backdrop.style.pointerEvents = locked ? "none" : "";
 			}
 		}
 
@@ -1325,36 +1333,60 @@
 			true
 		);
 
-		if (closeBtn) {
-			closeBtn.addEventListener("click", function (e) {
-				if (isCloseLocked()) {
+		/* Capture phase: block dismiss during lock (incl. click-through from Ansehen). */
+		layer.addEventListener(
+			"pointerdown",
+			function (e) {
+				if (!isCloseLocked()) return;
+				var t = e.target;
+				if (
+					t === backdrop ||
+					(closeBtn && (t === closeBtn || closeBtn.contains(t))) ||
+					(t && t.classList && t.classList.contains("ff-product-backdrop"))
+				) {
 					e.preventDefault();
 					e.stopPropagation();
-					return;
 				}
+			},
+			true
+		);
+
+		if (closeBtn) {
+			closeBtn.addEventListener("click", function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				if (isCloseLocked()) return;
 				closeModal();
 			});
 		}
 		if (backdrop) {
-			backdrop.addEventListener("click", function () {
+			backdrop.addEventListener("click", function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				if (isCloseLocked()) return;
 				closeModal();
 			});
 		}
-		document.addEventListener("keydown", function (e) {
-			if (!layer.classList.contains("is-open")) return;
-			if (e.key === "Escape") {
-				if (isCloseLocked()) {
-					e.preventDefault();
+		document.addEventListener(
+			"keydown",
+			function (e) {
+				if (!layer.classList.contains("is-open")) return;
+				if (e.key === "Escape") {
+					if (isCloseLocked()) {
+						e.preventDefault();
+						e.stopPropagation();
+						return;
+					}
+					closeModal();
 					return;
 				}
-				closeModal();
-				return;
-			}
-			if (galleryImages.length > 1 && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-				e.preventDefault();
-				setGalleryIndex(galleryIndex + (e.key === "ArrowRight" ? 1 : -1));
-			}
-		});
+				if (galleryImages.length > 1 && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+					e.preventDefault();
+					setGalleryIndex(galleryIndex + (e.key === "ArrowRight" ? 1 : -1));
+				}
+			},
+			true
+		);
 
 		ensureCartAuth().catch(function () {
 			/* optional preload */

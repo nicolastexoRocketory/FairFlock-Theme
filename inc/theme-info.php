@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.540',
+			'items'   => array(
+				__( 'Suche mobil: Header ausgeblendet; Ergebnis-Panel oben rund + 1em Abstand zur Suchleiste.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.539',
+			'items'   => array(
+				__( 'Produkt-PopUp: Schließen (✕, Escape, Backdrop) erst nach 2 Sekunden möglich.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.538',
 			'items'   => array(
 				__( 'Suchvorschläge: Produktkarten-Schrift in Contrast/Muted wie Shop — nicht Glass-Ink.', 'fairflock' ),

@@ -13,19 +13,52 @@
   }
 
   ready(function () {
-    /* Burger immer links neben dem Logo — auch bei gespeichertem Site-Editor-Header. */
-    (function placeBurgerLeftOfLogo() {
+    /*
+     * Mobile header chrome:
+     *   left  = Burger + Suche
+     *   center = Logo
+     *   right = Warenkorb + Account
+     * Desktop: Burger nur in Brand; Suche bleibt in Icons.
+     */
+    (function layoutHeaderChrome() {
       var brand = document.querySelector(".ff-header__brand");
+      var icons = document.querySelector(".ff-header__icons, .ff-header__actions");
       var burgerEl = document.querySelector(".ff-header .ff-nav-burger");
+      var searchEl = document.querySelector(".ff-header .ff-search-toggle");
       if (!brand || !burgerEl) return;
-      var moveNode =
+
+      var burgerNode =
         burgerEl.closest(".ff-header__menu-btns") ||
         burgerEl.closest(".wp-block-buttons") ||
         burgerEl;
-      if (brand.contains(burgerEl) && brand.firstElementChild === moveNode) {
-        return;
+      var searchNode = searchEl
+        ? searchEl.closest(".wp-block-buttons") || searchEl
+        : null;
+      var mq =
+        typeof window.matchMedia === "function"
+          ? window.matchMedia("(max-width: 960px)")
+          : { matches: true };
+
+      function apply() {
+        if (brand.firstElementChild !== burgerNode) {
+          brand.insertBefore(burgerNode, brand.firstChild);
+        }
+        if (!searchNode || !icons) return;
+        if (mq.matches) {
+          if (burgerNode.nextSibling !== searchNode) {
+            brand.insertBefore(searchNode, burgerNode.nextSibling);
+          }
+        } else if (!icons.contains(searchEl)) {
+          icons.insertBefore(searchNode, icons.firstChild);
+        }
       }
-      brand.insertBefore(moveNode, brand.firstChild);
+
+      apply();
+      if (typeof mq.addEventListener === "function") {
+        mq.addEventListener("change", apply);
+      } else if (typeof mq.addListener === "function") {
+        mq.addListener(apply);
+      }
     })();
 
     /*

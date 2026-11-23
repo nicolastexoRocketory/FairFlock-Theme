@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.559',
+			'items'   => array(
+				__( 'Mobile: Produktkarten öffnen mit einem Tippen — „Ansehen“-Hover blockiert Touch nicht mehr.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.558',
+			'items'   => array(
+				__( 'Mobile Nav: Logo mittig; links Burger + Suche (gleiche Icon-Größe); rechts Warenkorb + Account.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.557',
 			'items'   => array(
 				__( 'Produkt-Slideshows: Bildformat 3:4 zusätzlich zu 1:1 und 2:3 wählbar.', 'fairflock' ),

@@ -735,7 +735,7 @@ body:not(.block-editor-iframe__body) .ff-header {
 	transition: transform 0.3s var(--ff-ease);
 }
 
-/* Burger sitzt links neben dem Logo (nur mobil sichtbar) */
+	/* Burger (+ mobil Suche) in der Brand-Zeile ohne Extra-Wrapper-Abstand */
 .ff-header__brand > .ff-header__menu-btns,
 .ff-header__brand > .wp-block-buttons.ff-header__menu-btns {
 	display: contents;
@@ -1662,10 +1662,20 @@ body.is-ff-menu-open .ff-header__brand {
 	overflow: visible;
 }
 
-html.is-ff-mega-open .ff-header__brand .wp-block-site-logo,
-body.is-ff-menu-open .ff-header__brand .wp-block-site-logo {
-	position: relative;
-	z-index: 21;
+/* Desktop: Logo im Brand-Flow über dem Panel. Mobil bleibt absolute-Zentrierung. */
+@media (min-width: 961px) {
+	html.is-ff-mega-open .ff-header__brand .wp-block-site-logo,
+	body.is-ff-menu-open .ff-header__brand .wp-block-site-logo {
+		position: relative;
+		z-index: 21;
+	}
+}
+
+@media (max-width: 960px) {
+	html.is-ff-mega-open .ff-header__brand .wp-block-site-logo,
+	body.is-ff-menu-open .ff-header__brand .wp-block-site-logo {
+		z-index: 21;
+	}
 }
 
 /* Desktop: native WP-Untermenü des Mega-Triggers aus — Inhalt kommt aus Template-Part */
@@ -10098,10 +10108,11 @@ body.is-ff-ptable-open {
 	}
 
 	.ff-header__bar {
-		gap: 10px;
+		position: relative;
+		gap: 4px;
 		min-width: 0;
 		align-items: center;
-		/* Burger näher an den linken Rand */
+		/* Links: Burger + Suche · Mitte: Logo · Rechts: Cart + Account */
 		padding-left: 6px;
 		padding-right: 12px;
 	}
@@ -10112,32 +10123,41 @@ body.is-ff-ptable-open {
 		padding-right: var(--ff-gutter, 1em);
 	}
 
+	/* Linke Cluster: nur Burger + Suche (Logo absolut mittig) */
 	.ff-header__brand {
 		min-width: 0;
-		flex: 1 1 auto;
+		flex: 0 0 auto;
 		align-self: center;
-		gap: 12px;
+		gap: 0;
+		max-width: none;
+		z-index: 5;
 	}
 
-	/* Hit-Area etwas schmaler → weniger Leerraum links vom Glyph */
-	.ff-header .ff-header__brand .ff-nav-burger.wp-block-button .wp-block-button__link.wp-element-button,
-	.ff-header .ff-header__brand .ff-nav-burger.is-style-fill .wp-block-button__link.wp-element-button {
-		width: 34px !important;
-		min-width: 34px !important;
-		max-width: 34px !important;
-		margin-left: -2px !important;
+	.ff-header__brand > .ff-header__menu-btns,
+	.ff-header__brand > .wp-block-buttons.ff-header__menu-btns,
+	.ff-header__brand > .wp-block-buttons:has(.ff-search-toggle),
+	.ff-header__brand > .ff-header__action-btns:has(.ff-search-toggle) {
+		display: contents;
 	}
 
 	/*
-	 * Logo-Breite aus dem Site Editor (width / Inline-Style) auch mobil ehren.
-	 * Früher max-height:36px + max-width:160px hat die Einstellung überschrieben.
+	 * Logo mittig in der Nav — Editor-Breite ehren, Platz für Seiten-Icons lassen.
 	 */
 	.ff-header__brand .wp-block-site-logo {
-		max-width: min(100%, 70vw);
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		translate: -50% -50%;
+		z-index: 4;
+		max-width: min(46vw, 180px);
+		margin: 0;
+		pointer-events: auto;
 	}
 
 	.ff-header__brand .wp-block-site-logo a {
 		max-width: 100%;
+		display: inline-block;
+		line-height: 0;
 	}
 
 	.ff-header__brand .wp-block-site-logo img {
@@ -10151,7 +10171,9 @@ body.is-ff-ptable-open {
 	.ff-header__icons,
 	.ff-header__actions {
 		align-self: center;
+		margin-left: auto;
 		gap: 0 !important;
+		z-index: 5;
 	}
 
 	/*
@@ -10224,6 +10246,7 @@ body.is-ff-ptable-open {
 
 	.ff-header__icons .ff-search-toggle .wp-block-button__link,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link,
+	.ff-header__brand .ff-search-toggle .wp-block-button__link,
 	.ff-header__icons .ff-nav-burger .wp-block-button__link,
 	.ff-header__actions .ff-nav-burger .wp-block-button__link,
 	.ff-header__brand .ff-nav-burger .wp-block-button__link {
@@ -10248,6 +10271,7 @@ body.is-ff-ptable-open {
 
 	.ff-header__icons .ff-search-toggle .wp-block-button__link::before,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link::before,
+	.ff-header__brand .ff-search-toggle .wp-block-button__link::before,
 	.ff-header__icons .ff-nav-burger .wp-block-button__link::before,
 	.ff-header__actions .ff-nav-burger .wp-block-button__link::before,
 	.ff-header__brand .ff-nav-burger .wp-block-button__link::before {
@@ -10269,7 +10293,8 @@ body.is-ff-ptable-open {
 		height: 18px;
 	}
 
-	/* Mobile: Burger links am Logo · rechts Suche · Warenkorb · Account */
+	/* Mobile: links Burger+Suche · rechts Warenkorb+Account (Suche sitzt in Brand via JS) */
+	.ff-header__brand .ff-search-toggle,
 	.ff-header__icons .ff-search-toggle,
 	.ff-header__actions .ff-search-toggle {
 		display: flex !important;
@@ -10310,6 +10335,7 @@ body.is-ff-ptable-open {
 
 	.ff-header__icons .ff-search-toggle .wp-block-button__link,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link,
+	.ff-header__brand .ff-search-toggle .wp-block-button__link,
 	.ff-header__icons .ff-nav-burger .wp-block-button__link,
 	.ff-header__actions .ff-nav-burger .wp-block-button__link,
 	.ff-header__brand .ff-nav-burger .wp-block-button__link,
@@ -10317,6 +10343,7 @@ body.is-ff-ptable-open {
 	.ff-header__actions .ff-cart .wp-block-button__link,
 	.ff-header__icons .ff-search-toggle.is-style-fill .wp-block-button__link,
 	.ff-header__actions .ff-search-toggle.is-style-fill .wp-block-button__link,
+	.ff-header__brand .ff-search-toggle.is-style-fill .wp-block-button__link,
 	.ff-header__icons .ff-nav-burger.is-style-fill .wp-block-button__link,
 	.ff-header__actions .ff-nav-burger.is-style-fill .wp-block-button__link,
 	.ff-header__brand .ff-nav-burger.is-style-fill .wp-block-button__link,
@@ -10356,6 +10383,7 @@ body.is-ff-ptable-open {
 
 	.ff-header__icons .ff-search-toggle .wp-block-button__link::before,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link::before,
+	.ff-header__brand .ff-search-toggle .wp-block-button__link::before,
 	.ff-header__icons .ff-nav-burger .wp-block-button__link::before,
 	.ff-header__actions .ff-nav-burger .wp-block-button__link::before,
 	.ff-header__brand .ff-nav-burger .wp-block-button__link::before,
@@ -10364,10 +10392,13 @@ body.is-ff-ptable-open {
 		background-color: currentColor !important;
 	}
 
-	/* Lupe + Warenkorb-Glyph größer als die Desktop-18px */
+	/* Lupe + Warenkorb + Burger: gleiche Glyph-Größe mobil */
 	.ff-header .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button::before,
 	.ff-header .ff-header__icons .ff-search-toggle .wp-block-button__link::before,
-	.ff-header .ff-header__actions .ff-search-toggle .wp-block-button__link::before {
+	.ff-header .ff-header__actions .ff-search-toggle .wp-block-button__link::before,
+	.ff-header .ff-header__brand .ff-search-toggle .wp-block-button__link::before,
+	.ff-header .ff-nav-burger.wp-block-button .wp-block-button__link.wp-element-button::before,
+	.ff-header .ff-header__brand .ff-nav-burger .wp-block-button__link::before {
 		width: 22px !important;
 		height: 22px !important;
 	}
@@ -10403,6 +10434,7 @@ body.is-ff-ptable-open {
 
 	.ff-header__icons .ff-search-toggle .wp-block-button__link:hover,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link:hover,
+	.ff-header__brand .ff-search-toggle .wp-block-button__link:hover,
 	.ff-header__icons .ff-nav-burger .wp-block-button__link:hover,
 	.ff-header__actions .ff-nav-burger .wp-block-button__link:hover,
 	.ff-header__brand .ff-nav-burger .wp-block-button__link:hover,
@@ -13301,6 +13333,7 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 	-webkit-backface-visibility: hidden;
 	backface-visibility: hidden;
 	transform: translateZ(0);
+	touch-action: manipulation;
 	transition: transform 0.45s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)), border-color 0.3s;
 }
 
@@ -13425,15 +13458,27 @@ body.is-cols-5 { --ff-shop-cols: 5; }
 		color 0.28s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-.ff-shop__collection .wc-block-product:hover::before,
-.ff-shop__collection .wc-block-product-template__product:hover::before,
-.ff-shop__collection li.wc-block-product:hover::before {
-	opacity: 1;
+/*
+ * „Ansehen“ nur bei echtem Hover (Maus). Auf Touch würde :hover den ersten Tap
+ * „fressen“ (sticky hover) — Produkt öffnet erst beim zweiten Tippen.
+ */
+@media (hover: hover) and (pointer: fine) {
+	.ff-shop__collection .wc-block-product:hover::before,
+	.ff-shop__collection .wc-block-product-template__product:hover::before,
+	.ff-shop__collection li.wc-block-product:hover::before {
+		opacity: 1;
+	}
+
+	.ff-shop__collection .wc-block-product:hover .ff-prod-card__ansehen,
+	.ff-shop__collection .wc-block-product-template__product:hover .ff-prod-card__ansehen,
+	.ff-shop__collection li.wc-block-product:hover .ff-prod-card__ansehen {
+		opacity: 1;
+		translate: 0 0;
+		color: var(--wp--preset--color--brand, #377530);
+		pointer-events: auto;
+	}
 }
 
-.ff-shop__collection .wc-block-product:hover .ff-prod-card__ansehen,
-.ff-shop__collection .wc-block-product-template__product:hover .ff-prod-card__ansehen,
-.ff-shop__collection li.wc-block-product:hover .ff-prod-card__ansehen,
 .ff-shop__collection .ff-prod-card__ansehen:focus-visible {
 	opacity: 1;
 	translate: 0 0;
@@ -14414,6 +14459,7 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 	overflow: hidden;
 	border: 1px solid var(--ff-prod-line);
 	isolation: isolate;
+	touch-action: manipulation;
 	-webkit-backface-visibility: hidden;
 	backface-visibility: hidden;
 	transform: translateZ(0);
@@ -14546,15 +14592,23 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 		color 0.28s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product:hover::before,
-.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product-template__product:hover::before,
-.ff-pattern-products--woo .ff-prod-slider__track li.wc-block-product:hover::before {
-	opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+	.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product:hover::before,
+	.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product-template__product:hover::before,
+	.ff-pattern-products--woo .ff-prod-slider__track li.wc-block-product:hover::before {
+		opacity: 1;
+	}
+
+	.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product:hover .ff-prod-card__ansehen,
+	.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product-template__product:hover .ff-prod-card__ansehen,
+	.ff-pattern-products--woo .ff-prod-slider__track li.wc-block-product:hover .ff-prod-card__ansehen {
+		opacity: 1;
+		translate: 0 0;
+		color: var(--wp--preset--color--brand, #377530);
+		pointer-events: auto;
+	}
 }
 
-.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product:hover .ff-prod-card__ansehen,
-.ff-pattern-products--woo .ff-prod-slider__track .wc-block-product-template__product:hover .ff-prod-card__ansehen,
-.ff-pattern-products--woo .ff-prod-slider__track li.wc-block-product:hover .ff-prod-card__ansehen,
 .ff-pattern-products--woo .ff-prod-slider__track .ff-prod-card__ansehen:focus-visible {
 	opacity: 1;
 	translate: 0 0;
@@ -15224,13 +15278,10 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 	height: 22px !important;
 }
 
-/* Mobile: Lupe + Warenkorb größer (nach den Desktop-18px-Regeln) */
+/* Mobile: Lupe + Warenkorb + Burger gleiche Glyph-Größe (nach den Desktop-18px-Regeln) */
 @media (max-width: 960px) {
-	.ff-header .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button::before {
-		width: 22px !important;
-		height: 22px !important;
-	}
-
+	.ff-header .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button::before,
+	.ff-header .ff-nav-burger.wp-block-button .wp-block-button__link.wp-element-button::before,
 	.ff-header .ff-cart.wp-block-button .wp-block-button__link.wp-element-button::before {
 		width: 22px !important;
 		height: 22px !important;

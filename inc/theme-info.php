@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.552',
+			'items'   => array(
+				__( 'Logo bleibt über dem Mega-Menü: Header-z-index nicht mehr auf Panel-Niveau absenken.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.551',
 			'items'   => array(
 				__( 'Suche: Ergebnis-Panel hält „Alle Ergebnisse“ im Glas; Hintergrund scrollt nicht mit.', 'fairflock' ),

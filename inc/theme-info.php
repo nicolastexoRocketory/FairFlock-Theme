@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.556',
+			'items'   => array(
+				__( 'Mobile Nav: mehr Abstand Warenkorb↔Account, größere Suche-/Warenkorb-Icons, Logo-Breite aus dem Editor greift wieder.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.555',
+			'items'   => array(
+				__( 'Shop: Filter öffnen/schließen zeigt keine Ladeanimation mehr — nur echte Filter-/Sortier-Aktionen.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.554',
 			'items'   => array(
 				__( 'Shop: Filter-Portal/MutationObserver entfernt — behebt Einfrieren von Shop- und Kategorieseiten.', 'fairflock' ),

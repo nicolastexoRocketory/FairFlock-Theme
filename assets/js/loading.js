@@ -212,6 +212,9 @@
 		watchShopCollection();
 	}
 
+	/** Ignore filter change noise right after opening/closing the drawer. */
+	var ignoreFilterChangesUntil = 0;
+
 	function isLocalViewControl(el) {
 		if (!el || !el.closest) return false;
 		/* Spalten-„Ansicht“ is CSS-only — never show the global loader. */
@@ -220,10 +223,21 @@
 		return false;
 	}
 
+	/** Open/close chrome — must never trigger the product loading overlay. */
+	function isFilterUiChrome(el) {
+		if (!el || !el.closest) return false;
+		if (el.closest(".wc-block-product-filters__open-overlay")) return true;
+		if (el.closest(".wc-block-product-filters__close-overlay")) return true;
+		if (el.closest(".ff-shop-filter-close")) return true;
+		if (el.closest(".wc-block-product-filters__overlay-header")) return true;
+		return false;
+	}
+
 	function isShopNavTrigger(el) {
 		if (!el || !el.closest) return false;
 		if (!el.closest(".ff-shop")) return false;
 		if (isLocalViewControl(el)) return false;
+		if (isFilterUiChrome(el)) return false;
 		if (el.closest(".ff-shop__pagination")) return true;
 		if (el.closest(".wp-block-query-pagination")) return true;
 		if (el.closest(".wc-block-product-filter-chips")) return true;
@@ -234,6 +248,7 @@
 		if (el.closest(".wp-block-woocommerce-product-filter-taxonomy")) return true;
 		if (el.closest(".wp-block-woocommerce-product-collection-active-filters")) return true;
 		if (el.closest(".woocommerce-ordering")) return true;
+		if (el.closest(".wp-block-woocommerce-catalog-sorting")) return true;
 		return false;
 	}
 
@@ -242,6 +257,12 @@
 			"click",
 			function (e) {
 				var t = e.target;
+				if (!t || !t.closest) return;
+				/* Opening/closing the filter drawer must not show „Produkte werden geladen…“. */
+				if (isFilterUiChrome(t)) {
+					ignoreFilterChangesUntil = Date.now() + 500;
+					return;
+				}
 				if (isLocalViewControl(t)) return;
 				if (!isShopNavTrigger(t)) return;
 				var interactive =
@@ -262,10 +283,10 @@
 			function (e) {
 				var t = e.target;
 				if (!t || !t.closest) return;
-				if (isLocalViewControl(t)) return;
-				if (!t.closest(".ff-shop__filters") && !t.closest(".woocommerce-ordering")) {
-					return;
-				}
+				if (Date.now() < ignoreFilterChangesUntil) return;
+				if (isLocalViewControl(t) || isFilterUiChrome(t)) return;
+				/* Only real filter/sort controls — not every change inside .ff-shop__filters (drawer open init). */
+				if (!isShopNavTrigger(t)) return;
 				beginShopLoad();
 			},
 			true

@@ -10118,10 +10118,24 @@ body.is-ff-ptable-open {
 		margin-left: -2px !important;
 	}
 
+	/*
+	 * Logo-Breite aus dem Site Editor (width / Inline-Style) auch mobil ehren.
+	 * Früher max-height:36px + max-width:160px hat die Einstellung überschrieben.
+	 */
+	.ff-header__brand .wp-block-site-logo {
+		max-width: min(100%, 70vw);
+	}
+
+	.ff-header__brand .wp-block-site-logo a {
+		max-width: 100%;
+	}
+
 	.ff-header__brand .wp-block-site-logo img {
-		max-height: 36px;
-		width: auto;
-		max-width: min(160px, 42vw);
+		height: auto !important;
+		max-height: none !important;
+		/* Kein width:auto — sonst greift die Editor-Breite nicht */
+		max-width: 100% !important;
+		object-fit: contain;
 	}
 
 	.ff-header__icons,
@@ -10319,6 +10333,17 @@ body.is-ff-ptable-open {
 		gap: 2px !important;
 	}
 
+	/* +4px Luft zwischen Warenkorb und Account (Desktop hat bereits 4px) */
+	.ff-header__icons > .wp-block-buttons:has(.ff-account),
+	.ff-header__icons > .ff-header__account-btns,
+	.ff-header__icons > .ff-account,
+	.ff-header__icons > .wp-block-woocommerce-customer-account,
+	.ff-header__actions > .wp-block-buttons:has(.ff-account),
+	.ff-header__actions > .ff-header__account-btns,
+	.ff-header__actions > .ff-account {
+		margin-inline-start: 8px !important;
+	}
+
 	.ff-header__icons .ff-search-toggle .wp-block-button__link::before,
 	.ff-header__actions .ff-search-toggle .wp-block-button__link::before,
 	.ff-header__icons .ff-nav-burger .wp-block-button__link::before,
@@ -10327,6 +10352,21 @@ body.is-ff-ptable-open {
 	.ff-header__icons .ff-cart .wp-block-button__link::before,
 	.ff-header__actions .ff-cart .wp-block-button__link::before {
 		background-color: currentColor !important;
+	}
+
+	/* Lupe + Warenkorb-Glyph größer als die Desktop-18px */
+	.ff-header .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button::before,
+	.ff-header .ff-header__icons .ff-search-toggle .wp-block-button__link::before,
+	.ff-header .ff-header__actions .ff-search-toggle .wp-block-button__link::before {
+		width: 22px !important;
+		height: 22px !important;
+	}
+
+	.ff-header .ff-cart.wp-block-button .wp-block-button__link.wp-element-button::before,
+	.ff-header .ff-header__icons .ff-cart .wp-block-button__link::before,
+	.ff-header .ff-header__actions .ff-cart .wp-block-button__link::before {
+		width: 22px !important;
+		height: 22px !important;
 	}
 
 	/* Profil: hellgrauer Kreis ganz rechts — nicht transparent wie Suche/Cart */
@@ -15172,6 +15212,19 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E") !important;
 	width: 22px !important;
 	height: 22px !important;
+}
+
+/* Mobile: Lupe + Warenkorb größer (nach den Desktop-18px-Regeln) */
+@media (max-width: 960px) {
+	.ff-header .ff-search-toggle.wp-block-button .wp-block-button__link.wp-element-button::before {
+		width: 22px !important;
+		height: 22px !important;
+	}
+
+	.ff-header .ff-cart.wp-block-button .wp-block-button__link.wp-element-button::before {
+		width: 22px !important;
+		height: 22px !important;
+	}
 }
 
 body.is-ff-menu-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element-button::before,

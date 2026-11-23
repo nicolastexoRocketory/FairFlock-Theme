@@ -15664,13 +15664,48 @@ body .ff-search-layer .ff-search-mega .ff-search-hit .ff-delivery-info__btn {
 		filter: blur(0) !important;
 	}
 
-	body.is-ff-search-open .ff-header,
-	body.is-ff-search-closing .ff-header,
-	body.is-ff-search-open header.wp-block-template-part,
-	body.is-ff-search-closing header.wp-block-template-part {
-		visibility: hidden !important;
-		pointer-events: none !important;
+	/*
+	 * Header: bei Suche weg nach oben; beim Schließen Slide-in von oben nach unten.
+	 * translate statt transform — kompatibel mit floating (-50% 0) / Randlos.
+	 */
+	body:not(.block-editor-iframe__body) .ff-header {
+		transition:
+			translate 0.42s var(--ff-search-ease, cubic-bezier(0.22, 1, 0.36, 1)),
+			opacity 0.32s ease;
+	}
+
+	body.is-ff-search-open .ff-header {
 		opacity: 0 !important;
+		pointer-events: none !important;
+		visibility: visible !important;
+	}
+
+	body:not(.ff-header-style-edge).is-ff-search-open .ff-header {
+		translate: -50% calc(-100% - var(--ff-header-top, 16px) - 12px) !important;
+	}
+
+	body.ff-header-style-edge.is-ff-search-open .ff-header {
+		translate: 0 calc(-100% - 12px) !important;
+	}
+
+	body.is-ff-search-closing .ff-header {
+		opacity: 1 !important;
+		pointer-events: none !important;
+		visibility: visible !important;
+	}
+
+	body:not(.ff-header-style-edge).is-ff-search-closing .ff-header {
+		translate: -50% 0 !important;
+	}
+
+	body.ff-header-style-edge.is-ff-search-closing .ff-header {
+		translate: 0 0 !important;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		body:not(.block-editor-iframe__body) .ff-header {
+			transition: none;
+		}
 	}
 
 	body .ff-search-layer .ff-search-shell,

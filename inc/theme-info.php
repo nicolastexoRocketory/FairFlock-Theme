@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.541',
+			'items'   => array(
+				__( 'Suche mobil: Header slided beim Schließen von oben wieder ein.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.540',
 			'items'   => array(
 				__( 'Suche mobil: Header ausgeblendet; Ergebnis-Panel oben rund + 1em Abstand zur Suchleiste.', 'fairflock' ),

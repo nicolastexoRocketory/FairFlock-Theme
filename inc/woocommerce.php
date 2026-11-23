@@ -580,26 +580,28 @@ function fairflock_get_bestsellers_slider_pattern_content() {
 }
 
 /**
- * One-time: live shop catalog + German shop page title for Alle Produkte.
+ * Keep the shop catalog live + German shop page title for Alle Produkte.
  *
- * WooCommerce defaults to Coming Soon (store-only), which hides the catalog.
- * FairFlock shops need the Product Catalog template visible after install.
+ * WooCommerce defaults to Coming Soon (store-only), which replaces shop and
+ * category templates with a placeholder. That must stay off for FairFlock shops
+ * even if Coming Soon is re-enabled later in WooCommerce settings.
  *
  * @since 0.9.72
  *
  * @return void
  */
 function fairflock_maybe_setup_shop_catalog() {
-	if ( get_option( 'fairflock_shop_catalog_ready' ) === '1' ) {
-		return;
-	}
-
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		return;
 	}
 
+	/* Always enforce — not one-shot. Coming Soon can be toggled back on in WC. */
 	if ( get_option( 'woocommerce_coming_soon' ) === 'yes' ) {
 		update_option( 'woocommerce_coming_soon', 'no' );
+	}
+
+	if ( get_option( 'fairflock_shop_catalog_ready' ) === '1' ) {
+		return;
 	}
 
 	$shop_id = function_exists( 'wc_get_page_id' ) ? (int) wc_get_page_id( 'shop' ) : 0;

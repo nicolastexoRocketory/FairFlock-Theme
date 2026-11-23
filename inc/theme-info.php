@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.553',
+			'items'   => array(
+				__( 'Shop: WooCommerce „Coming Soon“ bleibt dauerhaft aus — Katalog/Kategorien wieder sichtbar.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.552',
 			'items'   => array(
 				__( 'Logo bleibt über dem Mega-Menü: Header-z-index nicht mehr auf Panel-Niveau absenken.', 'fairflock' ),

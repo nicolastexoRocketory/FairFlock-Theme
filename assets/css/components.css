@@ -718,6 +718,9 @@ body:not(.block-editor-iframe__body) .ff-header {
 	min-width: 0;
 	max-width: min(100%, 60vw);
 	gap: 12px;
+	overflow: visible;
+	position: relative;
+	z-index: 5;
 	transition: transform 0.3s var(--ff-ease);
 }
 
@@ -3086,8 +3089,14 @@ html.is-ff-mega-open .ff-header {
 }
 
 .ff-search-layer.is-open {
-	pointer-events: auto;
+	/* Layer itself never captures — only backdrop + shell (nav/logo stay clickable). */
+	pointer-events: none;
 	visibility: visible;
+}
+
+.ff-search-layer.is-open .ff-search-backdrop,
+.ff-search-layer.is-open .ff-search-shell {
+	pointer-events: auto;
 }
 
 .ff-search-backdrop {
@@ -15201,24 +15210,28 @@ html.is-ff-mega-open .ff-header .ff-nav-burger .wp-block-button__link.wp-element
  * suggestions card only while typing, expand-from-icon animation.
  * Collapse geometry (--ff-sc-*) is measured by header-search.js.
  */
-body .ff-search-layer {
+body .ff-search-layer,
+body .ff-search-layer-ui {
 	--ff-search-ease: cubic-bezier(0.22, 1, 0.36, 1);
 	--ff-search-dur: 0.42s;
 	--ff-search-fade-dur: 0.28s;
 	--ff-search-fade-delay: 0.3s;
 	/* clip collapse + delayed remnant fade (X / pill) */
 	--ff-search-total: calc(var(--ff-search-fade-delay) + var(--ff-search-fade-dur));
+}
+
+body .ff-search-layer {
 	visibility: hidden;
 	transition: visibility 0s linear var(--ff-search-total);
 }
 
-body .ff-search-layer.is-open,
-body .ff-search-layer.is-closing {
+body :is(.ff-search-layer, .ff-search-layer-ui).is-open,
+body :is(.ff-search-layer, .ff-search-layer-ui).is-closing {
 	visibility: visible;
 	transition-delay: 0s;
 }
 
-body .ff-search-layer.is-closing {
+body :is(.ff-search-layer, .ff-search-layer-ui).is-closing {
 	pointer-events: none;
 }
 
@@ -15226,7 +15239,7 @@ body .ff-search-layer.is-closing {
  * Overlay: opacity fade (100→0) starts immediately on close.
  * Keep glass tint + blur while closing so the fade is visible (not a snap).
  */
-body .ff-search-layer .ff-search-backdrop {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-backdrop {
 	/* Always under the navbar — Logo/Nav stay uncovered */
 	top: calc(var(--ff-header-top, 0px) + var(--ff-header-height, 56px)) !important;
 	background: var(--ff-glass-overlay) !important;
@@ -15236,11 +15249,11 @@ body .ff-search-layer .ff-search-backdrop {
 	transition: opacity 0.32s var(--ff-search-ease) !important;
 }
 
-body .ff-search-layer.is-open .ff-search-backdrop {
+body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-backdrop {
 	opacity: 1 !important;
 }
 
-body .ff-search-layer.is-closing .ff-search-backdrop {
+body :is(.ff-search-layer, .ff-search-layer-ui).is-closing .ff-search-backdrop {
 	opacity: 0 !important;
 	background: var(--ff-glass-overlay) !important;
 	-webkit-backdrop-filter: blur(14px) saturate(1.05) !important;
@@ -15250,6 +15263,8 @@ body .ff-search-layer.is-closing .ff-search-backdrop {
 /*
  * Desktop: Navbar stays sharp + visible while search is open.
  * Blur/overlay only under the header (backdrop top set in CSS + JS).
+ * Search UI mounts inside .ff-header (JS) so Logo/Nav stack above the veil
+ * and stay hoverable; backdrop stays in .ff-search-layer below the header.
  * Mobile: full-bleed overlay, header hidden — see max-width:960px.
  */
 @media (min-width: 961px) {
@@ -15270,13 +15285,117 @@ body .ff-search-layer.is-closing .ff-search-backdrop {
 	body.is-ff-search-closing > .wp-site-blocks > :not(header) {
 		filter: blur(0);
 	}
+
+	/* Backdrop under header/logo; shell lives in the header stacking context */
+	body .ff-search-layer {
+		z-index: 60;
+	}
+
+	body.is-ff-search-open .ff-header,
+	body.is-ff-search-closing .ff-header {
+		z-index: 100;
+		overflow: visible !important;
+	}
+
+	body.is-ff-search-open .ff-header__bar,
+	body.is-ff-search-closing .ff-header__bar,
+	body.is-ff-search-open .ff-header__brand,
+	body.is-ff-search-closing .ff-header__brand {
+		overflow: visible !important;
+	}
+
+	/* Search UI portaled into header — fixed stage, Logo/Nav above it */
+	.ff-header > .ff-search-layer-ui {
+		position: fixed !important;
+		inset: 0;
+		z-index: 2;
+		display: block;
+		padding: 0;
+		pointer-events: none;
+		justify-content: unset;
+		align-items: unset;
+	}
+
+	.ff-header > .ff-search-layer-ui .ff-search-shell {
+		pointer-events: auto;
+	}
+
+	body.is-ff-search-open .ff-header__nav,
+	body.is-ff-search-closing .ff-header__nav {
+		position: relative;
+		z-index: 5;
+	}
+
+	body.is-ff-search-open .ff-header__icons,
+	body.is-ff-search-closing .ff-header__icons {
+		position: relative;
+		z-index: 1;
+	}
+
+	/*
+	 * Portaled UI: open/close visuals keyed off .ff-search-layer-ui.is-open
+	 * (same rules as when UI lived inside .ff-search-layer).
+	 */
+	.ff-header > .ff-search-layer-ui.is-open .ff-search-shell,
+	.ff-header > .ff-search-layer-ui.is-open .ff-search-shell.has-background,
+	.ff-header > .ff-search-layer-ui.is-open .ff-search-shell.has-base-background-color {
+		clip-path: inset(-48px round 28px);
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+	}
+
+	body.ff-shape-sharp .ff-header > .ff-search-layer-ui.is-open .ff-search-shell {
+		clip-path: inset(-48px round 0);
+	}
+
+	.ff-header > .ff-search-layer-ui.is-open .ff-search-bar,
+	.ff-header > .ff-search-layer-ui.is-open .ff-search-bar.has-background,
+	.ff-header > .ff-search-layer-ui.is-open .ff-search-bar.has-base-background-color {
+		opacity: 1;
+		transform: none;
+	}
+
+	.ff-header > .ff-search-layer-ui.is-open .ff-search-bar .ff-search-field {
+		opacity: 1;
+		transition-delay: 0.12s;
+	}
+
+	.ff-header > .ff-search-layer-ui.is-closing .ff-search-bar,
+	.ff-header > .ff-search-layer-ui.is-closing .ff-search-bar.has-background,
+	.ff-header > .ff-search-layer-ui.is-closing .ff-search-bar.has-base-background-color {
+		opacity: 0;
+	}
+
+	.ff-header > .ff-search-layer-ui.is-closing .ff-search-shell {
+		opacity: 0;
+	}
+
+	.ff-header > .ff-search-layer-ui:not(.is-open):not(.is-closing) .ff-search-shell {
+		opacity: 0 !important;
+		visibility: hidden !important;
+		pointer-events: none !important;
+	}
+
+	.ff-header > .ff-search-layer-ui:not(.is-open) .ff-search-bar .ff-search-field,
+	.ff-header > .ff-search-layer-ui:not(.is-open) .ff-search-bar::before,
+	.ff-header > .ff-search-layer-ui.is-closing .ff-search-bar .ff-search-field,
+	.ff-header > .ff-search-layer-ui.is-closing .ff-search-bar::before {
+		opacity: 0;
+	}
+
+	.ff-header > .ff-search-layer-ui:not(.is-open) .ff-search-bar .ff-search-close,
+	.ff-header > .ff-search-layer-ui:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link {
+		opacity: 0 !important;
+		pointer-events: none !important;
+	}
 }
 
 /* Shell = transparent stage; clip-path morphs from lupa circle ↔ full pill.
  * Desktop: JS docks top-right to the nav lupa rect (--ff-sc-* = that circle). */
-body .ff-search-layer .ff-search-shell,
-body .ff-search-layer .ff-search-shell.has-background,
-body .ff-search-layer .ff-search-shell.has-base-background-color {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-shell,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-shell.has-background,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-shell.has-base-background-color {
 	padding: 0 !important;
 	gap: 0;
 	background: transparent !important;
@@ -15295,14 +15414,14 @@ body .ff-search-layer .ff-search-shell.has-base-background-color {
 		opacity 0.2s ease;
 }
 
-body .ff-search-layer.is-open .ff-search-shell {
+body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-shell {
 	clip-path: inset(-48px round 28px);
 }
 
 /* Modern pill search bar */
-body .ff-search-layer .ff-search-bar,
-body .ff-search-layer .ff-search-bar.has-background,
-body .ff-search-layer .ff-search-bar.has-base-background-color {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar.has-background,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar.has-base-background-color {
 	position: relative;
 	gap: 4px;
 	min-height: 56px;
@@ -15324,31 +15443,31 @@ body .ff-search-layer .ff-search-bar.has-base-background-color {
 }
 
 /* Formen → Eckig: Suchleiste / Morph / Close ohne Rundung */
-body.ff-shape-sharp .ff-search-layer .ff-search-shell,
-body.ff-shape-sharp .ff-search-layer .ff-search-shell.has-background,
-body.ff-shape-sharp .ff-search-layer .ff-search-shell.has-base-background-color {
+body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-shell,
+body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-shell.has-background,
+body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-shell.has-base-background-color {
 	clip-path: inset(
 		var(--ff-sc-top, 0px) var(--ff-sc-right, 0px) var(--ff-sc-bottom, calc(100% - 40px)) var(--ff-sc-left, calc(100% - 40px))
 		round 0
 	);
 }
 
-body.ff-shape-sharp .ff-search-layer.is-open .ff-search-shell {
+body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-shell {
 	clip-path: inset(-48px round 0);
 }
 
-body.ff-shape-sharp .ff-search-layer .ff-search-bar,
-body.ff-shape-sharp .ff-search-layer .ff-search-bar.has-background,
-body.ff-shape-sharp .ff-search-layer .ff-search-bar.has-base-background-color {
+body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar,
+body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar.has-background,
+body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar.has-base-background-color {
 	border-radius: 0 !important;
 }
 
-body.ff-shape-sharp .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link {
+body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar .ff-search-close .wp-block-button__link {
 	border-radius: 0 !important;
 }
 
-body.ff-shape-sharp .ff-search-layer .ff-search-mega,
-body.ff-shape-sharp .ff-search-layer .ff-search-mega.has-background {
+body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega,
+body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega.has-background {
 	border-radius: 0 !important;
 	border-top-left-radius: 0 !important;
 	border-top-right-radius: 0 !important;
@@ -15359,9 +15478,9 @@ body.ff-shape-sharp .ff-search-layer .ff-search-mega.has-background {
  * clip expands/collapses (no separate scale pop — the lupa becomes the pill).
  */
 @media (min-width: 961px) {
-	body .ff-search-layer .ff-search-bar,
-	body .ff-search-layer .ff-search-bar.has-background,
-	body .ff-search-layer .ff-search-bar.has-base-background-color {
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar,
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar.has-background,
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar.has-base-background-color {
 		box-sizing: border-box;
 		min-height: var(--ff-search-icon-size, 40px);
 		height: var(--ff-search-icon-size, 40px);
@@ -15372,26 +15491,26 @@ body.ff-shape-sharp .ff-search-layer .ff-search-mega.has-background {
 		transform-origin: right center;
 	}
 
-	body .ff-search-layer .ff-search-bar .wp-block-search__input {
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar .wp-block-search__input {
 		min-height: calc(var(--ff-search-icon-size, 40px) - 2px);
 		height: calc(var(--ff-search-icon-size, 40px) - 2px);
 		font-size: 0.9375rem;
 	}
 
-	body .ff-search-layer .ff-search-bar::before {
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar::before {
 		left: 12px;
 	}
 
-	body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link {
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar .ff-search-close .wp-block-button__link {
 		width: calc(var(--ff-search-icon-size, 40px) - 2px) !important;
 		height: calc(var(--ff-search-icon-size, 40px) - 2px) !important;
 		min-height: calc(var(--ff-search-icon-size, 40px) - 2px) !important;
 	}
 
 	/* Open: pill stays opaque (clip expands). Closing fades the glass so no disc remains. */
-	body .ff-search-layer.is-open .ff-search-bar,
-	body .ff-search-layer.is-open .ff-search-bar.has-background,
-	body .ff-search-layer.is-open .ff-search-bar.has-base-background-color {
+	body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-bar,
+	body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-bar.has-background,
+	body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-bar.has-base-background-color {
 		opacity: 1;
 		transform: none;
 		box-shadow: none !important;
@@ -15399,9 +15518,9 @@ body.ff-shape-sharp .ff-search-layer .ff-search-mega.has-background {
 	}
 }
 
-body .ff-search-layer.is-open .ff-search-bar,
-body .ff-search-layer.is-open .ff-search-bar.has-background,
-body .ff-search-layer.is-open .ff-search-bar.has-base-background-color {
+body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-bar,
+body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-bar.has-background,
+body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-bar.has-base-background-color {
 	opacity: 1;
 	transform: scale(1);
 	transition:
@@ -15413,9 +15532,9 @@ body .ff-search-layer.is-open .ff-search-bar.has-base-background-color {
 
 /* Mobile only: pill scale/fade on close. Desktop morph keeps the pill opaque (clip does it). */
 @media (max-width: 960px) {
-	body .ff-search-layer.is-closing .ff-search-bar,
-	body .ff-search-layer.is-closing .ff-search-bar.has-background,
-	body .ff-search-layer.is-closing .ff-search-bar.has-base-background-color {
+	body :is(.ff-search-layer, .ff-search-layer-ui).is-closing .ff-search-bar,
+	body :is(.ff-search-layer, .ff-search-layer-ui).is-closing .ff-search-bar.has-background,
+	body :is(.ff-search-layer, .ff-search-layer-ui).is-closing .ff-search-bar.has-base-background-color {
 		opacity: 0;
 		transform: scale(0.55);
 		transition:
@@ -15426,7 +15545,7 @@ body .ff-search-layer.is-open .ff-search-bar.has-base-background-color {
 	}
 }
 
-body .ff-search-layer .ff-search-bar::before {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar::before {
 	content: "";
 	position: absolute;
 	left: 20px;
@@ -15441,13 +15560,13 @@ body .ff-search-layer .ff-search-bar::before {
 	pointer-events: none;
 }
 
-body .ff-search-layer .ff-search-bar:focus-within {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar:focus-within {
 	background: var(--ff-glass-surface) !important;
 	border-color: var(--ff-glass-border-strong) !important;
 	box-shadow: none !important;
 }
 
-body .ff-search-layer .ff-search-bar .wp-block-search__input {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar .wp-block-search__input {
 	min-height: 44px;
 	font-size: 1.0625rem;
 	font-weight: 500;
@@ -15456,16 +15575,16 @@ body .ff-search-layer .ff-search-bar .wp-block-search__input {
 	caret-color: var(--ff-glass-ink);
 }
 
-body .ff-search-layer .ff-search-bar .wp-block-search__input::placeholder {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar .wp-block-search__input::placeholder {
 	color: var(--ff-glass-muted);
 }
 
-body .ff-search-layer .ff-search-bar .wp-block-search__input::-webkit-search-cancel-button {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar .wp-block-search__input::-webkit-search-cancel-button {
 	-webkit-appearance: none;
 	appearance: none;
 }
 
-body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar .ff-search-close .wp-block-button__link {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -15484,8 +15603,8 @@ body .ff-search-layer .ff-search-bar .ff-search-close .wp-block-button__link {
 		transform 0.2s ease;
 }
 
-body .ff-search-layer.is-open .ff-search-bar .ff-search-close .wp-block-button__link:hover,
-body .ff-search-layer.is-open .ff-search-bar .ff-search-close .wp-block-button__link:focus-visible {
+body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-bar .ff-search-close .wp-block-button__link:hover,
+body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-bar .ff-search-close .wp-block-button__link:focus-visible {
 	background: var(--ff-glass-hover) !important;
 	color: var(--ff-glass-ink) !important;
 	opacity: 1;
@@ -15496,12 +15615,12 @@ body .ff-search-layer.is-open .ff-search-bar .ff-search-close .wp-block-button__
  * clips to the lupa circle — without this the glass disc (close’s
  * background) remains as a ghost disc next to the reappearing lupa.
  */
-body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close,
-body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link,
-body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:hover,
-body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:focus,
-body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:focus-visible,
-body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:active {
+body :is(.ff-search-layer, .ff-search-layer-ui):not(.is-open) .ff-search-bar .ff-search-close,
+body :is(.ff-search-layer, .ff-search-layer-ui):not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link,
+body :is(.ff-search-layer, .ff-search-layer-ui):not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:hover,
+body :is(.ff-search-layer, .ff-search-layer-ui):not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:focus,
+body :is(.ff-search-layer, .ff-search-layer-ui):not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:focus-visible,
+body :is(.ff-search-layer, .ff-search-layer-ui):not(.is-open) .ff-search-bar .ff-search-close .wp-block-button__link:active {
 	opacity: 0 !important;
 	transform: none !important;
 	background: transparent !important;
@@ -15525,9 +15644,9 @@ body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-bu
 
 /* Desktop: dissolve glass remnant while clipping — no leftover disc. */
 @media (min-width: 961px) {
-	body .ff-search-layer.is-closing .ff-search-bar,
-	body .ff-search-layer.is-closing .ff-search-bar.has-background,
-	body .ff-search-layer.is-closing .ff-search-bar.has-base-background-color {
+	body :is(.ff-search-layer, .ff-search-layer-ui).is-closing .ff-search-bar,
+	body :is(.ff-search-layer, .ff-search-layer-ui).is-closing .ff-search-bar.has-background,
+	body :is(.ff-search-layer, .ff-search-layer-ui).is-closing .ff-search-bar.has-base-background-color {
 		background: transparent !important;
 		background-color: transparent !important;
 		border-color: transparent !important;
@@ -15543,7 +15662,7 @@ body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-bu
 			-webkit-backdrop-filter 0.18s ease !important;
 	}
 
-	body .ff-search-layer.is-closing .ff-search-shell {
+	body :is(.ff-search-layer, .ff-search-layer-ui).is-closing .ff-search-shell {
 		opacity: 0;
 		transition:
 			clip-path var(--ff-search-dur) var(--ff-search-ease),
@@ -15551,7 +15670,7 @@ body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-bu
 	}
 
 	/* Idle after cleanup: keep shell invisible even if visibility delay lags */
-	body .ff-search-layer:not(.is-open):not(.is-closing) .ff-search-shell {
+	body :is(.ff-search-layer, .ff-search-layer-ui):not(.is-open):not(.is-closing) .ff-search-shell {
 		opacity: 0 !important;
 		visibility: hidden !important;
 		pointer-events: none !important;
@@ -15559,25 +15678,25 @@ body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-close .wp-block-bu
 }
 
 /* Bar contents fade in once the pill has opened out — exclude close so its end-fade stays independent */
-body .ff-search-layer .ff-search-bar > :not(.ff-search-close),
-body .ff-search-layer .ff-search-bar::before {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar > :not(.ff-search-close),
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar::before {
 	transition: opacity 0.18s ease;
 }
 
-body .ff-search-layer:not(.is-open) .ff-search-bar .ff-search-field,
-body .ff-search-layer:not(.is-open) .ff-search-bar::before,
-body .ff-search-layer.is-closing .ff-search-bar .ff-search-field,
-body .ff-search-layer.is-closing .ff-search-bar::before {
+body :is(.ff-search-layer, .ff-search-layer-ui):not(.is-open) .ff-search-bar .ff-search-field,
+body :is(.ff-search-layer, .ff-search-layer-ui):not(.is-open) .ff-search-bar::before,
+body :is(.ff-search-layer, .ff-search-layer-ui).is-closing .ff-search-bar .ff-search-field,
+body :is(.ff-search-layer, .ff-search-layer-ui).is-closing .ff-search-bar::before {
 	opacity: 0;
 }
 
-body .ff-search-layer.is-open .ff-search-bar .ff-search-field {
+body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-bar .ff-search-field {
 	transition-delay: 0.12s;
 }
 
 /* Suggestions: flush under navbar — square top, rounded bottom only */
-body .ff-search-layer .ff-search-mega,
-body .ff-search-layer .ff-search-mega.has-background {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega.has-background {
 	margin-top: 0 !important;
 	padding: 0 20px !important;
 	max-height: 0;
@@ -15603,7 +15722,7 @@ body .ff-search-layer .ff-search-mega.has-background {
 		visibility 0s linear var(--ff-search-dur);
 }
 
-body .ff-search-layer .ff-search-mega.is-querying {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega.is-querying {
 	padding: 18px 20px 12px !important;
 	max-height: min(72vh, 900px);
 	opacity: 1;
@@ -15613,15 +15732,15 @@ body .ff-search-layer .ff-search-mega.is-querying {
 	transition-delay: 0s;
 }
 
-body .ff-search-layer .ff-search-mega .wp-block-heading,
-body .ff-search-layer .ff-search-mega #ffSearchProductsTitle,
-body .ff-search-layer .ff-search-mega .ff-search-mega-foot a,
-body .ff-search-layer .ff-search-mega .ff-search-menu-nav a,
-body .ff-search-layer .ff-search-mega .ff-search-empty {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .wp-block-heading,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega #ffSearchProductsTitle,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-mega-foot a,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-menu-nav a,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-empty {
 	color: var(--ff-glass-ink) !important;
 }
 
-body .ff-search-layer .ff-search-mega .has-muted-color {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .has-muted-color {
 	color: var(--ff-glass-muted) !important;
 }
 
@@ -15629,40 +15748,40 @@ body .ff-search-layer .ff-search-mega .has-muted-color {
  * Product cards: same ink as shop/slideshow cards — never inherit
  * glass-ink (esp. white on ff-glass-dark) onto the solid surface.
  */
-body .ff-search-layer .ff-search-mega .ff-search-hit,
-body .ff-search-layer .ff-search-mega .ff-search-hit:hover,
-body .ff-search-layer .ff-search-mega .ff-search-hit:focus-visible,
-body .ff-search-layer .ff-search-mega a.ff-search-hit,
-body .ff-search-layer .ff-search-mega a.ff-search-hit:visited,
-body .ff-search-layer .ff-search-mega a.ff-search-hit:hover,
-body .ff-search-layer .ff-search-mega a.ff-search-hit:focus-visible {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit:hover,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit:focus-visible,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega a.ff-search-hit,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega a.ff-search-hit:visited,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega a.ff-search-hit:hover,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega a.ff-search-hit:focus-visible {
 	background: var(--wp--preset--color--base, #fff) !important;
 	background-color: var(--wp--preset--color--base, #fff) !important;
 	color: var(--wp--preset--color--contrast, #0e1114) !important;
 }
 
-body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__body,
-body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__title,
-body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__price,
-body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__delivery,
-body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__delivery > span,
-body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__delivery svg {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit .ff-prod-card__body,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit .ff-prod-card__title,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit .ff-prod-card__price,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit .ff-prod-card__delivery,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit .ff-prod-card__delivery > span,
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit .ff-prod-card__delivery svg {
 	color: var(--wp--preset--color--contrast, #0e1114) !important;
 	fill: none;
 	stroke: currentColor;
 }
 
-body .ff-search-layer .ff-search-mega .ff-search-hit .ff-prod-card__tax {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit .ff-prod-card__tax {
 	color: var(--wp--preset--color--muted, #66707a) !important;
 }
 
-body .ff-search-layer .ff-search-mega .ff-search-hit .ff-delivery-info__btn {
+body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega .ff-search-hit .ff-delivery-info__btn {
 	color: var(--wp--preset--color--contrast, #0e1114) !important;
 }
 
 @media (max-width: 960px) {
 	/* Full-bleed overlay — no navbar under the search UI */
-	body .ff-search-layer .ff-search-backdrop {
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-backdrop {
 		top: 0 !important;
 	}
 
@@ -15718,9 +15837,9 @@ body .ff-search-layer .ff-search-mega .ff-search-hit .ff-delivery-info__btn {
 		}
 	}
 
-	body .ff-search-layer .ff-search-shell,
-	body .ff-search-layer .ff-search-shell.has-background,
-	body .ff-search-layer .ff-search-shell.has-base-background-color {
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-shell,
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-shell.has-background,
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-shell.has-base-background-color {
 		padding: 12px !important;
 		background: transparent !important;
 		clip-path: none;
@@ -15731,7 +15850,7 @@ body .ff-search-layer .ff-search-mega .ff-search-hit .ff-delivery-info__btn {
 			transform 0.32s var(--ff-search-ease) 0.04s;
 	}
 
-	body .ff-search-layer.is-open .ff-search-shell {
+	body :is(.ff-search-layer, .ff-search-layer-ui).is-open .ff-search-shell {
 		clip-path: none;
 		opacity: 1;
 		transform: none !important;
@@ -15740,15 +15859,15 @@ body .ff-search-layer .ff-search-mega .ff-search-hit .ff-delivery-info__btn {
 			transform 0.36s var(--ff-search-ease);
 	}
 
-	body .ff-search-layer .ff-search-bar,
-	body .ff-search-layer .ff-search-bar.has-background,
-	body .ff-search-layer .ff-search-bar.has-base-background-color {
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar,
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar.has-background,
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-bar.has-base-background-color {
 		transform-origin: center top;
 	}
 
 	/* Results panel: rounded on all corners + gap under the search bar */
-	body .ff-search-layer .ff-search-mega,
-	body .ff-search-layer .ff-search-mega.has-background {
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega,
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega.has-background {
 		margin-top: 1em !important;
 		border-radius: 24px !important;
 		border-top-left-radius: 24px !important;
@@ -15756,14 +15875,14 @@ body .ff-search-layer .ff-search-mega .ff-search-hit .ff-delivery-info__btn {
 		border-top: 1px solid var(--ff-glass-border) !important;
 	}
 
-	body.ff-shape-sharp .ff-search-layer .ff-search-mega,
-	body.ff-shape-sharp .ff-search-layer .ff-search-mega.has-background {
+	body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega,
+	body.ff-shape-sharp :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega.has-background {
 		border-radius: 0 !important;
 		border-top-left-radius: 0 !important;
 		border-top-right-radius: 0 !important;
 	}
 
-	body .ff-search-layer .ff-search-mega.is-querying {
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega.is-querying {
 		max-height: none;
 		overflow: visible;
 	}
@@ -15771,9 +15890,9 @@ body .ff-search-layer .ff-search-mega .ff-search-hit .ff-delivery-info__btn {
 
 @media (prefers-reduced-motion: reduce) {
 	body .ff-search-layer,
-	body .ff-search-layer .ff-search-backdrop,
-	body .ff-search-layer .ff-search-shell,
-	body .ff-search-layer .ff-search-mega {
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-backdrop,
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-shell,
+	body :is(.ff-search-layer, .ff-search-layer-ui) .ff-search-mega {
 		transition-duration: 0.01s !important;
 		transition-delay: 0s !important;
 	}

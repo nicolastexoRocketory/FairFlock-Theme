@@ -88,6 +88,32 @@
       document.body.appendChild(menuLayer);
     }
 
+    /*
+     * Desktop: mount search UI inside the header so Logo/Nav stay above the
+     * backdrop and can receive hover while search is open. Mobile keeps UI
+     * in the layer (header slides away).
+     */
+    var searchUi = layer && layer.querySelector(".ff-search-layer-ui");
+
+    function placeSearchUi() {
+      if (!layer || !searchUi) return;
+      var header = document.querySelector(".ff-header");
+      var desktop = isDesktopSearchDock();
+      if (desktop && header) {
+        if (searchUi.parentElement !== header) {
+          header.appendChild(searchUi);
+        }
+        return;
+      }
+      if (searchUi.parentElement !== layer) {
+        if (backdrop && backdrop.parentElement === layer && backdrop.nextSibling) {
+          layer.insertBefore(searchUi, backdrop.nextSibling);
+        } else {
+          layer.appendChild(searchUi);
+        }
+      }
+    }
+
     var form = layer && (layer.querySelector("form") || document.getElementById("ffSearchForm"));
     var input =
       (layer &&
@@ -107,6 +133,13 @@
 
     function isDesktopSearchDock() {
       return !!(desktopSearchMq && desktopSearchMq.matches);
+    }
+
+    placeSearchUi();
+    if (desktopSearchMq && typeof desktopSearchMq.addEventListener === "function") {
+      desktopSearchMq.addEventListener("change", placeSearchUi);
+    } else if (desktopSearchMq && typeof desktopSearchMq.addListener === "function") {
+      desktopSearchMq.addListener(placeSearchUi);
     }
 
     function readIconRect() {
@@ -971,9 +1004,15 @@
       if (toggle) toggle.classList.remove("is-ff-search-reappear");
       layer.style.removeProperty("visibility");
       layer.style.removeProperty("pointer-events");
+      placeSearchUi();
       positionSearchShell();
       if (shell) void shell.offsetWidth;
       layer.classList.add("is-open");
+      layer.classList.remove("is-closing");
+      if (searchUi) {
+        searchUi.classList.add("is-open");
+        searchUi.classList.remove("is-closing");
+      }
       layer.setAttribute("aria-hidden", "false");
       document.body.classList.add("is-ff-search-open");
       setSearchExpanded(true);
@@ -998,6 +1037,10 @@
          :hover on the X must not pin opacity at 1 during that fade. */
       layer.classList.add("is-closing");
       layer.classList.remove("is-open");
+      if (searchUi) {
+        searchUi.classList.add("is-closing");
+        searchUi.classList.remove("is-open");
+      }
       layer.setAttribute("aria-hidden", "true");
       document.body.classList.remove("is-ff-search-open");
       document.body.classList.add("is-ff-search-closing");
@@ -1012,6 +1055,7 @@
       closeCleanupTimer = window.setTimeout(function () {
         closeCleanupTimer = null;
         layer.classList.remove("is-closing");
+        if (searchUi) searchUi.classList.remove("is-closing");
         document.body.classList.remove("is-ff-search-closing");
         if (!layer.classList.contains("is-open")) {
           clearSearchPosition();

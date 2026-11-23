@@ -149,6 +149,11 @@
 			return;
 		}
 
+		/* Suche weicht dem Mega-Menü — Nav bleibt hoverbar während die Suche offen ist. */
+		if (typeof window.fairflockCloseSearch === "function") {
+			window.fairflockCloseSearch();
+		}
+
 		openMode = force ? "panel" : "hover";
 		openItem = item || openItem;
 		slot.classList.remove("is-closing");

@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.544',
+			'items'   => array(
+				__( 'Suche: Logo bleibt oben (kein Abschneiden); Nav hoverbar — Mega-Menü schließt die Suche.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.543',
 			'items'   => array(
 				__( 'Produkt-PopUp: Schließen erst nach 3 Sekunden (Backdrop/✕/Escape; kein Sofort-Wegklicken).', 'fairflock' ),

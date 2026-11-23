@@ -20,6 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.547',
+			'items'   => array(
+				__( 'Logo bleibt über dem Mega-Menü (Header über Panel-Stacking).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.546',
+			'items'   => array(
+				__( 'Nur Countdown-PopUp: Schließen erst nach 3 Sekunden; Produkt-Quickview wieder sofort schließbar.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.545',
+			'items'   => array(
+				__( 'Nav: Burger früher bei Logo-mittig — Menüpunkte nicht mehr hinter dem Logo.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.544',
 			'items'   => array(
 				__( 'Suche: Logo bleibt oben (kein Abschneiden); Nav hoverbar — Mega-Menü schließt die Suche.', 'fairflock' ),

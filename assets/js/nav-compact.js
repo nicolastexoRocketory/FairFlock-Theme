@@ -1,12 +1,13 @@
 /**
- * Collapse desktop text-nav to the burger as soon as items would wrap
- * onto a second line (or overflow the nav slot).
+ * Collapse desktop text-nav to the burger as soon as items would wrap,
+ * overflow the nav slot, or collide with the (often oversized) center logo.
  *
  * Body class: ff-nav-compact — CSS mirrors the ≤960px burger/nav rules.
  */
 (function () {
 	var MQ = "(min-width: 961px)";
-	var HYSTERESIS = 28;
+	var HYSTERESIS = 36;
+	var LOGO_GAP = 16;
 	var cachedNeed = 0;
 	var raf = 0;
 	var ro = null;
@@ -23,8 +24,29 @@
 		return window.matchMedia(MQ).matches;
 	}
 
+	function isLogoCenter() {
+		return (
+			document.body.classList.contains("ff-nav-layout-logo-center") ||
+			!!document.querySelector(".ff-header.ff-header--nav-logo-center")
+		);
+	}
+
 	function navEl() {
 		return document.querySelector(".ff-header__nav");
+	}
+
+	function brandEl() {
+		return document.querySelector(".ff-header__brand");
+	}
+
+	function logoEl() {
+		var brand = brandEl();
+		if (!brand) return null;
+		return (
+			brand.querySelector(".wp-block-site-logo") ||
+			brand.querySelector("img") ||
+			brand
+		);
 	}
 
 	function navContainer(nav) {
@@ -47,14 +69,13 @@
 		);
 	}
 
+	/** Full inline span of top-level items (includes gaps). */
 	function measureNeededWidth(container) {
 		var items = topLevelItems(container);
 		if (!items.length) return 0;
-		var sum = 0;
-		items.forEach(function (el) {
-			sum += el.getBoundingClientRect().width;
-		});
-		return Math.ceil(sum);
+		var first = items[0].getBoundingClientRect();
+		var last = items[items.length - 1].getBoundingClientRect();
+		return Math.ceil(Math.max(0, last.right - first.left));
 	}
 
 	function itemsWrap(container) {
@@ -69,21 +90,59 @@
 		return container.scrollWidth > container.clientWidth + 1;
 	}
 
+	/**
+	 * True when any top-level item overlaps the logo/brand box
+	 * (logo-center: oversized mark often covers the last menu labels).
+	 */
+	function overlapsLogo(container) {
+		var logo = logoEl();
+		if (!logo) return false;
+		var logoRect = logo.getBoundingClientRect();
+		if (!logoRect.width || !logoRect.height) return false;
+		var items = topLevelItems(container);
+		var i;
+		for (i = 0; i < items.length; i++) {
+			var r = items[i].getBoundingClientRect();
+			if (!r.width) continue;
+			if (
+				r.right > logoRect.left - LOGO_GAP &&
+				r.left < logoRect.right + LOGO_GAP
+			) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Free width the text-nav may use. Logo-center: left edge → logo left
+	 * (not bar − brand − icons — the large logo protrudes into the nav column).
+	 */
 	function availableNavWidth() {
 		var bar = document.querySelector(".ff-header__bar");
-		var brand = document.querySelector(".ff-header__brand");
+		var brand = brandEl();
+		var logo = logoEl();
 		var icons = document.querySelector(
 			".ff-header__icons, .ff-header__actions"
 		);
 		var search = document.querySelector(".ff-header__search");
 		if (!bar) return 0;
+
+		if (isLogoCenter() && logo) {
+			var barRect = bar.getBoundingClientRect();
+			var logoLeft = logo.getBoundingClientRect().left;
+			var pad = 16;
+			var style = window.getComputedStyle(bar);
+			var pl = parseFloat(style.paddingLeft) || 0;
+			return Math.max(0, Math.floor(logoLeft - barRect.left - pl - LOGO_GAP - pad));
+		}
+
 		var w = bar.getBoundingClientRect().width;
 		if (brand) w -= brand.getBoundingClientRect().width;
 		if (icons) w -= icons.getBoundingClientRect().width;
 		if (search && getComputedStyle(search).display !== "none") {
 			w -= search.getBoundingClientRect().width;
 		}
-		/* gaps / padding slack */
 		return Math.max(0, w - 48);
 	}
 
@@ -115,10 +174,10 @@
 		}
 
 		cachedNeed = measureNeededWidth(container) || cachedNeed;
-		var shouldCompact = itemsWrap(container);
-		if (!shouldCompact && cachedNeed > 0) {
-			shouldCompact = cachedNeed > availableNavWidth();
-		}
+		var shouldCompact =
+			itemsWrap(container) ||
+			overlapsLogo(container) ||
+			(cachedNeed > 0 && cachedNeed > availableNavWidth());
 
 		if (shouldCompact) {
 			document.body.classList.add("ff-nav-compact");
@@ -138,10 +197,14 @@
 		}
 		var bar = document.querySelector(".ff-header__bar");
 		var nav = navEl();
-		if (typeof ResizeObserver === "function" && (bar || nav)) {
+		var brand = brandEl();
+		var logo = logoEl();
+		if (typeof ResizeObserver === "function") {
 			ro = new ResizeObserver(schedule);
 			if (bar) ro.observe(bar);
 			if (nav) ro.observe(nav);
+			if (brand) ro.observe(brand);
+			if (logo && logo !== brand) ro.observe(logo);
 		}
 	});
 })();

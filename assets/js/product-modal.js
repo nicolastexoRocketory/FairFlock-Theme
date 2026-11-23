@@ -38,46 +38,6 @@
 		var galleryImages = [];
 		var currentProduct = null;
 		var selectedOptions = {};
-		var CLOSE_LOCK_MS = 3000;
-		var openedAt = 0;
-		var closeUnlockTimer = null;
-
-		function isCloseLocked() {
-			if (!layer.classList.contains("is-open")) return false;
-			if (layer.classList.contains("is-ff-close-locked")) return true;
-			return openedAt > 0 && Date.now() - openedAt < CLOSE_LOCK_MS;
-		}
-
-		function setCloseLocked(locked) {
-			layer.classList.toggle("is-ff-close-locked", !!locked);
-			document.body.classList.toggle("is-ff-product-close-locked", !!locked);
-			if (closeBtn) {
-				closeBtn.classList.toggle("is-ff-close-locked", !!locked);
-				closeBtn.setAttribute("aria-disabled", locked ? "true" : "false");
-				if (locked) {
-					closeBtn.setAttribute("tabindex", "-1");
-				} else {
-					closeBtn.removeAttribute("tabindex");
-				}
-			}
-			if (backdrop) {
-				backdrop.style.pointerEvents = locked ? "none" : "";
-			}
-		}
-
-		function armCloseLock() {
-			openedAt = Date.now();
-			setCloseLocked(true);
-			if (closeUnlockTimer) {
-				window.clearTimeout(closeUnlockTimer);
-			}
-			closeUnlockTimer = window.setTimeout(function () {
-				closeUnlockTimer = null;
-				if (layer.classList.contains("is-open")) {
-					setCloseLocked(false);
-				}
-			}, CLOSE_LOCK_MS);
-		}
 
 		function variationAttrs(p) {
 			if (!p || !Array.isArray(p.attributes)) return [];
@@ -1001,23 +961,12 @@
 			layer.classList.add("is-open");
 			layer.setAttribute("aria-hidden", "false");
 			document.body.classList.add("is-ff-product-open");
-			armCloseLock();
 			window.setTimeout(function () {
-				if (closeBtn && !isCloseLocked()) closeBtn.focus();
+				if (closeBtn) closeBtn.focus();
 			}, 40);
 		}
 
-		function closeModal(opts) {
-			opts = opts || {};
-			if (!opts.force && isCloseLocked()) {
-				return;
-			}
-			if (closeUnlockTimer) {
-				window.clearTimeout(closeUnlockTimer);
-				closeUnlockTimer = null;
-			}
-			openedAt = 0;
-			setCloseLocked(false);
+		function closeModal() {
 			layer.classList.remove("is-open");
 			layer.setAttribute("aria-hidden", "true");
 			document.body.classList.remove("is-ff-product-open");
@@ -1071,7 +1020,7 @@
 
 		function finishAddSuccess() {
 			setStatus("Zum Warenkorb hinzugefügt.");
-			closeModal({ force: true });
+			closeModal();
 			window.setTimeout(function () {
 				if (typeof window.fairflockOnAddedToCart === "function") {
 					window.fairflockOnAddedToCart();
@@ -1333,60 +1282,27 @@
 			true
 		);
 
-		/* Capture phase: block dismiss during lock (incl. click-through from Ansehen). */
-		layer.addEventListener(
-			"pointerdown",
-			function (e) {
-				if (!isCloseLocked()) return;
-				var t = e.target;
-				if (
-					t === backdrop ||
-					(closeBtn && (t === closeBtn || closeBtn.contains(t))) ||
-					(t && t.classList && t.classList.contains("ff-product-backdrop"))
-				) {
-					e.preventDefault();
-					e.stopPropagation();
-				}
-			},
-			true
-		);
-
 		if (closeBtn) {
-			closeBtn.addEventListener("click", function (e) {
-				e.preventDefault();
-				e.stopPropagation();
-				if (isCloseLocked()) return;
+			closeBtn.addEventListener("click", function () {
 				closeModal();
 			});
 		}
 		if (backdrop) {
-			backdrop.addEventListener("click", function (e) {
-				e.preventDefault();
-				e.stopPropagation();
-				if (isCloseLocked()) return;
+			backdrop.addEventListener("click", function () {
 				closeModal();
 			});
 		}
-		document.addEventListener(
-			"keydown",
-			function (e) {
-				if (!layer.classList.contains("is-open")) return;
-				if (e.key === "Escape") {
-					if (isCloseLocked()) {
-						e.preventDefault();
-						e.stopPropagation();
-						return;
-					}
-					closeModal();
-					return;
-				}
-				if (galleryImages.length > 1 && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-					e.preventDefault();
-					setGalleryIndex(galleryIndex + (e.key === "ArrowRight" ? 1 : -1));
-				}
-			},
-			true
-		);
+		document.addEventListener("keydown", function (e) {
+			if (!layer.classList.contains("is-open")) return;
+			if (e.key === "Escape") {
+				closeModal();
+				return;
+			}
+			if (galleryImages.length > 1 && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+				e.preventDefault();
+				setGalleryIndex(galleryIndex + (e.key === "ArrowRight" ? 1 : -1));
+			}
+		});
 
 		ensureCartAuth().catch(function () {
 			/* optional preload */

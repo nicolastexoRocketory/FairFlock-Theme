@@ -490,7 +490,8 @@ body.single-product:not(.home):not(.front-page) .wp-site-blocks > .woocommerce >
 	top: auto;
 	left: auto;
 	translate: none;
-	z-index: 70;
+	/* Above mega panel (90) so protruding logo stays in front */
+	z-index: 100;
 	width: var(--ff-shell);
 	max-width: var(--ff-shell);
 	margin-inline: auto;
@@ -1638,6 +1639,17 @@ html.is-ff-mega-open .ff-header__bar {
 	overflow: visible;
 }
 
+/* Logo/Brand always above the mega panel (slot is body-fixed at z-index 90) */
+html.is-ff-mega-open .ff-header {
+	z-index: 100;
+}
+
+html.is-ff-mega-open .ff-header__brand {
+	position: relative;
+	z-index: 5;
+	overflow: visible;
+}
+
 /* Desktop: native WP-Untermenü des Mega-Triggers aus — Inhalt kommt aus Template-Part */
 @media (min-width: 961px) {
 	.ff-header__nav .wp-block-navigation-submenu.is-style-ff-mega > .wp-block-navigation__submenu-container,
@@ -1648,7 +1660,8 @@ html.is-ff-mega-open .ff-header__bar {
 
 .ff-mega-panel-slot {
 	box-sizing: border-box;
-	z-index: 90;
+	/* Below header (100) so oversized logo paints over the panel */
+	z-index: 80;
 }
 
 /* Frontend: fixed under nav — animiert ein/aus (kein display:none, sonst keine Transition) */
@@ -1662,7 +1675,7 @@ body:not(.block-editor-iframe__body) .ff-mega-panel-slot {
 	padding: 0;
 	margin: 0;
 	box-sizing: border-box;
-	z-index: 90;
+	z-index: 80;
 	visibility: hidden;
 	opacity: 0;
 	pointer-events: none;
@@ -4635,20 +4648,6 @@ a.ff-cart-line__title:hover {
 .ff-product-layer.is-open > .ff-product-modal__close {
 	opacity: 1;
 	pointer-events: auto;
-}
-
-/* Erste 3s nach Öffnen: Schließen gesperrt (✕ + Backdrop) */
-.ff-product-layer.is-open.is-ff-close-locked > .ff-product-modal__close,
-.ff-product-layer.is-open > .ff-product-modal__close.is-ff-close-locked,
-.ff-product-modal > .ff-product-modal__close.is-ff-close-locked {
-	opacity: 0.35 !important;
-	pointer-events: none !important;
-	cursor: default !important;
-}
-
-.ff-product-layer.is-open.is-ff-close-locked > .ff-product-backdrop,
-.ff-product-layer.is-ff-close-locked #ffProductBackdrop {
-	pointer-events: none !important;
 }
 
 /* Legacy: Close noch im Modal (ältere Caches) */

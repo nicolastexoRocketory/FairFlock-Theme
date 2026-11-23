@@ -1,5 +1,6 @@
 /**
  * Countdown pop-up (FairFlock → Pop-up).
+ * Close (✕ / Escape / backdrop) only after CLOSE_LOCK_MS visible.
  */
 (function () {
   var cfg = window.fairflockPopup || {};
@@ -9,6 +10,8 @@
   var dialog = root.querySelector(".ff-popup__dialog");
   var countdown = root.querySelector(".ff-popup__countdown");
   var done = root.querySelector(".ff-popup__done");
+  var closeBtn = root.querySelector(".ff-popup__close");
+  var backdrop = root.querySelector(".ff-popup__backdrop");
   var nums = {};
   Array.prototype.forEach.call(root.querySelectorAll("[data-ff-unit]"), function (el) {
     nums[el.getAttribute("data-ff-unit")] = el;
@@ -19,6 +22,9 @@
   var timer = null;
   var lastFocus = null;
   var FREQ_MS = { day: 864e5, week: 6048e5 };
+  var CLOSE_LOCK_MS = 3000;
+  var openedAt = 0;
+  var closeUnlockTimer = null;
 
   function store(kind) {
     try {
@@ -74,13 +80,55 @@
     return left;
   }
 
+  function isCloseLocked() {
+    if (!root.classList.contains("is-open")) return false;
+    if (root.classList.contains("is-ff-close-locked")) return true;
+    return openedAt > 0 && Date.now() - openedAt < CLOSE_LOCK_MS;
+  }
+
+  function setCloseLocked(locked) {
+    root.classList.toggle("is-ff-close-locked", !!locked);
+    if (closeBtn) {
+      closeBtn.classList.toggle("is-ff-close-locked", !!locked);
+      closeBtn.setAttribute("aria-disabled", locked ? "true" : "false");
+      if (locked) {
+        closeBtn.setAttribute("tabindex", "-1");
+      } else {
+        closeBtn.removeAttribute("tabindex");
+      }
+    }
+    if (backdrop) {
+      backdrop.style.pointerEvents = locked ? "none" : "";
+    }
+  }
+
+  function armCloseLock() {
+    openedAt = Date.now();
+    setCloseLocked(true);
+    if (closeUnlockTimer) {
+      window.clearTimeout(closeUnlockTimer);
+    }
+    closeUnlockTimer = window.setTimeout(function () {
+      closeUnlockTimer = null;
+      if (root.classList.contains("is-open")) {
+        setCloseLocked(false);
+      }
+    }, CLOSE_LOCK_MS);
+  }
+
   function onKey(e) {
     if (e.key === "Escape") {
+      if (isCloseLocked()) {
+        e.preventDefault();
+        return;
+      }
       close();
       return;
     }
     if (e.key !== "Tab") return;
-    var focusables = dialog.querySelectorAll("a[href], button:not([disabled])");
+    var focusables = dialog.querySelectorAll(
+      "a[href], button:not([disabled]):not([aria-disabled='true'])"
+    );
     if (!focusables.length) return;
     var first = focusables[0];
     var last = focusables[focusables.length - 1];
@@ -99,6 +147,7 @@
     document.documentElement.classList.add("is-ff-popup-open");
     void root.offsetWidth;
     root.classList.add("is-open");
+    armCloseLock();
     dialog.focus({ preventScroll: true });
     document.addEventListener("keydown", onKey);
     markSeen();
@@ -107,6 +156,13 @@
   }
 
   function close() {
+    if (isCloseLocked()) return;
+    if (closeUnlockTimer) {
+      window.clearTimeout(closeUnlockTimer);
+      closeUnlockTimer = null;
+    }
+    openedAt = 0;
+    setCloseLocked(false);
     root.classList.remove("is-open");
     document.documentElement.classList.remove("is-ff-popup-open");
     document.removeEventListener("keydown", onKey);
@@ -120,11 +176,23 @@
     }
   }
 
+  root.addEventListener(
+    "pointerdown",
+    function (e) {
+      if (!isCloseLocked()) return;
+      if (e.target.closest("[data-ff-popup-close]")) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
+    true
+  );
+
   root.addEventListener("click", function (e) {
-    if (e.target.closest("[data-ff-popup-close]")) {
-      e.preventDefault();
-      close();
-    }
+    if (!e.target.closest("[data-ff-popup-close]")) return;
+    e.preventDefault();
+    if (isCloseLocked()) return;
+    close();
   });
 
   if (tick() <= 0 && cfg.afterEnd === "hide") return;

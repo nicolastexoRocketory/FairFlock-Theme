@@ -158,13 +158,25 @@
 	background: transparent;
 	color: var(--pp-ink-2);
 	cursor: pointer;
-	transition: background-color 0.2s ease, color 0.2s ease;
+	transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
 }
 
 .ff-popup__close:hover,
 .ff-popup__close:focus-visible {
 	background: var(--pp-tile);
 	color: var(--pp-ink);
+}
+
+/* Erste 3s nach Öffnen: Schließen gesperrt (✕ / Backdrop / Escape) */
+.ff-popup.is-open.is-ff-close-locked .ff-popup__close,
+.ff-popup__close.is-ff-close-locked {
+	opacity: 0.35;
+	pointer-events: none;
+	cursor: default;
+}
+
+.ff-popup.is-open.is-ff-close-locked .ff-popup__backdrop {
+	pointer-events: none;
 }
 
 .ff-popup__close:focus-visible,

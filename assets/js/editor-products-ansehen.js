@@ -1,5 +1,5 @@
 /**
- * Product slider/collection: Ansehen colors + image aspect (1:1 / 2:3).
+ * Product slider/collection: Ansehen colors + image aspect (1:1 / 2:3 / 3:4).
  * Stored in block metadata (ffProdViewBg / ffProdViewFg / ffProdAspect).
  */
 (function (wp, config) {
@@ -31,7 +31,13 @@
 		"ff-pattern-products__shell",
 	];
 
-	var ASPECT_CLASS = "ff-prod-aspect--23";
+	var ASPECT_CLASSES = ["ff-prod-aspect--23", "ff-prod-aspect--34"];
+
+	var ASPECT_MAP = {
+		"1-1": { className: "", css: "" },
+		"2-3": { className: "ff-prod-aspect--23", css: "2 / 3" },
+		"3-4": { className: "ff-prod-aspect--34", css: "3 / 4" },
+	};
 
 	function hasClass(className, token) {
 		return (
@@ -73,16 +79,35 @@
 		setMeta(props, patch);
 	}
 
+	function normalizeAspect(value) {
+		if (value === "2-3" || value === "3-4") {
+			return value;
+		}
+		return "1-1";
+	}
+
+	function aspectClassName(aspect) {
+		var entry = ASPECT_MAP[normalizeAspect(aspect)];
+		return (entry && entry.className) || "";
+	}
+
+	function aspectCss(aspect) {
+		var entry = ASPECT_MAP[normalizeAspect(aspect)];
+		return (entry && entry.css) || "";
+	}
+
 	function syncAspectClass(props, aspect) {
 		var className = props.attributes.className || "";
+		var nextAspect = normalizeAspect(aspect);
+		var nextToken = aspectClassName(nextAspect);
 		var parts = String(className)
 			.split(/\s+/)
 			.filter(Boolean)
 			.filter(function (t) {
-				return t !== ASPECT_CLASS;
+				return ASPECT_CLASSES.indexOf(t) === -1;
 			});
-		if (aspect === "2-3") {
-			parts.push(ASPECT_CLASS);
+		if (nextToken) {
+			parts.push(nextToken);
 		}
 		var next = parts.join(" ");
 		if (next !== className) {
@@ -99,7 +124,7 @@
 			var meta = getMeta(props.attributes);
 			var bg = meta.ffProdViewBg || undefined;
 			var fg = meta.ffProdViewFg || undefined;
-			var aspect = meta.ffProdAspect === "2-3" ? "2-3" : "1-1";
+			var aspect = normalizeAspect(meta.ffProdAspect);
 
 			return el(
 				Fragment,
@@ -118,7 +143,7 @@
 							label: i18n.aspectLabel || "Bildformat auf Karten",
 							help:
 								i18n.aspectHelp ||
-								"Standard 1:1. Portrait 2:3 nur für diese Sammlung.",
+								"Standard 1:1. Portrait 2:3 oder 3:4 nur für diese Sammlung.",
 							value: aspect,
 							options: [
 								{
@@ -129,11 +154,15 @@
 									label: i18n.aspect23 || "2:3 (Hochformat)",
 									value: "2-3",
 								},
+								{
+									label: i18n.aspect34 || "3:4 (Hochformat)",
+									value: "3-4",
+								},
 							],
 							onChange: function (value) {
-								var next = value === "2-3" ? "2-3" : "1-1";
+								var next = normalizeAspect(value);
 								setMeta(props, {
-									ffProdAspect: next === "2-3" ? "2-3" : "",
+									ffProdAspect: next === "1-1" ? "" : next,
 								});
 								syncAspectClass(props, next);
 							},
@@ -177,6 +206,9 @@
 			}
 
 			var meta = getMeta(props.attributes);
+			var aspect = normalizeAspect(meta.ffProdAspect);
+			var token = aspectClassName(aspect);
+			var css = aspectCss(aspect);
 			var style = Object.assign({}, (props.wrapperProps && props.wrapperProps.style) || {});
 			if (meta.ffProdViewBg) {
 				style["--ff-prod-view-bg"] = meta.ffProdViewBg;
@@ -184,13 +216,13 @@
 			if (meta.ffProdViewFg) {
 				style["--ff-prod-view-fg"] = meta.ffProdViewFg;
 			}
-			if (meta.ffProdAspect === "2-3") {
-				style["--ff-product-aspect"] = "2 / 3";
+			if (css) {
+				style["--ff-product-aspect"] = css;
 			}
 
 			var className = (props.wrapperProps && props.wrapperProps.className) || "";
-			if (meta.ffProdAspect === "2-3" && !hasClass(className, ASPECT_CLASS)) {
-				className = (className ? className + " " : "") + ASPECT_CLASS;
+			if (token && !hasClass(className, token)) {
+				className = (className ? className + " " : "") + token;
 			}
 
 			return el(

@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.557',
+			'items'   => array(
+				__( 'Produkt-Slideshows: Bildformat 3:4 zusätzlich zu 1:1 und 2:3 wählbar.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.556',
 			'items'   => array(
 				__( 'Mobile Nav: mehr Abstand Warenkorb↔Account, größere Suche-/Warenkorb-Icons, Logo-Breite aus dem Editor greift wieder.', 'fairflock' ),

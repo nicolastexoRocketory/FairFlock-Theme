@@ -91,7 +91,7 @@ body,
 }
 
 /*
- * Produkt-Sammlung / Slider: optional Portrait 2:3
+ * Produkt-Sammlung / Slider: optionale Portrait-Formate
  * (Site-Editor → Block → Produktbilder).
  */
 .ff-prod-aspect--23,
@@ -102,6 +102,16 @@ body,
 .wp-block-woocommerce-product-collection.ff-prod-aspect--23,
 .ff-pattern-products__shell.ff-prod-aspect--23 {
 	--ff-product-aspect: 2 / 3;
+}
+
+.ff-prod-aspect--34,
+.ff-pattern-products--woo.ff-prod-aspect--34,
+.ff-prod-slider.ff-prod-aspect--34,
+.ff-prod-slider__track.ff-prod-aspect--34,
+.ff-shop__collection.ff-prod-aspect--34,
+.wp-block-woocommerce-product-collection.ff-prod-aspect--34,
+.ff-pattern-products__shell.ff-prod-aspect--34 {
+	--ff-product-aspect: 3 / 4;
 }
 
 /*

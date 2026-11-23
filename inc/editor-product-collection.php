@@ -71,9 +71,10 @@ function fairflock_enqueue_product_collection_editor_assets() {
 					'text'         => __( 'Text', 'fairflock' ),
 					'aspectPanel'  => __( 'Produktbilder', 'fairflock' ),
 					'aspectLabel'  => __( 'Bildformat auf Karten', 'fairflock' ),
-					'aspectHelp'   => __( 'Standard 1:1. Portrait 2:3 nur für diese Sammlung/diesen Slider.', 'fairflock' ),
+					'aspectHelp'   => __( 'Standard 1:1. Portrait 2:3 oder 3:4 nur für diese Sammlung/diesen Slider.', 'fairflock' ),
 					'aspect11'     => __( '1:1 (Standard)', 'fairflock' ),
 					'aspect23'     => __( '2:3 (Hochformat)', 'fairflock' ),
+					'aspect34'     => __( '3:4 (Hochformat)', 'fairflock' ),
 				),
 			)
 		);
@@ -113,10 +114,45 @@ function fairflock_sanitize_prod_view_color( $color ) {
 }
 
 /**
- * Injects Ansehen colors + optional 2:3 card aspect from block metadata.
+ * Normalizes product-card aspect metadata (1-1 / 2-3 / 3-4).
+ *
+ * @since 0.9.557
+ *
+ * @param mixed $raw Raw metadata value.
+ * @return string Empty for 1:1, otherwise '2-3' or '3-4'.
+ */
+function fairflock_normalize_prod_aspect( $raw ) {
+	$value = is_string( $raw ) ? $raw : '';
+	if ( '2-3' === $value || '3-4' === $value ) {
+		return $value;
+	}
+	return '';
+}
+
+/**
+ * CSS class for a product-card aspect token.
+ *
+ * @since 0.9.557
+ *
+ * @param string $aspect Aspect token from fairflock_normalize_prod_aspect().
+ * @return string
+ */
+function fairflock_prod_aspect_class( $aspect ) {
+	if ( '2-3' === $aspect ) {
+		return 'ff-prod-aspect--23';
+	}
+	if ( '3-4' === $aspect ) {
+		return 'ff-prod-aspect--34';
+	}
+	return '';
+}
+
+/**
+ * Injects Ansehen colors + optional card aspect from block metadata.
  *
  * @since 0.9.257
  * @since 0.9.420 Aspect ratio (ffProdAspect / ff-prod-aspect--23).
+ * @since 0.9.557 Aspect 3:4 (ff-prod-aspect--34).
  *
  * @param string               $block_content Rendered HTML.
  * @param array<string, mixed> $block         Parsed block.
@@ -159,7 +195,7 @@ function fairflock_render_products_ansehen_colors( $block_content, $block ) {
 
 	$bg     = isset( $meta['ffProdViewBg'] ) ? fairflock_sanitize_prod_view_color( $meta['ffProdViewBg'] ) : '';
 	$fg     = isset( $meta['ffProdViewFg'] ) ? fairflock_sanitize_prod_view_color( $meta['ffProdViewFg'] ) : '';
-	$aspect = ( isset( $meta['ffProdAspect'] ) && '2-3' === (string) $meta['ffProdAspect'] ) ? '2-3' : '';
+	$aspect = isset( $meta['ffProdAspect'] ) ? fairflock_normalize_prod_aspect( $meta['ffProdAspect'] ) : '';
 
 	if ( '' === $bg && '' === $fg && '' === $aspect ) {
 		return $block_content;
@@ -174,25 +210,32 @@ function fairflock_render_products_ansehen_colors( $block_content, $block ) {
 	}
 	if ( '2-3' === $aspect ) {
 		$vars .= '--ff-product-aspect:2 / 3;';
+	} elseif ( '3-4' === $aspect ) {
+		$vars .= '--ff-product-aspect:3 / 4;';
 	}
+
+	$aspect_class = fairflock_prod_aspect_class( $aspect );
 
 	return (string) preg_replace_callback(
 		'/^(\s*<[a-z0-9:-]+)([^>]*)>/i',
-		static function ( $matches ) use ( $vars, $aspect ) {
+		static function ( $matches ) use ( $vars, $aspect_class ) {
 			$tag   = $matches[1];
 			$attrs = $matches[2];
 
-			if ( '2-3' === $aspect && ! preg_match( '/\bff-prod-aspect--23\b/', $attrs ) ) {
+			if ( '' !== $aspect_class && ! preg_match( '/\b' . preg_quote( $aspect_class, '/' ) . '\b/', $attrs ) ) {
+				/* Drop the other portrait class if present. */
+				$attrs = preg_replace( '/\bff-prod-aspect--(?:23|34)\b/', '', $attrs );
 				if ( preg_match( '/\sclass=(["\'])(.*?)\1/i', $attrs, $class_match ) ) {
-					$quote = $class_match[1];
-					$attrs = preg_replace(
+					$quote   = $class_match[1];
+					$classes = trim( preg_replace( '/\s+/', ' ', (string) $class_match[2] ) . ' ' . $aspect_class );
+					$attrs   = preg_replace(
 						'/\sclass=(["\'])(.*?)\1/i',
-						' class=' . $quote . $class_match[2] . ' ff-prod-aspect--23' . $quote,
+						' class=' . $quote . $classes . $quote,
 						$attrs,
 						1
 					);
 				} else {
-					$attrs .= ' class="ff-prod-aspect--23"';
+					$attrs .= ' class="' . esc_attr( $aspect_class ) . '"';
 				}
 			}
 

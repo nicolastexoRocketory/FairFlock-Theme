@@ -13992,32 +13992,13 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 	}
 
 	/*
-	 * Filter als zentriertes PopUp: Root wird per JS nach <body> portiert
-	 * (is-ff-filter-popup), damit es über Header/Logo liegt.
+	 * Filter als zentriertes PopUp über der Navbar (CSS only — no JS body portal;
+	 * a MutationObserver portal froze shop pages with WC Interactivity).
 	 */
-	body > .wc-block-product-filters.is-ff-filter-popup,
-	body > .wc-block-product-filters.is-overlay-opened {
-		position: fixed !important;
-		inset: 0 !important;
-		z-index: 100200 !important;
-		width: auto !important;
-		max-width: none !important;
-		margin: 0 !important;
-		padding: 0 !important;
-		border: 0 !important;
-		border-radius: 0 !important;
-		background: transparent !important;
-		display: block !important;
-		overflow: visible !important;
-	}
-
-	body > .wc-block-product-filters.is-ff-filter-popup > .wc-block-product-filters__open-overlay,
-	body > .wc-block-product-filters.is-overlay-opened > .wc-block-product-filters__open-overlay {
+	.ff-shop .wc-block-product-filters.is-overlay-opened > .wc-block-product-filters__open-overlay {
 		display: none !important;
 	}
 
-	body > .wc-block-product-filters.is-ff-filter-popup .wc-block-product-filters__overlay,
-	body > .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay,
 	.ff-shop .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay {
 		display: grid !important;
 		place-items: center;
@@ -14032,11 +14013,10 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 		max-width: none !important;
 		inset: 0 !important;
 		position: fixed !important;
-		z-index: 1 !important;
+		/* Above header (100) / logo */
+		z-index: 100200 !important;
 	}
 
-	body > .wc-block-product-filters.is-ff-filter-popup .wc-block-product-filters__overlay-wrapper,
-	body > .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-wrapper,
 	.ff-shop .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-wrapper {
 		position: relative !important;
 		inset: auto !important;
@@ -14048,8 +14028,6 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 		overflow: visible !important;
 	}
 
-	body > .wc-block-product-filters.is-ff-filter-popup .wc-block-product-filters__overlay-dialog,
-	body > .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-dialog,
 	.ff-shop .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-dialog {
 		position: relative !important;
 		inset: auto !important;
@@ -14070,10 +14048,12 @@ body.ff-product-hover-zoom .ff-prod-card__hover-img {
 		background: var(--ff-surface, #fff) !important;
 	}
 
-	body.ff-shape-sharp > .wc-block-product-filters.is-ff-filter-popup .wc-block-product-filters__overlay-dialog,
-	body.ff-shape-sharp > .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-dialog,
 	body.ff-shape-sharp .ff-shop .wc-block-product-filters.is-overlay-opened .wc-block-product-filters__overlay-dialog {
 		border-radius: 0 !important;
+	}
+
+	body:has(.ff-shop .wc-block-product-filters.is-overlay-opened) {
+		overflow: hidden;
 	}
 
 	.ff-shop .wc-block-product-filters__overlay-content,

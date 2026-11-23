@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.554',
+			'items'   => array(
+				__( 'Shop: Filter-Portal/MutationObserver entfernt — behebt Einfrieren von Shop- und Kategorieseiten.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.553',
 			'items'   => array(
 				__( 'Shop: WooCommerce „Coming Soon“ bleibt dauerhaft aus — Katalog/Kategorien wieder sichtbar.', 'fairflock' ),

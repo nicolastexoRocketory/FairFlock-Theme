@@ -883,7 +883,12 @@ function fairflock_shop_columns_script() {
 			filters.insertBefore(toolbar, filters.firstChild);
 		});
 
-		/* „Schließen“-Textbutton über „Anwenden“ im Filter-PopUp */
+		/*
+		 * „Schließen“ im Filter-PopUp. No MutationObserver / body-portal:
+		 * observing WC Interactivity subtree + moving the root caused an
+		 * infinite mutation loop that froze shop / category pages.
+		 * Overlay stacking is handled in CSS (fixed + high z-index).
+		 */
 		function enhanceFilterClose() {
 			document.querySelectorAll(".wc-block-product-filters").forEach(function (root) {
 				var footer = root.querySelector(".wc-block-product-filters__overlay-footer");
@@ -900,49 +905,18 @@ function fairflock_shop_columns_script() {
 			});
 		}
 
-		/**
-		 * Portal filter root to <body> while open so the popup escapes
-		 * header/wp-site-blocks stacking (otherwise it sits under the navbar).
-		 */
-		function syncFilterPopupPortal() {
-			document.querySelectorAll(".wc-block-product-filters").forEach(function (root) {
-				var open = root.classList.contains("is-overlay-opened");
-				var ph = root._ffFilterPh;
-				if (open) {
-					if (!ph) {
-						ph = document.createElement("div");
-						ph.className = "ff-shop-filter-placeholder";
-						ph.setAttribute("aria-hidden", "true");
-						ph.hidden = true;
-						if (root.parentNode) {
-							root.parentNode.insertBefore(ph, root);
-						}
-						root._ffFilterPh = ph;
-					}
-					if (root.parentElement !== document.body) {
-						document.body.appendChild(root);
-					}
-					root.classList.add("is-ff-filter-popup");
-				} else {
-					root.classList.remove("is-ff-filter-popup");
-					if (ph && ph.parentNode && root.parentElement === document.body) {
-						ph.parentNode.insertBefore(root, ph);
-					}
-				}
-			});
-			var anyOpen = !!document.querySelector(".wc-block-product-filters.is-overlay-opened");
-			document.body.classList.toggle("is-ff-filter-open", anyOpen);
-			document.documentElement.classList.toggle("is-ff-filter-open", anyOpen);
-		}
-
 		enhanceFilterClose();
-		syncFilterPopupPortal();
-		document.querySelectorAll(".wc-block-product-filters").forEach(function (root) {
-			new MutationObserver(function () {
-				enhanceFilterClose();
-				syncFilterPopupPortal();
-			}).observe(root, { attributes: true, attributeFilter: ["class"], childList: true, subtree: true });
-		});
+		document.addEventListener(
+			"click",
+			function (e) {
+				var t = e.target;
+				if (!t || !t.closest) return;
+				if (!t.closest(".wc-block-product-filters__open-overlay")) return;
+				window.setTimeout(enhanceFilterClose, 0);
+				window.setTimeout(enhanceFilterClose, 120);
+			},
+			true
+		);
 
 		var roots = document.querySelectorAll(".ff-shop-cols");
 		if (!roots.length) return;

@@ -14,18 +14,23 @@
 
   ready(function () {
     /*
-     * Mobile header chrome:
-     *   left  = Burger + Suche
-     *   center = Logo
-     *   right = Warenkorb + Account
-     * Desktop: Burger nur in Brand; Suche bleibt in Icons.
+     * Mobile header chrome (3 Spalten):
+     *   left   = Brand mit Burger + Suche
+     *   center = Logo als direktes Kind der Leiste (.ff-header__logo)
+     *   right  = Warenkorb + Account
+     * Absolute-Zentrierung in der Brand-Box war unzuverlässig (Logo links,
+     * Burger unsichtbar durch display:contents / Editor-Padding).
      */
     (function layoutHeaderChrome() {
+      var bar = document.querySelector(".ff-header__bar");
       var brand = document.querySelector(".ff-header__brand");
       var icons = document.querySelector(".ff-header__icons, .ff-header__actions");
       var burgerEl = document.querySelector(".ff-header .ff-nav-burger");
       var searchEl = document.querySelector(".ff-header .ff-search-toggle");
-      if (!brand || !burgerEl) return;
+      var logoEl =
+        (brand && brand.querySelector(".wp-block-site-logo")) ||
+        (bar && bar.querySelector(":scope > .wp-block-site-logo"));
+      if (!bar || !brand || !burgerEl) return;
 
       var burgerNode =
         burgerEl.closest(".ff-header__menu-btns") ||
@@ -34,6 +39,8 @@
       var searchNode = searchEl
         ? searchEl.closest(".wp-block-buttons") || searchEl
         : null;
+      var logoHomeParent = brand;
+      var logoHomeNext = logoEl ? logoEl.nextSibling : null;
       var mq =
         typeof window.matchMedia === "function"
           ? window.matchMedia("(max-width: 960px)")
@@ -43,13 +50,28 @@
         if (brand.firstElementChild !== burgerNode) {
           brand.insertBefore(burgerNode, brand.firstChild);
         }
-        if (!searchNode || !icons) return;
+
         if (mq.matches) {
-          if (burgerNode.nextSibling !== searchNode) {
+          if (searchNode && burgerNode.nextSibling !== searchNode) {
             brand.insertBefore(searchNode, burgerNode.nextSibling);
           }
-        } else if (!icons.contains(searchEl)) {
-          icons.insertBefore(searchNode, icons.firstChild);
+          if (logoEl && logoEl.parentElement !== bar) {
+            logoEl.classList.add("ff-header__logo");
+            var beforeIcons = icons && icons.parentElement === bar ? icons : null;
+            bar.insertBefore(logoEl, beforeIcons);
+          }
+        } else {
+          if (searchNode && icons && searchEl && !icons.contains(searchEl)) {
+            icons.insertBefore(searchNode, icons.firstChild);
+          }
+          if (logoEl && logoEl.parentElement !== logoHomeParent) {
+            logoEl.classList.remove("ff-header__logo");
+            if (logoHomeNext && logoHomeNext.parentElement === logoHomeParent) {
+              logoHomeParent.insertBefore(logoEl, logoHomeNext);
+            } else {
+              logoHomeParent.appendChild(logoEl);
+            }
+          }
         }
       }
 

@@ -20,6 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.563',
+			'items'   => array(
+				__( 'Shop: Lade-Overlay nur noch bei echten Filter-/Sortier-/Pagination-Aktionen — nicht bei Akkordeon öffnen/schließen.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.562',
+			'items'   => array(
+				__( 'Mobile Nav Fix: Burger+Lupe wieder sichtbar, Logo als echte Mittel-Spalte, Brand-Padding genullt — Layout Logo mittig / Edge.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.561',
+			'items'   => array(
+				__( 'Header-Logo: Editor-Breite und Responsive Styles (@mobile/@tablet) werden nicht mehr per CSS überschrieben.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.560',
 			'items'   => array(
 				__( 'Mobile Nav (Layout Logo mittig): Burger wieder sichtbar, Logo echt zentriert, weniger Abstand oben.', 'fairflock' ),

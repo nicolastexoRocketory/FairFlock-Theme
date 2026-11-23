@@ -777,7 +777,10 @@ body:not(.block-editor-iframe__body) .ff-header {
 	background-color: currentColor !important;
 }
 
-/* Site Logo „Breite“ aus dem Site Editor (width-Attribut / Inline-Style) muss greifen. */
+/*
+ * Site Logo: Größe kommt aus dem Editor (width-Attribut, Dimensions,
+ * Responsive Styles @mobile/@tablet). Theme setzt keine eigene Breite.
+ */
 .ff-header__brand .wp-block-site-logo {
 	line-height: 0;
 }
@@ -789,8 +792,7 @@ body:not(.block-editor-iframe__body) .ff-header {
 
 .ff-header__brand .wp-block-site-logo img {
 	display: block;
-	height: auto !important;
-	max-width: 100%;
+	height: auto;
 	max-height: none;
 	object-fit: contain;
 }
@@ -10084,9 +10086,21 @@ body.is-ff-ptable-open {
 @media (max-width: 960px) {
 	:root {
 		--ff-gutter: 1em;
-		/* Weniger Leerraum über der schwebenden Nav (Floating) */
+		/* Floating: knapper Abstand; Edge bleibt 0 */
 		--ff-header-top: 8px;
 		--ff-shell: calc(100% - 2 * var(--ff-gutter));
+	}
+
+	/* Edge: Bar bis an den Safe-Area-Rand, kein „Loch“ über der Nav */
+	body.ff-header-style-edge {
+		--ff-header-top: 0px;
+	}
+
+	body:not(.block-editor-iframe__body).ff-header-style-edge .ff-header,
+	body:not(.block-editor-iframe__body) .ff-header.ff-header--edge {
+		top: 0;
+		padding-top: env(safe-area-inset-top, 0px);
+		box-sizing: border-box;
 	}
 
 	body,
@@ -10120,55 +10134,66 @@ body.is-ff-ptable-open {
 
 	/*
 	 * Mobile chrome (auch Nav-Layout „Logo mittig“):
-	 * links Burger+Suche · Logo absolut in der Leisten-Mitte · rechts Cart+Account.
-	 * Brand muss position:static sein, sonst zentriert das Logo nur in der linken Box
-	 * und überdeckt den Burger.
+	 * 3 Spalten — Logo ist per JS (.ff-header__logo) direktes Kind der Leiste.
 	 */
 	.ff-header__bar {
 		position: relative;
 		display: grid !important;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: 1fr auto 1fr;
 		align-items: center;
-		gap: 4px;
+		column-gap: 4px;
+		row-gap: 0;
 		min-width: 0;
-		padding-left: 6px;
-		padding-right: 12px;
+		/* Editor-Padding am Bar-Inline-Style darf Icons nicht erdrücken */
+		padding-top: 0 !important;
+		padding-bottom: 0 !important;
+		padding-left: 8px !important;
+		padding-right: 8px !important;
+		min-height: 52px;
 	}
 
 	body.ff-header-style-edge .ff-header__bar,
 	.ff-header.ff-header--edge .ff-header__bar {
-		padding-left: 0.45em;
-		padding-right: var(--ff-gutter, 1em);
+		padding-left: max(8px, env(safe-area-inset-left, 0px)) !important;
+		padding-right: max(8px, env(safe-area-inset-right, 0px)) !important;
 	}
 
+	/* Links: nur Burger + Suche — Editor-Padding der Brand-Gruppe nullen */
 	.ff-header__brand {
 		grid-column: 1;
 		grid-row: 1;
 		justify-self: start;
 		align-self: center;
-		position: static !important;
+		position: relative !important;
 		display: flex !important;
 		flex-direction: row;
 		flex-wrap: nowrap;
 		align-items: center;
-		gap: 0;
+		gap: 0 !important;
 		min-width: 0;
 		max-width: none;
 		flex: unset;
+		width: auto;
+		margin: 0 !important;
+		padding: 0 !important;
 		z-index: 6;
+		overflow: visible;
 	}
 
-	/* Kein display:contents — Safari blendet den Burger sonst oft aus */
 	.ff-header__brand > .ff-header__menu-btns,
 	.ff-header__brand > .wp-block-buttons.ff-header__menu-btns,
 	.ff-header__brand > .wp-block-buttons:has(.ff-search-toggle),
-	.ff-header__brand > .ff-header__action-btns:has(.ff-search-toggle) {
+	.ff-header__brand > .ff-header__action-btns:has(.ff-search-toggle),
+	.ff-header__brand > .wp-block-buttons {
 		display: flex !important;
-		flex-direction: row;
-		flex-wrap: nowrap;
-		align-items: center;
-		gap: 0;
-		margin: 0;
+		flex-direction: row !important;
+		flex-wrap: nowrap !important;
+		align-items: center !important;
+		gap: 0 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		width: auto !important;
+		min-width: 0;
 	}
 
 	.ff-header__brand .ff-nav-burger,
@@ -10176,43 +10201,87 @@ body.is-ff-ptable-open {
 		position: relative;
 		z-index: 7;
 		flex-shrink: 0;
+		display: flex !important;
+		visibility: visible !important;
+		opacity: 1 !important;
+		margin: 0 !important;
 	}
 
-	/* Logo in der Mitte der gesamten Header-Leiste (nicht der Brand-Box) */
-	.ff-header__brand .wp-block-site-logo {
+	/* Mitte: Logo (JS hängt .ff-header__logo an die Leiste) */
+	.ff-header__bar > .ff-header__logo,
+	.ff-header__bar > .wp-block-site-logo.ff-header__logo {
+		grid-column: 2;
+		grid-row: 1;
+		justify-self: center;
+		align-self: center;
+		position: relative !important;
+		inset: auto !important;
+		translate: none !important;
+		z-index: 5;
+		margin: 0 !important;
+		padding: 0 !important;
+		line-height: 0;
+		pointer-events: auto;
+	}
+
+	.ff-header__bar > .ff-header__logo a,
+	.ff-header__bar > .wp-block-site-logo.ff-header__logo a {
+		display: inline-block;
+		line-height: 0;
+	}
+
+	.ff-header__bar > .ff-header__logo img,
+	.ff-header__bar > .wp-block-site-logo.ff-header__logo img {
+		display: block;
+		height: auto;
+		max-height: none;
+		object-fit: contain;
+	}
+
+	/* Fallback falls JS Logo noch nicht verschoben hat */
+	.ff-header__brand .wp-block-site-logo:not(.ff-header__logo) {
 		position: absolute;
 		left: 50%;
 		top: 50%;
 		translate: -50% -50%;
 		z-index: 4;
-		max-width: min(42vw, 160px);
-		margin: 0;
-		pointer-events: auto;
-	}
-
-	.ff-header__brand .wp-block-site-logo a {
-		max-width: 100%;
-		display: inline-block;
-		line-height: 0;
-	}
-
-	.ff-header__brand .wp-block-site-logo img {
-		height: auto !important;
-		max-height: none !important;
-		/* Kein width:auto — sonst greift die Editor-Breite nicht */
-		max-width: 100% !important;
-		object-fit: contain;
+		margin: 0 !important;
 	}
 
 	.ff-header__icons,
 	.ff-header__actions {
-		grid-column: 2;
+		grid-column: 3;
 		grid-row: 1;
 		justify-self: end;
 		align-self: center;
 		margin-left: 0 !important;
 		gap: 0 !important;
 		z-index: 6;
+	}
+
+	/* Nav-Textzeile nie als Grid-Zelle mitzählen */
+	.ff-header__nav {
+		grid-column: 1 / -1;
+		grid-row: 2;
+	}
+
+	/*
+	 * Icon-Farbe: wie sichtbare Cart/Account-Links.
+	 * Ohne --ff-icon-fg aus .ff-header__icons wären Brand-Icons oft dunkel auf dunklem Bar.
+	 */
+	.ff-header__bar {
+		--ff-icon-fg: currentColor;
+	}
+
+	.ff-header__bar:has(.ff-header__icons .has-white-color),
+	.ff-header__bar:has(.ff-cart .has-white-color),
+	.ff-header__bar:has(.ff-search-toggle .has-white-color) {
+		--ff-icon-fg: #fff;
+	}
+
+	.ff-header__brand .ff-nav-burger .wp-block-button__link,
+	.ff-header__brand .ff-search-toggle .wp-block-button__link {
+		color: var(--ff-icon-fg, currentColor) !important;
 	}
 
 	/*

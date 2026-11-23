@@ -230,25 +230,83 @@
 		if (el.closest(".wc-block-product-filters__close-overlay")) return true;
 		if (el.closest(".ff-shop-filter-close")) return true;
 		if (el.closest(".wc-block-product-filters__overlay-header")) return true;
+		if (el.closest(".wc-block-product-filters__overlay-footer")) return true;
 		return false;
 	}
 
+	/** Accordion open/close — no product reload. */
+	function isFilterAccordionChrome(el) {
+		if (!el || !el.closest) return false;
+		if (el.closest(".ff-shop__filter-acc__summary")) return true;
+		var details = el.closest("details.ff-shop__filter-acc");
+		if (!details) return false;
+		var summary = details.querySelector(":scope > summary");
+		return !!(summary && (el === summary || summary.contains(el)));
+	}
+
+	/**
+	 * Only real product-list mutations: Sortierung, Pagination, Chip/Checkbox/Preis,
+	 * aktive Filter. Nicht: Akkordeon, Show-more, Drawer-Chrome, Ansicht.
+	 */
 	function isShopNavTrigger(el) {
 		if (!el || !el.closest) return false;
 		if (!el.closest(".ff-shop")) return false;
 		if (isLocalViewControl(el)) return false;
 		if (isFilterUiChrome(el)) return false;
+		if (isFilterAccordionChrome(el)) return false;
+		/* „Mehr anzeigen“ in Chip-Listen lädt keine Produkte neu */
+		if (
+			el.closest(
+				".wc-block-product-filter-chips__show-more, .wc-block-product-filter-chips__show-more-button, button.wc-block-product-filter-chips__show-more"
+			)
+		) {
+			return false;
+		}
+
 		if (el.closest(".ff-shop__pagination")) return true;
 		if (el.closest(".wp-block-query-pagination")) return true;
-		if (el.closest(".wc-block-product-filter-chips")) return true;
-		if (el.closest(".wc-block-product-filter-checkbox-list")) return true;
-		if (el.closest(".wp-block-woocommerce-product-filter-price")) return true;
-		if (el.closest(".wp-block-woocommerce-product-filter-attribute")) return true;
-		if (el.closest(".wp-block-woocommerce-product-filter-status")) return true;
-		if (el.closest(".wp-block-woocommerce-product-filter-taxonomy")) return true;
-		if (el.closest(".wp-block-woocommerce-product-collection-active-filters")) return true;
 		if (el.closest(".woocommerce-ordering")) return true;
 		if (el.closest(".wp-block-woocommerce-catalog-sorting")) return true;
+		if (el.closest(".wp-block-woocommerce-product-collection-active-filters")) return true;
+
+		/* Konkrete Filter-Werte — nicht der ganze Filter-Block (sonst triggert summary) */
+		if (el.closest(".wc-block-product-filter-chips__item")) return true;
+		if (
+			el.closest(
+				".wc-block-product-filter-checkbox-list__item, .wc-block-product-filter-checkbox-list label, .wc-block-product-filter-checkbox-list input, .wc-block-product-filter-checkbox-list__input"
+			)
+		) {
+			return true;
+		}
+		if (
+			el.closest(
+				".wc-block-product-filter-price-slider, .wc-block-filter-price-slider, .wp-block-woocommerce-product-filter-price input, .wp-block-woocommerce-product-filter-price .wc-block-components-price-slider"
+			)
+		) {
+			return true;
+		}
+		if (
+			el.closest(
+				".wc-block-product-filter-clear-button, .wp-block-woocommerce-product-filter-clear-button, .wp-block-button.wc-block-product-filter-clear-button"
+			)
+		) {
+			return true;
+		}
+		if (
+			el.closest(
+				".wp-block-woocommerce-product-filter-status label, .wp-block-woocommerce-product-filter-status input, .wp-block-woocommerce-product-filter-status .wc-block-product-filter-checkbox-list__item"
+			)
+		) {
+			return true;
+		}
+		if (
+			el.closest(
+				".wp-block-woocommerce-product-filter-rating label, .wp-block-woocommerce-product-filter-rating input, .wp-block-woocommerce-product-filter-rating button"
+			)
+		) {
+			return true;
+		}
+
 		return false;
 	}
 

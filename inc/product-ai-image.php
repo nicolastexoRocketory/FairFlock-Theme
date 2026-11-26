@@ -76,6 +76,7 @@ function fairflock_ki_bild_id_from_url( $url ) {
 	if ( $url === '' || ! function_exists( 'attachment_url_to_postid' ) ) {
 		return 0;
 	}
+	$url = html_entity_decode( $url, ENT_QUOTES | ENT_HTML5 );
 	$id = (int) attachment_url_to_postid( $url );
 	if ( $id ) {
 		return $id;
@@ -85,6 +86,44 @@ function fairflock_ki_bild_id_from_url( $url ) {
 		return (int) attachment_url_to_postid( $stripped );
 	}
 	return 0;
+}
+
+/**
+ * Attachment id from rendered markup (wp-image-N or background-image url).
+ *
+ * @since 0.9.569
+ *
+ * @param string $html Rendered block HTML.
+ * @return int
+ */
+function fairflock_ki_bild_id_from_html( $html ) {
+	if ( ! is_string( $html ) || $html === '' ) {
+		return 0;
+	}
+	if ( preg_match( '/\bwp-image-(\d+)\b/', $html, $m ) ) {
+		return absint( $m[1] );
+	}
+	$decoded = html_entity_decode( $html, ENT_QUOTES | ENT_HTML5 );
+	if ( preg_match( '/background-image\s*:\s*url\(\s*[\'"]?([^\'")]+)/i', $decoded, $m ) ) {
+		return fairflock_ki_bild_id_from_url( $m[1] );
+	}
+	return 0;
+}
+
+/**
+ * Class list contains a whole token (fs-slide, not fs-slide-inner).
+ *
+ * @since 0.9.569
+ *
+ * @param string $class Class attribute.
+ * @param string $token Token.
+ * @return bool
+ */
+function fairflock_ki_bild_has_class_token( $class, $token ) {
+	if ( $class === '' || $token === '' ) {
+		return false;
+	}
+	return (bool) preg_match( '/(?:^|\s)' . preg_quote( $token, '/' ) . '(?:\s|$)/', $class );
 }
 
 /**
@@ -148,10 +187,10 @@ function fairflock_ki_bild_mark_root_html( $html ) {
 		return $html;
 	}
 	$tag = fairflock_ki_bild_tag_html();
-	if ( ! preg_match( '/^(<\w+\b[^>]*>)/', $html, $m ) ) {
-		return $tag . $html;
+	if ( ! preg_match( '/^(\s*)(<\w+\b[^>]*>)/', $html, $m ) ) {
+		return $html;
 	}
-	$open = $m[1];
+	$open = $m[2];
 	if ( ! preg_match( '/\bff-has-ki-bild\b/', $open ) ) {
 		if ( preg_match( '/\bclass=(["\'])(.*?)\1/i', $open ) ) {
 			$open = preg_replace(
@@ -164,13 +203,16 @@ function fairflock_ki_bild_mark_root_html( $html ) {
 			$open = preg_replace( '/^<(\w+)/', '<$1 class="ff-has-ki-bild"', $open, 1 );
 		}
 	}
-	return $open . $tag . substr( $html, strlen( $m[1] ) );
+	return $m[1] . $open . $tag . substr( $html, strlen( $m[1] ) + strlen( $m[2] ) );
 }
 
 /**
- * KI-Bild tag on fullscreen covers and fullbleed background sections.
+ * KI-Bild tag on hero slides, covers, fullbleed, collection cards and bento cards.
+ *
+ * Mega-Menü and the red promo band stay untagged.
  *
  * @since 0.9.566
+ * @since 0.9.569 Hero, Kollektionen, Bento; kein Tag im Mega-Menü oder auf ff-band.
  *
  * @param string               $content Block HTML.
  * @param array<string, mixed> $block   Parsed block.
@@ -183,14 +225,26 @@ function fairflock_ki_bild_render_background_block( $content, $block ) {
 	$name  = isset( $block['blockName'] ) ? (string) $block['blockName'] : '';
 	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
 	$class = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
-	$is_cover     = ( $name === 'core/cover' );
-	$is_fullbleed = str_contains( $class, 'ff-fullbleed' );
-	if ( ! $is_cover && ! $is_fullbleed ) {
+
+	if ( str_contains( $class, 'ff-mega' ) || str_contains( $class, 'ff-band' ) ) {
 		return $content;
 	}
+
+	$is_cover = ( $name === 'core/cover' );
+	$is_slide = fairflock_ki_bild_has_class_token( $class, 'fs-slide' );
+	$is_bleed = str_contains( $class, 'ff-fullbleed' );
+	$is_card  = fairflock_ki_bild_has_class_token( $class, 'ff-collection-card' )
+		|| fairflock_ki_bild_has_class_token( $class, 'ff-bento-card' );
+	if ( ! $is_cover && ! $is_slide && ! $is_bleed && ! $is_card ) {
+		return $content;
+	}
+
 	$id = $is_cover
 		? fairflock_ki_bild_cover_attachment_id( $block )
 		: fairflock_ki_bild_background_attachment_id( $block );
+	if ( ! $id ) {
+		$id = fairflock_ki_bild_id_from_html( $content );
+	}
 	if ( ! fairflock_attachment_is_ki_bild( $id ) ) {
 		return $content;
 	}

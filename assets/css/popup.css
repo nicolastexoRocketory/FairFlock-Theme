@@ -265,7 +265,6 @@
 }
 
 .ff-popup__cta:hover {
-	opacity: 0.88;
 	color: var(--pp-surface);
 }
 

@@ -259,12 +259,6 @@
 	line-height: 1.25;
 }
 
-.ff-cart-page .wc-block-cart__submit-button:hover,
-.ff-cart-page .wc-block-components-button:not(.is-link):not(.outlined):hover {
-	background: var(--wp--preset--color--brand-deep, #2a5c25) !important;
-	border-color: var(--wp--preset--color--brand-deep, #2a5c25) !important;
-}
-
 /* —— Leerer Warenkorb —— */
 .ff-cart-page:has(.wp-block-woocommerce-empty-cart-block) .wc-block-components-sidebar-layout,
 .ff-cart-page .wp-block-woocommerce-filled-cart-block:empty,
@@ -341,7 +335,6 @@
 }
 
 .ff-cart-page .ff-cart-empty__cta:hover {
-	opacity: 0.86;
 	color: var(--ff-trust-surface, #fff);
 }
 

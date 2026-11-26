@@ -19,6 +19,13 @@
 
 	function hostForImg(img) {
 		if (!img) return null;
+		if (
+			img.closest(
+				".ff-mega-panel, .ff-mega-panel-slot, .ff-menu-sub__mega, .ff-mega-cover-link, .ff-band"
+			)
+		) {
+			return null;
+		}
 		return (
 			img.closest(
 				".woocommerce-product-gallery__image, .wc-block-woocommerce-product-gallery__image, .wp-block-woocommerce-product-image, .ff-product-peek__slide, .ff-product-modal__slide, .wc-block-components-product-image, figure"

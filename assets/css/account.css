@@ -578,17 +578,6 @@ body.woocommerce-lost-password button.button {
 	cursor: pointer;
 }
 
-.ff-account-page .button:hover,
-.ff-account-page button.button:hover,
-body.woocommerce-account .woocommerce-MyAccount-content .button:hover,
-body.woocommerce-account .woocommerce-form-login .button:hover,
-body.woocommerce-account .woocommerce-ResetPassword .button:hover,
-body.woocommerce-lost-password .woocommerce-ResetPassword .button:hover,
-body.woocommerce-lost-password button.button:hover {
-	background: var(--wp--preset--color--brand-deep, #9a0c23) !important;
-	color: #fff !important;
-}
-
 /* —— Login / Register cards —— */
 body.woocommerce-account #customer_login.u-columns,
 body.woocommerce-account .u-columns#customer_login,

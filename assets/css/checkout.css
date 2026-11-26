@@ -1248,7 +1248,7 @@ body.ff-checkout-dark .ff-checkout {
 
 .ff-checkout .wc-block-components-totals-coupon__form .wc-block-components-button:hover,
 .ff-checkout .wc-block-components-totals-coupon__button:hover {
-	background: var(--co-surface-3);
+	background: var(--co-surface-2);
 }
 
 .ff-checkout .wc-block-components-totals-coupon__form .wc-block-components-button:disabled {
@@ -1428,7 +1428,7 @@ body.ff-checkout-dark .ff-checkout {
 }
 
 .ff-checkout .wc-block-components-checkout-place-order-button:hover:not(:disabled) {
-	background: var(--co-cta-hover);
+	background: var(--co-cta-bg);
 	color: var(--co-cta-fg);
 }
 

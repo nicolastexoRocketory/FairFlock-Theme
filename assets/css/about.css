@@ -226,12 +226,6 @@ body.ff-about-page .ff-about-page .wp-block-post-content > *.alignfull,
 	text-align: center !important;
 }
 
-.ff-about-hero__btn .wp-block-button__link:hover,
-.ff-about-hero__cta .wp-element-button:hover,
-.ff-about-hero .wp-block-button__link:hover {
-	background: var(--wp--preset--color--brand-deep, #2a5c25) !important;
-}
-
 .ff-about-story .ff-media-split,
 .ff-about-visit .ff-media-split,
 .ff-about-values .ff-pattern-steps__shell,

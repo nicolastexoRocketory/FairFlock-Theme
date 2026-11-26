@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.570',
+			'items'   => array(
+				__( 'Buttons: Hover ist ein Lichtstreifen über der bestehenden Farbe, ohne Wechsel auf eine zweite Farbe.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.569',
+			'items'   => array(
+				__( 'KI-Bild: Hinweis auf Hero, Kollektionen, Vollbild-Hintergründen und Kategorie-Karten. Kein Hinweis im Mega-Menü und nicht auf der roten Promo-Karte.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.568',
 			'items'   => array(
 				__( 'Mega-Menü: Überkategorien und Zurück haben denselben Unterstreichungs-Hover mit Übergang wie die übrigen Links.', 'fairflock' ),

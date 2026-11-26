@@ -400,7 +400,7 @@
 
 .fs-slider a.btn-light:hover,
 .fs-slider .btn-light:not(.wp-block-button):hover {
-	background: #f2f4f3;
+	background: #fff;
 	color: var(--fs-ink, #0e1114);
 }
 
@@ -415,7 +415,7 @@
 
 .fs-slider a.btn-glass:hover,
 .fs-slider .btn-glass:not(.wp-block-button):hover {
-	background: rgba(255, 255, 255, 0.18);
+	background: rgba(255, 255, 255, 0.1);
 }
 
 .fs-slider a.btn-brand,
@@ -426,7 +426,7 @@
 
 .fs-slider a.btn-brand:hover,
 .fs-slider .btn-brand:not(.wp-block-button):hover {
-	background: var(--fs-brand-deep);
+	background: var(--fs-brand);
 }
 
 .fs-slider .with-ico {
@@ -1072,7 +1072,7 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 .fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:where(:not(.has-background)):focus-visible,
 .fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:where(:not(.has-background)):hover,
 .fs-slider .cta-row .wp-block-button.is-style-fill:not(.btn-glass):not(.btn-brand) .wp-block-button__link:where(:not(.has-background)):focus-visible {
-	background: #f2f4f3;
+	background: #fff;
 }
 
 .fs-slider .cta-row .wp-block-button.btn-light .wp-block-button__link:where(:not(.has-text-color)):hover,
@@ -1095,7 +1095,7 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 
 .fs-slider .cta-row .wp-block-button.btn-glass .wp-block-button__link:where(:not(.has-background)):hover,
 .fs-slider .cta-row .wp-block-button.btn-glass .wp-block-button__link:where(:not(.has-background)):focus-visible {
-	background: rgba(255, 255, 255, 0.18);
+	background: rgba(255, 255, 255, 0.12);
 }
 
 .fs-slider .cta-row .wp-block-button.btn-brand .wp-block-button__link:where(:not(.has-background)) {
@@ -1109,5 +1109,5 @@ body.ff-hero-nav-cluster .fs-nav .fs-dots {
 
 .fs-slider .cta-row .wp-block-button.btn-brand .wp-block-button__link:where(:not(.has-background)):hover,
 .fs-slider .cta-row .wp-block-button.btn-brand .wp-block-button__link:where(:not(.has-background)):focus-visible {
-	background: var(--fs-brand-deep, #2a5c25);
+	background: var(--fs-brand, #377530);
 }

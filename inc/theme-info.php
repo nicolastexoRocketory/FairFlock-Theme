@@ -20,6 +20,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.568',
+			'items'   => array(
+				__( 'Mega-Menü: Überkategorien und Zurück haben denselben Unterstreichungs-Hover mit Übergang wie die übrigen Links.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.567',
+			'items'   => array(
+				__( 'Kollektionen und Mega-Menü: Option „Nur Überkategorien“. Im Mega-Menü öffnet ein Klick die Unterkategorien, oben mit Zurück.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.566',
+			'items'   => array(
+				__( 'KI-Bild: Hinweis auch auf Vollbild-Hintergrundsektionen (Cover/Fullbleed) und auf Produktbildern im Such-Popup.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.565',
+			'items'   => array(
+				__( 'Suche: Produkttreffer zeigen wieder Titel, Preis, MwSt.-Hinweis und Lieferzeile unter dem Bild.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.564',
+			'items'   => array(
+				__( 'Site Editor Mobil: Header-Leiste wie Frontend (Burger+Lupe | Logo | Cart+Account); Overlay-Slots in der Mobil-Vorschau ausgeblendet.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.563',
 			'items'   => array(
 				__( 'Shop: Lade-Overlay nur noch bei echten Filter-/Sortier-/Pagination-Aktionen — nicht bei Akkordeon öffnen/schließen.', 'fairflock' ),

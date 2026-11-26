@@ -214,13 +214,97 @@ function fairflock_mega_list_links_markup( array $items ) {
 }
 
 /**
+ * Groups product categories by parent term id.
+ *
+ * @since 0.9.567
+ *
+ * @return array<int, array<int, WP_Term>>
+ */
+function fairflock_mega_list_terms_by_parent() {
+	$by_parent = array();
+
+	if ( ! function_exists( 'fairflock_get_category_overview_terms' ) ) {
+		return $by_parent;
+	}
+
+	foreach ( fairflock_get_category_overview_terms() as $term ) {
+		if ( ! $term instanceof WP_Term ) {
+			continue;
+		}
+		$parent = (int) $term->parent;
+		if ( ! isset( $by_parent[ $parent ] ) ) {
+			$by_parent[ $parent ] = array();
+		}
+		$by_parent[ $parent ][] = $term;
+	}
+
+	return $by_parent;
+}
+
+/**
+ * Nested category list: parents drill into children, with Zurück at the top.
+ *
+ * @since 0.9.567
+ *
+ * @param array<int, WP_Term>             $terms     Categories at this level.
+ * @param array<int, array<int, WP_Term>> $by_parent Children keyed by parent id.
+ * @return string
+ */
+function fairflock_mega_list_parent_items_markup( array $terms, array $by_parent ) {
+	$html    = '';
+	$chevron = function_exists( 'fairflock_chevron_svg' )
+		? fairflock_chevron_svg( array( 'dir' => 'right', 'size' => 16 ) )
+		: '';
+	$back_icon = function_exists( 'fairflock_chevron_svg' )
+		? fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 16 ) )
+		: '';
+	$back_label = esc_html__( 'Zurück', 'fairflock' );
+
+	foreach ( $terms as $term ) {
+		if ( ! $term instanceof WP_Term ) {
+			continue;
+		}
+		$link = get_term_link( $term );
+		if ( is_wp_error( $link ) ) {
+			continue;
+		}
+		$label    = esc_html( $term->name );
+		$children = isset( $by_parent[ (int) $term->term_id ] ) ? $by_parent[ (int) $term->term_id ] : array();
+		if ( ! $children ) {
+			$html .= '<li class="ff-mega-list__leaf"><a href="' . esc_url( (string) $link ) . '">' . $label . '</a></li>';
+			continue;
+		}
+		$kids  = fairflock_mega_list_parent_items_markup( $children, $by_parent );
+		$html .= '<li class="ff-mega-list__branch">';
+		$html .= '<button type="button" class="ff-mega-list__drill"><span class="ff-mega-list__label">' . $label . '</span>' . $chevron . '</button>';
+		$html .= '<ul class="ff-mega-list__kids" hidden>';
+		$html .= '<li class="ff-mega-list__back"><button type="button" class="ff-mega-list__back-btn">' . $back_icon . '<span class="ff-mega-list__label">' . $back_label . '</span></button></li>';
+		$html .= $kids;
+		$html .= '</ul></li>';
+	}
+
+	return $html;
+}
+
+/**
  * Live category links for mega list.
  *
  * @since 0.9.218
+ * @since 0.9.567 Optional parents-only drill-down.
  *
+ * @param bool $parents_only Only Überkategorien; click opens children.
  * @return string
  */
-function fairflock_mega_list_categories_markup() {
+function fairflock_mega_list_categories_markup( $parents_only = false ) {
+	if ( $parents_only ) {
+		$by_parent = fairflock_mega_list_terms_by_parent();
+		$roots     = isset( $by_parent[0] ) ? $by_parent[0] : array();
+		$inner     = fairflock_mega_list_parent_items_markup( $roots, $by_parent );
+		if ( $inner !== '' ) {
+			return '<ul class="wp-block-list ff-mega-panel__links has-small-font-size ff-mega-list__live ff-mega-list__tree">' . $inner . '</ul>';
+		}
+	}
+
 	$items = array();
 
 	if ( function_exists( 'fairflock_get_category_overview_terms' ) ) {
@@ -345,7 +429,8 @@ function fairflock_render_mega_list_group( $block_content, $block ) {
 
 	$live = '';
 	if ( 'categories' === $mode ) {
-		$live = fairflock_mega_list_categories_markup();
+		$parents = fairflock_mega_list_has_class( $class, 'ff-mega-list--parents' );
+		$live    = fairflock_mega_list_categories_markup( $parents );
 	} elseif ( 'products' === $mode ) {
 		$live = fairflock_mega_list_products_markup( fairflock_mega_list_parse_category_id( $class ) );
 	}

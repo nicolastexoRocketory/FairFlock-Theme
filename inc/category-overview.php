@@ -15,11 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 0.9.99
  * @since 0.9.250 Optional extra term IDs to exclude.
+ * @since 0.9.567 Optional top-level categories only.
  *
  * @param array<int, int> $extra_exclude Extra term IDs to exclude.
+ * @param bool            $parents_only  Only Überkategorien (parent 0).
  * @return array<int, WP_Term>
  */
-function fairflock_get_category_overview_terms( $extra_exclude = array() ) {
+function fairflock_get_category_overview_terms( $extra_exclude = array(), $parents_only = false ) {
 	if ( ! taxonomy_exists( 'product_cat' ) ) {
 		return array();
 	}
@@ -41,15 +43,18 @@ function fairflock_get_category_overview_terms( $extra_exclude = array() ) {
 
 	$exclude = array_values( array_unique( array_filter( array_map( 'intval', $exclude ) ) ) );
 
-	$terms = get_terms(
-		array(
-			'taxonomy'   => 'product_cat',
-			'hide_empty' => false,
-			'orderby'    => 'name',
-			'order'      => 'ASC',
-			'exclude'    => $exclude,
-		)
+	$query = array(
+		'taxonomy'   => 'product_cat',
+		'hide_empty' => false,
+		'orderby'    => 'name',
+		'order'      => 'ASC',
+		'exclude'    => $exclude,
 	);
+	if ( $parents_only ) {
+		$query['parent'] = 0;
+	}
+
+	$terms = get_terms( $query );
 
 	if ( ! is_array( $terms ) ) {
 		return array();
@@ -124,6 +129,20 @@ function fairflock_collections_is_titles_only( $class_name ) {
  */
 function fairflock_collections_has_titles_blur( $class_name ) {
 	return (bool) preg_match( '/(?:^|\s)ff-collections-titles-blur(?:\s|$)/', (string) $class_name );
+}
+
+/**
+ * Whether the collections section lists only top-level categories.
+ *
+ * Token: ff-collections-parents
+ *
+ * @since 0.9.567
+ *
+ * @param string $class_name Block className.
+ * @return bool
+ */
+function fairflock_collections_is_parents_only( $class_name ) {
+	return (bool) preg_match( '/(?:^|\s)ff-collections-parents(?:\s|$)/', (string) $class_name );
 }
 
 /**
@@ -248,14 +267,15 @@ HTML;
  * @since 0.9.133
  * @since 0.9.250 Optional category IDs to exclude.
  *
- * @param array<int, int> $exclude     Extra term IDs to exclude.
- * @param bool            $titles_only No images; centered h2 only.
- * @param bool            $titles_blur Blurred category image behind title.
+ * @param array<int, int> $exclude      Extra term IDs to exclude.
+ * @param bool            $titles_only  No images; centered h2 only.
+ * @param bool            $titles_blur  Blurred category image behind title.
+ * @param bool            $parents_only Only Überkategorien.
  * @return string
  */
-function fairflock_get_collections_cards_markup( $exclude = array(), $titles_only = false, $titles_blur = false ) {
+function fairflock_get_collections_cards_markup( $exclude = array(), $titles_only = false, $titles_blur = false, $parents_only = false ) {
 	$shop  = esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' ) );
-	$terms = fairflock_get_category_overview_terms( $exclude );
+	$terms = fairflock_get_category_overview_terms( $exclude, $parents_only );
 	$cta   = __( 'Zur Kollektion →', 'fairflock' );
 	$cards = '';
 
@@ -393,10 +413,11 @@ function fairflock_render_collections_section( $block_content, $block ) {
 		return $block_content;
 	}
 
-	$exclude     = fairflock_collections_parse_exclude_ids( $class );
-	$titles_only = fairflock_collections_is_titles_only( $class );
-	$titles_blur = $titles_only && fairflock_collections_has_titles_blur( $class );
-	$markup      = fairflock_get_collections_cards_markup( $exclude, $titles_only, $titles_blur );
+	$exclude      = fairflock_collections_parse_exclude_ids( $class );
+	$titles_only  = fairflock_collections_is_titles_only( $class );
+	$titles_blur  = $titles_only && fairflock_collections_has_titles_blur( $class );
+	$parents_only = fairflock_collections_is_parents_only( $class );
+	$markup       = fairflock_get_collections_cards_markup( $exclude, $titles_only, $titles_blur, $parents_only );
 	$live        = do_blocks( $markup );
 
 	if ( ! is_string( $live ) || $live === '' ) {
@@ -436,7 +457,8 @@ function fairflock_get_collections_section_markup( array $args = array() ) {
 	$cards       = fairflock_get_collections_cards_markup(
 		fairflock_collections_parse_exclude_ids( $section_cls ),
 		$titles_only,
-		$titles_only && fairflock_collections_has_titles_blur( $section_cls )
+		$titles_only && fairflock_collections_has_titles_blur( $section_cls ),
+		fairflock_collections_is_parents_only( $section_cls )
 	);
 
 	$heading_esc = esc_html( $heading );

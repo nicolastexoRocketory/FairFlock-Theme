@@ -16,6 +16,7 @@
 	var InspectorControls = wp.blockEditor.InspectorControls;
 	var PanelBody = wp.components.PanelBody;
 	var SelectControl = wp.components.SelectControl;
+	var ToggleControl = wp.components.ToggleControl;
 	var Notice = wp.components.Notice;
 	var createHigherOrderComponent = wp.compose.createHigherOrderComponent;
 	var apiFetch = wp.apiFetch;
@@ -75,15 +76,20 @@
 		return match ? parseInt(match[1], 10) : 0;
 	}
 
+	function hasParentsOnly(className) {
+		return hasClass(className, "ff-mega-list--parents");
+	}
+
 	function stripModeAndCat(className) {
 		return String(className || "")
 			.replace(/(?:^|\s)ff-mega-list--(?:manual|categories|products)(?=\s|$)/g, " ")
 			.replace(/(?:^|\s)ff-mega-list-cat-\d+(?=\s|$)/g, " ")
+			.replace(/(?:^|\s)ff-mega-list--parents(?=\s|$)/g, " ")
 			.replace(/\s+/g, " ")
 			.trim();
 	}
 
-	function buildClassName(className, mode, catId) {
+	function buildClassName(className, mode, catId, parentsOnly) {
 		var base = stripModeAndCat(className);
 		if (!hasClass(base, "ff-mega-list")) {
 			base = (base + " ff-mega-list").trim();
@@ -91,6 +97,9 @@
 		var next = (base + " ff-mega-list--" + mode).trim();
 		if (mode === "products" && catId > 0) {
 			next += " ff-mega-list-cat-" + catId;
+		}
+		if (mode === "categories" && parentsOnly) {
+			next += " ff-mega-list--parents";
 		}
 		return next;
 	}
@@ -170,6 +179,7 @@
 			var className = props.attributes.className || "";
 			var mode = parseMode(className);
 			var catId = parseCategoryId(className);
+			var parentsOnly = mode === "categories" && hasParentsOnly(className);
 			var hint =
 				mode === "categories"
 					? i18n.hintCats
@@ -197,10 +207,29 @@
 							],
 							onChange: function (value) {
 								props.setAttributes({
-									className: buildClassName(className, value, catId),
+									className: buildClassName(
+										className,
+										value,
+										catId,
+										value === "categories" && parentsOnly
+									),
 								});
 							},
 						}),
+						mode === "categories"
+							? el(ToggleControl, {
+									label: i18n.parents || "Nur Überkategorien",
+									help:
+										i18n.parentsHelp ||
+										"Nur Hauptkategorien. Ein Klick öffnet die Unterkategorien, oben mit Zurück.",
+									checked: parentsOnly,
+									onChange: function (next) {
+										props.setAttributes({
+											className: buildClassName(className, "categories", catId, !!next),
+										});
+									},
+							  })
+							: null,
 						mode === "products"
 							? el(CategorySelect, {
 									catId: catId,

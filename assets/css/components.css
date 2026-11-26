@@ -631,6 +631,35 @@ body:not(.block-editor-iframe__body) .ff-header {
 	max-width: 100%;
 }
 
+/*
+ * Site Editor · Mobil/Tablet-Vorschau: Overlay-Slots ausblenden,
+ * damit die Header-Leiste wie im Frontend aussieht (nicht Untermenü darunter).
+ * Blöcke bleiben in der Liste wählbar.
+ */
+.block-editor-iframe__body.is-ff-editor-mobile .ff-header .ff-submenu-slot,
+.block-editor-iframe__body.is-ff-editor-mobile .ff-header .ff-mega-panel-slot,
+.block-editor-iframe__body.is-ff-editor-mobile .ff-header .ff-search-overlay-slot,
+.block-editor-iframe__body.is-ff-editor-mobile .ff-header .ff-menu-overlay-slot,
+.block-editor-iframe__body.is-ff-editor-mobile .ff-header .ff-cart-drawer-slot,
+.block-editor-iframe__body.is-ff-editor-mobile .ff-header .ff-search-layer,
+.block-editor-iframe__body.is-ff-editor-mobile .ff-header .ff-cart-layer,
+.block-editor-iframe__body.is-ff-editor-mobile .ff-header .ff-nav-sub {
+	display: none !important;
+}
+
+@media (max-width: 960px) {
+	.block-editor-iframe__body .ff-header .ff-submenu-slot,
+	.block-editor-iframe__body .ff-header .ff-mega-panel-slot,
+	.block-editor-iframe__body .ff-header .ff-search-overlay-slot,
+	.block-editor-iframe__body .ff-header .ff-menu-overlay-slot,
+	.block-editor-iframe__body .ff-header .ff-cart-drawer-slot,
+	.block-editor-iframe__body .ff-header .ff-search-layer,
+	.block-editor-iframe__body .ff-header .ff-cart-layer,
+	.block-editor-iframe__body .ff-header .ff-nav-sub {
+		display: none !important;
+	}
+}
+
 /* Einzelnes Bearbeiten: Mega-Suche-Template-Teil */
 .block-editor-iframe__body .is-root-container > .ff-search-layer,
 .block-editor-iframe__body .is-root-container > .ff-search-overlay-slot,
@@ -2042,15 +2071,104 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 	display: block;
 	padding: 6px 0;
 	color: inherit;
-	text-decoration: none;
+	text-decoration: underline;
+	text-decoration-color: transparent;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 2px;
 	opacity: 0.88;
+	transition:
+		opacity 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+		text-decoration-color 0.28s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .ff-mega-panel__links a:hover,
-.ff-mega-panel .wp-block-list a:hover {
+.ff-mega-panel__links a:focus-visible,
+.ff-mega-panel .wp-block-list a:hover,
+.ff-mega-panel .wp-block-list a:focus-visible {
 	opacity: 1;
+	text-decoration-color: currentColor;
+}
+
+/* Nur Überkategorien: Klick öffnet Unterpunkte, oben Zurück */
+.ff-mega-list__drill,
+.ff-mega-list__back-btn {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	width: 100%;
+	margin: 0;
+	padding: 6px 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	line-height: inherit;
+	text-align: left;
+	text-decoration: none;
+	cursor: pointer;
+	opacity: 0.88;
+	transition: opacity 0.2s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ff-mega-list__label {
 	text-decoration: underline;
+	text-decoration-color: transparent;
+	text-decoration-thickness: 1px;
 	text-underline-offset: 2px;
+	transition: text-decoration-color 0.28s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ff-mega-list__back-btn {
+	justify-content: flex-start;
+	gap: 8px;
+	font-weight: 700;
+}
+
+.ff-mega-list__drill:hover,
+.ff-mega-list__drill:focus-visible,
+.ff-mega-list__back-btn:hover,
+.ff-mega-list__back-btn:focus-visible {
+	opacity: 1;
+}
+
+.ff-mega-list__drill:hover .ff-mega-list__label,
+.ff-mega-list__drill:focus-visible .ff-mega-list__label,
+.ff-mega-list__back-btn:hover .ff-mega-list__label,
+.ff-mega-list__back-btn:focus-visible .ff-mega-list__label {
+	text-decoration-color: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ff-mega-panel__links a,
+	.ff-mega-panel .wp-block-list a,
+	.ff-mega-list__drill,
+	.ff-mega-list__back-btn,
+	.ff-mega-list__label {
+		transition: none;
+	}
+}
+
+.ff-mega-list__drill .ff-chevron,
+.ff-mega-list__back-btn .ff-chevron {
+	flex: 0 0 auto;
+}
+
+.ff-mega-list__kids {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	column-count: 1;
+}
+
+.ff-mega-list--parents [hidden] {
+	display: none !important;
+}
+
+.ff-mega-list--parents.is-ff-drilled .ff-mega-panel__links,
+.ff-mega-list--parents.is-ff-drilled .ff-mega-list__live,
+.ff-mega-list--parents.is-ff-drilled .ff-mega-list__kids {
+	column-count: 1;
 }
 
 /* Mega-Liste (manuell / live Kategorien / live Produkte) */
@@ -3672,14 +3790,17 @@ ul.ff-search-menu-nav {
 	margin-block-start: 0 !important;
 }
 
-/* Search hits = same product-card language as shop / slideshows */
+/* Search hits = same product-card language as shop / slideshows.
+ * height:100% + overflow:hidden sized the row to the image only and clipped
+ * title / price / tax / delivery. Height stays content-sized. */
 .ff-search-hit {
-	display: flex;
-	flex-direction: column;
+	display: flex !important;
+	flex-direction: column !important;
 	gap: 0;
 	align-items: stretch;
-	align-self: stretch;
-	height: 100%;
+	align-self: start;
+	height: auto !important;
+	max-height: none !important;
 	min-width: 0;
 	width: 100%;
 	padding: 0;
@@ -3712,6 +3833,7 @@ ul.ff-search-menu-nav {
 	width: 100%;
 	aspect-ratio: var(--ff-product-aspect, 1 / 1);
 	flex: 0 0 auto;
+	height: auto;
 	overflow: hidden;
 	margin: 0;
 	background: #e8eceb;
@@ -3735,15 +3857,18 @@ ul.ff-search-menu-nav {
 }
 
 .ff-search-hit .ff-prod-card__body {
-	display: grid;
+	display: grid !important;
+	position: relative;
 	gap: 6px;
 	padding: 12px 12px 10px !important;
 	text-align: left !important;
 	justify-items: stretch;
-	flex: 1 1 auto;
+	flex: 0 0 auto;
+	height: auto;
 	min-width: 0;
 	align-content: start;
-	color: inherit !important;
+	background: var(--wp--preset--color--base, #fff);
+	color: var(--wp--preset--color--contrast, #0e1114) !important;
 }
 
 .ff-search-hit .ff-prod-card__title {
@@ -5900,8 +6025,16 @@ body.is-ff-loading {
 .woocommerce-product-gallery__image.ff-has-ki-bild,
 .wc-block-woocommerce-product-gallery__image.ff-has-ki-bild,
 .wp-block-woocommerce-product-image.ff-has-ki-bild,
-.wc-block-components-product-image.ff-has-ki-bild {
+.wc-block-components-product-image.ff-has-ki-bild,
+.wp-block-cover.ff-has-ki-bild,
+.ff-fullbleed.ff-has-ki-bild {
 	position: relative;
+}
+
+.wp-block-cover.ff-has-ki-bild > .ff-ki-bild-tag,
+.ff-fullbleed.ff-has-ki-bild > .ff-ki-bild-tag,
+.ff-search-hit .ff-prod-card__media > .ff-ki-bild-tag {
+	z-index: 4;
 }
 
 .ff-product__hero .woocommerce-product-gallery__image img,

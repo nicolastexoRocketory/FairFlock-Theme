@@ -1,6 +1,6 @@
 /**
  * Collections section: exclude categories + titles-only + blurred bg via className tokens.
- * Tokens: ff-collections-exclude-{id}-{id}-… · ff-collections-titles · ff-collections-titles-blur
+ * Tokens: ff-collections-exclude-{id}-{id}-… · ff-collections-titles · ff-collections-titles-blur · ff-collections-parents
  */
 (function (wp, config) {
 	if (
@@ -82,8 +82,19 @@
 		return hasClass(className, "ff-collections-titles-blur");
 	}
 
-	function buildClassName(className, excludeIds, titlesOnly, titlesBlur) {
-		var base = stripTitlesToken(stripExcludeToken(className));
+	function hasParentsOnly(className) {
+		return hasClass(className, "ff-collections-parents");
+	}
+
+	function stripParentsToken(className) {
+		return String(className || "")
+			.replace(/(?:^|\s)ff-collections-parents(?=\s|$)/g, " ")
+			.replace(/\s+/g, " ")
+			.trim();
+	}
+
+	function buildClassName(className, excludeIds, titlesOnly, titlesBlur, parentsOnly) {
+		var base = stripParentsToken(stripTitlesToken(stripExcludeToken(className)));
 		var ids = (excludeIds || [])
 			.map(function (id) {
 				return parseInt(id, 10);
@@ -102,6 +113,9 @@
 			if (titlesBlur) {
 				base = (base + " ff-collections-titles-blur").trim();
 			}
+		}
+		if (parentsOnly) {
+			base = (base + " ff-collections-parents").trim();
 		}
 		return base;
 	}
@@ -211,6 +225,7 @@
 			var excludeIds = parseExcludeIds(className);
 			var titlesOnly = hasTitlesOnly(className);
 			var titlesBlur = titlesOnly && hasTitlesBlur(className);
+			var parentsOnly = hasParentsOnly(className);
 
 			return el(
 				Fragment,
@@ -237,7 +252,26 @@
 										className,
 										excludeIds,
 										!!next,
-										!!next && titlesBlur
+										!!next && titlesBlur,
+										parentsOnly
+									),
+								});
+							},
+						}),
+						el(ToggleControl, {
+							label: i18n.parents || "Nur Überkategorien",
+							help:
+								i18n.parentsHelp ||
+								"Es werden nur Hauptkategorien angezeigt, keine Unterkategorien.",
+							checked: parentsOnly,
+							onChange: function (next) {
+								props.setAttributes({
+									className: buildClassName(
+										className,
+										excludeIds,
+										titlesOnly,
+										titlesBlur,
+										!!next
 									),
 								});
 							},
@@ -262,7 +296,8 @@
 										className,
 										excludeIds,
 										true,
-										!!next
+										!!next,
+										parentsOnly
 									),
 								});
 							},
@@ -275,7 +310,8 @@
 										className,
 										ids,
 										titlesOnly,
-										titlesBlur
+										titlesBlur,
+										parentsOnly
 									),
 								});
 							},

@@ -517,13 +517,13 @@
           "</span></span>";
       }
       return (
-        '<p class="ff-prod-card__delivery">' +
+        '<span class="ff-prod-card__delivery">' +
         DELIVERY_TRUCK_SVG +
         "<span>" +
         escapeHtml(text) +
         "</span>" +
         tipHtml +
-        "</p>"
+        "</span>"
       );
     }
 
@@ -538,6 +538,15 @@
         imgHover = imgs[1].thumbnail || imgs[1].src || "";
       }
       var ext = (item.extensions && item.extensions.fairflock) || {};
+      var kiExt =
+        (item.extensions && (item.extensions.fairflockKi || item.extensions.fairflock_ki)) || {};
+      var kiIds = Array.isArray(kiExt.image_ids)
+        ? kiExt.image_ids.map(function (id) {
+            return Number(id);
+          })
+        : [];
+      var imgId = imgs[0] && imgs[0].id ? Number(imgs[0].id) : 0;
+      var hoverId = imgs[1] && imgs[1].id ? Number(imgs[1].id) : 0;
       var name = decodeEntities(item.name || "");
       return {
         name: name,
@@ -548,6 +557,7 @@
         url: item.permalink || "",
         img: img,
         imgHover: imgHover,
+        ki: (imgId && kiIds.indexOf(imgId) !== -1) || (hoverId && kiIds.indexOf(hoverId) !== -1),
         q: name
       };
     }
@@ -563,7 +573,10 @@
           var imgSrc = String(item.img || "").replace(/"/g, "%22");
           var hoverSrc = String(item.imgHover || "").replace(/"/g, "%22");
           var media =
-            '<span class="ff-prod-card__media">' +
+            '<span class="ff-prod-card__media' +
+            (item.ki ? " ff-has-ki-bild" : "") +
+            '">' +
+            (item.ki ? '<span class="ff-ki-bild-tag">KI-Bild</span>' : "") +
             (imgSrc
               ? '<img src="' + imgSrc + '" alt="" loading="lazy" decoding="async">'
               : "") +

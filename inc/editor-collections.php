@@ -3,7 +3,7 @@
  * Collections editor UX — exclude categories + titles-only mode.
  *
  * core/group.ff-pattern-collections: className tokens
- * ff-collections-exclude-{id}-{id}-… · ff-collections-titles · ff-collections-titles-blur
+ * ff-collections-exclude-{id}-{id}-… · ff-collections-titles · ff-collections-titles-blur · ff-collections-parents
  *
  * @package FairFlock
  * @since 0.9.250
@@ -54,6 +54,8 @@ function fairflock_enqueue_collections_editor_assets() {
 				'titlesBlur'           => __( 'Weichgezeichnetes Hintergrundbild anzeigen', 'fairflock' ),
 				'titlesBlurHelp'       => __( 'Kategoriebild unscharf hinter dem Titel, mit Overlay für Lesbarkeit.', 'fairflock' ),
 				'titlesBlurNeedTitles' => __( 'Nur verfügbar, wenn „Nur Titel“ aktiv ist.', 'fairflock' ),
+				'parents'        => __( 'Nur Überkategorien', 'fairflock' ),
+				'parentsHelp'    => __( 'Es werden nur Hauptkategorien angezeigt, keine Unterkategorien.', 'fairflock' ),
 				'exclude'        => __( 'Kategorien ausschließen', 'fairflock' ),
 				'loading'        => __( 'Kategorien werden geladen…', 'fairflock' ),
 				'hint'           => __( 'Ausgeschlossene Kategorien erscheinen auf der Website nicht. Die Karten im Editor dienen als Platzhalter.', 'fairflock' ),

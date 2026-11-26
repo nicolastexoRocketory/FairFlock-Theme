@@ -64,6 +64,141 @@ function fairflock_ki_bild_tag_html() {
 }
 
 /**
+ * Resolve a media-library attachment from a URL (including resized -WxH files).
+ *
+ * @since 0.9.566
+ *
+ * @param string $url Image URL.
+ * @return int
+ */
+function fairflock_ki_bild_id_from_url( $url ) {
+	$url = trim( (string) $url );
+	if ( $url === '' || ! function_exists( 'attachment_url_to_postid' ) ) {
+		return 0;
+	}
+	$id = (int) attachment_url_to_postid( $url );
+	if ( $id ) {
+		return $id;
+	}
+	$stripped = preg_replace( '/-\d+x\d+(?=\.[a-z0-9]+(?:\?.*)?$)/i', '', $url );
+	if ( is_string( $stripped ) && $stripped !== $url ) {
+		return (int) attachment_url_to_postid( $stripped );
+	}
+	return 0;
+}
+
+/**
+ * Cover block background attachment (media id, featured image, or url).
+ *
+ * @since 0.9.566
+ *
+ * @param array<string, mixed> $block Parsed block.
+ * @return int
+ */
+function fairflock_ki_bild_cover_attachment_id( $block ) {
+	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	if ( ! empty( $attrs['id'] ) ) {
+		return absint( $attrs['id'] );
+	}
+	if ( ! empty( $attrs['useFeaturedImage'] ) ) {
+		$thumb = (int) get_post_thumbnail_id();
+		if ( $thumb ) {
+			return $thumb;
+		}
+	}
+	if ( ! empty( $attrs['url'] ) ) {
+		return fairflock_ki_bild_id_from_url( (string) $attrs['url'] );
+	}
+	return fairflock_ki_bild_background_attachment_id( $block );
+}
+
+/**
+ * Group/section background image from block style.background.backgroundImage.
+ *
+ * @since 0.9.566
+ *
+ * @param array<string, mixed> $block Parsed block.
+ * @return int
+ */
+function fairflock_ki_bild_background_attachment_id( $block ) {
+	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	$bg    = $attrs['style']['background']['backgroundImage'] ?? null;
+	if ( ! is_array( $bg ) ) {
+		return 0;
+	}
+	if ( ! empty( $bg['id'] ) ) {
+		return absint( $bg['id'] );
+	}
+	if ( ! empty( $bg['url'] ) ) {
+		return fairflock_ki_bild_id_from_url( (string) $bg['url'] );
+	}
+	return 0;
+}
+
+/**
+ * Adds the KI-Bild class + tag to the root element of a rendered block.
+ *
+ * @since 0.9.566
+ *
+ * @param string $html Block HTML.
+ * @return string
+ */
+function fairflock_ki_bild_mark_root_html( $html ) {
+	if ( ! is_string( $html ) || $html === '' || str_contains( $html, 'ff-ki-bild-tag' ) ) {
+		return $html;
+	}
+	$tag = fairflock_ki_bild_tag_html();
+	if ( ! preg_match( '/^(<\w+\b[^>]*>)/', $html, $m ) ) {
+		return $tag . $html;
+	}
+	$open = $m[1];
+	if ( ! preg_match( '/\bff-has-ki-bild\b/', $open ) ) {
+		if ( preg_match( '/\bclass=(["\'])(.*?)\1/i', $open ) ) {
+			$open = preg_replace(
+				'/\bclass=(["\'])(.*?)\1/i',
+				'class=$1$2 ff-has-ki-bild$1',
+				$open,
+				1
+			);
+		} else {
+			$open = preg_replace( '/^<(\w+)/', '<$1 class="ff-has-ki-bild"', $open, 1 );
+		}
+	}
+	return $open . $tag . substr( $html, strlen( $m[1] ) );
+}
+
+/**
+ * KI-Bild tag on fullscreen covers and fullbleed background sections.
+ *
+ * @since 0.9.566
+ *
+ * @param string               $content Block HTML.
+ * @param array<string, mixed> $block   Parsed block.
+ * @return string
+ */
+function fairflock_ki_bild_render_background_block( $content, $block ) {
+	if ( ! is_string( $content ) || $content === '' || ! is_array( $block ) ) {
+		return $content;
+	}
+	$name  = isset( $block['blockName'] ) ? (string) $block['blockName'] : '';
+	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
+	$class = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
+	$is_cover     = ( $name === 'core/cover' );
+	$is_fullbleed = str_contains( $class, 'ff-fullbleed' );
+	if ( ! $is_cover && ! $is_fullbleed ) {
+		return $content;
+	}
+	$id = $is_cover
+		? fairflock_ki_bild_cover_attachment_id( $block )
+		: fairflock_ki_bild_background_attachment_id( $block );
+	if ( ! fairflock_attachment_is_ki_bild( $id ) ) {
+		return $content;
+	}
+	return fairflock_ki_bild_mark_root_html( $content );
+}
+add_filter( 'render_block', 'fairflock_ki_bild_render_background_block', 12, 2 );
+
+/**
  * Featured + gallery attachment IDs for a product.
  *
  * @since 0.9.360

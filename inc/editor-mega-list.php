@@ -62,6 +62,8 @@ function fairflock_enqueue_mega_list_editor_assets() {
 				'loading'             => __( 'Kategorien werden geladen…', 'fairflock' ),
 				'hintManual'          => __( 'Links in der Liste unten selbst bearbeiten.', 'fairflock' ),
 				'hintCats'            => __( 'Frontend zeigt alle Produktkategorien live. Die Liste im Editor dient nur als Platzhalter.', 'fairflock' ),
+				'parents'             => __( 'Nur Überkategorien', 'fairflock' ),
+				'parentsHelp'         => __( 'Nur Hauptkategorien. Ein Klick öffnet die Unterkategorien, oben mit Zurück.', 'fairflock' ),
 				'hintProds'           => __( 'Frontend zeigt Produkte der gewählten Kategorie live. Die Liste im Editor dient nur als Platzhalter.', 'fairflock' ),
 				'noCategory'          => __( '— Kategorie wählen —', 'fairflock' ),
 				'coverLinkPanel'       => __( 'Cover-Link', 'fairflock' ),

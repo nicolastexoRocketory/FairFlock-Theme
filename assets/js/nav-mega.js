@@ -192,110 +192,58 @@
 		clearInlineBox(slot);
 	}
 
-	function resetMegaCategoryDrill() {
+	function resetMegaCategoryBranches() {
 		var roots = document.querySelectorAll(".ff-mega-list--parents");
 		Array.prototype.forEach.call(roots, function (root) {
-			root.classList.remove("is-ff-drilled");
-			Array.prototype.forEach.call(root.querySelectorAll(".ff-mega-list__kids"), function (list) {
-				list.hidden = true;
+			Array.prototype.forEach.call(root.querySelectorAll(".ff-mega-list__branch"), function (item) {
+				item.classList.remove("is-ff-open");
 			});
-			Array.prototype.forEach.call(root.querySelectorAll(".ff-mega-list__drill"), function (button) {
-				button.hidden = false;
+			Array.prototype.forEach.call(root.querySelectorAll(".ff-mega-list__toggle"), function (button) {
+				button.setAttribute("aria-expanded", "false");
 			});
-			Array.prototype.forEach.call(
-				root.querySelectorAll(".ff-mega-list__branch, .ff-mega-list__leaf"),
-				function (item) {
-					item.hidden = false;
-					item.classList.remove("is-ff-open");
-				}
-			);
 		});
 	}
 
-	function openMegaBranch(button) {
-		var item = button.closest(".ff-mega-list__branch");
-		var kids = item && item.querySelector(":scope > .ff-mega-list__kids");
-		var parentList = item && item.parentElement;
-		if (!item || !kids || !parentList) {
-			return;
-		}
-		Array.prototype.forEach.call(parentList.children, function (sibling) {
-			if (sibling !== item) {
-				sibling.hidden = true;
-			}
-		});
-		button.hidden = true;
-		kids.hidden = false;
-		item.classList.add("is-ff-open");
-		var root = button.closest(".ff-mega-list--parents");
-		if (root) {
-			root.classList.add("is-ff-drilled");
-		}
-		var back = kids.querySelector(":scope > .ff-mega-list__back .ff-mega-list__back-btn");
-		if (back) {
-			back.focus({ preventScroll: true });
+	function setBranchOpen(item, open) {
+		item.classList.toggle("is-ff-open", open);
+		var button = item.querySelector(":scope > .ff-mega-list__row > .ff-mega-list__toggle");
+		if (button) {
+			button.setAttribute("aria-expanded", open ? "true" : "false");
 		}
 	}
 
-	function closeMegaBranch(button) {
-		var kids = button.closest(".ff-mega-list__kids");
-		var item = kids && kids.parentElement;
-		if (!kids || !item) {
-			return;
-		}
-		kids.hidden = true;
-		Array.prototype.forEach.call(kids.querySelectorAll(".ff-mega-list__kids"), function (nested) {
-			nested.hidden = true;
-		});
-		Array.prototype.forEach.call(kids.querySelectorAll(".ff-mega-list__drill"), function (drill) {
-			drill.hidden = false;
-		});
-		Array.prototype.forEach.call(
-			kids.querySelectorAll(".ff-mega-list__branch, .ff-mega-list__leaf"),
-			function (child) {
-				child.hidden = false;
-				child.classList.remove("is-ff-open");
-			}
-		);
-		var drill = item.querySelector(":scope > .ff-mega-list__drill");
-		if (drill) {
-			drill.hidden = false;
-		}
-		item.classList.remove("is-ff-open");
-		if (item.parentElement) {
-			Array.prototype.forEach.call(item.parentElement.children, function (sibling) {
-				sibling.hidden = false;
-			});
-		}
-		var root = button.closest(".ff-mega-list--parents");
-		if (root && !root.querySelector(".ff-mega-list__kids:not([hidden])")) {
-			root.classList.remove("is-ff-drilled");
-		}
-		if (drill) {
-			drill.focus({ preventScroll: true });
-		}
-	}
-
-	function bindMegaCategoryDrill() {
+	function bindMegaCategoryBranches() {
 		document.addEventListener("click", function (event) {
-			var drill = event.target.closest(".ff-mega-list--parents .ff-mega-list__drill");
-			if (drill) {
-				event.preventDefault();
-				openMegaBranch(drill);
+			var row = event.target.closest(".ff-mega-list--parents .ff-mega-list__row");
+			if (!row) {
 				return;
 			}
-			var back = event.target.closest(".ff-mega-list--parents .ff-mega-list__back-btn");
-			if (back) {
-				event.preventDefault();
-				closeMegaBranch(back);
+			var item = row.closest(".ff-mega-list__branch");
+			if (!item) {
+				return;
 			}
+			var toggle = event.target.closest(".ff-mega-list__toggle");
+			/* Mobile: the parent row opens its children. Desktop: only the chevron toggles. */
+			if (isDesktop() && !toggle) {
+				return;
+			}
+			event.preventDefault();
+			var open = !item.classList.contains("is-ff-open");
+			if (open && item.parentElement) {
+				Array.prototype.forEach.call(item.parentElement.children, function (sibling) {
+					if (sibling !== item && sibling.classList && sibling.classList.contains("ff-mega-list__branch")) {
+						setBranchOpen(sibling, false);
+					}
+				});
+			}
+			setBranchOpen(item, open);
 		});
 	}
 
 	function closeMega() {
 		clearCloseTimer();
 		clearAnimTimer();
-		resetMegaCategoryDrill();
+		resetMegaCategoryBranches();
 		var slot = panelSlot();
 		document.documentElement.classList.remove("is-ff-mega-open");
 		setPanelBodyClass(false);
@@ -459,7 +407,7 @@
 		});
 	}
 
-	bindMegaCategoryDrill();
+	bindMegaCategoryBranches();
 
 	window.fairflockOpenMega = function () {
 		openMega(null, { force: true });

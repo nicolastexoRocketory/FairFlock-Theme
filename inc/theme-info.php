@@ -20,6 +20,36 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.581',
+			'items'   => array(
+				__( 'Mega-Menü: Einträge der ersten Ebene sind so kräftig wie die Überkategorien. Spaltentitel sind etwas größer.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.580',
+			'items'   => array(
+				__( 'Mega-Menü: Überkategorien sind so kräftig gesetzt wie „Alles in {Kategorie} anzeigen“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.579',
+			'items'   => array(
+				__( 'Mega-Menü: der Innenabstand aus dem Site-Editor gilt im Frontend, ohne zusätzlichen Seitenabstand.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.578',
+			'items'   => array(
+				__( 'Mega-Menü mobil: Unterpunkte öffnen erst beim Tippen. Darüber steht „Alles in {Überkategorie} anzeigen“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.577',
+			'items'   => array(
+				__( 'Mega-Menü: Hover auf eine Überkategorie klappt die Unterpunkte darunter auf. Ein Klick öffnet die Kategorie im Shop.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.576',
 			'items'   => array(
 				__( 'Mega-Menü: Kategorien bleiben einspaltig, wenn zwei Spalten nicht nebeneinander passen.', 'fairflock' ),

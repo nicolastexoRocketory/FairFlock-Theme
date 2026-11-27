@@ -242,9 +242,12 @@ function fairflock_mega_list_terms_by_parent() {
 }
 
 /**
- * Nested category list: parents drill into children, with Zurück at the top.
+ * Nested category list. Hover reveals children under the parent.
+ * The parent link opens that category in the shop.
  *
  * @since 0.9.567
+ * @since 0.9.577 Hover expands children; the parent link opens the category.
+ * @since 0.9.578 Mobile: children open on tap, with “Alles in {Kategorie} anzeigen” above them.
  *
  * @param array<int, WP_Term>             $terms     Categories at this level.
  * @param array<int, array<int, WP_Term>> $by_parent Children keyed by parent id.
@@ -253,12 +256,8 @@ function fairflock_mega_list_terms_by_parent() {
 function fairflock_mega_list_parent_items_markup( array $terms, array $by_parent ) {
 	$html    = '';
 	$chevron = function_exists( 'fairflock_chevron_svg' )
-		? fairflock_chevron_svg( array( 'dir' => 'right', 'size' => 16 ) )
+		? fairflock_chevron_svg( array( 'dir' => 'down', 'size' => 16 ) )
 		: '';
-	$back_icon = function_exists( 'fairflock_chevron_svg' )
-		? fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 16 ) )
-		: '';
-	$back_label = esc_html__( 'Zurück', 'fairflock' );
 
 	foreach ( $terms as $term ) {
 		if ( ! $term instanceof WP_Term ) {
@@ -274,11 +273,26 @@ function fairflock_mega_list_parent_items_markup( array $terms, array $by_parent
 			$html .= '<li class="ff-mega-list__leaf"><a href="' . esc_url( (string) $link ) . '">' . $label . '</a></li>';
 			continue;
 		}
-		$kids  = fairflock_mega_list_parent_items_markup( $children, $by_parent );
+		$kids         = fairflock_mega_list_parent_items_markup( $children, $by_parent );
+		$toggle_label = esc_attr(
+			sprintf(
+				/* translators: %s: category name. */
+				__( 'Unterkategorien von %s', 'fairflock' ),
+				$term->name
+			)
+		);
+		$all_label    = sprintf(
+			/* translators: %s: parent category name. */
+			esc_html__( 'Alles in %s anzeigen', 'fairflock' ),
+			$label
+		);
 		$html .= '<li class="ff-mega-list__branch">';
-		$html .= '<button type="button" class="ff-mega-list__drill"><span class="ff-mega-list__label">' . $label . '</span>' . $chevron . '</button>';
-		$html .= '<ul class="ff-mega-list__kids" hidden>';
-		$html .= '<li class="ff-mega-list__back"><button type="button" class="ff-mega-list__back-btn">' . $back_icon . '<span class="ff-mega-list__label">' . $back_label . '</span></button></li>';
+		$html .= '<div class="ff-mega-list__row">';
+		$html .= '<a href="' . esc_url( (string) $link ) . '">' . $label . '</a>';
+		$html .= '<button type="button" class="ff-mega-list__toggle" aria-expanded="false" aria-label="' . $toggle_label . '">' . $chevron . '</button>';
+		$html .= '</div>';
+		$html .= '<ul class="ff-mega-list__kids">';
+		$html .= '<li class="ff-mega-list__all"><a href="' . esc_url( (string) $link ) . '">' . $all_label . '</a></li>';
 		$html .= $kids;
 		$html .= '</ul></li>';
 	}
@@ -290,9 +304,11 @@ function fairflock_mega_list_parent_items_markup( array $terms, array $by_parent
  * Live category links for mega list.
  *
  * @since 0.9.218
- * @since 0.9.567 Optional parents-only drill-down.
+ * @since 0.9.567 Optional parents-only list.
+ * @since 0.9.577 Parent hover expands children; the parent link opens the category.
+ * @since 0.9.578 Mobile opens children on tap.
  *
- * @param bool $parents_only Only Überkategorien; click opens children.
+ * @param bool $parents_only Only Überkategorien, with children on hover.
  * @return string
  */
 function fairflock_mega_list_categories_markup( $parents_only = false ) {

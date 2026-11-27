@@ -207,12 +207,14 @@ function fairflock_ki_bild_mark_root_html( $html ) {
 }
 
 /**
- * KI-Bild tag on hero slides, covers, fullbleed, collection cards and bento cards.
+ * KI-Bild tag on hero slides, covers, fullbleed, collection cards, bento cards, mega-menu images and the brand-band photo.
  *
- * Mega-Menü and the red promo band stay untagged.
+ * The band copy column stays untagged. The photo column (ff-band__media) is tagged when the image is flagged.
  *
  * @since 0.9.566
- * @since 0.9.569 Hero, Kollektionen, Bento; kein Tag im Mega-Menü oder auf ff-band.
+ * @since 0.9.569 Hero, Kollektionen, Bento.
+ * @since 0.9.572 Mega-Menü-Bilder wieder mit Hinweis.
+ * @since 0.9.574 Brand-Band: Hinweis auf dem Bild rechts, nicht auf dem Text.
  *
  * @param string               $content Block HTML.
  * @param array<string, mixed> $block   Parsed block.
@@ -226,7 +228,10 @@ function fairflock_ki_bild_render_background_block( $content, $block ) {
 	$attrs = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
 	$class = isset( $attrs['className'] ) ? (string) $attrs['className'] : '';
 
-	if ( str_contains( $class, 'ff-mega' ) || str_contains( $class, 'ff-band' ) ) {
+	if (
+		fairflock_ki_bild_has_class_token( $class, 'ff-band' )
+		|| fairflock_ki_bild_has_class_token( $class, 'ff-band__copy' )
+	) {
 		return $content;
 	}
 

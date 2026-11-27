@@ -20,6 +20,42 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.576',
+			'items'   => array(
+				__( 'Mega-Menü: Kategorien bleiben einspaltig, wenn zwei Spalten nicht nebeneinander passen.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.575',
+			'items'   => array(
+				__( 'Buttons: der Hover-Schimmer ist weicher gezeichnet.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.574',
+			'items'   => array(
+				__( 'Brand-Band: KI-Bild-Hinweis sitzt auf dem Foto, wenn das Bild markiert ist.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.573',
+			'items'   => array(
+				__( 'Suche: Produktkarten zeigen das ganze Bild und schneiden Titel und Foto nicht mehr über eine feste Höhe ab.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.572',
+			'items'   => array(
+				__( 'Mega-Menü: KI-Bild-Hinweis auf den Kartenbildern, wenn das Bild markiert ist.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.571',
+			'items'   => array(
+				__( 'Hero: KI-Bild-Hinweis verschiebt das Hintergrundbild nicht mehr nach oben.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.570',
 			'items'   => array(
 				__( 'Buttons: Hover ist ein Lichtstreifen über der bestehenden Farbe, ohne Wechsel auf eine zweite Farbe.', 'fairflock' ),

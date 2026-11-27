@@ -77,6 +77,12 @@
 	z-index: 1;
 }
 
+/* KI-Hinweis darf die absolute Füllung des Slides nicht aufheben. */
+.fs-slide.ff-has-ki-bild {
+	position: absolute;
+	inset: 0;
+}
+
 /*
  * Hero: Inhalt mittig — Block-Stil „Hero: Inhalt mittig“ am Slide,
  * am Inhalts-Group (fs-slide-inner) oder am ganzen Hero-Karussell.

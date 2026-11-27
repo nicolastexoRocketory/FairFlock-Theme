@@ -1893,8 +1893,8 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 }
 
 /*
- * Kollektionen (Live-Kategorien): Spalte doppelt so breit,
- * Linkliste fließt in zwei Spalten — weniger Leerraum neben Beliebt/Service.
+ * Kollektionen (Live-Kategorien): Spalte doppelt so breit.
+ * Zwei Spalten nur, wenn jede mindestens 15rem breit bleibt — sonst eine Spalte.
  */
 .ff-mega-panel__cols > .wp-block-column:has(.ff-mega-list--categories) {
 	flex: 2 1 0% !important;
@@ -1906,6 +1906,7 @@ body.ff-mega-width-bar:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-m
 .ff-mega-list--categories .ff-mega-panel__links,
 .ff-mega-list--categories .ff-mega-list__live {
 	column-count: 2;
+	column-width: 15rem;
 	column-gap: 28px;
 }
 
@@ -3831,9 +3832,10 @@ ul.ff-search-menu-nav {
 	position: relative;
 	display: block;
 	width: 100%;
-	aspect-ratio: var(--ff-product-aspect, 1 / 1);
+	aspect-ratio: auto;
 	flex: 0 0 auto;
 	height: auto;
+	max-height: none;
 	overflow: hidden;
 	margin: 0;
 	background: #e8eceb;
@@ -3841,19 +3843,28 @@ ul.ff-search-menu-nav {
 }
 
 .ff-search-hit .ff-prod-card__media img {
-	position: absolute;
-	inset: 0;
+	position: static;
+	inset: auto;
 	display: block;
 	width: 100% !important;
-	height: 100% !important;
+	height: auto !important;
 	max-width: none !important;
+	max-height: none !important;
 	margin: 0;
 	padding: 0;
 	border: 0;
 	border-radius: inherit;
-	object-fit: cover;
-	object-position: top center;
+	object-fit: contain;
+	object-position: center top;
 	background: #e8eceb;
+}
+
+.ff-search-hit .ff-prod-card__media .ff-prod-card__hover-img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
 }
 
 .ff-search-hit .ff-prod-card__body {
@@ -6027,14 +6038,16 @@ body.is-ff-loading {
 .wc-block-components-product-image.ff-has-ki-bild,
 .wp-block-cover.ff-has-ki-bild,
 .ff-fullbleed.ff-has-ki-bild,
-.fs-slide.ff-has-ki-bild,
 .ff-bento-card.ff-has-ki-bild,
 .ff-collection-card.ff-has-ki-bild {
 	position: relative;
 }
 
+.ff-band__media.ff-has-ki-bild > .ff-ki-bild-tag,
 .wp-block-cover.ff-has-ki-bild > .ff-ki-bild-tag,
 .ff-fullbleed.ff-has-ki-bild > .ff-ki-bild-tag,
+.ff-mega-panel__card-media.ff-has-ki-bild > .ff-ki-bild-tag,
+a.ff-mega-cover-link .ff-has-ki-bild > .ff-ki-bild-tag,
 .fs-slide.ff-has-ki-bild > .ff-ki-bild-tag,
 .ff-bento-card.ff-has-ki-bild > .ff-ki-bild-tag,
 .ff-collection-card.ff-has-ki-bild > .ff-ki-bild-tag,
@@ -10782,7 +10795,8 @@ body.is-ff-ptable-open {
 	.ff-search-hits {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 10px;
-		min-height: 0;
+		min-height: auto;
+		height: auto;
 	}
 
 	.ff-search-mega.is-querying .ff-search-mega-foot {
@@ -16579,16 +16593,17 @@ main.ff-404,
 )::after {
 	content: "";
 	position: absolute;
-	top: -30%;
-	bottom: -30%;
+	top: -45%;
+	bottom: -45%;
 	left: 0;
-	width: 46%;
+	width: 62%;
+	filter: blur(14px);
 	background: linear-gradient(
 		105deg,
 		transparent 0%,
-		color-mix(in srgb, #0e1114 18%, transparent) 38%,
-		color-mix(in srgb, #fff 82%, transparent) 50%,
-		color-mix(in srgb, #0e1114 14%, transparent) 62%,
+		color-mix(in srgb, #0e1114 10%, transparent) 24%,
+		color-mix(in srgb, #fff 48%, transparent) 50%,
+		color-mix(in srgb, #0e1114 8%, transparent) 76%,
 		transparent 100%
 	);
 	transform: translateX(-160%) skewX(-16deg);

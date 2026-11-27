@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.586',
+			'items'   => array(
+				__( 'Mega-Menü: stabile Abstände bei Hover, Trennlinien zwischen den Punkten und klarere Spalten für Unterkategorien.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.585',
 			'items'   => array(
 				__( 'Mega-Menü: ein per Hover geöffnetes Untermenü bleibt offen, bis eine andere Kategorie gewählt wird.', 'fairflock' ),

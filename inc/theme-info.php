@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.582',
+			'items'   => array(
+				__( 'Mega-Menü: Kategorien stehen immer in einer Spalte.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.581',
 			'items'   => array(
 				__( 'Mega-Menü: Einträge der ersten Ebene sind so kräftig wie die Überkategorien. Spaltentitel sind etwas größer.', 'fairflock' ),

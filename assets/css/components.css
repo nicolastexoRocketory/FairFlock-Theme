@@ -1904,22 +1904,11 @@ body.ff-mega-width-shell:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff
 	flex-shrink: 1;
 }
 
-/*
- * Kollektionen (Live-Kategorien): Spalte doppelt so breit.
- * Zwei Spalten nur, wenn jede mindestens 15rem breit bleibt — sonst eine Spalte.
- */
-.ff-mega-panel__cols > .wp-block-column:has(.ff-mega-list--categories) {
-	flex: 2 1 0% !important;
-	flex-basis: 0% !important;
-	width: auto !important;
-	max-width: none !important;
-}
-
+/* Kollektionen: Kategorien immer untereinander, eine Spalte. */
 .ff-mega-list--categories .ff-mega-panel__links,
 .ff-mega-list--categories .ff-mega-list__live {
-	column-count: 2;
-	column-width: 15rem;
-	column-gap: 28px;
+	column-count: 1;
+	column-width: auto;
 }
 
 .ff-mega-list--categories .ff-mega-panel__links > li,
@@ -2242,11 +2231,6 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 
 	.ff-mega-panel__cols > .wp-block-column:has(.ff-mega-list--categories) {
 		flex-basis: 100% !important;
-	}
-
-	.ff-mega-list--categories .ff-mega-panel__links,
-	.ff-mega-list--categories .ff-mega-list__live {
-		column-count: 2;
 	}
 
 	.ff-mega-panel__cols > .wp-block-column:last-child {

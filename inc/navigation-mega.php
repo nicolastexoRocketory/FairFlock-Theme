@@ -242,18 +242,21 @@ function fairflock_mega_list_terms_by_parent() {
 }
 
 /**
- * Nested category list. Hover reveals children under the parent.
+ * Nested category list. Desktop shows children in the column to the right.
  * The parent link opens that category in the shop.
  *
  * @since 0.9.567
  * @since 0.9.577 Hover expands children; the parent link opens the category.
  * @since 0.9.578 Mobile: children open on tap, with “Alles in {Kategorie} anzeigen” above them.
+ * @since 0.9.583 Desktop: children sit in the next column.
+ * @since 0.9.584 Descendants below the first level are plain subcategory links.
  *
  * @param array<int, WP_Term>             $terms     Categories at this level.
  * @param array<int, array<int, WP_Term>> $by_parent Children keyed by parent id.
+ * @param bool                            $flat      True inside a parent: no further submenu.
  * @return string
  */
-function fairflock_mega_list_parent_items_markup( array $terms, array $by_parent ) {
+function fairflock_mega_list_parent_items_markup( array $terms, array $by_parent, $flat = false ) {
 	$html    = '';
 	$chevron = function_exists( 'fairflock_chevron_svg' )
 		? fairflock_chevron_svg( array( 'dir' => 'down', 'size' => 16 ) )
@@ -269,11 +272,14 @@ function fairflock_mega_list_parent_items_markup( array $terms, array $by_parent
 		}
 		$label    = esc_html( $term->name );
 		$children = isset( $by_parent[ (int) $term->term_id ] ) ? $by_parent[ (int) $term->term_id ] : array();
-		if ( ! $children ) {
+		if ( $flat || ! $children ) {
 			$html .= '<li class="ff-mega-list__leaf"><a href="' . esc_url( (string) $link ) . '">' . $label . '</a></li>';
+			if ( $children ) {
+				$html .= fairflock_mega_list_parent_items_markup( $children, $by_parent, true );
+			}
 			continue;
 		}
-		$kids         = fairflock_mega_list_parent_items_markup( $children, $by_parent );
+		$kids         = fairflock_mega_list_parent_items_markup( $children, $by_parent, true );
 		$toggle_label = esc_attr(
 			sprintf(
 				/* translators: %s: category name. */

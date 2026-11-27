@@ -201,7 +201,30 @@
 			Array.prototype.forEach.call(root.querySelectorAll(".ff-mega-list__toggle"), function (button) {
 				button.setAttribute("aria-expanded", "false");
 			});
+			Array.prototype.forEach.call(root.querySelectorAll(".ff-mega-list__tree"), function (list) {
+				list.style.minHeight = "";
+			});
 		});
+	}
+
+	function syncCategoryFlyout(list) {
+		if (!list) {
+			return;
+		}
+		if (!isDesktop()) {
+			list.style.minHeight = "";
+			return;
+		}
+		var branch =
+			list.querySelector(":scope > .ff-mega-list__branch:hover") ||
+			list.querySelector(":scope > .ff-mega-list__branch:focus-within") ||
+			list.querySelector(":scope > .ff-mega-list__branch.is-ff-open");
+		var kids = branch ? branch.querySelector(":scope > .ff-mega-list__kids") : null;
+		if (!kids) {
+			list.style.minHeight = "";
+			return;
+		}
+		list.style.minHeight = kids.scrollHeight + "px";
 	}
 
 	function setBranchOpen(item, open) {
@@ -210,6 +233,36 @@
 		if (button) {
 			button.setAttribute("aria-expanded", open ? "true" : "false");
 		}
+	}
+
+	function categoryTopItem(list, node) {
+		var item = node && node.closest ? node.closest("li") : null;
+		while (item && item.parentElement !== list) {
+			item = item.parentElement ? item.parentElement.closest("li") : null;
+		}
+		return item && list.contains(item) ? item : null;
+	}
+
+	/* Desktop: the hovered parent stays open until another top-level category is chosen. */
+	function stickCategoryFlyout(list, item) {
+		if (!list || !isDesktop()) {
+			return;
+		}
+		if (item && item.classList.contains("ff-mega-list__branch")) {
+			Array.prototype.forEach.call(list.children, function (sibling) {
+				if (sibling !== item && sibling.classList && sibling.classList.contains("ff-mega-list__branch")) {
+					setBranchOpen(sibling, false);
+				}
+			});
+			setBranchOpen(item, true);
+		} else if (item && item.classList.contains("ff-mega-list__leaf")) {
+			Array.prototype.forEach.call(list.children, function (sibling) {
+				if (sibling.classList && sibling.classList.contains("ff-mega-list__branch")) {
+					setBranchOpen(sibling, false);
+				}
+			});
+		}
+		syncCategoryFlyout(list);
 	}
 
 	function bindMegaCategoryBranches() {
@@ -222,21 +275,44 @@
 			if (!item) {
 				return;
 			}
-			var toggle = event.target.closest(".ff-mega-list__toggle");
-			/* Mobile: the parent row opens its children. Desktop: only the chevron toggles. */
-			if (isDesktop() && !toggle) {
+			/* Desktop hover keeps the submenu open. Mobile opens it on tap. */
+			if (isDesktop()) {
 				return;
 			}
 			event.preventDefault();
 			var open = !item.classList.contains("is-ff-open");
-			if (open && item.parentElement) {
-				Array.prototype.forEach.call(item.parentElement.children, function (sibling) {
+			var list = item.parentElement;
+			if (open && list) {
+				Array.prototype.forEach.call(list.children, function (sibling) {
 					if (sibling !== item && sibling.classList && sibling.classList.contains("ff-mega-list__branch")) {
 						setBranchOpen(sibling, false);
 					}
 				});
 			}
 			setBranchOpen(item, open);
+			syncCategoryFlyout(list);
+		});
+
+		document.addEventListener("mouseover", function (event) {
+			if (!isDesktop()) {
+				return;
+			}
+			var list = event.target.closest(".ff-mega-list--categories .ff-mega-list__tree");
+			if (!list) {
+				return;
+			}
+			stickCategoryFlyout(list, categoryTopItem(list, event.target));
+		});
+
+		document.addEventListener("focusin", function (event) {
+			if (!isDesktop()) {
+				return;
+			}
+			var list = event.target.closest(".ff-mega-list--categories .ff-mega-list__tree");
+			if (!list) {
+				return;
+			}
+			stickCategoryFlyout(list, categoryTopItem(list, event.target));
 		});
 	}
 

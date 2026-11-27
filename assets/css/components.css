@@ -2155,10 +2155,46 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 	display: block;
 }
 
-/* Desktop: der Elternlink öffnet die Kategorie, „Alles in …“ bleibt aus. */
+/* Desktop: der Elternlink öffnet die Kategorie, „Alles in …“ bleibt aus.
+   Unterkategorien stehen in der Spalte rechts neben den Überkategorien. */
 @media (min-width: 961px) {
 	.ff-mega-list__all {
 		display: none;
+	}
+
+	.ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__tree {
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		width: 100%;
+		column-count: 1;
+		column-width: auto;
+	}
+
+	.ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__tree > li {
+		grid-column: 1;
+		min-width: 0;
+	}
+
+	.ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__tree > .ff-mega-list__branch > .ff-mega-list__kids {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		width: 50%;
+		margin: 0;
+		padding: 0 0 0 1.75rem;
+		box-sizing: border-box;
+	}
+
+	.ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__tree:has(> .ff-mega-list__branch:hover) > .ff-mega-list__branch:not(:hover) > .ff-mega-list__kids {
+		display: none;
+	}
+
+	.ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__tree > .ff-mega-list__branch > .ff-mega-list__row .ff-chevron,
+	.ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__tree > .ff-mega-list__branch:hover > .ff-mega-list__row .ff-chevron,
+	.ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__tree > .ff-mega-list__branch:focus-within > .ff-mega-list__row .ff-chevron,
+	.ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__tree > .ff-mega-list__branch.is-ff-open > .ff-mega-list__row .ff-chevron {
+		transform: rotate(-90deg);
 	}
 }
 

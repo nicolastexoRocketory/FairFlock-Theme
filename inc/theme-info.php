@@ -20,6 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.585',
+			'items'   => array(
+				__( 'Mega-Menü: ein per Hover geöffnetes Untermenü bleibt offen, bis eine andere Kategorie gewählt wird.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.584',
+			'items'   => array(
+				__( 'Mega-Menü: Unter-Unterkategorien stehen als normale Unterkategorien in derselben Liste, ohne weiteres Untermenü.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.583',
+			'items'   => array(
+				__( 'Mega-Menü: Unterkategorien stehen in der Spalte rechts neben den Überkategorien.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.582',
 			'items'   => array(
 				__( 'Mega-Menü: Kategorien stehen immer in einer Spalte.', 'fairflock' ),

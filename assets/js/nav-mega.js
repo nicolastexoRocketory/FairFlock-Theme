@@ -135,6 +135,7 @@
 				"important"
 			);
 			paintMegaSlotBackground(slot);
+			layoutOpenCategoryKids();
 		} else {
 			slot.style.removeProperty("left");
 			slot.style.removeProperty("right");
@@ -219,21 +220,51 @@
 		document.documentElement.classList.toggle("is-ff-mega-drill", open);
 	}
 
+	function clearCategoryKidsPanel(kids) {
+		if (!kids) {
+			return;
+		}
+		["backgroundColor", "color", "padding", "top", "left", "width", "height", "right", "bottom"].forEach(
+			function (prop) {
+				kids.style[prop] = "";
+			}
+		);
+		kids.scrollTop = 0;
+	}
+
 	function paintCategoryKidsPanel(kids) {
 		if (!kids) {
 			return;
 		}
+		var slot = panelSlot();
 		var panel = kids.closest(".ff-mega-panel");
-		if (!panel) {
-			kids.style.backgroundColor = "";
-			kids.style.color = "";
-			kids.style.padding = "";
+		if (!slot || !panel || isDesktop()) {
+			clearCategoryKidsPanel(kids);
 			return;
 		}
 		var styles = window.getComputedStyle(panel);
 		kids.style.backgroundColor = styles.backgroundColor;
 		kids.style.color = styles.color;
 		kids.style.padding = styles.padding;
+		/*
+		 * Pin to the current scrollport of the slot. Categories can sit far
+		 * down the panel — anchoring to panel top:0 would open “empty”.
+		 */
+		kids.style.top = Math.round(slot.scrollTop) + "px";
+		kids.style.left = "0px";
+		kids.style.width = Math.round(slot.clientWidth) + "px";
+		kids.style.height = Math.round(slot.clientHeight) + "px";
+		kids.scrollTop = 0;
+	}
+
+	function layoutOpenCategoryKids() {
+		if (isDesktop()) {
+			return;
+		}
+		var open = document.querySelector(".ff-mega-list--parents .ff-mega-list__branch.is-ff-open > .ff-mega-list__kids");
+		if (open) {
+			paintCategoryKidsPanel(open);
+		}
 	}
 
 	function resetMegaCategoryBranches() {
@@ -245,11 +276,7 @@
 			Array.prototype.forEach.call(root.querySelectorAll(".ff-mega-list__toggle"), function (button) {
 				button.setAttribute("aria-expanded", "false");
 			});
-			Array.prototype.forEach.call(root.querySelectorAll(".ff-mega-list__kids"), function (kids) {
-				kids.style.backgroundColor = "";
-				kids.style.color = "";
-				kids.style.padding = "";
-			});
+			Array.prototype.forEach.call(root.querySelectorAll(".ff-mega-list__kids"), clearCategoryKidsPanel);
 		});
 		syncMegaDrillClass();
 	}
@@ -263,10 +290,11 @@
 		var kids = item.querySelector(":scope > .ff-mega-list__kids");
 		if (open && !isDesktop()) {
 			paintCategoryKidsPanel(kids);
-		} else if (kids) {
-			kids.style.backgroundColor = "";
-			kids.style.color = "";
-			kids.style.padding = "";
+			window.requestAnimationFrame(function () {
+				paintCategoryKidsPanel(kids);
+			});
+		} else {
+			clearCategoryKidsPanel(kids);
 		}
 		syncMegaDrillClass();
 	}

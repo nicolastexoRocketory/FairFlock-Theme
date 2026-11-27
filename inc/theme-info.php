@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.591',
+			'items'   => array(
+				__( 'Mega-Menü mobil: Unterkategorie-Panel öffnet im sichtbaren Bereich, auch wenn die Kategorien weiter unten stehen.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.590',
 			'items'   => array(
 				__( 'Mega-Menü mobil: Überziehen (Overscroll) zeigt die Seite dahinter nicht mehr.', 'fairflock' ),

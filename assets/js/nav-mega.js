@@ -203,6 +203,7 @@
 			openItem.classList.add("is-ff-mega-active");
 			openItem.setAttribute("aria-expanded", "true");
 		}
+		openDefaultCategoryFlyout();
 	}
 
 	function finishClose(slot) {
@@ -348,6 +349,23 @@
 			clearCategoryKidsPanel(kids);
 		}
 		syncMegaDrillClass();
+	}
+
+	/** Desktop: first parent category flyout open by default when mega opens. */
+	function openDefaultCategoryFlyout() {
+		if (!isDesktop()) {
+			return;
+		}
+		var roots = document.querySelectorAll(".ff-mega-list--parents .ff-mega-list__tree");
+		Array.prototype.forEach.call(roots, function (list) {
+			if (list.querySelector(":scope > .ff-mega-list__branch.is-ff-open")) {
+				return;
+			}
+			var first = list.querySelector(":scope > .ff-mega-list__branch");
+			if (first) {
+				setBranchOpen(first, true);
+			}
+		});
 	}
 
 	function categoryTopItem(list, node) {

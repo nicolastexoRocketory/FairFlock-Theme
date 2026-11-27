@@ -1873,7 +1873,9 @@ body.ff-mega-width-shell:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff
 
 .ff-mega-panel h3,
 .ff-mega-panel .wp-block-heading {
-	margin: 0;
+	/* margin-block-start freilassen — Zwischenabstand zum Block davor */
+	margin-inline: 0;
+	margin-block-end: 0;
 	font-family: var(--wp--preset--font-family--body, inherit);
 	font-weight: 700;
 	letter-spacing: normal;
@@ -1890,14 +1892,14 @@ body.ff-mega-width-shell:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff
 	line-height: 1.3;
 }
 
-/* Mega-Spalten: Flex wie core/columns — Editor-Breiten (flex-basis) gelten */
+/* Mega-Spalten: Flex wie core/columns — Editor-Breiten (flex-basis) gelten.
+ * gap bewusst nicht setzen: WP schreibt den Site-Editor-Blockabstand als
+ * .wp-container-… { gap: … } — unsere gap-Regel hat das zuvor überschrieben. */
 .ff-mega-panel__cols.wp-block-columns,
 .ff-mega-panel .ff-mega-panel__cols {
 	display: flex !important;
 	flex-wrap: nowrap !important;
 	align-items: start !important;
-	/* Fallback only — Site-Editor Block-/Innenabstand (gap) must win. */
-	gap: var(--wp--style--block-gap, 28px);
 }
 
 .ff-mega-panel__cols > .wp-block-column {
@@ -1906,17 +1908,6 @@ body.ff-mega-width-shell:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff
 	height: auto !important;
 	min-width: 0;
 	box-sizing: border-box;
-}
-
-/*
- * Spalten-Innenabstand (Cards, Listen, Titel): WP nutzt oft :where() mit
- * Spezifität 0 — .ff-mega-list { margin:0 } hat das zuvor geschluckt.
- */
-.ff-mega-panel__cols > .wp-block-column > * + *,
-.ff-mega-panel__cols > .wp-block-column.is-layout-flow > * + *,
-.ff-mega-panel__cols > .wp-block-column.wp-block-column-is-layout-flow > * + * {
-	margin-block-start: var(--wp--style--block-gap, 1.25rem);
-	margin-block-end: 0;
 }
 
 /* Ohne gesetzte Breite: gleichmäßig wachsen (WP-Default) */
@@ -1956,8 +1947,7 @@ body.ff-mega-width-shell:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff
 .ff-mega-panel__card {
 	display: flex;
 	flex-direction: column;
-	/* Editor-Blockabstand der Card-Gruppe, Fallback 12px */
-	gap: var(--wp--style--block-gap, 12px);
+	/* gap nicht setzen — Site-Editor blockGap kommt von WP-Container-CSS */
 	height: fit-content;
 	max-height: none;
 	align-self: start;
@@ -2072,22 +2062,26 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 .ff-mega-panel__card-body {
 	display: flex;
 	flex-direction: column;
-	gap: var(--wp--style--block-gap, 10px);
+	/* gap nicht setzen — Site-Editor blockGap kommt von WP-Container-CSS */
 	flex: 0 0 auto;
 }
 
 .ff-mega-panel__card-body p {
-	margin: 0;
+	/* margin-block-start freilassen — Site-Editor-Blockabstand */
+	margin-inline: 0;
+	margin-block-end: 0;
 	line-height: 1.45;
 }
 
 .ff-mega-panel__card .wp-block-buttons {
-	margin: 0;
+	margin-inline: 0;
+	margin-block-end: 0;
 }
 
 .ff-mega-panel__links,
 .ff-mega-panel .wp-block-list {
-	margin: 0;
+	margin-inline: 0;
+	margin-block-end: 0;
 	padding: 0;
 	list-style: none;
 }
@@ -2392,7 +2386,7 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 
 /* Mega-Liste (manuell / live Kategorien / live Produkte) */
 .ff-mega-list {
-	/* Kein margin:0 — sonst stirbt der Spalten-Blockabstand (margin-block-start). */
+	/* Kein margin:0 — WP-Flow-Blockabstand (margin-block-start) muss greifen. */
 	margin-inline: 0;
 	margin-block-end: 0;
 	padding: 0;
@@ -2489,7 +2483,6 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel .ff-mega-panel__cols {
 		flex-direction: column !important;
 		flex-wrap: nowrap !important;
-		gap: var(--wp--style--block-gap, 1.5em);
 	}
 
 	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel__cols > .wp-block-column {
@@ -3355,7 +3348,6 @@ html.is-ff-mega-open .ff-header {
 	body.ff-nav-compact:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel .ff-mega-panel__cols {
 		flex-direction: column !important;
 		flex-wrap: nowrap !important;
-		gap: var(--wp--style--block-gap, 1.5em);
 	}
 
 	body.ff-nav-compact:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel__cols > .wp-block-column {

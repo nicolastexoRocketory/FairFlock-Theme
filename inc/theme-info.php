@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.594',
+			'items'   => array(
+				__( 'Mega-Menü: Blockabstände aus dem Site-Editor greifen (kein Überschreiben durch Theme-CSS); Desktop öffnet standardmäßig die erste Kategorie.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.593',
 			'items'   => array(
 				__( 'Mega-Menü: Blockabstand in Spalten (zwischen Cards, Titeln, Listen) aus dem Site-Editor greift wieder.', 'fairflock' ),

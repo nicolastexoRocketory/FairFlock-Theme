@@ -20,6 +20,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.593',
+			'items'   => array(
+				__( 'Mega-Menü: Blockabstand in Spalten (zwischen Cards, Titeln, Listen) aus dem Site-Editor greift wieder.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.592',
+			'items'   => array(
+				__( 'Mega-Menü: horizontaler Innenabstand Desktop 4em, Tablet 2em, Mobile 1em; Unterkategorie-Panel ohne Overscroll über die obere Kante.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.591',
 			'items'   => array(
 				__( 'Mega-Menü mobil: Unterkategorie-Panel öffnet im sichtbaren Bereich, auch wenn die Kategorien weiter unten stehen.', 'fairflock' ),

@@ -1794,6 +1794,23 @@ body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
 	border-radius: 0;
 	background: var(--ff-surface, var(--wp--custom--surface, #fff));
 	color: var(--wp--preset--color--contrast, #0e1114);
+	/* Horizontal: Desktop 4em · Tablet 2em · Mobile 1em (oben/unten bleibt Site-Editor). */
+	padding-left: 4em !important;
+	padding-right: 4em !important;
+}
+
+@media (max-width: 960px) {
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
+		padding-left: 2em !important;
+		padding-right: 2em !important;
+	}
+}
+
+@media (max-width: 700px) {
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
+		padding-left: 1em !important;
+		padding-right: 1em !important;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1856,7 +1873,7 @@ body.ff-mega-width-shell:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff
 
 .ff-mega-panel h3,
 .ff-mega-panel .wp-block-heading {
-	margin: 0 0 10px;
+	margin: 0;
 	font-family: var(--wp--preset--font-family--body, inherit);
 	font-weight: 700;
 	letter-spacing: normal;
@@ -1889,6 +1906,17 @@ body.ff-mega-width-shell:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff
 	height: auto !important;
 	min-width: 0;
 	box-sizing: border-box;
+}
+
+/*
+ * Spalten-Innenabstand (Cards, Listen, Titel): WP nutzt oft :where() mit
+ * Spezifität 0 — .ff-mega-list { margin:0 } hat das zuvor geschluckt.
+ */
+.ff-mega-panel__cols > .wp-block-column > * + *,
+.ff-mega-panel__cols > .wp-block-column.is-layout-flow > * + *,
+.ff-mega-panel__cols > .wp-block-column.wp-block-column-is-layout-flow > * + * {
+	margin-block-start: var(--wp--style--block-gap, 1.25rem);
+	margin-block-end: 0;
 }
 
 /* Ohne gesetzte Breite: gleichmäßig wachsen (WP-Default) */
@@ -1928,7 +1956,8 @@ body.ff-mega-width-shell:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff
 .ff-mega-panel__card {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	/* Editor-Blockabstand der Card-Gruppe, Fallback 12px */
+	gap: var(--wp--style--block-gap, 12px);
 	height: fit-content;
 	max-height: none;
 	align-self: start;
@@ -2043,7 +2072,7 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 .ff-mega-panel__card-body {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: var(--wp--style--block-gap, 10px);
 	flex: 0 0 auto;
 }
 
@@ -2305,7 +2334,8 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 		height: 100%;
 		z-index: 90;
 		margin: 0;
-		padding: 0;
+		padding-left: 2em;
+		padding-right: 2em;
 		box-sizing: border-box;
 		display: block !important;
 		visibility: hidden;
@@ -2316,12 +2346,15 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 			visibility 0.28s;
 		overflow-x: hidden;
 		overflow-y: auto;
-		-webkit-overflow-scrolling: touch;
-		overscroll-behavior: none;
+		overscroll-behavior-y: none;
+		overscroll-behavior-x: none;
+		-webkit-overflow-scrolling: auto;
+		touch-action: pan-y;
 		background: var(--ff-surface, var(--wp--custom--surface, #fff));
 		color: inherit;
 		list-style: none;
 		column-count: 1;
+		isolation: isolate;
 	}
 
 	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__branch.is-ff-open > .ff-mega-list__kids {
@@ -2336,7 +2369,15 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 	}
 
 	html.is-ff-mega-drill .ff-mega-panel-slot {
-		overflow: hidden;
+		overflow: hidden !important;
+		overscroll-behavior: none;
+	}
+}
+
+@media (max-width: 700px) {
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__kids {
+		padding-left: 1em;
+		padding-right: 1em;
 	}
 }
 
@@ -2351,7 +2392,9 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 
 /* Mega-Liste (manuell / live Kategorien / live Produkte) */
 .ff-mega-list {
-	margin: 0;
+	/* Kein margin:0 — sonst stirbt der Spalten-Blockabstand (margin-block-start). */
+	margin-inline: 0;
+	margin-block-end: 0;
 	padding: 0;
 }
 

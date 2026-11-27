@@ -224,12 +224,58 @@
 		if (!kids) {
 			return;
 		}
-		["backgroundColor", "color", "padding", "top", "left", "width", "height", "right", "bottom"].forEach(
-			function (prop) {
-				kids.style[prop] = "";
-			}
-		);
+		[
+			"backgroundColor",
+			"color",
+			"padding",
+			"paddingTop",
+			"paddingBottom",
+			"paddingLeft",
+			"paddingRight",
+			"top",
+			"left",
+			"width",
+			"height",
+			"right",
+			"bottom",
+		].forEach(function (prop) {
+			kids.style[prop] = "";
+		});
 		kids.scrollTop = 0;
+	}
+
+	function bindKidsOverscrollLock(kids) {
+		if (!kids || kids.getAttribute("data-ff-overscroll-bound") === "1") {
+			return;
+		}
+		kids.setAttribute("data-ff-overscroll-bound", "1");
+		var startY = 0;
+		kids.addEventListener(
+			"touchstart",
+			function (event) {
+				if (!event.touches || !event.touches.length) {
+					return;
+				}
+				startY = event.touches[0].clientY;
+			},
+			{ passive: true }
+		);
+		kids.addEventListener(
+			"touchmove",
+			function (event) {
+				if (!event.touches || !event.touches.length) {
+					return;
+				}
+				var dy = event.touches[0].clientY - startY;
+				var atTop = kids.scrollTop <= 0;
+				var atBottom = kids.scrollTop + kids.clientHeight >= kids.scrollHeight - 1;
+				/* Block rubber-band past the drill panel edges (reveals mega behind). */
+				if ((atTop && dy > 0) || (atBottom && dy < 0)) {
+					event.preventDefault();
+				}
+			},
+			{ passive: false }
+		);
 	}
 
 	function paintCategoryKidsPanel(kids) {
@@ -245,7 +291,11 @@
 		var styles = window.getComputedStyle(panel);
 		kids.style.backgroundColor = styles.backgroundColor;
 		kids.style.color = styles.color;
-		kids.style.padding = styles.padding;
+		/* LR comes from CSS (2em / 1em); keep editor top/bottom rhythm. */
+		kids.style.paddingTop = styles.paddingTop;
+		kids.style.paddingBottom = styles.paddingBottom;
+		kids.style.paddingLeft = "";
+		kids.style.paddingRight = "";
 		/*
 		 * Pin to the current scrollport of the slot. Categories can sit far
 		 * down the panel — anchoring to panel top:0 would open “empty”.
@@ -255,6 +305,7 @@
 		kids.style.width = Math.round(slot.clientWidth) + "px";
 		kids.style.height = Math.round(slot.clientHeight) + "px";
 		kids.scrollTop = 0;
+		bindKidsOverscrollLock(kids);
 	}
 
 	function layoutOpenCategoryKids() {

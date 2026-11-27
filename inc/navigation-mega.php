@@ -250,6 +250,7 @@ function fairflock_mega_list_terms_by_parent() {
  * @since 0.9.578 Mobile: children open on tap, with “Alles in {Kategorie} anzeigen” above them.
  * @since 0.9.583 Desktop: children sit in the next column.
  * @since 0.9.584 Descendants below the first level are plain subcategory links.
+ * @since 0.9.589 Mobile: children slide in from the right with a back control.
  *
  * @param array<int, WP_Term>             $terms     Categories at this level.
  * @param array<int, array<int, WP_Term>> $by_parent Children keyed by parent id.
@@ -257,10 +258,14 @@ function fairflock_mega_list_terms_by_parent() {
  * @return string
  */
 function fairflock_mega_list_parent_items_markup( array $terms, array $by_parent, $flat = false ) {
-	$html    = '';
-	$chevron = function_exists( 'fairflock_chevron_svg' )
+	$html         = '';
+	$chevron      = function_exists( 'fairflock_chevron_svg' )
 		? fairflock_chevron_svg( array( 'dir' => 'down', 'size' => 16 ) )
 		: '';
+	$chevron_left = function_exists( 'fairflock_chevron_svg' )
+		? fairflock_chevron_svg( array( 'dir' => 'left', 'size' => 16 ) )
+		: '';
+	$back_label   = esc_html__( 'Zurück zu allen Kategorien', 'fairflock' );
 
 	foreach ( $terms as $term ) {
 		if ( ! $term instanceof WP_Term ) {
@@ -298,6 +303,7 @@ function fairflock_mega_list_parent_items_markup( array $terms, array $by_parent
 		$html .= '<button type="button" class="ff-mega-list__toggle" aria-expanded="false" aria-label="' . $toggle_label . '">' . $chevron . '</button>';
 		$html .= '</div>';
 		$html .= '<ul class="ff-mega-list__kids">';
+		$html .= '<li class="ff-mega-list__back"><button type="button" class="ff-mega-list__back-btn">' . $chevron_left . '<span>' . $back_label . '</span></button></li>';
 		$html .= '<li class="ff-mega-list__all"><a href="' . esc_url( (string) $link ) . '">' . $all_label . '</a></li>';
 		$html .= $kids;
 		$html .= '</ul></li>';

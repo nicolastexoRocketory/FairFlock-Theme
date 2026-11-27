@@ -20,6 +20,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 function fairflock_theme_changelog() {
 	return array(
 		array(
+			'version' => '0.9.590',
+			'items'   => array(
+				__( 'Mega-Menü mobil: Überziehen (Overscroll) zeigt die Seite dahinter nicht mehr.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.589',
+			'items'   => array(
+				__( 'Mega-Menü mobil: Unterkategorien fahren als Panel von rechts ein, mit „Zurück zu allen Kategorien“ und „Alles in {Kategorie} anzeigen“.', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.588',
+			'items'   => array(
+				__( 'Mega-Menü und Kategorie-Übersicht: Reihenfolge folgt der WooCommerce-Kategorie-Reihenfolge (Produkte → Kategorien).', 'fairflock' ),
+			),
+		),
+		array(
+			'version' => '0.9.587',
+			'items'   => array(
+				__( 'Mega-Menü: vertikale Spaltenlinie entfernt, keine Linie über dem ersten Unterpunkt.', 'fairflock' ),
+			),
+		),
+		array(
 			'version' => '0.9.586',
 			'items'   => array(
 				__( 'Mega-Menü: stabile Abstände bei Hover, Trennlinien zwischen den Punkten und klarere Spalten für Unterkategorien.', 'fairflock' ),

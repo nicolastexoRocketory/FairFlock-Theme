@@ -88,6 +88,26 @@
 		return slot;
 	}
 
+	function paintMegaSlotBackground(slot) {
+		if (!slot) {
+			return;
+		}
+		var fullBleed =
+			openMode === "panel" ||
+			!isDesktop() ||
+			document.body.classList.contains("ff-nav-compact");
+		if (!fullBleed) {
+			slot.style.backgroundColor = "";
+			return;
+		}
+		var panel = slot.querySelector(".ff-mega-panel");
+		if (!panel) {
+			return;
+		}
+		/* Match the Site-Editor panel color so overscroll never shows the page behind. */
+		slot.style.backgroundColor = window.getComputedStyle(panel).backgroundColor;
+	}
+
 	function positionSlot(slot) {
 		var bar = headerBar();
 		if (!slot || !bar) {
@@ -114,12 +134,14 @@
 				"calc(100dvh - " + top + "px)",
 				"important"
 			);
+			paintMegaSlotBackground(slot);
 		} else {
 			slot.style.removeProperty("left");
 			slot.style.removeProperty("right");
 			slot.style.removeProperty("width");
 			slot.style.removeProperty("max-width");
 			slot.style.removeProperty("max-height");
+			slot.style.backgroundColor = "";
 		}
 		/* transform is owned by CSS animation — do not clear while open */
 	}
@@ -192,6 +214,28 @@
 		clearInlineBox(slot);
 	}
 
+	function syncMegaDrillClass() {
+		var open = !isDesktop() && !!document.querySelector(".ff-mega-list--parents .ff-mega-list__branch.is-ff-open");
+		document.documentElement.classList.toggle("is-ff-mega-drill", open);
+	}
+
+	function paintCategoryKidsPanel(kids) {
+		if (!kids) {
+			return;
+		}
+		var panel = kids.closest(".ff-mega-panel");
+		if (!panel) {
+			kids.style.backgroundColor = "";
+			kids.style.color = "";
+			kids.style.padding = "";
+			return;
+		}
+		var styles = window.getComputedStyle(panel);
+		kids.style.backgroundColor = styles.backgroundColor;
+		kids.style.color = styles.color;
+		kids.style.padding = styles.padding;
+	}
+
 	function resetMegaCategoryBranches() {
 		var roots = document.querySelectorAll(".ff-mega-list--parents");
 		Array.prototype.forEach.call(roots, function (root) {
@@ -201,7 +245,13 @@
 			Array.prototype.forEach.call(root.querySelectorAll(".ff-mega-list__toggle"), function (button) {
 				button.setAttribute("aria-expanded", "false");
 			});
+			Array.prototype.forEach.call(root.querySelectorAll(".ff-mega-list__kids"), function (kids) {
+				kids.style.backgroundColor = "";
+				kids.style.color = "";
+				kids.style.padding = "";
+			});
 		});
+		syncMegaDrillClass();
 	}
 
 	function setBranchOpen(item, open) {
@@ -210,6 +260,15 @@
 		if (button) {
 			button.setAttribute("aria-expanded", open ? "true" : "false");
 		}
+		var kids = item.querySelector(":scope > .ff-mega-list__kids");
+		if (open && !isDesktop()) {
+			paintCategoryKidsPanel(kids);
+		} else if (kids) {
+			kids.style.backgroundColor = "";
+			kids.style.color = "";
+			kids.style.padding = "";
+		}
+		syncMegaDrillClass();
 	}
 
 	function categoryTopItem(list, node) {
@@ -220,7 +279,7 @@
 		return item && list.contains(item) ? item : null;
 	}
 
-	/* Desktop: open stays until another top-level category is chosen. No minHeight — that stretched grid gaps. */
+	/* Desktop: open stays until another top-level category is chosen. */
 	function stickCategoryFlyout(list, item) {
 		if (!list || !isDesktop() || !item) {
 			return;
@@ -248,6 +307,16 @@
 
 	function bindMegaCategoryBranches() {
 		document.addEventListener("click", function (event) {
+			var back = event.target.closest(".ff-mega-list--parents .ff-mega-list__back-btn");
+			if (back) {
+				event.preventDefault();
+				var backItem = back.closest(".ff-mega-list__branch");
+				if (backItem) {
+					setBranchOpen(backItem, false);
+				}
+				return;
+			}
+
 			var row = event.target.closest(".ff-mega-list--parents .ff-mega-list__row");
 			if (!row) {
 				return;
@@ -256,21 +325,20 @@
 			if (!item) {
 				return;
 			}
-			/* Desktop hover keeps the submenu open. Mobile opens it on tap. */
+			/* Desktop: hover opens the flyout; the parent link navigates. */
 			if (isDesktop()) {
 				return;
 			}
 			event.preventDefault();
-			var open = !item.classList.contains("is-ff-open");
 			var list = item.parentElement;
-			if (open && list) {
+			if (list) {
 				Array.prototype.forEach.call(list.children, function (sibling) {
 					if (sibling !== item && sibling.classList && sibling.classList.contains("ff-mega-list__branch")) {
 						setBranchOpen(sibling, false);
 					}
 				});
 			}
-			setBranchOpen(item, open);
+			setBranchOpen(item, true);
 		});
 
 		document.addEventListener("mouseover", function (event) {
@@ -302,8 +370,12 @@
 		resetMegaCategoryBranches();
 		var slot = panelSlot();
 		document.documentElement.classList.remove("is-ff-mega-open");
+		document.documentElement.classList.remove("is-ff-mega-drill");
 		setPanelBodyClass(false);
 		openMode = null;
+		if (slot) {
+			slot.style.backgroundColor = "";
+		}
 
 		megaItems().forEach(function (item) {
 			item.classList.remove("is-ff-mega-active");
@@ -453,14 +525,30 @@
 		);
 
 		document.addEventListener("keydown", function (event) {
-			if (
-				event.key === "Escape" &&
-				slot &&
-				(slot.classList.contains("is-open") || slot.classList.contains("is-closing"))
-			) {
+			if (event.key !== "Escape" || !slot) {
+				return;
+			}
+			var drill = slot.querySelector(".ff-mega-list__branch.is-ff-open");
+			if (drill && !isDesktop()) {
+				setBranchOpen(drill, false);
+				return;
+			}
+			if (slot.classList.contains("is-open") || slot.classList.contains("is-closing")) {
 				closeMega();
 			}
 		});
+
+		window.addEventListener(
+			"resize",
+			function () {
+				if (isDesktop()) {
+					document.documentElement.classList.remove("is-ff-mega-drill");
+				} else {
+					syncMegaDrillClass();
+				}
+			},
+			{ passive: true }
+		);
 	}
 
 	bindMegaCategoryBranches();

@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 0.9.99
  * @since 0.9.250 Optional extra term IDs to exclude.
  * @since 0.9.567 Optional top-level categories only.
+ * @since 0.9.588 Ordered by WooCommerce menu_order (Products → Categories).
  *
  * @param array<int, int> $extra_exclude Extra term IDs to exclude.
  * @param bool            $parents_only  Only Überkategorien (parent 0).
@@ -43,10 +44,14 @@ function fairflock_get_category_overview_terms( $extra_exclude = array(), $paren
 
 	$exclude = array_values( array_unique( array_filter( array_map( 'intval', $exclude ) ) ) );
 
+	/*
+	 * menu_order = WooCommerce-Reihenfolge (Produkte → Kategorien, per Drag & Drop).
+	 * Gilt für Über- und Unterkategorien im Mega-Menü und der Kategorie-Übersicht.
+	 */
 	$query = array(
 		'taxonomy'   => 'product_cat',
 		'hide_empty' => false,
-		'orderby'    => 'name',
+		'orderby'    => 'menu_order',
 		'order'      => 'ASC',
 		'exclude'    => $exclude,
 	);

@@ -2173,9 +2173,37 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 	opacity: 1;
 }
 
+.ff-mega-list__back-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	margin: 0;
+	padding: 10px 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-weight: 600;
+	text-align: left;
+	cursor: pointer;
+	opacity: 0.88;
+}
+
+.ff-mega-list__back-btn:hover,
+.ff-mega-list__back-btn:focus-visible {
+	opacity: 1;
+}
+
+.ff-mega-list__back-btn .ff-chevron {
+	flex: 0 0 auto;
+	opacity: 0.7;
+}
+
 /* Desktop: Unterkategorien in der rechten Spalte. Nur .is-ff-open — kein Hover-Layoutsprung. */
 @media (min-width: 961px) {
-	.ff-mega-list__all {
+	.ff-mega-list__all,
+	.ff-mega-list__back {
 		display: none;
 	}
 
@@ -2194,13 +2222,8 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 	.ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__tree > li {
 		grid-column: 1;
 		min-width: 0;
-		border-right: 1px solid color-mix(in srgb, currentColor 14%, transparent);
 		padding-right: 1.25rem;
 		box-sizing: border-box;
-	}
-
-	.ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__tree > li:last-child {
-		border-bottom: 0;
 	}
 
 	.ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__tree > .ff-mega-list__branch > .ff-mega-list__kids {
@@ -2211,7 +2234,12 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 		margin: 0;
 		padding: 0 0 0 1.25rem;
 		box-sizing: border-box;
-		border-right: 0;
+	}
+
+	/* „Alles in …“ / Zurück sind desktop ausgeblendet — erster sichtbarer Unterpunkt ohne Linie. */
+	.ff-mega-panel-slot .ff-mega-list__kids > .ff-mega-list__all + li,
+	.ff-mega-panel-slot .ff-mega-list__kids > .ff-mega-list__back + .ff-mega-list__all + li {
+		border-top: 0;
 	}
 
 	/* Hover darf Desktop-Unterpunkte nicht kurz einblenden — sonst springt das Layout. */
@@ -2238,7 +2266,7 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 	}
 }
 
-/* Mobile: Unterpunkte nur nach Klick, darüber „Alles in {Überkategorie} anzeigen“. */
+/* Mobile: Unterkategorien als Panel von rechts. */
 @media (max-width: 960px) {
 	.ff-mega-list__toggle {
 		pointer-events: auto;
@@ -2253,20 +2281,67 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 		display: block;
 	}
 
+	.ff-mega-list__branch > .ff-mega-list__row .ff-chevron,
 	.ff-mega-list__branch:hover > .ff-mega-list__row .ff-chevron,
-	.ff-mega-list__branch:focus-within > .ff-mega-list__row .ff-chevron {
-		transform: none;
+	.ff-mega-list__branch:focus-within > .ff-mega-list__row .ff-chevron,
+	.ff-mega-list__branch.is-ff-open > .ff-mega-list__row .ff-chevron {
+		transform: rotate(-90deg);
 	}
 
-	.ff-mega-list__branch.is-ff-open > .ff-mega-list__row .ff-chevron {
-		transform: rotate(180deg);
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
+		position: relative;
+		overflow-x: hidden;
+	}
+
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__kids {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		min-height: 100%;
+		z-index: 30;
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+		display: block !important;
+		visibility: hidden;
+		pointer-events: none;
+		transform: translate3d(100%, 0, 0);
+		transition:
+			transform 0.28s var(--ff-ease, cubic-bezier(0.16, 1, 0.3, 1)),
+			visibility 0.28s;
+		overflow-x: hidden;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior: contain;
+		background: var(--ff-surface, var(--wp--custom--surface, #fff));
+		color: inherit;
+		list-style: none;
+		column-count: 1;
+	}
+
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__branch.is-ff-open > .ff-mega-list__kids {
+		visibility: visible;
+		pointer-events: auto;
+		transform: translate3d(0, 0, 0);
+	}
+
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__branch:hover > .ff-mega-list__kids,
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__branch:focus-within > .ff-mega-list__kids {
+		display: block !important;
+	}
+
+	html.is-ff-mega-drill .ff-mega-panel-slot {
+		overflow: hidden;
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.ff-mega-panel__links a,
 	.ff-mega-panel .wp-block-list a,
-	.ff-mega-list__toggle .ff-chevron {
+	.ff-mega-list__toggle .ff-chevron,
+	body:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-list--categories .ff-mega-list__kids {
 		transition: none;
 	}
 }
@@ -2335,13 +2410,19 @@ a.ff-mega-cover-link:not(:has(.wp-block-cover__image-background)):not(:has(.wp-b
 	 * Mobile/Tablet: Mega-Panel = Menü (Burger öffnet es).
 	 * Altes Drill-Menü (.ff-menu-layer) bleibt im DOM, wird aber nicht genutzt.
 	 */
+	/*
+	 * Opaker Slot + overscroll none: Pull-to-overscroll darf die Seite
+	 * dahinter nicht freilegen (iOS Rubber-Band).
+	 */
 	body:not(.block-editor-iframe__body) .ff-mega-panel-slot {
 		display: block;
 		overflow-x: hidden;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
-		overscroll-behavior: contain;
+		overscroll-behavior: none;
 		bottom: 0;
+		background-color: var(--ff-surface, var(--wp--custom--surface, #fff));
+		isolation: isolate;
 	}
 
 	/*
@@ -3211,9 +3292,11 @@ html.is-ff-mega-open .ff-header {
 		overflow-x: hidden;
 		overflow-y: auto;
 		-webkit-overflow-scrolling: touch;
-		overscroll-behavior: contain;
+		overscroll-behavior: none;
 		bottom: 0;
 		padding-bottom: env(safe-area-inset-bottom, 0px);
+		background-color: var(--ff-surface, var(--wp--custom--surface, #fff));
+		isolation: isolate;
 	}
 
 	body.ff-nav-compact:not(.block-editor-iframe__body) .ff-mega-panel-slot .ff-mega-panel {
